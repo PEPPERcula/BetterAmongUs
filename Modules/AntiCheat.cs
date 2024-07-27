@@ -142,7 +142,7 @@ class AntiCheat
             {
                 PlayerControl target = reader.ReadNetObject<PlayerControl>();
 
-                if (IsCrewmate || !player.IsAlive() || !target.IsAlive() || target.IsImpostorTeam())
+                if (IsCrewmate || !player.IsAlive() || player.IsInVanish() || !target.IsAlive() || target.IsImpostorTeam())
                     BAUNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
 
                 return;
