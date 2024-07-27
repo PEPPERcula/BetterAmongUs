@@ -62,8 +62,7 @@ class BetterHostManager
             }
             else if (GameStates.IsInGame && !GameStates.IsLobby)
             {
-                string RoleHexColor = player.IsImpostorTeam() ? "#ff1919" : "#8cffff";
-                string Role = $"<color={RoleHexColor}>{player.GetRoleName()}</color>";
+                string Role = $"<color={player.GetTeamHexColor()}>{player.GetRoleName()}</color>";
                 if (!player.IsImpostorTeam() && !target.IsImpostorTeam())
                 {
                     if (target.IsAlive() && player != target)

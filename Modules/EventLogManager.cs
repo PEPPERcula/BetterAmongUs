@@ -20,6 +20,15 @@ class EventLogManager
             else
                 Logger.LogPrivate($"{__instance.Data.PlayerName} Has Un-Shapeshifted, did animate: {animate}", "EventLog");
         }
+        [HarmonyPatch(nameof(PlayerControl.SetRoleInvisibility))]
+        [HarmonyPostfix]
+        public static void SetRoleInvisibility_Postfix(PlayerControl __instance, [HarmonyArgument(0)] bool isActive, [HarmonyArgument(1)] bool animate)
+        {
+            if (isActive)
+                Logger.LogPrivate($"{__instance.Data.PlayerName} Has Vanished as Phantom, did animate: {animate}", "EventLog");
+            else
+                Logger.LogPrivate($"{__instance.Data.PlayerName} Has Appeared as Phantom, did animate: {animate}", "EventLog");
+        }
     }
 
     [HarmonyPatch(typeof(PlayerPhysics))]

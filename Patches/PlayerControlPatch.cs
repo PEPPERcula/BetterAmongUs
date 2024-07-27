@@ -199,8 +199,7 @@ class PlayerControlPatch
         }
         else
         {
-            string RoleHexColor = player.IsImpostorTeam() ? "#ff1919" : "#8cffff";
-            string Role = $"<color={RoleHexColor}>{player.GetRoleName()}</color>";
+            string Role = $"<color={player.GetTeamHexColor()}>{player.GetRoleName()}</color>";
             if (!player.IsImpostorTeammate())
             {
                 if (PlayerControl.LocalPlayer.IsAlive() && player != PlayerControl.LocalPlayer)

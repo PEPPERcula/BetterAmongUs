@@ -114,8 +114,7 @@ class ChatPatch
                 string hashPuid = Utils.GetHashPuid(sourcePlayer);
                 string friendCode = sourcePlayer.Data.FriendCode;
                 string playerName = sourcePlayer.Data.PlayerName;
-                string RoleHexColor = sourcePlayer.IsImpostorTeam() ? "#ff1919" : "#8cffff";
-                string Role = $"<size=75%><color={RoleHexColor}>{sourcePlayer.GetRoleName()}</color></size>+++";
+                string Role = $"<size=75%><color={sourcePlayer.GetTeamHexColor()}>{sourcePlayer.GetRoleName()}</color></size>+++";
 
                 if (GameStates.IsLobby && !GameStates.IsFreePlay)
                 {
