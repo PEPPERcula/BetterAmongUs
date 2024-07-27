@@ -4,6 +4,13 @@ A client-sided mod that enhances the experience for the popular game Among Us!
 
 <img src="https://github.com/D1GQ/BetterAmongUs/assets/83262852/ab10830c-a270-4be4-b79d-4fe911693e47" alt="BetterAmongUs-Logo" width="700" height="400">
 
+## Getting Started
+
+1. **Install the Mod**: Download the latest version from [Releases](https://github.com/D1GQ/BetterAmongUs/releases) and follow the installation instructions in the [BepInEx Installation Guide](https://docs.bepinex.dev/articles/user_guide/installation/index.html) to get BetterAmongUs up and running.
+2. **Explore the Features**: Use the pause menu to discover new options and settings.
+3. **Check the Commands**: Type `/commands` in the chat to view a list of all available commands.
+4. **Stay Updated**: Keep an eye on this page for future updates and new features.
+
 ## Features
 
 BetterAmongUs comes packed with a variety of features designed to improve your gameplay experience:
