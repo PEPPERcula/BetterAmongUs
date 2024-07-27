@@ -1,0 +1,229 @@
+﻿using AmongUs.GameOptions;
+using InnerNet;
+using System.Reflection;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.RegularExpressions;
+using UnityEngine;
+
+namespace BetterAmongUs;
+
+public static class Utils
+{
+    // Get player by client id
+    public static ClientData? ClientFromId(int id) => AmongUsClient.Instance.allClients.ToArray().FirstOrDefault(cd => cd.Id == id) ?? null;
+    // Get player from player id
+    public static PlayerControl? PlayerFromId(int playerId) => Main.AllPlayerControls.FirstOrDefault(player => player.PlayerId == playerId) ?? null;
+    // Get player from client id
+    public static PlayerControl? PlayerFromClientId(int clientId) => Main.AllPlayerControls.FirstOrDefault(player => player.GetClientId() == clientId) ?? null;
+    // Get player from net id
+    public static PlayerControl? PlayerFromNetId(uint netId) => Main.AllPlayerControls.FirstOrDefault(player => player.NetId == netId) ?? null;
+    // Add msg to chat
+    public static void AddChatPrivate(string text, string overrideName = "", bool setRight = false)
+    {
+        ChatController chat = HudManager.Instance.Chat;
+        NetworkedPlayerInfo data = PlayerControl.LocalPlayer.Data;
+        ChatBubble pooledBubble = chat.GetPooledBubble();
+        string MsgName = "<color=#ffffff><b>(<color=#00ff44>System Message</color>)</b>";
+        if (overrideName != "")
+            MsgName = overrideName;
+        try
+        {
+            pooledBubble.transform.SetParent(chat.scroller.Inner);
+            pooledBubble.transform.localScale = Vector3.one;
+            pooledBubble.Background.color = new Color(0.05f, 0.05f, 0.05f, 1f);
+            pooledBubble.SetCosmetics(data);
+            pooledBubble.gameObject.transform.Find("PoolablePlayer").gameObject.SetActive(false);
+            pooledBubble.ColorBlindName.gameObject.SetActive(false);
+            if (!setRight)
+            {
+                pooledBubble.SetLeft();
+                pooledBubble.gameObject.transform.Find("NameText (TMP)").transform.localPosition += new Vector3(-0.7f, 0f);
+                pooledBubble.gameObject.transform.Find("ChatText (TMP)").transform.localPosition += new Vector3(-0.7f, 0f);
+            }
+            else
+            {
+                pooledBubble.SetRight();
+            }
+            chat.SetChatBubbleName(pooledBubble, data, data.IsDead, false, PlayerNameColor.Get(data), null);
+            pooledBubble.SetText(text);
+            pooledBubble.AlignChildren();
+            chat.AlignAllBubbles();
+            pooledBubble.NameText.text = MsgName;
+            if (!chat.IsOpenOrOpening && chat.notificationRoutine == null)
+            {
+                chat.notificationRoutine = chat.StartCoroutine(chat.BounceDot());
+            }
+            SoundManager.Instance.PlaySound(chat.messageSound, false, 1f, null).pitch = 0.5f + (float)data.PlayerId / 15f;
+        }
+        catch (Exception ex)
+        {
+            chat.chatBubblePool.Reclaim(pooledBubble);
+            Logger.Error(ex.ToString());
+            throw; 
+        }
+    }
+    // Get players HashPuid
+    public static string GetHashPuid(PlayerControl player)
+    {
+        if (player?.Data?.Puid == null) return "";
+
+        string puid = player.Data.Puid;
+
+        using SHA256 sha256 = SHA256.Create();
+        byte[] sha256Bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(puid));
+        string sha256Hash = BitConverter.ToString(sha256Bytes).Replace("-", "").ToLower();
+        return sha256Hash.Substring(0, 5) + sha256Hash.Substring(sha256Hash.Length - 4);
+    }
+    // Get HashPuid from puid
+    public static string GetHashPuid(string puid)
+    {
+        using SHA256 sha256 = SHA256.Create();
+        byte[] sha256Bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(puid));
+        string sha256Hash = BitConverter.ToString(sha256Bytes).Replace("-", "").ToLower();
+        return sha256Hash.Substring(0, 5) + sha256Hash.Substring(sha256Hash.Length - 4);
+    }
+    // Remove Html Tags Template
+    public static string RemoveHtmlTagsTemplate(string str) => Regex.Replace(str, "", "");
+    // Get raw text
+    public static string GetRawText(string text)
+    {
+        text = Regex.Replace(text, "<[^>]*>", "");
+        text = Regex.Replace(text, "{[^}]*}", "");
+        return text;
+    }
+    // Get name for role
+    public static string GetRoleName(RoleTypes role) => Main.GetRoleName[(int)role];
+    public static string Color32ToHex(Color32 color) => $"#{color.r:X2}{color.g:X2}{color.b:X2}{255:X2}";
+    // Disconnect client
+    public static void DisconnectSelf(string reason)
+    {
+        AmongUsClient.Instance.ExitGame(0);
+        _ = new LateTask(() =>
+        {
+            SceneChanger.ChangeScene("MainMenu");
+            _ = new LateTask(() =>
+            {
+                var lines = "<color=#ebbd34>----------------------------------------------------------------------------------------------</color>";
+                DisconnectPopup.Instance._textArea.enableWordWrapping = false;
+                DisconnectPopup.Instance.ShowCustom($"{lines}\n\n\n<size=150%>{reason}</size>\n\n\n{lines}");
+            }, 0.1f, "DisconnectSelf 2");
+        }, 0.2f, "DisconnectSelf 1");
+    }
+
+    public static Dictionary<string, Sprite> CachedSprites = [];
+
+    public static Sprite? LoadSprite(string path, float pixelsPerUnit = 1f)
+    {
+        try
+        {
+            if (CachedSprites.TryGetValue(path + pixelsPerUnit, out var sprite))
+                return sprite;
+
+            var texture = LoadTextureFromResources(path);
+            if (texture == null)
+                return null;
+
+            sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), pixelsPerUnit);
+            sprite.hideFlags |= HideFlags.HideAndDontSave | HideFlags.DontSaveInEditor;
+
+            Logger.Log($"Successfully loaded sprite from {path}");
+            return CachedSprites[path + pixelsPerUnit] = sprite;
+        }
+        catch (Exception ex) 
+        {
+            Logger.Error(ex.ToString());
+            return null;
+        }
+    }
+
+    public static Texture2D? LoadTextureFromResources(string path)
+    {
+        try
+        {
+            var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(path);
+            if (stream == null)
+                return null;
+
+            var texture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
+            using (var ms = new MemoryStream())
+            {
+                stream.CopyTo(ms);
+                if (!ImageConversion.LoadImage(texture, ms.ToArray(), false))
+                    return null;
+            }
+
+            Logger.Log($"Successfully loaded texture from {path}");
+            return texture;
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex.ToString());
+            return null;
+        }
+    }
+
+    // Get platform name
+    public static string GetPlatformName(PlayerControl player, bool useTag = false)
+    {
+        if (player == null) return string.Empty;
+        if (player.GetClient() == null) return string.Empty;
+
+        string PlatformName = string.Empty;
+        string Tag = string.Empty;
+
+        Platforms platform = player.GetClient().PlatformData.Platform;
+
+        switch (platform)
+        {
+            case Platforms.StandaloneSteamPC:
+                PlatformName = "Steam";
+                Tag = "PC";
+                break;
+            case Platforms.StandaloneEpicPC:
+                PlatformName = "Epic Games";
+                Tag = "PC";
+                break;
+            case Platforms.StandaloneWin10:
+                PlatformName = "Microsoft Store";
+                Tag = "PC";
+                break;
+            case Platforms.StandaloneMac:
+                PlatformName = "Mac OS";
+                Tag = "PC";
+                break;
+            case Platforms.StandaloneItch:
+                PlatformName = "Itch.io";
+                Tag = "PC";
+                break;
+            case Platforms.Xbox:
+                PlatformName = "Xbox";
+                Tag = "Console";
+                break;
+            case Platforms.Playstation:
+                PlatformName = "Playstation";
+                Tag = "Console";
+                break;
+            case Platforms.Switch:
+                PlatformName = "Switch";
+                Tag = "Console";
+                break;
+            case Platforms.Android:
+                PlatformName = "Android";
+                Tag = "Mobile";
+                break;
+            case Platforms.IPhone:
+                PlatformName = "IPhone";
+                Tag = "Mobile";
+                break;
+            case Platforms.Unknown:
+                PlatformName = "None";
+                break;
+        }
+
+        if (useTag == false)
+            return PlatformName;
+
+        return $"{Tag}: {PlatformName}";
+    }
+}
