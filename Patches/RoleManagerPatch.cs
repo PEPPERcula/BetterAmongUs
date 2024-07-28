@@ -17,8 +17,7 @@ public class RoleManagerPatch
     {
         if (!Main.BetterRoleAlgorithma.Value) return true;
 
-        Logger.Log($"   Better Role Assignment Has Started!", "RoleManager");
-        Logger.Log($"--------------------------------------------", "RoleManager");
+        Logger.LogHeader($"Better Role Assignment Has Started", "RoleManager");
 
         // Set roles up
         foreach (var addplayer in Main.AllPlayerControls.Where(pc => !ImpostorMultiplier.ContainsKey(Utils.GetHashPuid(pc))))
@@ -184,8 +183,7 @@ public class RoleManagerPatch
         SetPlayerRole.Clear();
         RPC.SyncAllNames();
 
-        Logger.Log($"--------------------------------------------", "RoleManager");
-        Logger.Log($"  Better Role Assignment Has Finished!", "RoleManager");
+        Logger.LogHeader($"Better Role Assignment Has Finished", "RoleManager");
 
         return false;
     }
