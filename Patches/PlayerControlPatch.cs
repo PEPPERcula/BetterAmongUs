@@ -70,7 +70,7 @@ class PlayerControlPatch
 
     public static void SetPlayerInfo(PlayerControl player)
     {
-        if (player == null) return;
+        if (player == null || player.Data == null) return;
 
         // Set player text info
         if (player.DataIsCollected() != true)
@@ -203,7 +203,7 @@ class PlayerControlPatch
             string Role = $"<color={player.GetTeamHexColor()}>{player.GetRoleName()}</color>";
             if (!player.IsImpostorTeammate())
             {
-                if (PlayerControl.LocalPlayer.IsAlive() && player != PlayerControl.LocalPlayer)
+                if (PlayerControl.LocalPlayer != null && PlayerControl.LocalPlayer.IsAlive() && player != PlayerControl.LocalPlayer)
                 {
                     if (!DebugMenu.RevealRoles)
                     {
