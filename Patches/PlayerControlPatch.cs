@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace BetterAmongUs.Patches;
 
@@ -218,9 +219,58 @@ class PlayerControlPatch
 
     [HarmonyPatch(nameof(PlayerControl.MurderPlayer))]
     [HarmonyPostfix]
-    public static void MurderPlayer_Postfix(/*PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target*/)
+    public static void MurderPlayer_Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
     {
         if (GameStates.IsInGame || GameStates.IsFreePlay && !GameStates.IsLobby && !GameStates.IsHideNSeek && HudManager.Instance.CrewmatesKilled.isActiveAndEnabled)
             HudManager.Instance?.NotifyOfDeath();
+
+
+        Logger.LogPrivate($"{__instance.Data.PlayerName} Has killed {target.Data.PlayerName} as {Utils.GetRoleName(__instance.Data.RoleType)}", "EventLog");
+    }
+    [HarmonyPatch(nameof(PlayerControl.Shapeshift))]
+    [HarmonyPostfix]
+    public static void Shapeshift_Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] bool animate)
+    {
+
+        if (__instance != target)
+            Logger.LogPrivate($"{__instance.Data.PlayerName} Has Shapeshifted into {target.Data.PlayerName}, did animate: {animate}", "EventLog");
+        else
+            Logger.LogPrivate($"{__instance.Data.PlayerName} Has Un-Shapeshifted, did animate: {animate}", "EventLog");
+    }
+    [HarmonyPatch(nameof(PlayerControl.SetRoleInvisibility))]
+    [HarmonyPostfix]
+    public static void SetRoleInvisibility_Postfix(PlayerControl __instance, [HarmonyArgument(0)] bool isActive, [HarmonyArgument(1)] bool animate)
+    {
+
+        if (isActive)
+            Logger.LogPrivate($"{__instance.Data.PlayerName} Has Vanished as Phantom, did animate: {animate}", "EventLog");
+        else
+            Logger.LogPrivate($"{__instance.Data.PlayerName} Has Appeared as Phantom, did animate: {animate}", "EventLog");
+    }
+}
+
+[HarmonyPatch(typeof(PlayerPhysics))]
+public class PlayerPhysicsPatch
+{
+    [HarmonyPatch(nameof(PlayerPhysics.BootFromVent))]
+    [HarmonyPostfix]
+    private static void BootFromVent_Postfix(PlayerPhysics __instance, [HarmonyArgument(0)] int ventId)
+    {
+
+        Logger.LogPrivate($"{__instance.myPlayer.Data.PlayerName} Has been booted from vent: {ventId}, as {Utils.GetRoleName(__instance.myPlayer.Data.RoleType)}", "EventLog");
+    }
+    [HarmonyPatch(nameof(PlayerPhysics.CoEnterVent))]
+    [HarmonyPostfix]
+    private static void CoEnterVent_Postfix(PlayerPhysics __instance, [HarmonyArgument(0)] int ventId)
+    {
+
+        Logger.LogPrivate($"{__instance.myPlayer.Data.PlayerName} Has entered vent: {ventId}, as {Utils.GetRoleName(__instance.myPlayer.Data.RoleType)}", "EventLog");
+    }
+    [HarmonyPatch(nameof(PlayerPhysics.CoExitVent))]
+    [HarmonyPostfix]
+    private static void CoExitVent_Postfix(PlayerPhysics __instance, [HarmonyArgument(0)] int ventId)
+    {
+
+        Logger.LogPrivate($"{__instance.myPlayer.Data.PlayerName} Has exit vent: {ventId}, as {Utils.GetRoleName(__instance.myPlayer.Data.RoleType)}", "EventLog");
     }
 }
