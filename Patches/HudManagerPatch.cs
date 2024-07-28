@@ -78,3 +78,19 @@ public class HudManagerPatch
         catch { }
     }
 }
+
+[HarmonyPatch(typeof(KillOverlay))]
+public class KillOverlayPatch
+{
+    [HarmonyPatch(nameof(KillOverlay.ShowKillAnimation))]
+    [HarmonyPrefix]
+    private static bool ShowKillAnimation_Prefix()
+    {
+        if (!PlayerControl.LocalPlayer.IsAlive())
+        {
+            return false;
+        }
+
+        return true;
+    }
+}
