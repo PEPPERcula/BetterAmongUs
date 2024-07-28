@@ -26,6 +26,12 @@ class Logger
 
     public static void LogPrivate(string info, string tag = "Log")
     {
+        if (GameStates.IsDev)
+        {
+            Log(info, tag);
+            return;
+        }
+
         string mark = $"{DateTime.Now:HH:mm} [BetterLog][PrivateLog][{tag}]";
         string logFilePath = Path.Combine(Environment.CurrentDirectory, "better-log.txt");
         string newLine = $"{mark}: " + Encryptor.Encrypt($"{info}");
