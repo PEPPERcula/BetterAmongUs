@@ -153,7 +153,7 @@ class AntiCheat
 
             if (callId is (byte)RpcCalls.SendChat or (byte)RpcCalls.SendQuickChat)
             {
-                if (player.IsAlive() && GameStates.InGame && !GameStates.IsLobby && !GameStates.IsMeeting && !GameStates.IsExilling && GameStates.IsInTask)
+                if (player.IsAlive() && GameStates.IsInGamePlay && !GameStates.IsMeeting && !GameStates.IsExilling)
                     BAUNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
 
                 return;
