@@ -127,7 +127,7 @@ static class ExtendedPlayerControl
     public static string GetRoleName(this PlayerControl player) => player?.Data != null && Main.GetRoleName.TryGetValue((int)player.Data.RoleType, out var roleName) ? roleName : string.Empty;
     // Check if player is Shapeshifting
     public static bool IsInShapeshift(this PlayerControl player) => player != null && (player.shapeshiftTargetPlayerId > -1 || player.shapeshifting);
-    // Check if player is in vanish
+    // Check if player is in vanish as Phantom
     public static bool IsInVanish(this PlayerControl player)
     {
         if (player != null && player.Data.Role is PhantomRole phantomRole)
