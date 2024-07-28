@@ -178,6 +178,8 @@ class AntiCheat
                     {
                         byte Type = reader.ReadByte();
                         BAUNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)} - {Enum.GetName((SystemTypes)callId)}");
+
+                        return;
                     }
                     if (callId is (byte)RpcCalls.UpdateSystem)
                     {
@@ -191,10 +193,10 @@ class AntiCheat
                         {
                             BAUNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)} - {Enum.GetName((SystemTypes)callId)}");
                         }
+
+                        return;
                     }
                 }
-
-                return;
             }
 
             if (IsImpostor)
@@ -202,9 +204,9 @@ class AntiCheat
                 if (callId is (byte)RpcCalls.CompleteTask or (byte)RpcCalls.BootFromVent)
                 {
                     BAUNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
-                }
 
-                return;
+                    return;
+                }
             }
 
             if (callId is (byte)RpcCalls.Pet or (byte)RpcCalls.CancelPet)
