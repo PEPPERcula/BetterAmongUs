@@ -221,7 +221,9 @@ class PlayerControlPatch
     [HarmonyPostfix]
     public static void MurderPlayer_Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
     {
-        if (GameStates.IsInGame || GameStates.IsFreePlay && !GameStates.IsLobby && !GameStates.IsHideNSeek && HudManager.Instance.CrewmatesKilled.isActiveAndEnabled)
+        if (target == null) return;
+
+        if (PlayerControl.LocalPlayer.IsImpostorTeam() && GameStates.IsInGamePlay && !GameStates.IsHideNSeek && HudManager.Instance.CrewmatesKilled.isActiveAndEnabled)
             HudManager.Instance?.NotifyOfDeath();
 
 
@@ -231,6 +233,7 @@ class PlayerControlPatch
     [HarmonyPostfix]
     public static void Shapeshift_Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] bool animate)
     {
+        if (target == null) return;
 
         if (__instance != target)
             Logger.LogPrivate($"{__instance.Data.PlayerName} Has Shapeshifted into {target.Data.PlayerName}, did animate: {animate}", "EventLog");
