@@ -26,8 +26,10 @@ class AntiCheat
     }
 
     // Handle RPC before anti cheat detection
-    public static void HandleRPCBeforeCheck(PlayerControl player, byte callId, MessageReader reader)
+    public static void HandleRPCBeforeCheck(PlayerControl player, byte callId, MessageReader Oldreader)
     {
+        MessageReader reader = Oldreader;
+
         if (player == PlayerControl.LocalPlayer || PlayerControl.LocalPlayer == null || player == null || !IsEnabled) return;
 
         if (callId is unchecked((byte)CustomRPC.Sicko) && Main.AntiCheat.Value)
@@ -110,8 +112,9 @@ class AntiCheat
     }
 
     // Check and notify for invalid rpcs
-    public static void CheckRPC(PlayerControl player, byte callId, MessageReader reader)
+    public static void CheckRPC(PlayerControl player, byte callId, MessageReader Oldreader)
     {
+        MessageReader reader = Oldreader;
         try
         {
             if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || reader == null || !IsEnabled || !Main.AntiCheat.Value) return;
@@ -130,7 +133,7 @@ class AntiCheat
                 return;
             }
 
-            if (callId is (byte)RpcCalls.CheckProtect or (byte)RpcCalls.ProtectPlayer)
+            if (callId is (byte)RpcCalls.ProtectPlayer)
             {
                 if (Role is not RoleTypes.GuardianAngel)
                     BAUNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
@@ -138,14 +141,17 @@ class AntiCheat
                 return;
             }
 
-            if (callId is (byte)RpcCalls.CheckMurder or (byte)RpcCalls.MurderPlayer)
+            if (callId is (byte)RpcCalls.MurderPlayer)
             {
                 if (reader.BytesRemaining > 0)
                 {
                     PlayerControl target = reader.ReadNetObject<PlayerControl>();
 
-                    if (IsCrewmate || !player.IsAlive() || player.IsInVanish() || !target.IsAlive() || target.IsImpostorTeam())
-                        BAUNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
+                    if (target != null)
+                    {
+                        if (IsCrewmate || !player.IsAlive() || player.IsInVanish() || !target.IsAlive() || target.IsImpostorTeam())
+                            BAUNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
+                    }
                 }
 
                 return;
@@ -229,8 +235,9 @@ class AntiCheat
     }
 
     // Check notify and cancel out request for invalid rpcs
-    public static bool CheckCancelRPC(PlayerControl player, byte callId, MessageReader reader)
+    public static bool CheckCancelRPC(PlayerControl player, byte callId, MessageReader Oldreader)
     {
+        MessageReader reader = Oldreader;
         try
         {
             if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || reader == null || !IsEnabled || !Main.AntiCheat.Value) return true;
@@ -245,18 +252,7 @@ class AntiCheat
                 return false;
             }
 
-            if (callId is (byte)RpcCalls.CheckMurder or (byte)RpcCalls.MurderPlayer)
-            {
-                PlayerControl target = reader.ReadNetObject<PlayerControl>();
-
-                if (!target.IsAlive() || target.IsImpostorTeam())
-                {
-                    BAUNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
-                    return false;
-                }
-            }
-
-            if (callId is (byte)RpcCalls.CheckShapeshift or (byte)RpcCalls.Shapeshift)
+            if (callId is (byte)RpcCalls.Shapeshift)
             {
                 var flag = reader.ReadBoolean();
 
@@ -273,7 +269,7 @@ class AntiCheat
                 }
             }
 
-            if (callId is (byte)RpcCalls.CheckVanish or (byte)RpcCalls.CheckAppear or (byte)RpcCalls.StartVanish or (byte)RpcCalls.StartAppear)
+            if (callId is (byte)RpcCalls.StartVanish or (byte)RpcCalls.StartAppear)
             {
                 if (Role is not RoleTypes.Phantom || player.Data.IsDead)
                 {

@@ -149,9 +149,12 @@ internal static class RPC
             case (byte)RpcCalls.SendChat:
                 if (player.IsHost() && player != PlayerControl.LocalPlayer)
                 {
-                    if (reader.ReadString().ToLower() == "/allow")
+                    if (reader.BytesRemaining > 0)
                     {
-                        CommandsPatch.Permission = player;
+                        if (reader.ReadString().ToLower() == "/allow")
+                        {
+                            CommandsPatch.Permission = player;
+                        }
                     }
                 }
                 break;
