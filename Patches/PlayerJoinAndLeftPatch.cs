@@ -108,6 +108,8 @@ class GameDataPatch
                 break;
         }
 
+        Logger.Log(ReasonText);
+
         DestroyableSingleton<HudManager>.Instance.Notifier.AddDisconnectMessage(ReasonText);
         return false;
     }
