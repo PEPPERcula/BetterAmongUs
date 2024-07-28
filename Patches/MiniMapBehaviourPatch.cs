@@ -14,7 +14,10 @@ public class MiniMapBehaviourPatch
         public static void Awake_Postfix(MapBehaviour __instance)
         {
             PoolablePlayer NewDisplay = __instance.HerePoint.gameObject.AddComponent<PoolablePlayer>();
-            NewDisplay.SetBodyCosmeticsVisible(true);
+            if (NewDisplay != null)
+            {
+                NewDisplay.SetBodyCosmeticsVisible(true);
+            }
         }
         [HarmonyPatch(nameof(MapBehaviour.Show))]
         [HarmonyPrefix]
