@@ -84,7 +84,7 @@ public class KillOverlayPatch
 {
     [HarmonyPatch(nameof(KillOverlay.ShowKillAnimation))]
     [HarmonyPrefix]
-    private static bool ShowKillAnimation_Prefix()
+    public static bool ShowKillAnimation_Prefix()
     {
         if (!PlayerControl.LocalPlayer.IsAlive())
         {
