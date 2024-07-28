@@ -1,7 +1,6 @@
-﻿
-#Skip
+﻿#Skip
 #Number:100001
-#Title:Better Among Us v1.0.0 Canary 2
+#Title:Better Among Us v1.0.0
 #SubTitle:<color=#4d4d4d>Is it truly better though?</color>
 #ShortTitle:BAU v1.0.0
 #Date:2024-7-28T00:00:00Z
