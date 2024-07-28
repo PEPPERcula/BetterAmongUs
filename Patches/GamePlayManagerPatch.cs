@@ -4,14 +4,17 @@ namespace BetterAmongUs.Patches;
 
 class GamePlayManager
 {
-    [HarmonyPatch(typeof(GameStartManager))]
-    public class GameStartManagerPatch
+    [HarmonyPatch(typeof(LobbyBehaviour))]
+    public class LobbyBehaviourPatch
     {
-        [HarmonyPatch(nameof(GameStartManager.BeginGame))]
-        [HarmonyPostfix]
-        public static void Postfix(/*GameStartManager __instance*/)
+        [HarmonyPatch(nameof(LobbyBehaviour.OnDestroy))]
+        [HarmonyPrefix]
+        private static void Prefix(/*LobbyBehaviour __instance*/)
         {
-            AntiCheat.PauseAntiCheat();
+            if (GameStates.IsInGame)
+            {
+                AntiCheat.PauseAntiCheat();
+            }
         }
     }
 
@@ -20,7 +23,7 @@ class GamePlayManager
     {
         [HarmonyPatch(nameof(GameManager.EndGame))]
         [HarmonyPostfix]
-        public static void Postfix(/*GameManager __instance*/)
+        private static void Postfix(/*GameManager __instance*/)
         {
             if (GameStates.IsHost)
             {
