@@ -10,34 +10,30 @@ class OnGameJoinedPatch
 {
     public static void Postfix(/*AmongUsClient __instance*/)
     {
-        try
+        PlayerControlPatch.infotime = 0f;
+
+        AntiCheat.PauseAntiCheat();
+
+        // Fix host icon in lobby on modded servers
+        if (!GameStates.IsVanillaServer)
         {
-            PlayerControlPatch.infotime = 0f;
-
-            AntiCheat.PauseAntiCheat();
-
-            // Fix host icon in lobby on modded servers
-            if (!GameStates.IsVanillaServer)
-            {
-                var host = AmongUsClient.Instance.GetHost().Character;
-                host.SetColor(-2);
-                host.SetColor(host.CurrentOutfit.ColorId);
-            }
-
-            _ = new LateTask(() =>
-            {
-                // Send Better Among Us Check RPC
-                if (GameStates.IsInGame)
-                {
-                    MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.BetterCheck, SendOption.None, -1);
-                    messageWriter.Write((byte)PlayerControl.LocalPlayer.NetId);
-                    AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
-                }
-            }, 1.5f, "OnGameJoinedPatch");
-
-            Logger.Log($"Successfully joined {GameCode.IntToGameName(AmongUsClient.Instance.GameId)}", "OnGameJoinedPatch");
+            var host = AmongUsClient.Instance.GetHost().Character;
+            host.SetColor(-2);
+            host.SetColor(host.CurrentOutfit.ColorId);
         }
-        catch { };
+
+        _ = new LateTask(() =>
+        {
+            // Send Better Among Us Check RPC
+            if (GameStates.IsInGame)
+            {
+                MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.BetterCheck, SendOption.None, -1);
+                messageWriter.Write((byte)PlayerControl.LocalPlayer.NetId);
+                AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+            }
+        }, 1.5f, "OnGameJoinedPatch");
+
+        Logger.Log($"Successfully joined {GameCode.IntToGameName(AmongUsClient.Instance.GameId)}", "OnGameJoinedPatch");
     }
 }
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnPlayerJoined))]
