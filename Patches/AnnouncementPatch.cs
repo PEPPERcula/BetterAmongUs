@@ -89,12 +89,13 @@ public class ModNews
         foreach (var line in lines)
         {
             if (line.StartsWith("#Skip")) return;
-            else if (line.StartsWith("#Number:")) number = int.Parse(line.Substring(8));
-            else if (line.StartsWith("#Title:")) title = line.Substring(7);
-            else if (line.StartsWith("#SubTitle:")) subTitle = line.Substring(10);
-            else if (line.StartsWith("#ShortTitle:")) shortTitle = line.Substring(12);
-            else if (line.StartsWith("#Date:")) date = line.Substring(6);
-            else if (line.StartsWith("#-----------------------------"));
+            else if (line.StartsWith("#Number:")) number = int.Parse(line[8..]);
+            else if (line.StartsWith("#Title:")) title = line[7..];
+            else if (line.StartsWith("#SubTitle:")) subTitle = line[10..];
+            else if (line.StartsWith("#ShortTitle:")) shortTitle = line[12..];
+            else if (line.StartsWith("#Date:")) date = line[6..];
+            else if (line.StartsWith("#-----------------------------")) continue;
+            else if (line.StartsWith("#") && line.Length <= 1) text += "\n";
             else text += line + "\n";
         }
 
