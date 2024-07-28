@@ -44,13 +44,13 @@ public class DebugMenu : MonoBehaviour
         {
             if (GameStates.IsInGame || GameStates.IsLobby || GameStates.IsFreePlay)
             {
-                BAUNotificationManager.NotifyCheat(PlayerControl.LocalPlayer, "Debug Test", kickPlayer: false);
+                BetterNotificationManager.NotifyCheat(PlayerControl.LocalPlayer, "Debug Test", kickPlayer: false);
             }
         }, true);
 
         AddButtonToTab(Main, "Clear Anti-Cheat Data", () =>
         {
-            BAUDataManager.ClearCheatData();
+            BetterDataManager.ClearCheatData();
         });
 
         AddButtonToTab(HostOnly, "Sync All Names", () =>

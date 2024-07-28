@@ -41,11 +41,11 @@ class AntiCheat
                 if (reader.BytesRemaining == 0 && !flag)
                 {
                     AmongUsClient.Instance.ReportPlayer(player.GetClientId(), ReportReasons.Cheating_Hacking);
-                    BAUNotificationManager.NotifyCheat(player, $"Sicko Menu", newText: "Has been detected with a cheat client");
+                    BetterNotificationManager.NotifyCheat(player, $"Sicko Menu", newText: "Has been detected with a cheat client");
                     PlayerData[Utils.GetHashPuid(player)] = player.FriendCode;
                     SickoData[Utils.GetHashPuid(player)] = player.FriendCode;
-                    BAUDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "cheatData", "Sicko Menu RPC");
-                    BAUDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "sickoData", "Sicko Menu RPC");
+                    BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "cheatData", "Sicko Menu RPC");
+                    BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "sickoData", "Sicko Menu RPC");
                 }
             }
 
@@ -65,11 +65,11 @@ class AntiCheat
                     if (!flag)
                     {
                         AmongUsClient.Instance.ReportPlayer(player.GetClientId(), ReportReasons.Cheating_Hacking);
-                        BAUNotificationManager.NotifyCheat(player, $"AUM", newText: "Has been detected with a cheat client");
+                        BetterNotificationManager.NotifyCheat(player, $"AUM", newText: "Has been detected with a cheat client");
                         PlayerData[Utils.GetHashPuid(player)] = player.FriendCode;
                         AUMData[Utils.GetHashPuid(player)] = player.FriendCode;
-                        BAUDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "cheatData", "AUM RPC");
-                        BAUDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "aumData", "AUM RPC");
+                        BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "cheatData", "AUM RPC");
+                        BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "aumData", "AUM RPC");
                     }
                 }
             }
@@ -98,11 +98,11 @@ class AntiCheat
                 if (!flag && !flag2)
                 {
                     AmongUsClient.Instance.ReportPlayer(player.GetClientId(), ReportReasons.Cheating_Hacking);
-                    BAUNotificationManager.NotifyCheat(AUMPlayer, $"AUM", newText: "Has been detected with a cheat client");
+                    BetterNotificationManager.NotifyCheat(AUMPlayer, $"AUM", newText: "Has been detected with a cheat client");
                     PlayerData[Utils.GetHashPuid(AUMPlayer)] = AUMPlayer.FriendCode;
                     AUMData[Utils.GetHashPuid(AUMPlayer)] = AUMPlayer.FriendCode;
-                    BAUDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "cheatData", "AUM Chat RPC");
-                    BAUDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "aumData", "AUM Chat RPC");
+                    BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "cheatData", "AUM Chat RPC");
+                    BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "aumData", "AUM Chat RPC");
                 }
             }
             catch { }
@@ -128,7 +128,7 @@ class AntiCheat
             if (callId is (byte)RpcCalls.EnterVent or (byte)RpcCalls.ExitVent)
             {
                 if ((IsCrewmate && Role != RoleTypes.Engineer) || player.Data.IsDead)
-                    BAUNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
+                    BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
 
                 return;
             }
@@ -136,7 +136,7 @@ class AntiCheat
             if (callId is (byte)RpcCalls.ProtectPlayer)
             {
                 if (Role is not RoleTypes.GuardianAngel)
-                    BAUNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
+                    BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
 
                 return;
             }
@@ -150,7 +150,7 @@ class AntiCheat
                     if (target != null)
                     {
                         if (IsCrewmate || !player.IsAlive() || player.IsInVanish() || !target.IsAlive() || target.IsImpostorTeam())
-                            BAUNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
+                            BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
                     }
                 }
 
@@ -160,7 +160,7 @@ class AntiCheat
             if (callId is (byte)RpcCalls.SendChat or (byte)RpcCalls.SendQuickChat)
             {
                 if (player.IsAlive() && GameStates.IsInGamePlay && !GameStates.IsMeeting && !GameStates.IsExilling)
-                    BAUNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
+                    BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
 
                 return;
             }
@@ -172,7 +172,7 @@ class AntiCheat
                     uint level = reader.ReadPackedUInt32();
                     if (level >= 200)
                     {
-                        BAUNotificationManager.NotifyCheat(player, $"Invalid Level: {level}");
+                        BetterNotificationManager.NotifyCheat(player, $"Invalid Level: {level}");
                     }
                 }
 
@@ -186,7 +186,7 @@ class AntiCheat
                     if (callId is (byte)RpcCalls.CloseDoorsOfType)
                     {
                         byte Type = reader.ReadByte();
-                        BAUNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)} - {Enum.GetName((SystemTypes)callId)}");
+                        BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)} - {Enum.GetName((SystemTypes)callId)}");
 
                         return;
                     }
@@ -200,7 +200,7 @@ class AntiCheat
                             or (byte)SystemTypes.MushroomMixupSabotage
                             or (byte)SystemTypes.HeliSabotage)
                         {
-                            BAUNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)} - {Enum.GetName((SystemTypes)callId)}");
+                            BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)} - {Enum.GetName((SystemTypes)callId)}");
                         }
 
                         return;
@@ -212,7 +212,7 @@ class AntiCheat
             {
                 if (callId is (byte)RpcCalls.CompleteTask or (byte)RpcCalls.BootFromVent)
                 {
-                    BAUNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
+                    BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
 
                     return;
                 }
@@ -222,7 +222,7 @@ class AntiCheat
             {
                 if (player?.CurrentOutfit?.PetId == "pet_EmptyPet")
                 {
-                    BAUNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
+                    BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
                 }
 
                 return;
@@ -248,7 +248,7 @@ class AntiCheat
 
             if (TrustedRPCs(callId) != true)
             {
-                BAUNotificationManager.NotifyCheat(player, $"Untrusted RPC received: {callId}");
+                BetterNotificationManager.NotifyCheat(player, $"Untrusted RPC received: {callId}");
                 return false;
             }
 
@@ -258,13 +258,13 @@ class AntiCheat
 
                 if (Role is not RoleTypes.Shapeshifter || !player.IsAlive())
                 {
-                    BAUNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
+                    BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
                     return false;
                 }
 
                 if (!flag && !player.IsInVent())
                 {
-                    BAUNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
+                    BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
                     return false;
                 }
             }
@@ -273,7 +273,7 @@ class AntiCheat
             {
                 if (Role is not RoleTypes.Phantom || player.Data.IsDead)
                 {
-                    BAUNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
+                    BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
                     return false;
                 }
             }
@@ -284,7 +284,7 @@ class AntiCheat
                 or (byte)RpcCalls.ExtendLobbyTimer
                 or (byte)RpcCalls.CloseMeeting)
                 {
-                    BAUNotificationManager.NotifyCheat(player, $"Invalid Host RPC: {Enum.GetName((RpcCalls)callId)}");
+                    BetterNotificationManager.NotifyCheat(player, $"Invalid Host RPC: {Enum.GetName((RpcCalls)callId)}");
                     return false;
                 }
             }
@@ -293,7 +293,7 @@ class AntiCheat
             {
                 if (callId is (byte)RpcCalls.SetName or (byte)RpcCalls.CheckName or (byte)RpcCalls.SetLevel)
                 {
-                    BAUNotificationManager.NotifyCheat(player, $"Invalid Set RPC: {Enum.GetName((RpcCalls)callId)}");
+                    BetterNotificationManager.NotifyCheat(player, $"Invalid Set RPC: {Enum.GetName((RpcCalls)callId)}");
                     return false;
                 }
             }
@@ -307,7 +307,7 @@ class AntiCheat
                     or (byte)RpcCalls.SetPet
                     or (byte)RpcCalls.SetNamePlate)
                 {
-                    BAUNotificationManager.NotifyCheat(player, $"Invalid Set RPC: {Enum.GetName((RpcCalls)callId)}");
+                    BetterNotificationManager.NotifyCheat(player, $"Invalid Set RPC: {Enum.GetName((RpcCalls)callId)}");
                     return false;
                 }
             }
@@ -341,7 +341,7 @@ class AntiCheat
                     or (byte)RpcCalls.CheckAppear
                     or (byte)RpcCalls.CheckVanish)
                 {
-                    BAUNotificationManager.NotifyCheat(player, $"Invalid Lobby RPC: {Enum.GetName((RpcCalls)callId)}");
+                    BetterNotificationManager.NotifyCheat(player, $"Invalid Lobby RPC: {Enum.GetName((RpcCalls)callId)}");
                     return false;
                 }
             }

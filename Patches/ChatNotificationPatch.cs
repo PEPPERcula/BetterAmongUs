@@ -11,7 +11,7 @@ public class ChatNotificationPatch
     [HarmonyPostfix]
     public static void Awake_Postfix(ChatNotification __instance)
     {
-        if (__instance.gameObject.name == "ChatNotification" && BAUNotificationManager.BAUNotificationManagerObj == null)
+        if (__instance.gameObject.name == "ChatNotification" && BetterNotificationManager.BAUNotificationManagerObj == null)
         {
             GameObject ChatNotifications = __instance.gameObject;
             if (ChatNotifications != null)
@@ -25,7 +25,7 @@ public class ChatNotificationPatch
                 GameObject.Find($"{BAUNotification.name}/Sizer/NameText").transform.localPosition = new Vector3(-3.3192f, -0.0105f);
                 GameObject.Find($"{BAUNotification.name}/Sizer/NameText").GetComponent<TextMeshPro>().text = "<color=#00ff44>System Notification</color>";
                 UnityEngine.Object.DontDestroyOnLoad(BAUNotification);
-                BAUNotificationManager.BAUNotificationManagerObj = BAUNotification;
+                BetterNotificationManager.BAUNotificationManagerObj = BAUNotification;
                 BAUNotification.SetActive(false);
             }
         }

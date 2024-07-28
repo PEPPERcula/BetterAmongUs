@@ -17,6 +17,6 @@ public class ModManagerPatch
 
         FileChecker.UpdateUnauthorizedFiles();
         LateTask.Update(Time.deltaTime);
-        BAUNotificationManager.Update();
+        BetterNotificationManager.Update();
     }
 }

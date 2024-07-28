@@ -25,7 +25,7 @@ public static class OptionsMenuBehaviourPatch
         {
             bool flag = GameStates.IsInGame && !GameStates.IsLobby || GameStates.IsFreePlay;
             if (flag)
-                BAUNotificationManager.Notify($"Unable to toggle {buttonName} while in game!", 2.5f);
+                BetterNotificationManager.Notify($"Unable to toggle {buttonName} while in game!", 2.5f);
 
             return flag;
         }
@@ -84,11 +84,11 @@ public static class OptionsMenuBehaviourPatch
             DisableLobbyTheme = ClientOptionItem.Create("Open Save Data", null, __instance, OpenSaveDataButtonToggle, IsToggle: false);
             static void OpenSaveDataButtonToggle()
             {
-                if (File.Exists(BAUDataManager.GetFilePath("BetterData")))
+                if (File.Exists(BetterDataManager.GetFilePath("BetterData")))
                 {
                     System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
                     {
-                        FileName = BAUDataManager.GetFilePath("BetterData"),
+                        FileName = BetterDataManager.GetFilePath("BetterData"),
                         UseShellExecute = true,
                         Verb = "open"
                     });
