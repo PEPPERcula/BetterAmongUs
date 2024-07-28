@@ -43,6 +43,8 @@ class MeetingHudStartPatch
         }
 
         RPC.SyncAllNames(isForMeeting: true);
+
+        Logger.LogHeader("Meeting Has Started");
     }
 }
 [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Update))]
