@@ -82,7 +82,7 @@ public class HudManagerPatch
 [HarmonyPatch(typeof(KillOverlay))]
 public class KillOverlayPatch
 {
-    [HarmonyPatch(nameof(KillOverlay.ShowKillAnimation))]
+    [HarmonyPatch(nameof(KillOverlay.ShowKillAnimation), new Type[] { typeof(OverlayKillAnimation), typeof(NetworkedPlayerInfo), typeof(NetworkedPlayerInfo) })]
     [HarmonyPrefix]
     public static bool ShowKillAnimation_Prefix()
     {
