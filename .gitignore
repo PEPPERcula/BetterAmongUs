@@ -1,8 +1,7 @@
-﻿################################################################################
-# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
-################################################################################
-
-/BetterAmongUs.csproj
+﻿/BetterAmongUs.sln
 /.vs
-/bin/Debug/net6.0
+/bin
 /obj
+/.editorconfig
+/.vscode
+/BetterAmongUs.csproj
