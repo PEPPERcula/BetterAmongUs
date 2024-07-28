@@ -3,6 +3,7 @@ using HarmonyLib;
 using System.Text;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace BetterAmongUs.Patches;
 
@@ -171,6 +172,8 @@ class ChatPatch
                 }
 
                 pooledBubble.NameText.SetText(playerName);
+
+                Logger.Log($"{sourcePlayer.Data.PlayerName} -> {chatText}", "ChatLog");
             }
             catch
             {

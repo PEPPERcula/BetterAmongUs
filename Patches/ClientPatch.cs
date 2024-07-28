@@ -1,13 +1,20 @@
-﻿using BepInEx.Logging;
-using Cpp2IL.Core.Logging;
-using GooglePlayGames.OurUtils;
-using HarmonyLib;
+﻿using HarmonyLib;
 using UnityEngine;
 
 namespace BetterAmongUs.Patches;
 
 public class ClientPatch
 {
+    [HarmonyPatch(typeof(AmongUsClient))]
+    public class AmongUsClientPatch
+    {
+        [HarmonyPatch(nameof(AmongUsClient.ExitGame))]
+        [HarmonyPostfix]
+        public static void ExitGame_Postfix([HarmonyArgument(0)] DisconnectReasons reason)
+        {
+            Logger.Log($"Client has left game for: {Enum.GetName(reason)}", "AmongUsClientPatch");
+        }
+    }
     [HarmonyPatch(typeof(CosmeticsLayer))]
     public class CosmeticsLayerPatch
     {
