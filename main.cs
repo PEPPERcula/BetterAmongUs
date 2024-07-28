@@ -79,8 +79,8 @@ public class Main : BasePlugin
             Logger = BepInEx.Logging.Logger.CreateLogSource(PluginGuid);
 
             Harmony.PatchAll();
-            BAUDataManager.SetUp();
-            BAUDataManager.LoadCheatData();
+            BetterDataManager.SetUp();
+            BetterDataManager.LoadCheatData();
             LoadOptions();
 
             if (File.Exists(Path.Combine($"{Environment.CurrentDirectory}/Among Us_Data/Plugins/x86", "steam_api.dll")))
