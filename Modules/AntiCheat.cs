@@ -140,10 +140,13 @@ class AntiCheat
 
             if (callId is (byte)RpcCalls.CheckMurder or (byte)RpcCalls.MurderPlayer)
             {
-                PlayerControl target = reader.ReadNetObject<PlayerControl>();
+                if (reader.BytesRemaining > 0)
+                {
+                    PlayerControl target = reader.ReadNetObject<PlayerControl>();
 
-                if (IsCrewmate || !player.IsAlive() || player.IsInVanish() || !target.IsAlive() || target.IsImpostorTeam())
-                    BAUNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
+                    if (IsCrewmate || !player.IsAlive() || player.IsInVanish() || !target.IsAlive() || target.IsImpostorTeam())
+                        BAUNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
+                }
 
                 return;
             }
