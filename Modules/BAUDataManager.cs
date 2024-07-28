@@ -77,14 +77,21 @@ class BAUDataManager
 
     public static string Load(string name, string category = "Data")
     {
-        string filePath = GetFilePath("BetterData");
-
-        string json = File.ReadAllText(filePath);
-        var jsonData = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, string>>>(json);
-
-        if (jsonData != null && jsonData.ContainsKey(category) && jsonData[category].ContainsKey(name))
+        try
         {
-            return jsonData[category][name];
+            string filePath = GetFilePath("BetterData");
+
+            string json = File.ReadAllText(filePath);
+            var jsonData = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, string>>>(json);
+
+            if (jsonData != null && jsonData.ContainsKey(category) && jsonData[category].ContainsKey(name))
+            {
+                return jsonData[category][name];
+            }
+        }
+        catch (Exception ex) 
+        {
+            Logger.Error(ex.ToString());
         }
 
         return string.Empty;
@@ -154,35 +161,42 @@ class BAUDataManager
 
     public static void LoadCheatData()
     {
-        string filePath = GetFilePath("BetterData");
-        string json = File.ReadAllText(filePath);
-        var jsonData = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, Dictionary<string, string>>>>(json);
-
-        if (jsonData != null)
+        try
         {
-            if (jsonData.ContainsKey("cheatData"))
-            {
-                foreach (var item in jsonData["cheatData"])
-                {
-                    AntiCheat.PlayerData[item.Value["HashPUID"]] = item.Value["FriendCode"];
-                }
-            }
+            string filePath = GetFilePath("BetterData");
+            string json = File.ReadAllText(filePath);
+            var jsonData = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, Dictionary<string, string>>>>(json);
 
-            if (jsonData.ContainsKey("sickoData"))
+            if (jsonData != null)
             {
-                foreach (var item in jsonData["sickoData"])
+                if (jsonData.ContainsKey("cheatData"))
                 {
-                    AntiCheat.SickoData[item.Value["HashPUID"]] = item.Value["FriendCode"];
+                    foreach (var item in jsonData["cheatData"])
+                    {
+                        AntiCheat.PlayerData[item.Value["HashPUID"]] = item.Value["FriendCode"];
+                    }
                 }
-            }
 
-            if (jsonData.ContainsKey("aumData"))
-            {
-                foreach (var item in jsonData["aumData"])
+                if (jsonData.ContainsKey("sickoData"))
                 {
-                    AntiCheat.AUMData[item.Value["HashPUID"]] = item.Value["FriendCode"];
+                    foreach (var item in jsonData["sickoData"])
+                    {
+                        AntiCheat.SickoData[item.Value["HashPUID"]] = item.Value["FriendCode"];
+                    }
+                }
+
+                if (jsonData.ContainsKey("aumData"))
+                {
+                    foreach (var item in jsonData["aumData"])
+                    {
+                        AntiCheat.AUMData[item.Value["HashPUID"]] = item.Value["FriendCode"];
+                    }
                 }
             }
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex.ToString());
         }
     }
 }
