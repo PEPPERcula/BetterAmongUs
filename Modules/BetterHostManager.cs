@@ -1,4 +1,5 @@
 ﻿using Hazel;
+using InnerNet;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -6,11 +7,113 @@ namespace BetterAmongUs;
 
 class BetterHostManager
 {
-    public static bool CheckRPCAsHost(PlayerControl player, byte callId, MessageReader reader)
+    public static bool CheckRPCAsHost(PlayerControl player, byte callId, MessageReader reader, ref bool canceled)
     {
+        if (player == null) return true;
+
+        bool shouldReturn = false;
+
+        switch (callId)
+        {
+            case (byte)RpcCalls.CheckProtect:
+                {
+                    PlayerControl target = reader.ReadNetObject<PlayerControl>();
+                    if (target != null)
+                    {
+                        if (player.Data.Role is GuardianAngelRole && player.IsAlive() && !player.IsImpostorTeam())
+                        {
+                            if (target.IsAlive())
+                            {
+                                player.RpcProtectPlayer(target, player.Data.DefaultOutfit.ColorId);
+                                break;
+                            }
+                        }
+                    }
+
+                    canceled = true;
+                }
+                break;
+
+            case (byte)RpcCalls.CheckMurder:
+                {
+                    PlayerControl target = reader.ReadNetObject<PlayerControl>();
+                    if (target != null)
+                    {
+                        if (player.IsAlive() && player.IsImpostorTeam() && !player.inMovingPlat && !player.IsInVent() && !player.IsInVanish() && !player.shapeshifting && !player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
+                        {
+                            if (target.IsAlive() && !target.IsImpostorTeam() && !target.inMovingPlat && !target.IsInVent() && !target.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
+                            {
+                                player.RpcMurderPlayer(target, true);
+                                break;
+                            }
+                        }
+                    }
+
+                    canceled = true;
+                }
+                break;
+
+            case (byte)RpcCalls.CheckShapeshift:
+                {
+                    PlayerControl target = reader.ReadNetObject<PlayerControl>();
+                    bool flag = reader.ReadBoolean();
+
+                    if (target != null)
+                    {
+                        if (player.Data.Role is ShapeshifterRole && player.IsAlive() && player.IsImpostorTeam() && !player.inMovingPlat && !player.shapeshifting && !player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
+                        {
+                            if (!target.IsInVent() && flag == false)
+                            {
+                                break;
+                            }
+
+                            player.RpcShapeshift(target, !target.IsInVent());
+                            break;
+                        }
+                    }
+
+                    canceled = true;
+                }
+                break;
+
+            case (byte)RpcCalls.CheckVanish:
+                {
+                    if (player.Data.Role is PhantomRole && player.IsAlive() && player.IsImpostorTeam() && !player.IsInVent() && !player.inMovingPlat && !player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
+                    {
+                        player.RpcVanish();
+                        break;
+                    }
+
+                    canceled = true;
+                }
+                break;
+
+            case (byte)RpcCalls.CheckAppear:
+                {
+                    bool flag = reader.ReadBoolean();
+
+                    if (player.Data.Role is PhantomRole && player.IsAlive() && player.IsImpostorTeam() && !player.inMovingPlat && !player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
+                    {
+                        if (!player.IsInVent() && flag == false)
+                        {
+                            break;
+                        }
+
+                        player.RpcAppear(!player.IsInVent());
+                        break;
+                    }
+
+                    canceled = true;
+                }
+                break;
+
+            default:
+                shouldReturn = true;
+                break;
+        }
 
 
-        return true;
+        return shouldReturn;
     }
 
     // Set player names for better host
