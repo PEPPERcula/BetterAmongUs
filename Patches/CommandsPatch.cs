@@ -372,7 +372,7 @@ class CommandsPatch
                 case "syncallnames":
                     if (HandleIsHost(command) == true)
                     {
-                        RPC.SyncAllNames();
+                        RPC.SyncAllNames(force: true);
                     }
                     break;
                 default:

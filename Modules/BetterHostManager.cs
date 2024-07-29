@@ -122,7 +122,7 @@ class BetterHostManager
     {
         if (player == null || !player.DataIsCollected()) return;
 
-        if (!Main.BetterHost.Value)
+        if (!Main.BetterHost.Value || forMeeting)
         {
             if (player.Data.PlayerName != player.CurrentOutfit.PlayerName && !player.IsInShapeshift() || force)
             {
@@ -187,16 +187,19 @@ class BetterHostManager
             NewName = $"<size=50%>{sbTopInfo}</size>\n{NewName}";
 
             // Don't send rpc if name is the same!
-            if (!LastPlayerName.ContainsKey(target.Data.PlayerId))
+            if (!force)
             {
-                LastPlayerName[target.Data.PlayerId] = new Dictionary<byte, string>();
-            }
-
-            if (LastPlayerName[target.Data.PlayerId].ContainsKey(player.Data.PlayerId))
-            {
-                if (LastPlayerName[target.Data.PlayerId][player.Data.PlayerId] == NewName)
+                if (!LastPlayerName.ContainsKey(target.Data.PlayerId))
                 {
-                    return;
+                    LastPlayerName[target.Data.PlayerId] = new Dictionary<byte, string>();
+                }
+
+                if (LastPlayerName[target.Data.PlayerId].ContainsKey(player.Data.PlayerId))
+                {
+                    if (LastPlayerName[target.Data.PlayerId][player.Data.PlayerId] == NewName)
+                    {
+                        return;
+                    }
                 }
             }
 
