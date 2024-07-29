@@ -136,8 +136,11 @@ internal static class RPC
         switch (callId)
         {
             case (byte)CustomRPC.BetterCheck:
-                if (reader.ReadByte() == player.NetId)
+                if (reader.ReadByte() == player.Data.NetId)
+                {
                     player.SetIsBetterUser(true);
+                    player.SetIsBetterHost(reader.ReadBoolean());
+                }
                 break;
             case (byte)CustomRPC.AddChat:
                 Utils.AddChatPrivate(reader.ReadString(), reader.ReadString());

@@ -1,4 +1,5 @@
-﻿using Hazel;
+﻿using AmongUs.GameOptions;
+using Hazel;
 using InnerNet;
 using System.Text;
 
@@ -61,7 +62,7 @@ class BetterHostManager
 
                     if (target != null)
                     {
-                        if (player.Data.Role is ShapeshifterRole && player.IsAlive() && player.IsImpostorTeam() && !player.inMovingPlat && !player.shapeshifting && !player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
+                        if (player.Data.RoleType == RoleTypes.Shapeshifter && player.IsAlive() && player.IsImpostorTeam() && !player.inMovingPlat && !player.shapeshifting && !player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
                         {
                             if (!target.IsInVent() && flag == false)
                             {
@@ -79,9 +80,15 @@ class BetterHostManager
 
             case (byte)RpcCalls.CheckVanish:
                 {
-                    if (player.Data.Role is PhantomRole && player.IsAlive() && player.IsImpostorTeam() && !player.IsInVent() && !player.inMovingPlat && !player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
+                    if (player.Data.RoleType == RoleTypes.Phantom && player.IsAlive() && player.IsImpostorTeam() && !player.IsInVent() && !player.inMovingPlat && !player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
                     {
+
+                        if (AmongUsClient.Instance.AmClient)
+                        {
+                            player.SetRoleInvisibility(true, true, true);
+                        }
                         player.RpcVanish();
+
                         break;
                     }
 
@@ -93,14 +100,19 @@ class BetterHostManager
                 {
                     bool flag = reader.ReadBoolean();
 
-                    if (player.Data.Role is PhantomRole && player.IsAlive() && player.IsImpostorTeam() && !player.inMovingPlat && !player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
+                    if (player.Data.RoleType == RoleTypes.Phantom && player.IsAlive() && player.IsImpostorTeam() && !player.inMovingPlat && !player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
                     {
                         if (!player.IsInVent() && flag == false)
                         {
                             break;
                         }
 
+                        if (AmongUsClient.Instance.AmClient)
+                        {
+                            player.SetRoleInvisibility(false, !player.IsInVent(), true);
+                        }
                         player.RpcAppear(!player.IsInVent());
+
                         break;
                     }
 
@@ -120,7 +132,7 @@ class BetterHostManager
     // Set player names for better host
     public static void SetPlayersInfoAsHost(PlayerControl player, bool forMeeting = false, bool force = false, bool IsBetterHost = true)
     {
-        if (player == null || !player.DataIsCollected()) return;
+        if (player == null) return;
 
         if (!Main.BetterHost.Value || forMeeting)
         {
@@ -158,7 +170,7 @@ class BetterHostManager
             else if (GameStates.IsInGamePlay)
             {
                 string Role = $"<color={player.GetTeamHexColor()}>{player.GetRoleName()}</color>";
-                if (!player.IsImpostorTeam() && !target.IsImpostorTeam())
+                if (player.IsImpostorTeam() is false || target.IsImpostorTeam() is false)
                 {
                     if (target.IsAlive() && player != target)
                     {
@@ -184,7 +196,10 @@ class BetterHostManager
                 }
             }
 
-            NewName = $"<size=50%>{sbTopInfo}</size>\n{NewName}";
+            if (sbTopInfo.Length > 0)
+                NewName = $"<size=50%>{sbTopInfo}</size>\n{NewName}";
+            else
+                NewName = $"{NewName}";
 
             // Don't send rpc if name is the same!
             if (LastPlayerName.TryGetValue(target.Data.PlayerId, out var playerNameDict))

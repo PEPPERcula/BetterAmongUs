@@ -1,4 +1,5 @@
 using HarmonyLib;
+using Hazel;
 using UnityEngine;
 
 namespace BetterAmongUs.Patches;
@@ -40,7 +41,15 @@ public static class OptionsMenuBehaviourPatch
         if (BetterHost == null || BetterHost.ToggleButton == null)
         {
             BetterHost = ClientOptionItem.Create("<color=#4f92ff>Better Host</color>", Main.BetterHost, __instance, BetterHostButtonToggle, () => !toggleCheckInGame("<color=#4f92ff>Better Host</color>"));
-            static void BetterHostButtonToggle() => RPC.SyncAllNames(force: true);
+            static void BetterHostButtonToggle()
+            {
+                MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, unchecked((byte)CustomRPC.BetterCheck), SendOption.None, -1);
+                messageWriter.Write((byte)PlayerControl.LocalPlayer.NetId);
+                messageWriter.Write(Main.BetterHost.Value);
+                AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+
+                RPC.SyncAllNames(force: true);
+            }
         }
 
         if (BetterRoleAlgorithma == null || BetterRoleAlgorithma.ToggleButton == null)
