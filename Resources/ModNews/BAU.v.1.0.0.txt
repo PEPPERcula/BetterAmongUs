@@ -17,4 +17,4 @@ We are thrilled to announce the release of <b>BetterAmongUs</b> v1.0.0
 
 Thank you for your support, and we hope you enjoy the new features of <b>BetterAmongUs</b>!
 #
-<size=75%>Happy gaming!</size>
+<size=125%><nobr><link="https://github.com/D1GQ/BetterAmongUs">Github</nobr></link> </size>
