@@ -21,11 +21,12 @@ public enum ReleaseTypes : int
 public class Main : BasePlugin
 {
     public const ReleaseTypes ReleaseBuildType = ReleaseTypes.Canary;
-    public const string CanaryNum = "2";
+    public const string CanaryNum = "3";
     public const string PluginGuid = "com.d1gq.betteramongus";
     public const string PluginVersion = "1.0.0";
-    public const string ReleaseDate = "07.28.2024"; // dd/mm/yyyy
+    public const string ReleaseDate = "07.29.2024"; // dd/mm/yyyy
     public const string Github = "https://github.com/D1GQ/BetterAmongUs";
+    public const string Discord = "https://discord.gg/";
     public static string GetVersionText()
     {
         if (ReleaseBuildType == ReleaseTypes.Release)
