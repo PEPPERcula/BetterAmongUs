@@ -109,7 +109,9 @@ class PlayerControlPatch
         if (player.IsDev() && !GameStates.IsInGamePlay)
             sbTag.Append("<color=#6e6e6e>(<color=#0088ff>Dev</color>)</color>+++");
 
-        if ((player == PlayerControl.LocalPlayer || player.GetIsBetterUser() == true) && GameStates.IsLobby && !GameStates.IsFreePlay)
+        if (((player == PlayerControl.LocalPlayer && Main.BetterHost.Value) || player.GetIsBetterHost() == true) && !GameStates.IsInGamePlay)
+            sbTag.Append("<color=#0dff00>Better Host</color>+++");
+        else if ((player == PlayerControl.LocalPlayer || player.GetIsBetterUser() == true) && !GameStates.IsInGamePlay)
             sbTag.Append("<color=#0dff00>Better User</color>+++");
 
         if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.SickoData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.SickoData.ContainsValue(friendCode))

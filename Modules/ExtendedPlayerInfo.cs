@@ -4,6 +4,7 @@ namespace BetterAmongUs;
 static class ExtendedPlayerInfo
 {
     private static Dictionary<PlayerControl, bool> IsBetterUser = new Dictionary<PlayerControl, bool>();
+    private static Dictionary<PlayerControl, bool> IsBetterHost = new Dictionary<PlayerControl, bool>();
 
     public static bool GetIsBetterUser(this PlayerControl player)
     {
@@ -13,9 +14,22 @@ static class ExtendedPlayerInfo
             return false;
     }
 
+    public static bool GetIsBetterHost(this PlayerControl player)
+    {
+        if (IsBetterHost.ContainsKey(player))
+            return IsBetterHost[player];
+        else
+            return false;
+    }
+
     public static void SetIsBetterUser(this PlayerControl player, bool value)
     {
         IsBetterUser[player] = value;
+    }
+
+    public static void SetIsBetterHost(this PlayerControl player, bool value)
+    {
+        IsBetterHost[player] = value;
     }
 }
 

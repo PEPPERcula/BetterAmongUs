@@ -31,6 +31,7 @@ class OnGameJoinedPatch
                 {
                     MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.BetterCheck, SendOption.None, -1);
                     messageWriter.Write((byte)PlayerControl.LocalPlayer.NetId);
+                    messageWriter.Write(Main.BetterHost.Value);
                     AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
                 }
             }, 1.5f, "OnGameJoinedPatch");
@@ -54,6 +55,7 @@ public static class OnPlayerJoinedPatch
                 // Send Better Among Us Check RPC
                 MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, unchecked((byte)CustomRPC.BetterCheck), SendOption.None, -1);
                 messageWriter.Write((byte)PlayerControl.LocalPlayer.NetId);
+                messageWriter.Write(Main.BetterHost.Value);
                 AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
 
                 RPC.SyncAllNames(force: true);
