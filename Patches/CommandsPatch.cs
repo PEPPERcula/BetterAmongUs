@@ -195,7 +195,7 @@ class CommandsPatch
                     _ = new LateTask(() =>
                     {
                         RPC.SyncAllNames();
-                    }, 1f, $"Command {Main.CommandPrefix}name");
+                    }, 1f, $"Command {Main.CommandPrefix.Value}name");
                 }
                 else if (command.Length > 1 && !string.IsNullOrWhiteSpace(command[1]) && System.Text.RegularExpressions.Regex.IsMatch(command[1], @"^[a-zA-Z0-9]+$"))
                 {
