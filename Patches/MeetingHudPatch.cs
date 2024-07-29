@@ -42,7 +42,7 @@ class MeetingHudStartPatch
             PlayerLevel.transform.position += new Vector3(0.23f, 0f);
         }
 
-        RPC.SyncAllNames(isForMeeting: true);
+        RPC.SyncAllNames(true, true);
 
         Logger.LogHeader("Meeting Has Started");
     }
