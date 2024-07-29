@@ -23,7 +23,7 @@ public class PingTrackerPatch
             StringBuilder sb = new StringBuilder();
 
             sb.AppendFormat("PING: <b>{0}</b>\n", GetPingColor(AmongUsClient.Instance.Ping));
-            sb.Append($"<color=#00dbdb><size=75%>BetterAmongUs {Main.GetVersionText()}</size></color>\n");
+            sb.Append($"<color=#00dbdb><size=75%>BetterAmongUs {Main.GetVersionText(true)}</size></color>\n");
             sb.AppendFormat("<color=#b0b0b0><size=50%>{0}</size></color>\n", Main.Github);
 
             if (Main.BetterHost.Value && GameStates.IsHost)

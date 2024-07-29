@@ -187,20 +187,19 @@ class BetterHostManager
             NewName = $"<size=50%>{sbTopInfo}</size>\n{NewName}";
 
             // Don't send rpc if name is the same!
-            if (!force)
+            if (LastPlayerName.TryGetValue(target.Data.PlayerId, out var playerNameDict))
             {
-                if (!LastPlayerName.ContainsKey(target.Data.PlayerId))
+                if (playerNameDict.TryGetValue(player.Data.PlayerId, out var currentName) && currentName == NewName)
                 {
-                    LastPlayerName[target.Data.PlayerId] = new Dictionary<byte, string>();
-                }
-
-                if (LastPlayerName[target.Data.PlayerId].ContainsKey(player.Data.PlayerId))
-                {
-                    if (LastPlayerName[target.Data.PlayerId][player.Data.PlayerId] == NewName)
+                    if (!force)
                     {
                         return;
                     }
                 }
+            }
+            else
+            {
+                LastPlayerName[target.Data.PlayerId] = new Dictionary<byte, string>();
             }
 
             LastPlayerName[target.Data.PlayerId][player.Data.PlayerId] = NewName;
