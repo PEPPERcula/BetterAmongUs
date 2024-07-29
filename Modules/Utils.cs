@@ -60,7 +60,7 @@ public static class Utils
         {
             chat.chatBubblePool.Reclaim(pooledBubble);
             Logger.Error(ex.ToString());
-            throw; 
+            throw;
         }
     }
     // Get players HashPuid
@@ -130,7 +130,7 @@ public static class Utils
             Logger.Log($"Successfully loaded sprite from {path}");
             return CachedSprites[path + pixelsPerUnit] = sprite;
         }
-        catch (Exception ex) 
+        catch (Exception ex)
         {
             Logger.Error(ex.ToString());
             return null;

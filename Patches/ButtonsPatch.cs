@@ -1,6 +1,4 @@
-﻿using BetterAmongUs.Role;
-using HarmonyLib;
-using UnityEngine;
+﻿using HarmonyLib;
 
 namespace BetterAmongUs.Patches;
 

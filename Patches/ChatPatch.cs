@@ -3,7 +3,6 @@ using HarmonyLib;
 using System.Text;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace BetterAmongUs.Patches;
 
@@ -58,7 +57,7 @@ class ChatPatch
                 else __instance.freeChatField.textArea.SetText("");
             }
         }
-        
+
         [HarmonyPatch(nameof(ChatController.AddChat))]
         [HarmonyPrefix]
         public static bool AddChat_Prefix(ChatController __instance, [HarmonyArgument(0)] PlayerControl sourcePlayer, [HarmonyArgument(1)] string chatText)

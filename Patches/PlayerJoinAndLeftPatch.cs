@@ -1,7 +1,7 @@
-using InnerNet;
+using BetterAmongUs.Patches;
 using HarmonyLib;
 using Hazel;
-using BetterAmongUs.Patches;
+using InnerNet;
 
 namespace BetterAmongUs;
 

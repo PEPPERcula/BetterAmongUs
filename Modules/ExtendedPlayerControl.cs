@@ -106,7 +106,7 @@ static class ExtendedPlayerControl
     // Get vent Id that the player is in.
     public static int GetPlayerVentId(this PlayerControl player)
     {
-        if(player == null) return -1;
+        if (player == null) return -1;
 
         if (!(ShipStatus.Instance.Systems.TryGetValue(SystemTypes.Ventilation, out var systemType) &&
               systemType.TryCast<VentilationSystem>() is VentilationSystem ventilationSystem))

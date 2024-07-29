@@ -1,7 +1,5 @@
 // Code from: https://github.com/0xDrMoe/TownofHost-Enhanced
 
-using System.Linq;
-
 namespace BetterAmongUs;
 
 class LateTask

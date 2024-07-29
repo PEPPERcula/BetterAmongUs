@@ -1,13 +1,11 @@
 ﻿using AmongUs.Data;
 using HarmonyLib;
-using Hazel;
 using Il2CppSystem.Linq;
 using LibCpp2IL;
 using System.Text;
 using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace BetterAmongUs.Patches;
 

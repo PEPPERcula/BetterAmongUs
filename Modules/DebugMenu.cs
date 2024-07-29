@@ -1,6 +1,6 @@
-﻿using UnityEngine;
+﻿using BetterAmongUs.Resources;
 using Il2CppInterop.Runtime.Attributes;
-using BetterAmongUs.Resources;
+using UnityEngine;
 
 namespace BetterAmongUs;
 

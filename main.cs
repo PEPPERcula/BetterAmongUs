@@ -1,11 +1,11 @@
-﻿using UnityEngine;
-using BepInEx;
+﻿using BepInEx;
 using BepInEx.Configuration;
-using BepInEx.Unity.IL2CPP;
 using BepInEx.Logging;
+using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
-using Innersloth.IO;
 using Il2CppInterop.Runtime.Injection;
+using Innersloth.IO;
+using UnityEngine;
 
 namespace BetterAmongUs;
 

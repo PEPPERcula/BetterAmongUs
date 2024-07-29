@@ -1,12 +1,12 @@
-﻿using System.Collections;
-using System.Reflection;
-using AmongUs.Data;
+﻿using AmongUs.Data;
 using AmongUs.Data.Player;
 using Assets.InnerNet;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
-using UnityEngine;
 using HarmonyLib;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using System.Collections;
+using System.Reflection;
+using UnityEngine;
 
 namespace BetterAmongUs.Patches;
 
