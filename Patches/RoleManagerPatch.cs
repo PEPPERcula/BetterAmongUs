@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using HarmonyLib;
+using Hazel;
 
 namespace BetterAmongUs.Role;
 
@@ -181,7 +182,11 @@ public class RoleManagerPatch
         }
 
         SetPlayerRole.Clear();
-        RPC.SyncAllNames();
+
+        _ = new LateTask(() =>
+        {
+            RPC.SyncAllNames(false, true, Main.BetterHost.Value);
+        }, 1f, "RoleManager SyncAllNames");
 
         Logger.LogHeader($"Better Role Assignment Has Finished", "RoleManager");
 

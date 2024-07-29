@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Hazel;
 
 namespace BetterAmongUs.Patches;
 
@@ -16,6 +17,18 @@ class GamePlayManager
                 AntiCheat.PauseAntiCheat();
             }
         }
+        [HarmonyPatch(nameof(LobbyBehaviour.Start))]
+        [HarmonyPostfix]
+        private static void Postfix(/*LobbyBehaviour __instance*/)
+        {
+            _ = new LateTask(() =>
+            {
+                if (GameStates.IsInGame)
+                {
+                    RPC.SyncAllNames(force: true);
+                }
+            }, 1.5f, "LobbyBehaviourPatch SyncAllNames");
+        }
     }
 
     [HarmonyPatch(typeof(GameManager))]
@@ -32,6 +45,17 @@ class GamePlayManager
                     player.RpcSetName(player.Data.PlayerName);
                 }
             }
+        }
+    }
+
+    [HarmonyPatch(typeof(GameStartManager))]
+    public class GameStartManagerPatch
+    {
+        [HarmonyPatch(nameof(GameStartManager.Update))]
+        [HarmonyPrefix]
+        private static void Prefix(GameStartManager __instance)
+        {
+            __instance.MinPlayers = 1;
         }
     }
 }
