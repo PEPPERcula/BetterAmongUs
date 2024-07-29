@@ -22,20 +22,31 @@ public class Main : BasePlugin
 {
     public const ReleaseTypes ReleaseBuildType = ReleaseTypes.Canary;
     public const string CanaryNum = "3";
+    public const string HotfixNum = "1";
+    public const bool IsHotFix = true;
     public const string PluginGuid = "com.d1gq.betteramongus";
     public const string PluginVersion = "1.0.0";
     public const string ReleaseDate = "07.29.2024"; // dd/mm/yyyy
     public const string Github = "https://github.com/D1GQ/BetterAmongUs";
     public const string Discord = "https://discord.gg/";
 
-    public static string GetVersionText()
+    public static string GetVersionText(bool newLine = false)
     {
+        string text = string.Empty;
+
+        string newLineText = newLine ? "\n" : " ";
+
         if (ReleaseBuildType == ReleaseTypes.Release)
-            return $"v{BetterAmongUsVersion}";
+            text = $"v{BetterAmongUsVersion}";
         else if (ReleaseBuildType == ReleaseTypes.Canary)
-            return $"v{BetterAmongUsVersion} Canary {Main.CanaryNum}";
+            text = $"v{BetterAmongUsVersion}{newLineText}Canary {Main.CanaryNum}";
         else if (Main.ReleaseBuildType == ReleaseTypes.Dev)
-            return $"v{BetterAmongUsVersion} Dev {Main.ReleaseDate}";
+            text = $"v{BetterAmongUsVersion}{newLineText}Dev {Main.ReleaseDate}";
+
+        if (IsHotFix)
+            text += $" Hotfix {HotfixNum}";
+
+        return text;
     }
     public Harmony Harmony { get; } = new Harmony(PluginGuid);
 
