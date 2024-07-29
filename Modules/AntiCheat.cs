@@ -157,6 +157,7 @@ class AntiCheat
                 return;
             }
 
+            /*
             if (callId is (byte)RpcCalls.SendChat or (byte)RpcCalls.SendQuickChat)
             {
                 if (player.IsAlive() && GameStates.IsInGamePlay && !GameStates.IsMeeting && !GameStates.IsExilling)
@@ -164,6 +165,7 @@ class AntiCheat
 
                 return;
             }
+            */
 
             if (callId is (byte)RpcCalls.SetLevel)
             {
