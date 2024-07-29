@@ -1,12 +1,13 @@
 ﻿using Hazel;
 using InnerNet;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace BetterAmongUs;
 
 class BetterHostManager
 {
+    public static Dictionary<byte, Dictionary<byte, string>> LastPlayerName = []; // Targetid, Playerid, Name
+
     public static bool CheckRPCAsHost(PlayerControl player, byte callId, MessageReader reader, ref bool canceled)
     {
         if (player == null) return true;
@@ -133,18 +134,11 @@ class BetterHostManager
 
         if (!IsBetterHost && !force) return;
 
-        string friendCode = player.Data.FriendCode;
-
-        string pattern = @"^[a-zA-Z0-9#]+$";
-        string hashtagPattern = @"^#[0-9]{4}$";
-        string friendCodeColor = (Regex.Replace(friendCode, hashtagPattern, string.Empty).Length is > 10 or < 5 || !Regex.IsMatch(friendCode, pattern) || !Regex.IsMatch(friendCode, hashtagPattern)) ? "#00f7ff" : "#ff0000";
-
         foreach (PlayerControl target in Main.AllPlayerControls)
         {
             if (target == null || target == PlayerControl.LocalPlayer || target.GetIsBetterUser()) continue;
 
             string NewName = player.CurrentOutfit.PlayerName;
-            string BottomTag = "";
 
             StringBuilder sbTopTag = new StringBuilder();
             StringBuilder sbTopInfo = new StringBuilder();
@@ -160,10 +154,8 @@ class BetterHostManager
                     sbTopTag.Append($"<color=#0dff00>Better Host</color>+++");
                 else if (player.GetIsBetterUser())
                     sbTopTag.Append("<color=#0dff00>Better User</color>+++");
-
-                BottomTag += $"<color={friendCodeColor}>{friendCode}</color>";
             }
-            else if (GameStates.IsInGame && !GameStates.IsLobby)
+            else if (GameStates.IsInGamePlay)
             {
                 string Role = $"<color={player.GetTeamHexColor()}>{player.GetRoleName()}</color>";
                 if (!player.IsImpostorTeam() && !target.IsImpostorTeam())
@@ -192,7 +184,23 @@ class BetterHostManager
                 }
             }
 
-            NewName = $"<size=65%>{sbTopInfo}</size>\n{NewName}\n<size=65%>{BottomTag}</size>";
+            NewName = $"<size=50%>{sbTopInfo}</size>\n{NewName}";
+
+            // Don't send rpc if name is the same!
+            if (!LastPlayerName.ContainsKey(target.Data.PlayerId))
+            {
+                LastPlayerName[target.Data.PlayerId] = new Dictionary<byte, string>();
+            }
+
+            if (LastPlayerName[target.Data.PlayerId].ContainsKey(player.Data.PlayerId))
+            {
+                if (LastPlayerName[target.Data.PlayerId][player.Data.PlayerId] == NewName)
+                {
+                    return;
+                }
+            }
+
+            LastPlayerName[target.Data.PlayerId][player.Data.PlayerId] = NewName;
 
             player.RpcSetNamePrivate(NewName, target);
             Logger.Log($"Set {player.Data.PlayerName} name to {NewName.Replace("\n", "-")} for {target.Data.PlayerName}", "RPC");
