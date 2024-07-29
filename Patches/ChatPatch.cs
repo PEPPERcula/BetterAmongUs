@@ -123,7 +123,7 @@ class ChatPatch
                     if (sourcePlayer.IsDev())
                         sbTag.Append("<color=#0088ff>Dev</color>+++");
 
-                    if (((sourcePlayer == PlayerControl.LocalPlayer && Main.BetterHost.Value) || sourcePlayer.GetIsBetterHost() == true) && !GameStates.IsInGamePlay)
+                    if (((sourcePlayer == PlayerControl.LocalPlayer && GameStates.IsHost && Main.BetterHost.Value) || sourcePlayer.GetIsBetterHost() == true) && !GameStates.IsInGamePlay)
                         sbTag.Append("<color=#0dff00>Better Host</color>+++");
                     if ((sourcePlayer == PlayerControl.LocalPlayer || sourcePlayer.GetIsBetterUser() == true) && !GameStates.IsInGamePlay)
                         sbTag.Append("<color=#0dff00>Better User</color>+++");
