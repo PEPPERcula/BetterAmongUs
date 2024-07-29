@@ -125,7 +125,7 @@ class ChatPatch
 
                     if (((sourcePlayer == PlayerControl.LocalPlayer && GameStates.IsHost && Main.BetterHost.Value) || sourcePlayer.GetIsBetterHost() == true) && !GameStates.IsInGamePlay)
                         sbTag.Append("<color=#0dff00>Better Host</color>+++");
-                    if ((sourcePlayer == PlayerControl.LocalPlayer || sourcePlayer.GetIsBetterUser() == true) && !GameStates.IsInGamePlay)
+                    else if ((sourcePlayer == PlayerControl.LocalPlayer || sourcePlayer.GetIsBetterUser() == true) && !GameStates.IsInGamePlay)
                         sbTag.Append("<color=#0dff00>Better User</color>+++");
 
                     if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.SickoData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.SickoData.ContainsValue(friendCode))
