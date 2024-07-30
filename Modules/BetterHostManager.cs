@@ -21,6 +21,7 @@ class BetterHostManager
 
         var idealSpeed = player.NetTransform.idealSpeed;
 
+        // Prevent player from going over speed modifier
         if (player.CanMove && IsSpeedExceeding(idealSpeed) == true)
         {
             if (LastPlayerPosDelay.ContainsKey(player) && LastPlayeridealSpeed.ContainsKey(player))
@@ -36,6 +37,7 @@ class BetterHostManager
 
         LastPlayeridealSpeed[player] = player.NetTransform.idealSpeed;
 
+        // Get delayed position
         _ = new LateTask(() =>
         {
             if (player != null)
@@ -44,30 +46,29 @@ class BetterHostManager
             }
         }, 1.25f, shoudLog: false);
 
-        if (GameStates.IsInGamePlay)
+        // Prevent player from moving in certain States
+        if (player.CanMove)
         {
-            if (player.CanMove)
+            LastPlayerPos[player] = player.GetCustomPosition();
+            LastPlayerMoveSequence[player] = player.NetTransform.lastSequenceId;
+        }
+        else
+        {
+            if (player.shapeshifting)
             {
-                LastPlayerPos[player] = player.GetCustomPosition();
-                LastPlayerMoveSequence[player] = player.NetTransform.lastSequenceId;
-            }
-            else
-            {
-                if (player.shapeshifting)
+                if (LastPlayerPos.ContainsKey(player))
                 {
-                    if (LastPlayerPos.ContainsKey(player))
+                    if (LastPlayerMoveSequence[player] + 6 < player.NetTransform.lastSequenceId)
                     {
-                        if (LastPlayerMoveSequence[player] + 6 < player.NetTransform.lastSequenceId)
-                        {
-                            player.RpcTeleport(LastPlayerPos[player]);
-                            Logger.Log($"invalid move sequence, reset {player.Data.PlayerName} pos:{player.GetCustomPosition()}");
-                            LastPlayerMoveSequence[player] = (ushort)(player.NetTransform.lastSequenceId - 4);
-                        }
+                        player.RpcTeleport(LastPlayerPos[player]);
+                        Logger.Log($"invalid move sequence, reset {player.Data.PlayerName} pos:{player.GetCustomPosition()}");
+                        LastPlayerMoveSequence[player] = (ushort)(player.NetTransform.lastSequenceId - 4);
                     }
                 }
             }
         }
 
+        // Lock up player vent button if it's invalid vent
         if (!VentStuck.Contains(player) && player.inVent && player.Data.RoleType != RoleTypes.Engineer && !player.IsImpostorTeam())
         {
             player.MyPhysics.RpcEnterVent(player.GetPlayerVentId());
