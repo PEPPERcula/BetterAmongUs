@@ -22,20 +22,20 @@ class BetterHostManager
         var idealSpeed = player.NetTransform.idealSpeed;
 
         // Prevent player from going over speed modifier
-        if (player.CanMove && IsSpeedExceeding(idealSpeed) == true)
+        if (player.IsAlive() && player.CanMove && player.MyPhysics.Animations.IsPlayingRunAnimation() && IsSpeedExceeding(idealSpeed) == true)
         {
             if (LastPlayerPosDelay.ContainsKey(player) && LastPlayeridealSpeed.ContainsKey(player))
             {
-                if (idealSpeed > LastPlayeridealSpeed[player] - 0.5f)
+                if ((int)idealSpeed >= (int)LastPlayeridealSpeed[player])
                 {
                     player.RpcTeleport(LastPlayerPosDelay[player]);
                     player.NetTransform.idealSpeed = 0f;
-                    Logger.Log($"invalid move speed {idealSpeed} is > {GetAverageSpeed()}, reset {player.Data.PlayerName} pos:{player.GetCustomPosition()}");
+                    Logger.Log($"invalid move speed, {idealSpeed} is > {GetAverageSpeed()}, reset {player.Data.PlayerName} pos:{player.GetCustomPosition()}");
                 }
             }
         }
 
-        LastPlayeridealSpeed[player] = player.NetTransform.idealSpeed;
+        LastPlayeridealSpeed[player] = idealSpeed;
 
         // Get delayed position
         _ = new LateTask(() =>
