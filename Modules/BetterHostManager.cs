@@ -22,7 +22,7 @@ class BetterHostManager
                     PlayerControl target = reader.ReadNetObject<PlayerControl>();
                     if (target != null)
                     {
-                        if (player.Data.RoleType == RoleTypes.GuardianAngel && player.IsAlive() && !player.IsImpostorTeam())
+                        if (player.Data.RoleType == RoleTypes.GuardianAngel && !player.IsAlive() && !player.IsImpostorTeam())
                         {
                             if (target.IsAlive())
                             {
