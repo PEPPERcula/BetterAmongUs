@@ -263,7 +263,7 @@ class AntiCheat
                 return false;
             }
 
-            if (callId is (byte)RpcCalls.StartMeeting)
+            if (callId is (byte)RpcCalls.StartMeeting or (byte)RpcCalls.ReportDeadBody)
             {
                 if (GameStates.IsMeeting || GameStates.IsExilling)
                 {
