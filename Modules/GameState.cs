@@ -20,7 +20,7 @@ public static class GameStates
     public static bool IsInGame => InGame;
     public static bool IsLobby => AmongUsClient.Instance?.GameState == InnerNet.InnerNetClient.GameStates.Joined;
     public static bool IsInIntro => IntroCutscene.Instance != null;
-    public static bool IsInGamePlay => (InGame && !IsLobby && !IsInIntro) || IsFreePlay;
+    public static bool IsInGamePlay => (InGame && !IsLobby && !IsInIntro && IsShip) || IsFreePlay;
     public static bool IsEnded => AmongUsClient.Instance?.GameState == InnerNet.InnerNetClient.GameStates.Ended;
     public static bool IsNotJoined => AmongUsClient.Instance?.GameState == InnerNet.InnerNetClient.GameStates.NotJoined;
     public static bool IsOnlineGame => AmongUsClient.Instance?.NetworkMode == NetworkModes.OnlineGame;

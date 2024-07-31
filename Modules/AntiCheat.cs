@@ -28,7 +28,7 @@ class AntiCheat
     // Handle RPC before anti cheat detection
     public static void HandleRPCBeforeCheck(PlayerControl player, byte callId, MessageReader Oldreader)
     {
-        MessageReader reader = Oldreader;
+        MessageReader reader = MessageReader.Get(Oldreader);
 
         if (player == PlayerControl.LocalPlayer || PlayerControl.LocalPlayer == null || player == null || !IsEnabled) return;
 
@@ -114,9 +114,10 @@ class AntiCheat
     // Check and notify for invalid rpcs
     public static void CheckRPC(PlayerControl player, byte callId, MessageReader Oldreader)
     {
-        MessageReader reader = Oldreader;
         try
         {
+            MessageReader reader = MessageReader.Get(Oldreader);
+
             if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.GetIsBetterHost() || reader == null || !IsEnabled || !Main.AntiCheat.Value) return;
 
             RoleTypes? Role = player?.Data?.RoleType;
@@ -246,9 +247,10 @@ class AntiCheat
     // Check notify and cancel out request for invalid rpcs
     public static bool CheckCancelRPC(PlayerControl player, byte callId, MessageReader Oldreader)
     {
-        MessageReader reader = Oldreader;
         try
         {
+            MessageReader reader = MessageReader.Get(Oldreader);
+
             if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.GetIsBetterHost() || reader == null || !IsEnabled || !Main.AntiCheat.Value) return true;
 
             RoleTypes Role = player.Data.RoleType;

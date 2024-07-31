@@ -65,7 +65,7 @@ public static class OnPlayerJoinedPatch
                 if (Main.BetterHost.Value)
                     client.Character.RpcSendHostChat(HudManagerPatch.WelcomeMessage, sendToBetterUser: false);
             }
-        }, 1.5f, "OnPlayerJoinedPatch", false);
+        }, 2.5f, "OnPlayerJoinedPatch", false);
     }
 }
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnPlayerLeft))]
