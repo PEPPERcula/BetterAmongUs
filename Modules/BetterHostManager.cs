@@ -19,6 +19,8 @@ class BetterHostManager
     {
         if (!Main.BetterHost.Value) return;
 
+        // Buggy
+        /*
         var idealSpeed = player.NetTransform.idealSpeed;
 
         // Prevent player from going over speed modifier
@@ -47,6 +49,7 @@ class BetterHostManager
                 LastPlayerPosDelay[player] = lastPos;
             }
         }, 1.8f, shoudLog: false);
+        */
 
         // Prevent player from moving in certain States
         if (player.CanMove)
