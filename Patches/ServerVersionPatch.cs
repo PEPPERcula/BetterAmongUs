@@ -16,7 +16,7 @@ class ServerUpdatePatch
     {
         if (GameStates.IsLocalGame)
         {
-            Logger.Log($"IsLocalGame: {__result}", "VersionServer");
+            // Logger.Log($"IsLocalGame: {__result}", "VersionServer");
         }
         if (GameStates.IsOnlineGame)
         {
@@ -26,7 +26,7 @@ class ServerUpdatePatch
                 __result += 25;
             }
             ModdedVersionServer = __result;
-            Logger.Log($"IsOnlineGame: {__result}", "VersionServer");
+            // Logger.Log($"IsOnlineGame: {__result}", "VersionServer");
         }
     }
 }
