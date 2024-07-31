@@ -5,11 +5,6 @@ namespace BetterAmongUs.Patches;
 
 class GamePlayManager
 {
-    public static string ModdedProtocolWarning = $"<b><color=#ff1100><size=125%><align=\"center\">Warning</size>\n" +
-    "Modded Protocol Is Enabled!</align></color></b>\n<size=120%> </size>\n"
-        + "While <b><color=#4f92ff>Modded Protcol</b></color> is enabled, the built-in server-sided anti cheat is disabled, be sure to have <b><color=#4f92ff>Anti Cheat</b></color> enabled in settings.\n"
-        + "Also while enabled your lobby will not be viewable to the public and only other <b><color=#4f92ff>Modded Protocol</b></color> players can find your lobby, normal players are still able to join off codes!";
-
     [HarmonyPatch(typeof(LobbyBehaviour))]
     public class LobbyBehaviourPatch
     {
@@ -31,11 +26,6 @@ class GamePlayManager
                 if (GameStates.IsInGame)
                 {
                     RPC.SyncAllNames(force: true);
-                }
-
-                if (GameStates.IsModdedProtocol)
-                {
-                    Utils.AddChatPrivate(ModdedProtocolWarning, overrideName: " ");
                 }
             }, 1.5f, "LobbyBehaviourPatch SyncAllNames");
         }

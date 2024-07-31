@@ -31,11 +31,6 @@ public class PingTrackerPatch
                 sb.Append("<size=75%><color=#4f92ff>Better Host</color>: <color=#00f04c>Enabled</color></size>\n");
             }
 
-            if (GameStates.IsModdedProtocol)
-            {
-                sb.Append("<size=75%><color=#4f92ff>Modded Protocol</color>: <color=#00f04c>Enabled</color></size>\n");
-            }
-
             if (Main.ShowFPS.Value)
             {
                 float FPSNum = 1.0f / Time.deltaTime;

@@ -11,7 +11,6 @@ public static class OptionsMenuBehaviourPatch
 {
     private static ClientOptionItem AntiCheat;
     private static ClientOptionItem BetterHost;
-    private static ClientOptionItem ModdedProtocol;
     private static ClientOptionItem BetterRoleAlgorithma;
     private static ClientOptionItem LobbyPlayerInfo;
     private static ClientOptionItem DisableLobbyTheme;
@@ -60,11 +59,6 @@ public static class OptionsMenuBehaviourPatch
 
                 RPC.SyncAllNames(force: true);
             }
-        }     
-        
-        if (ModdedProtocol == null || ModdedProtocol.ToggleButton == null)
-        {
-            ModdedProtocol = ClientOptionItem.Create("<color=#4f92ff>Modded Protocol</color>", Main.ModdedProtocol, __instance, toggleCheck: () => !toggleCheckInGame("<color=#4f92ff>Modded Protocol</color>"));
         }
 
         if (BetterRoleAlgorithma == null || BetterRoleAlgorithma.ToggleButton == null)

@@ -97,46 +97,6 @@ static class ExtendedPlayerControl
         if (player == null) return;
         RPC.ExileAsync(player);
     }
-    public static void RpcTeleport(this PlayerControl player, Vector2 position)
-    {
-        if (!GameStates.IsHost) return;
-        if (!GameStates.IsModdedProtocol) return;
-
-        var cancelTeleport = false;
-
-        if (player.inVent || player.MyPhysics.Animations.IsPlayingEnterVentAnimation())
-        {
-            cancelTeleport = true;
-        }
-        else if (player.onLadder || player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
-        {
-            cancelTeleport = true;
-        }
-        else if (player.inMovingPlat)
-        {
-            cancelTeleport = true;
-        }
-
-        if (cancelTeleport)
-        {
-            return;
-        }
-
-        var netTransform = player.NetTransform;
-
-        if (AmongUsClient.Instance.AmClient)
-        {
-            // +328 because lastSequenceId has delay between the host and the vanilla client
-            // And this cannot forced teleport the player
-            netTransform.SnapTo(position, (ushort)(netTransform.lastSequenceId + 328));
-        }
-
-        ushort newSid = (ushort)(netTransform.lastSequenceId + 8);
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(netTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.Reliable);
-        NetHelpers.WriteVector2(position, messageWriter);
-        messageWriter.Write(newSid);
-        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
-    }
 
     public static bool IsInRoomSelect(this PlayerControl player)
     {
