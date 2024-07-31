@@ -102,10 +102,6 @@ internal static class RPC
             return;
         }
 
-        return;
-
-        await WaitForChatCooldown();
-
         PlayerControl asPlayer = Main.AllPlayerControls.Where(pc => pc.IsAlive()).OrderBy(pc => pc == PlayerControl.LocalPlayer ? 0 : 1).First();
 
         var oldName = asPlayer.CurrentOutfit.PlayerName;

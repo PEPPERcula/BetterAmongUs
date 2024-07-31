@@ -99,6 +99,7 @@ static class ExtendedPlayerControl
     }
     public static void RpcTeleport(this PlayerControl player, Vector2 position)
     {
+        if (!GameStates.IsHost) return;
 
         var cancelTeleport = false;
 
