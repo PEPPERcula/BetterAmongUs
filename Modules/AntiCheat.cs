@@ -129,10 +129,10 @@ class AntiCheat
             /*
             if (callId is (byte)RpcCalls.SendChat)
             {
+                var text = reader.ReadString();
+
                 if (player.IsAlive() && GameStates.IsInGamePlay && !GameStates.IsMeeting && !GameStates.IsExilling)
                     BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
-
-                var text = reader.ReadString();
 
                 if (text.Contains('<') || text.Contains('>') || text.Length > 120)
                 {
@@ -261,6 +261,15 @@ class AntiCheat
             {
                 BetterNotificationManager.NotifyCheat(player, $"Untrusted RPC received: {callId}");
                 return false;
+            }
+
+            if (callId is (byte)RpcCalls.StartMeeting)
+            {
+                if (GameStates.IsMeeting || GameStates.IsExilling)
+                {
+                    BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
+                    return false;
+                }
             }
 
             if (callId is (byte)RpcCalls.Shapeshift)
