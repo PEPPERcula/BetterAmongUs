@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using BetterAmongUs.Patches;
 
 namespace BetterAmongUs;
 
@@ -24,6 +25,7 @@ public static class GameStates
     public static bool IsEnded => AmongUsClient.Instance?.GameState == InnerNet.InnerNetClient.GameStates.Ended;
     public static bool IsNotJoined => AmongUsClient.Instance?.GameState == InnerNet.InnerNetClient.GameStates.NotJoined;
     public static bool IsOnlineGame => AmongUsClient.Instance?.NetworkMode == NetworkModes.OnlineGame;
+    public static bool IsModdedProtocol => ServerUpdatePatch.IsModdedProtocol;
     public static bool IsVanillaServer
     {
         get

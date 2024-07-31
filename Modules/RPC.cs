@@ -94,6 +94,8 @@ internal static class RPC
             return;
         }
 
+        if (!GameStates.IsModdedProtocol) return;
+
         PlayerControl asPlayer = Main.AllPlayerControls.Where(pc => pc.IsAlive()).OrderBy(pc => pc == PlayerControl.LocalPlayer ? 0 : 1).First();
 
         var oldName = asPlayer.CurrentOutfit.PlayerName;

@@ -11,6 +11,7 @@ public static class OptionsMenuBehaviourPatch
 {
     private static ClientOptionItem AntiCheat;
     private static ClientOptionItem BetterHost;
+    private static ClientOptionItem ModdedProtocol;
     private static ClientOptionItem BetterRoleAlgorithma;
     private static ClientOptionItem LobbyPlayerInfo;
     private static ClientOptionItem DisableLobbyTheme;
@@ -22,9 +23,17 @@ public static class OptionsMenuBehaviourPatch
     [HarmonyPrefix]
     public static void Start_Postfix(OptionsMenuBehaviour __instance)
     {
-        static bool toggleCheckInGame(string buttonName)
+        static bool toggleCheckInGamePlay(string buttonName)
         {
             bool flag = GameStates.IsInGame && !GameStates.IsLobby || GameStates.IsFreePlay;
+            if (flag)
+                BetterNotificationManager.Notify($"Unable to toggle {buttonName} while in gameplay!", 2.5f);
+
+            return flag;
+        }
+        static bool toggleCheckInGame(string buttonName)
+        {
+            bool flag = GameStates.IsInGame;
             if (flag)
                 BetterNotificationManager.Notify($"Unable to toggle {buttonName} while in game!", 2.5f);
 
@@ -40,7 +49,7 @@ public static class OptionsMenuBehaviourPatch
 
         if (BetterHost == null || BetterHost.ToggleButton == null)
         {
-            BetterHost = ClientOptionItem.Create("<color=#4f92ff>Better Host</color>", Main.BetterHost, __instance, BetterHostButtonToggle, () => !toggleCheckInGame("<color=#4f92ff>Better Host</color>"));
+            BetterHost = ClientOptionItem.Create("<color=#4f92ff>Better Host</color>", Main.BetterHost, __instance, BetterHostButtonToggle, () => !toggleCheckInGamePlay("<color=#4f92ff>Better Host</color>"));
             static void BetterHostButtonToggle()
             {
                 var flag = GameStates.IsHost && Main.BetterHost.Value;
@@ -51,11 +60,16 @@ public static class OptionsMenuBehaviourPatch
 
                 RPC.SyncAllNames(force: true);
             }
+        }     
+        
+        if (ModdedProtocol == null || ModdedProtocol.ToggleButton == null)
+        {
+            ModdedProtocol = ClientOptionItem.Create("<color=#4f92ff>Modded Protocol</color>", Main.ModdedProtocol, __instance, toggleCheck: () => !toggleCheckInGame("<color=#4f92ff>Modded Protocol</color>"));
         }
 
         if (BetterRoleAlgorithma == null || BetterRoleAlgorithma.ToggleButton == null)
         {
-            BetterRoleAlgorithma = ClientOptionItem.Create("<color=#4f92ff>Better Role Algorithma</color>", Main.BetterRoleAlgorithma, __instance, toggleCheck: () => !toggleCheckInGame("<color=#4f92ff>Better Role Algorithma</color>"));
+            BetterRoleAlgorithma = ClientOptionItem.Create("<color=#4f92ff>Better Role Algorithma</color>", Main.BetterRoleAlgorithma, __instance, toggleCheck: () => !toggleCheckInGamePlay("<color=#4f92ff>Better Role Algorithma</color>"));
         }
 
         if (LobbyPlayerInfo == null || LobbyPlayerInfo.ToggleButton == null)
