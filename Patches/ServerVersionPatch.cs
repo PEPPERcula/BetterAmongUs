@@ -21,7 +21,7 @@ class ServerUpdatePatch
         if (GameStates.IsOnlineGame)
         {
             VanillaVersionServer = __result;
-            if (Main.ModdedProtocol.Value)
+            if (Main.ModdedProtocol.Value || !GameStates.IsVanillaServer)
             {
                 __result += 25;
             }

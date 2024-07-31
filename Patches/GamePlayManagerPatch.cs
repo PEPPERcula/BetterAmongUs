@@ -33,7 +33,7 @@ class GamePlayManager
                     RPC.SyncAllNames(force: true);
                 }
 
-                if (Main.ModdedProtocol.Value)
+                if (GameStates.IsModdedProtocol)
                 {
                     Utils.AddChatPrivate(ModdedProtocolWarning, overrideName: " ");
                 }
