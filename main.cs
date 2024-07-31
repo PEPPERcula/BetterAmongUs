@@ -2,6 +2,7 @@
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
+using BetterAmongUs.Patches;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using Innersloth.IO;
@@ -21,7 +22,7 @@ public enum ReleaseTypes : int
 public class Main : BasePlugin
 {
     public const ReleaseTypes ReleaseBuildType = ReleaseTypes.Canary;
-    public const string CanaryNum = "4";
+    public const string CanaryNum = "5";
     public const string HotfixNum = "0";
     public const bool IsHotFix = false;
     public const string PluginGuid = "com.d1gq.betteramongus";
@@ -124,6 +125,7 @@ public class Main : BasePlugin
 
     public static ConfigEntry<bool> AntiCheat { get; private set; }
     public static ConfigEntry<bool> BetterHost { get; private set; }
+    public static ConfigEntry<bool> ModdedProtocol { get; private set; }
     public static ConfigEntry<bool> BetterRoleAlgorithma { get; private set; }
     public static ConfigEntry<bool> LobbyPlayerInfo { get; private set; }
     public static ConfigEntry<bool> DisableLobbyTheme { get; private set; }
@@ -134,6 +136,7 @@ public class Main : BasePlugin
     {
         AntiCheat = Config.Bind("Better Options", "AntiCheat", true);
         BetterHost = Config.Bind("Better Options", "BetterHost", false);
+        ModdedProtocol = Config.Bind("Better Options", "ModdedProtocol", false);
         BetterRoleAlgorithma = Config.Bind("Better Options", "BetterRoleAlgorithma", true);
         LobbyPlayerInfo = Config.Bind("Better Options", "LobbyPlayerInfo", true);
         DisableLobbyTheme = Config.Bind("Better Options", "DisableLobbyTheme", true);

@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using HarmonyLib;
 using Hazel;
 using InnerNet;
 
@@ -24,6 +25,40 @@ class AntiCheat
             }, time, "PauseAntiCheat");
         }
     }
+
+    [HarmonyPatch(typeof(PlatformSpecificData))]
+    class PlatformSpecificDataPatch
+    {
+        [HarmonyPatch(nameof(PlatformSpecificData.Deserialize))]
+        [HarmonyPostfix]
+        public static void Deserialize_Postfix(PlatformSpecificData __instance)
+        {
+            _ = new LateTask(() =>
+                {
+                var player = Main.AllPlayerControls.FirstOrDefault(pc => pc.GetClient().PlatformData == __instance);
+
+                if (player != null)
+                {
+                    if (__instance.Platform is Platforms.StandaloneWin10 or Platforms.Xbox)
+                    {
+                        if (__instance.XboxPlatformId == 0)
+                        {
+                            BetterNotificationManager.NotifyCheat(player, $"Platform Spoofer", newText: "Has been detected with a cheat");
+                        }
+                    }
+
+                    if (__instance.Platform is Platforms.Playstation)
+                    {
+                        if (__instance.PsnPlatformId == 0)
+                        {
+                            BetterNotificationManager.NotifyCheat(player, $"Platform Spoofer", newText: "Has been detected with a cheat");
+                        }
+                    }
+                }
+            }, 1.5f, shoudLog: false);
+        }
+    }
+
 
     // Handle RPC before anti cheat detection
     public static void HandleRPCBeforeCheck(PlayerControl player, byte callId, MessageReader Oldreader)
