@@ -37,14 +37,16 @@ class BetterHostManager
 
         LastPlayeridealSpeed[player] = idealSpeed;
 
+        var lastPos = player.GetCustomPosition();
+
         // Get delayed position
         _ = new LateTask(() =>
         {
             if (player != null)
             {
-                LastPlayerPosDelay[player] = player.GetCustomPosition();
+                LastPlayerPosDelay[player] = lastPos;
             }
-        }, 1.25f, shoudLog: false);
+        }, 1.8f, shoudLog: false);
 
         // Prevent player from moving in certain States
         if (player.CanMove)

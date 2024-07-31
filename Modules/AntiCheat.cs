@@ -117,13 +117,30 @@ class AntiCheat
         MessageReader reader = Oldreader;
         try
         {
-            if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || reader == null || !IsEnabled || !Main.AntiCheat.Value) return;
+            if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.GetIsBetterHost() || reader == null || !IsEnabled || !Main.AntiCheat.Value) return;
 
             RoleTypes? Role = player?.Data?.RoleType;
             Role ??= RoleTypes.Crewmate;
             bool IsImpostor = player.IsImpostorTeam();
             bool IsCrewmate = !player.IsImpostorTeam();
             string hashPuid = Utils.GetHashPuid(player);
+
+            /*
+            if (callId is (byte)RpcCalls.SendChat)
+            {
+                if (player.IsAlive() && GameStates.IsInGamePlay && !GameStates.IsMeeting && !GameStates.IsExilling)
+                    BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
+
+                var text = reader.ReadString();
+
+                if (text.Contains('<') || text.Contains('>') || text.Length > 120)
+                {
+                    BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
+                }
+
+                return;
+            }
+            */
 
             if (callId is (byte)RpcCalls.EnterVent or (byte)RpcCalls.ExitVent)
             {
@@ -156,16 +173,6 @@ class AntiCheat
 
                 return;
             }
-
-            /*
-            if (callId is (byte)RpcCalls.SendChat or (byte)RpcCalls.SendQuickChat)
-            {
-                if (player.IsAlive() && GameStates.IsInGamePlay && !GameStates.IsMeeting && !GameStates.IsExilling)
-                    BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
-
-                return;
-            }
-            */
 
             if (callId is (byte)RpcCalls.SetLevel)
             {
@@ -242,7 +249,7 @@ class AntiCheat
         MessageReader reader = Oldreader;
         try
         {
-            if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || reader == null || !IsEnabled || !Main.AntiCheat.Value) return true;
+            if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.GetIsBetterHost() || reader == null || !IsEnabled || !Main.AntiCheat.Value) return true;
 
             RoleTypes Role = player.Data.RoleType;
             bool IsImpostor = player.IsImpostorTeam();

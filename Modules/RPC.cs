@@ -77,15 +77,7 @@ internal static class RPC
         player.Exiled();
     }
 
-    public static async Task WaitForChatCooldown()
-    {
-        while (3f - HudManager.Instance.Chat.timeSinceLastMessage > 0f)
-        {
-            await Task.Delay(100);
-        }
-    }
-
-    public static async void SendHostChatToPlayer(PlayerControl player, string text, string? title = "", bool sendToBetterUser = true)
+    public static void SendHostChatToPlayer(PlayerControl player, string text, string? title = "", bool sendToBetterUser = true)
     {
         if (!GameStates.IsHost) return;
 
@@ -117,12 +109,15 @@ internal static class RPC
         messageWriter.Write(text);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
 
-        MessageWriter writer2 = AmongUsClient.Instance.StartRpcImmediately(asPlayer.NetId, (byte)RpcCalls.SetName, SendOption.None, player.GetClientId());
-        writer2.Write(asPlayer.Data.NetId);
-        writer2.Write(oldName);
-        AmongUsClient.Instance.FinishRpcImmediately(writer2);
+        _ = new LateTask(() =>
+        {
+            MessageWriter writer2 = AmongUsClient.Instance.StartRpcImmediately(asPlayer.NetId, (byte)RpcCalls.SetName, SendOption.None, player.GetClientId());
+            writer2.Write(asPlayer.Data.NetId);
+            writer2.Write(oldName);
+            AmongUsClient.Instance.FinishRpcImmediately(writer2);
 
-        SyncAllNames();
+            SyncAllNames(force: true);
+        }, 0.08f, shoudLog: false);
     }
 
     public static void HandleRPC(PlayerControl player, byte callId, MessageReader reader)
