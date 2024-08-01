@@ -138,7 +138,7 @@ internal static class RPC
             case (byte)CustomRPC.AddChat:
                 Utils.AddChatPrivate(reader.ReadString(), reader.ReadString());
                 break;
-            case (byte)CustomRPC.VersionCheck:
+            case (byte)CustomRPC.VersionCheck or (byte)CustomRPC.RequestRetryVersionCheck:
                 if (player.IsHost())
                 {
                     var BAU = "<color=#278720>♻</color><color=#0ed400><b>BetterAmongUs</b></color><color=#278720>♻</color>";
