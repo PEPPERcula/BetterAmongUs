@@ -24,8 +24,16 @@ class ChatPatch
             {
                 GameObject chatItem = __instance.scroller.Inner.transform.GetChild(i).gameObject;
 
-                chatItem.transform.Find("Background").GetComponent<SpriteRenderer>().color = new Color(0.05f, 0.05f, 0.05f, 1f);
                 chatItem.transform.Find("ChatText (TMP)").GetComponent<TextMeshPro>().color = new Color(1f, 1f, 1f, 1f);
+                chatItem.transform.Find("Background").GetComponent<SpriteRenderer>().color = new Color(0.05f, 0.05f, 0.05f, 1f);
+
+                if (chatItem.transform.Find("PoolablePlayer/xMark") != null)
+                {
+                    if (chatItem.transform.Find("PoolablePlayer/xMark").GetComponent<SpriteRenderer>().enabled == true)
+                    {
+                        chatItem.transform.Find("Background").GetComponent<SpriteRenderer>().color = new Color(0.05f, 0.05f, 0.05f, 0.5f);
+                    }
+                }
             }
 
             // Free chat color
