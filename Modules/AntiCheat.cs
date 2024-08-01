@@ -161,22 +161,13 @@ class AntiCheat
             bool IsCrewmate = !player.IsImpostorTeam();
             string hashPuid = Utils.GetHashPuid(player);
 
-            /*
-            if (callId is (byte)RpcCalls.SendChat)
+            if (callId is (byte)RpcCalls.SendChat or (byte)RpcCalls.SendQuickChat)
             {
-                var text = reader.ReadString();
-
                 if (player.IsAlive() && GameStates.IsInGamePlay && !GameStates.IsMeeting && !GameStates.IsExilling)
                     BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
 
-                if (text.Contains('<') || text.Contains('>') || text.Length > 120)
-                {
-                    BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
-                }
-
                 return;
             }
-            */
 
             if (callId is (byte)RpcCalls.EnterVent or (byte)RpcCalls.ExitVent)
             {
