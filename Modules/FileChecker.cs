@@ -20,6 +20,11 @@ class FileChecker
     {
         if (Enabled == false) return;
 
+        if (GameStates.IsDev)
+        {
+            HasTrySpoofFriendCode = false;
+        }
+
         GameObject PlayButton = GameObject.Find("Main Buttons/PlayButton");
 
         // Disable play button
