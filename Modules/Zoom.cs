@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using AmongUs.GameOptions;
+using HarmonyLib;
 using UnityEngine;
 
 namespace BetterAmongUs;
@@ -11,8 +12,7 @@ public static class Zoom
 
     public static void Postfix()
     {
-        if ((GameStates.IsShip && !GameStates.IsMeeting && GameStates.IsCanMove && PlayerControl.LocalPlayer.Data.IsDead) ||
-            (GameStates.IsLobby && GameStates.IsCanMove))
+        if (GameStates.IsCanMove && !PlayerControl.LocalPlayer.Is(RoleTypes.GuardianAngel) && (!GameStates.IsInGamePlay || !PlayerControl.LocalPlayer.IsAlive()))
         {
             if (Camera.main.orthographicSize > 3.0f)
                 resetButtons = true;

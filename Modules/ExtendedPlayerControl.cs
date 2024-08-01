@@ -151,6 +151,8 @@ static class ExtendedPlayerControl
             return "#8cffff";
         }
     }
+    // Check if player is role type
+    public static bool Is(this PlayerControl player, RoleTypes role) => player?.Data?.RoleType == role;
     // Check if player is on imposter team
     public static bool IsImpostorTeam(this PlayerControl player) => player?.Data != null && (player.Data.RoleType is RoleTypes.Impostor or RoleTypes.ImpostorGhost or RoleTypes.Shapeshifter or RoleTypes.Phantom);
     // Check if player is a imposter teammate
