@@ -16,7 +16,7 @@ class BetterHostManager
         if (!Main.BetterHost.Value) return;
 
         // Lock up player vent button if it's invalid vent
-        if (!VentStuck.Contains(player) && player.inVent && player.Data.RoleType != RoleTypes.Engineer && !player.IsImpostorTeam())
+        if (!VentStuck.Contains(player) && player.inVent && !player.Is(RoleTypes.Engineer) && !player.IsImpostorTeam())
         {
             player.MyPhysics.RpcEnterVent(player.GetPlayerVentId());
             player.MyPhysics.RpcBootFromVent(player.GetPlayerVentId());
@@ -76,7 +76,7 @@ class BetterHostManager
                     PlayerControl target = reader.ReadNetObject<PlayerControl>();
                     if (target != null)
                     {
-                        if (player.Data.RoleType == RoleTypes.GuardianAngel
+                        if (player.Is(RoleTypes.GuardianAngel)
                             && !player.IsAlive()
                             && !player.IsImpostorTeam()
                             && CheckRange(player.GetCustomPosition(), target.GetCustomPosition(), 3f))
@@ -133,7 +133,7 @@ class BetterHostManager
 
                     if (target != null)
                     {
-                        if (player.Data.RoleType == RoleTypes.Shapeshifter
+                        if (player.Is(RoleTypes.Shapeshifter)
                             && player.IsAlive()
                             && player.IsImpostorTeam()
                             && !player.inMovingPlat
@@ -157,7 +157,7 @@ class BetterHostManager
 
             case (byte)RpcCalls.CheckVanish:
                 {
-                    if (player.Data.RoleType == RoleTypes.Phantom
+                    if (player.Is(RoleTypes.Phantom)
                         && player.IsAlive()
                         && player.IsImpostorTeam()
                         && !player.IsInVent()
@@ -183,7 +183,7 @@ class BetterHostManager
                 {
                     bool flag = reader.ReadBoolean();
 
-                    if (player.Data.RoleType == RoleTypes.Phantom
+                    if (player.Is(RoleTypes.Phantom)
                         && player.IsAlive() && player.IsImpostorTeam()
                         && !player.inMovingPlat
                         && !player.onLadder
