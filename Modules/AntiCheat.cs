@@ -29,6 +29,31 @@ class AntiCheat
                 ExtendedPlayerControl.TimeSinceKill.Clear();
             }
         }
+
+        if (GameStates.IsHost)
+        {
+            foreach (var player in Main.AllPlayerControls)
+            {
+                var hashPuid = Utils.GetHashPuid(player);
+
+                if (SickoData.ContainsKey(hashPuid))
+                {
+                    player.RpcSetName($"<color=#ffea00>{player.Data.PlayerName}</color> Has been banned by <color=#4f92ff>Anti-Cheat</color>, Reason: Known Sicko Menu User<size=0%>");
+                    AmongUsClient.Instance.KickPlayer(player.GetClientId(), true);
+                }
+                else if (AUMData.ContainsKey(hashPuid))
+                {
+                    player.RpcSetName($"<color=#ffea00>{player.Data.PlayerName}</color> Has been banned by <color=#4f92ff>Anti-Cheat</color>, Reason: Known AUM User<size=0%>");
+                    AmongUsClient.Instance.KickPlayer(player.GetClientId(), true);
+                }
+                else if (PlayerData.ContainsKey(hashPuid))
+                {
+                    player.RpcSetName($"<color=#ffea00>{player.Data.PlayerName}</color> Has been banned by <color=#4f92ff>Anti-Cheat</color>, Reason: Known Cheater<size=0%>");
+                    AmongUsClient.Instance.KickPlayer(player.GetClientId(), true);
+                }
+            }
+
+        }
     }
 
     public static void PauseAntiCheat()
