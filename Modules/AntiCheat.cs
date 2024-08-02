@@ -52,7 +52,6 @@ class AntiCheat
                     AmongUsClient.Instance.KickPlayer(player.GetClientId(), true);
                 }
             }
-
         }
     }
 
@@ -120,11 +119,9 @@ class AntiCheat
                 if (reader.BytesRemaining == 0 && !flag)
                 {
                     AmongUsClient.Instance.ReportPlayer(player.GetClientId(), ReportReasons.Cheating_Hacking);
-                    BetterNotificationManager.NotifyCheat(player, $"Sicko Menu", newText: "Has been detected with a cheat client");
-                    PlayerData[Utils.GetHashPuid(player)] = player.FriendCode;
                     SickoData[Utils.GetHashPuid(player)] = player.FriendCode;
-                    BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "cheatData", "Sicko Menu RPC");
                     BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "sickoData", "Sicko Menu RPC");
+                    BetterNotificationManager.NotifyCheat(player, $"Sicko Menu", newText: "Has been detected with a cheat client");
                 }
             }
 
@@ -144,11 +141,9 @@ class AntiCheat
                     if (!flag)
                     {
                         AmongUsClient.Instance.ReportPlayer(player.GetClientId(), ReportReasons.Cheating_Hacking);
-                        BetterNotificationManager.NotifyCheat(player, $"AUM", newText: "Has been detected with a cheat client");
-                        PlayerData[Utils.GetHashPuid(player)] = player.FriendCode;
                         AUMData[Utils.GetHashPuid(player)] = player.FriendCode;
-                        BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "cheatData", "AUM RPC");
                         BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "aumData", "AUM RPC");
+                        BetterNotificationManager.NotifyCheat(player, $"AUM", newText: "Has been detected with a cheat client");
                     }
                 }
             }
@@ -177,11 +172,9 @@ class AntiCheat
                 if (!flag && !flag2)
                 {
                     AmongUsClient.Instance.ReportPlayer(player.GetClientId(), ReportReasons.Cheating_Hacking);
-                    BetterNotificationManager.NotifyCheat(AUMPlayer, $"AUM", newText: "Has been detected with a cheat client");
-                    PlayerData[Utils.GetHashPuid(AUMPlayer)] = AUMPlayer.FriendCode;
                     AUMData[Utils.GetHashPuid(AUMPlayer)] = AUMPlayer.FriendCode;
-                    BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "cheatData", "AUM Chat RPC");
                     BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "aumData", "AUM Chat RPC");
+                    BetterNotificationManager.NotifyCheat(AUMPlayer, $"AUM", newText: "Has been detected with a cheat client");
                 }
             }
             catch { }
