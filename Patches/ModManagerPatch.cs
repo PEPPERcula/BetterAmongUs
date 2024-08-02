@@ -15,6 +15,7 @@ public class ModManagerPatch
         if (__instance.ModStamp.gameObject.active == true)
             __instance.ModStamp.GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("BetterAmongUs.Resources.Images.BetterAmongUs-Mod.png", 250f);
 
+        AntiCheat.Update();
         FileChecker.UpdateUnauthorizedFiles();
         LateTask.Update(Time.deltaTime);
         BetterNotificationManager.Update();

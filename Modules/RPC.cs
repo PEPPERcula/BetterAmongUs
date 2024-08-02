@@ -94,8 +94,7 @@ internal static class RPC
             return;
         }
 
-        return;
-
+        /*
         PlayerControl asPlayer = Main.AllPlayerControls.Where(pc => pc.IsAlive()).OrderBy(pc => pc == PlayerControl.LocalPlayer ? 0 : 1).First();
 
         var oldName = asPlayer.CurrentOutfit.PlayerName;
@@ -120,6 +119,7 @@ internal static class RPC
 
             SyncAllNames(force: true);
         }, 0.08f, shoudLog: false);
+        */
     }
 
     public static void HandleRPC(PlayerControl player, byte callId, MessageReader reader)
@@ -131,8 +131,15 @@ internal static class RPC
             case (byte)CustomRPC.BetterCheck:
                 if (reader.ReadByte() == player.Data.NetId)
                 {
+                    var IsBetterHost = reader.ReadBoolean();
+
+                    if (!player.IsHost() && IsBetterHost)
+                    {
+                        BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)} called as BetterHost");
+                    }
+
                     player.SetIsBetterUser(true);
-                    player.SetIsBetterHost(reader.ReadBoolean());
+                    player.SetIsBetterHost(IsBetterHost);
                 }
                 break;
             case (byte)CustomRPC.AddChat:

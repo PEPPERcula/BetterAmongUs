@@ -2,6 +2,7 @@
 using HarmonyLib;
 using Hazel;
 using InnerNet;
+using UnityEngine;
 
 namespace BetterAmongUs;
 
@@ -11,6 +12,24 @@ class AntiCheat
     public static Dictionary<string, string> SickoData = []; // HashPuid, FriendCode
     public static Dictionary<string, string> AUMData = []; // HashPuid, FriendCode
     private static bool IsEnabled = true;
+
+    public static void Update()
+    {
+        if (GameStates.IsInGame)
+        {
+            foreach (var kvp in ExtendedPlayerControl.TimeSinceKill)
+            {
+                ExtendedPlayerControl.TimeSinceKill[kvp.Key] += Time.deltaTime;
+            }
+        }
+        else
+        {
+            if (ExtendedPlayerControl.TimeSinceKill.Any())
+            {
+                ExtendedPlayerControl.TimeSinceKill.Clear();
+            }
+        }
+    }
 
     public static void PauseAntiCheat()
     {
@@ -193,8 +212,11 @@ class AntiCheat
 
                     if (target != null)
                     {
-                        if (IsCrewmate || !player.IsAlive() || player.IsInVanish() || !target.IsAlive() || target.IsImpostorTeam())
+                        if (IsCrewmate || !player.IsAlive() || player.IsInVanish() || !target.IsAlive() || target.IsImpostorTeam()
+                            || ExtendedPlayerControl.TimeSinceKill.TryGetValue(player, out var value) && value < (float)GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown)
+                        {
                             BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
+                        }
                     }
                 }
 

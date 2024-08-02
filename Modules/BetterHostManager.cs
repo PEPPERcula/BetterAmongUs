@@ -107,6 +107,7 @@ class BetterHostManager
                             && !player.shapeshifting
                             && !player.onLadder
                             && !player.MyPhysics.Animations.IsPlayingAnyLadderAnimation()
+                            && ExtendedPlayerControl.TimeSinceKill.TryGetValue(player, out var value) && value >= (float)GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown
                             && CheckRange(player.GetCustomPosition(), target.GetCustomPosition(), 3f))
                         {
                             if (target.IsAlive()
