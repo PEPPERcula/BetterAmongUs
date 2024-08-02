@@ -247,6 +247,9 @@ class BetterHostManager
             {
                 NewName = player.Data.PlayerName;
 
+                if (player.IsHost())
+                    NewName = player.GetPlayerNameAndColor();
+
                 if (player.IsDev())
                     sbTopTag.Append("<color=#6e6e6e>(<color=#0088ff>Dev</color>)</color>+++");
 
