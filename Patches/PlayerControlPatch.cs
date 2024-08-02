@@ -147,8 +147,7 @@ class PlayerControlPatch
         {
             if (Main.LobbyPlayerInfo.Value == true)
             {
-                string hexColor = Utils.Color32ToHex(Palette.PlayerColors[Host.CurrentOutfit.ColorId]);
-                NewName = $"<color={hexColor}>{player.Data.PlayerName}</color>";
+                NewName = player.GetPlayerNameAndColor();
             }
         }
         if (player.IsImpostorTeammate() && player != PlayerControl.LocalPlayer)
