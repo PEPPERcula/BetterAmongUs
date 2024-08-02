@@ -118,7 +118,7 @@ internal static class RPC
             AmongUsClient.Instance.FinishRpcImmediately(writer2);
 
             SyncAllNames(force: true);
-        }, 0.08f, shoudLog: false);
+        }, 0.08f, shoudLog: false); 
         */
     }
 
@@ -136,6 +136,7 @@ internal static class RPC
                     if (!player.IsHost() && IsBetterHost)
                     {
                         BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)} called as BetterHost");
+                        break;
                     }
 
                     player.SetIsBetterUser(true);
