@@ -43,12 +43,14 @@ internal class RPCHandlerPatch
             return false;
         }
 
+        AntiCheat.CheckRPC(__instance, callId, reader);
+        RPC.HandleRPC(__instance, callId, reader);
+
         return true;
     }
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
-        AntiCheat.CheckRPC(__instance, callId, reader);
-        RPC.HandleRPC(__instance, callId, reader);
+        RPC.HandleCustomRPC(__instance, callId, reader);
     }
 }
 
@@ -122,9 +124,13 @@ internal static class RPC
         */
     }
 
-    public static void HandleRPC(PlayerControl player, byte callId, MessageReader reader)
+    public static void HandleCustomRPC(PlayerControl player, byte callId, MessageReader oldReader)
     {
         if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.Data == null) return;
+
+        if (!Enum.IsDefined(typeof(CustomRPC), (int)unchecked(callId))) return;
+
+        MessageReader reader = MessageReader.Get(oldReader);
 
         switch (callId)
         {
@@ -153,15 +159,26 @@ internal static class RPC
                     Utils.DisconnectSelf($"{BAU} does not support <color=#ff9cdc><b>TOHE</b></color>");
                 }
                 break;
+        }
+    }
+
+    public static void HandleRPC(PlayerControl player, byte callId, MessageReader oldReader)
+    {
+        if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.Data == null) return;
+
+        MessageReader reader = MessageReader.Get(oldReader);
+
+        switch (callId)
+        {
             case (byte)RpcCalls.SendChat:
+                var text = reader.ReadString();
+
                 if (player.IsHost() && player != PlayerControl.LocalPlayer)
                 {
-                    if (reader.BytesRemaining > 0)
+                    if (text.ToLower() == "/allow")
                     {
-                        if (reader.ReadString().ToLower() == "/allow")
-                        {
-                            CommandsPatch.Permission = player;
-                        }
+                        CommandsPatch.Permission = player;
+                        BetterNotificationManager.Notify($"{player.GetPlayerNameAndColor()} has granted permission!");
                     }
                 }
                 break;

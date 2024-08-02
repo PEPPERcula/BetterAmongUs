@@ -3,6 +3,7 @@ using Hazel;
 using InnerNet;
 using TMPro;
 using UnityEngine;
+using static Il2CppSystem.Net.Http.Headers.Parser;
 
 namespace BetterAmongUs;
 
@@ -29,6 +30,8 @@ static class ExtendedPlayerControl
         var client = player.GetClient();
         return client == null ? -1 : client.Id;
     }
+    // Get player name with outfit color
+    public static string GetPlayerNameAndColor(this PlayerControl player) => $"<color={Utils.Color32ToHex(Palette.PlayerColors[player.CurrentOutfit.ColorId])}>{player.Data.PlayerName}</color>";
     // Set players over head text
     public static void SetPlayerTextInfo(this PlayerControl player, string text, bool isBottom = false, bool isInfo = false)
     {
