@@ -125,7 +125,7 @@ class CommandsPatch
                 {
                     Directory.CreateDirectory(logFolderPath);
                 }
-                string logFileName = "log-" + DateTime.Now.ToString("yyyy.MM.dd-HH.mm.ss") + ".log";
+                string logFileName = "log-" + Main.GetVersionText().Replace(' ', '-').ToLower() + "-" + DateTime.Now.ToString("yyyy.MM.dd-HH.mm.ss") + ".log";
                 string newLogFilePath = Path.Combine(logFolderPath, logFileName);
                 File.WriteAllText(newLogFilePath, newLog);
                 System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
@@ -140,6 +140,8 @@ class CommandsPatch
                     UseShellExecute = true,
                     Verb = "open"
                 });
+
+                Utils.AddChatPrivate($"Dump logs at <color=#b1b1b1>'{newLogFilePath}'</color>");
                 break;
             case "player":
                 if (HandlePlayerArgument(command, subArgs) == true)
@@ -150,10 +152,10 @@ class CommandsPatch
                     var format2 = "├ •";
                     var format3 = "└ •";
                     sb.Append($"<size=150%><color={hexColor}><b>{player?.Data?.PlayerName}</color> Info:</b></size>\n");
-                    sb.Append($"{format1} <color=#525252>ID: {player?.Data?.PlayerId}</color>\n");
-                    sb.Append($"{format2} <color=#525252>HashPUID: {Utils.GetHashPuid($"{player?.Data?.Puid}")}</color>\n");
-                    sb.Append($"{format2} <color=#525252>Platform: {Utils.GetPlatformName(player)}</color>\n");
-                    sb.Append($"{format3} <color=#525252>FriendCode: {player?.Data?.FriendCode}</color>");
+                    sb.Append($"{format1} <color=#c1c1c1>ID: {player?.Data?.PlayerId}</color>\n");
+                    sb.Append($"{format2} <color=#c1c1c1>HashPUID: {Utils.GetHashPuid($"{player?.Data?.Puid}")}</color>\n");
+                    sb.Append($"{format2} <color=#c1c1c1>Platform: {Utils.GetPlatformName(player)}</color>\n");
+                    sb.Append($"{format3} <color=#c1c1c1>FriendCode: {player?.Data?.FriendCode}</color>");
                     Utils.AddChatPrivate(sb.ToString());
                 }
                 break;
@@ -162,10 +164,10 @@ class CommandsPatch
                 {
                     var hexColor = Utils.Color32ToHex(Palette.PlayerColors[player.CurrentOutfit.ColorId]);
                     sb.Append($"<color={hexColor}><b>{player?.Data?.PlayerName}</color> Info:</b>\n");
-                    sb.Append($"<color=#525252>{player?.Data?.PlayerId}</color> - ");
-                    sb.Append($"<color=#525252>{Utils.GetHashPuid($"{player?.Data?.Puid}")}</color> - ");
-                    sb.Append($"<color=#525252>{Utils.GetPlatformName(player)}</color>  - ");
-                    sb.Append($"<color=#525252>{player?.Data?.FriendCode}</color>");
+                    sb.Append($"<color=#c1c1c1>{player?.Data?.PlayerId}</color> - ");
+                    sb.Append($"<color=#c1c1c1>{Utils.GetHashPuid($"{player?.Data?.Puid}")}</color> - ");
+                    sb.Append($"<color=#c1c1c1>{Utils.GetPlatformName(player)}</color> - ");
+                    sb.Append($"<color=#c1c1c1>{player?.Data?.FriendCode}</color>");
                     sb.Append("\n\n");
                 }
                 Utils.AddChatPrivate(sb.ToString());
@@ -176,12 +178,11 @@ class CommandsPatch
                     if (UseCommandInGame() == true)
                     {
                         var player = cmdTarget;
-                        var hexColor = Utils.Color32ToHex(Palette.PlayerColors[player.CurrentOutfit.ColorId]);
 
                         MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)RpcCalls.SendChat, SendOption.None, player.GetClientId());
                         messageWriter.Write(string.Join(" ", command[2..].ToArray()));
                         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
-                        Utils.AddChatPrivate($"{string.Join(" ", command[2..].ToArray())}", overrideName: $"<color=#696969>Sent Private Message to</color> <color={hexColor}><b>{player.Data.PlayerName}</b></color>");
+                        Utils.AddChatPrivate($"{string.Join(" ", command[2..].ToArray())}", overrideName: $"<color=#696969>Sent Private Message to</color> <b>{player.GetPlayerNameAndColor()}</b>");
                     }
                 }
                 break;
@@ -373,6 +374,7 @@ class CommandsPatch
                     if (HandleIsHost(command) == true)
                     {
                         RPC.SyncAllNames(force: true);
+                        Utils.AddChatPrivate("<color=#0dff00>All player names have been updated and synced!</color>");
                     }
                     break;
                 default:
