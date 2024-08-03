@@ -333,7 +333,7 @@ class AntiCheat
 
             if (callId is (byte)RpcCalls.StartMeeting or (byte)RpcCalls.ReportDeadBody)
             {
-                if (GameStates.IsMeeting || GameStates.IsExilling)
+                if (GameStates.IsMeeting)
                 {
                     BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
                     return false;
