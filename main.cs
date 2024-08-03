@@ -23,8 +23,8 @@ public class Main : BasePlugin
 {
     public const ReleaseTypes ReleaseBuildType = ReleaseTypes.Canary;
     public const string CanaryNum = "5";
-    public const string HotfixNum = "0";
-    public const bool IsHotFix = false;
+    public const string HotfixNum = "1";
+    public const bool IsHotFix = true;
     public const string PluginGuid = "com.d1gq.betteramongus";
     public const string PluginVersion = "1.0.0";
     public const string ReleaseDate = "08.01.2024"; // mm/dd/yyyy
