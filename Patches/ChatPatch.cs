@@ -1,6 +1,9 @@
 ﻿using AmongUs.Data;
+using Assets.CoreScripts;
 using HarmonyLib;
+using Hazel;
 using System.Text;
+using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 
@@ -13,6 +16,39 @@ class ChatPatch
     public static List<string> ChatHistory = [];
     public static int CurrentHistorySelection = -1;
 
+    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSendChat))]
+    class RpcSendChatPatch
+    {
+        public static bool Prefix(PlayerControl __instance, string chatText, ref bool __result)
+        {
+            if (string.IsNullOrWhiteSpace(chatText))
+            {
+                __result = false;
+                return false;
+            }
+            if (!GameStates.IsBetterHostLobby)
+            {
+                __result = false;
+                return true;
+            }
+            chatText = Regex.Replace(chatText, "<.*?>", string.Empty);
+            if (AmongUsClient.Instance.AmClient && DestroyableSingleton<HudManager>.Instance)
+            {
+                DestroyableSingleton<HudManager>.Instance.Chat.AddChat(__instance, chatText, true);
+            }
+            if (chatText.IndexOf("who", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                DestroyableSingleton<UnityTelemetry>.Instance.SendWho();
+            }
+            chatText = "\n" + chatText;
+            MessageWriter messageWriter = AmongUsClient.Instance.StartRpc(__instance.NetId, 13, SendOption.Reliable);
+            messageWriter.Write(chatText);
+            messageWriter.EndMessage();
+            __result = true;
+            return false;
+        }
+    }
+
     [HarmonyPatch(typeof(ChatController))]
     class ChatControllerPatch
     {
@@ -24,8 +60,16 @@ class ChatPatch
             {
                 GameObject chatItem = __instance.scroller.Inner.transform.GetChild(i).gameObject;
 
-                chatItem.transform.Find("Background").GetComponent<SpriteRenderer>().color = new Color(0.05f, 0.05f, 0.05f, 1f);
                 chatItem.transform.Find("ChatText (TMP)").GetComponent<TextMeshPro>().color = new Color(1f, 1f, 1f, 1f);
+                chatItem.transform.Find("Background").GetComponent<SpriteRenderer>().color = new Color(0.05f, 0.05f, 0.05f, 1f);
+
+                if (chatItem.transform.Find("PoolablePlayer/xMark") != null)
+                {
+                    if (chatItem.transform.Find("PoolablePlayer/xMark").GetComponent<SpriteRenderer>().enabled == true)
+                    {
+                        chatItem.transform.Find("Background").GetComponent<SpriteRenderer>().color = new Color(0.05f, 0.05f, 0.05f, 0.5f);
+                    }
+                }
             }
 
             // Free chat color
@@ -36,6 +80,9 @@ class ChatPatch
             // Quick chat color
             __instance.quickChatField.background.color = new Color32(40, 40, 40, byte.MaxValue);
             __instance.quickChatField.text.color = Color.white;
+
+            __instance.quickChatButton.transform.Find("QuickChatIcon").GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.5f, 0.5f, 1f);
+            __instance.openKeyboardButton.transform.Find("OpenKeyboardIcon").GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.5f, 0.5f, 1f);
 
             if ((Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetKeyDown(KeyCode.X))
             {

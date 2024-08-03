@@ -1,6 +1,8 @@
 ﻿using AmongUs.GameOptions;
+using HarmonyLib;
 using Hazel;
 using InnerNet;
+using UnityEngine;
 
 namespace BetterAmongUs;
 
@@ -10,6 +12,50 @@ class AntiCheat
     public static Dictionary<string, string> SickoData = []; // HashPuid, FriendCode
     public static Dictionary<string, string> AUMData = []; // HashPuid, FriendCode
     private static bool IsEnabled = true;
+
+    public static void Update()
+    {
+        if (GameStates.IsInGame)
+        {
+            foreach (var kvp in ExtendedPlayerControl.TimeSinceKill)
+            {
+                ExtendedPlayerControl.TimeSinceKill[kvp.Key] += Time.deltaTime;
+            }
+        }
+        else
+        {
+            if (ExtendedPlayerControl.TimeSinceKill.Any())
+            {
+                ExtendedPlayerControl.TimeSinceKill.Clear();
+            }
+        }
+
+        if (GameStates.IsHost && GameStates.IsInGame)
+        {
+            RPC.SyncAllNames(isBetterHost: false);
+
+            foreach (var player in Main.AllPlayerControls)
+            {
+                var hashPuid = Utils.GetHashPuid(player);
+
+                if (SickoData.ContainsKey(hashPuid))
+                {
+                    player.RpcSetName($"<color=#ffea00>{player.Data.PlayerName}</color> Has been banned by <color=#4f92ff>Anti-Cheat</color>, Reason: Known Sicko Menu User<size=0%>");
+                    AmongUsClient.Instance.KickPlayer(player.GetClientId(), true);
+                }
+                else if (AUMData.ContainsKey(hashPuid))
+                {
+                    player.RpcSetName($"<color=#ffea00>{player.Data.PlayerName}</color> Has been banned by <color=#4f92ff>Anti-Cheat</color>, Reason: Known AUM User<size=0%>");
+                    AmongUsClient.Instance.KickPlayer(player.GetClientId(), true);
+                }
+                else if (PlayerData.ContainsKey(hashPuid))
+                {
+                    player.RpcSetName($"<color=#ffea00>{player.Data.PlayerName}</color> Has been banned by <color=#4f92ff>Anti-Cheat</color>, Reason: Known Cheater<size=0%>");
+                    AmongUsClient.Instance.KickPlayer(player.GetClientId(), true);
+                }
+            }
+        }
+    }
 
     public static void PauseAntiCheat()
     {
@@ -25,10 +71,44 @@ class AntiCheat
         }
     }
 
+    [HarmonyPatch(typeof(PlatformSpecificData))]
+    class PlatformSpecificDataPatch
+    {
+        [HarmonyPatch(nameof(PlatformSpecificData.Deserialize))]
+        [HarmonyPostfix]
+        public static void Deserialize_Postfix(PlatformSpecificData __instance)
+        {
+            _ = new LateTask(() =>
+                {
+                var player = Main.AllPlayerControls.FirstOrDefault(pc => pc.GetClient().PlatformData == __instance);
+
+                if (player != null)
+                {
+                    if (__instance.Platform is Platforms.StandaloneWin10 or Platforms.Xbox)
+                    {
+                        if (__instance.XboxPlatformId == 0)
+                        {
+                            BetterNotificationManager.NotifyCheat(player, $"Platform Spoofer", newText: "Has been detected with a cheat");
+                        }
+                    }
+
+                    if (__instance.Platform is Platforms.Playstation)
+                    {
+                        if (__instance.PsnPlatformId == 0)
+                        {
+                            BetterNotificationManager.NotifyCheat(player, $"Platform Spoofer", newText: "Has been detected with a cheat");
+                        }
+                    }
+                }
+            }, 1.5f, shoudLog: false);
+        }
+    }
+
+
     // Handle RPC before anti cheat detection
     public static void HandleRPCBeforeCheck(PlayerControl player, byte callId, MessageReader Oldreader)
     {
-        MessageReader reader = Oldreader;
+        MessageReader reader = MessageReader.Get(Oldreader);
 
         if (player == PlayerControl.LocalPlayer || PlayerControl.LocalPlayer == null || player == null || !IsEnabled) return;
 
@@ -41,11 +121,9 @@ class AntiCheat
                 if (reader.BytesRemaining == 0 && !flag)
                 {
                     AmongUsClient.Instance.ReportPlayer(player.GetClientId(), ReportReasons.Cheating_Hacking);
-                    BetterNotificationManager.NotifyCheat(player, $"Sicko Menu", newText: "Has been detected with a cheat client");
-                    PlayerData[Utils.GetHashPuid(player)] = player.FriendCode;
                     SickoData[Utils.GetHashPuid(player)] = player.FriendCode;
-                    BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "cheatData", "Sicko Menu RPC");
                     BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "sickoData", "Sicko Menu RPC");
+                    BetterNotificationManager.NotifyCheat(player, $"Sicko Menu", newText: "Has been detected with a cheat client");
                 }
             }
 
@@ -65,11 +143,9 @@ class AntiCheat
                     if (!flag)
                     {
                         AmongUsClient.Instance.ReportPlayer(player.GetClientId(), ReportReasons.Cheating_Hacking);
-                        BetterNotificationManager.NotifyCheat(player, $"AUM", newText: "Has been detected with a cheat client");
-                        PlayerData[Utils.GetHashPuid(player)] = player.FriendCode;
                         AUMData[Utils.GetHashPuid(player)] = player.FriendCode;
-                        BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "cheatData", "AUM RPC");
                         BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "aumData", "AUM RPC");
+                        BetterNotificationManager.NotifyCheat(player, $"AUM", newText: "Has been detected with a cheat client");
                     }
                 }
             }
@@ -98,11 +174,9 @@ class AntiCheat
                 if (!flag && !flag2)
                 {
                     AmongUsClient.Instance.ReportPlayer(player.GetClientId(), ReportReasons.Cheating_Hacking);
-                    BetterNotificationManager.NotifyCheat(AUMPlayer, $"AUM", newText: "Has been detected with a cheat client");
-                    PlayerData[Utils.GetHashPuid(AUMPlayer)] = AUMPlayer.FriendCode;
                     AUMData[Utils.GetHashPuid(AUMPlayer)] = AUMPlayer.FriendCode;
-                    BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "cheatData", "AUM Chat RPC");
                     BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "aumData", "AUM Chat RPC");
+                    BetterNotificationManager.NotifyCheat(AUMPlayer, $"AUM", newText: "Has been detected with a cheat client");
                 }
             }
             catch { }
@@ -114,16 +188,25 @@ class AntiCheat
     // Check and notify for invalid rpcs
     public static void CheckRPC(PlayerControl player, byte callId, MessageReader Oldreader)
     {
-        MessageReader reader = Oldreader;
         try
         {
-            if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || reader == null || !IsEnabled || !Main.AntiCheat.Value) return;
+            MessageReader reader = MessageReader.Get(Oldreader);
+
+            if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.GetIsBetterHost() || reader == null || !IsEnabled || !Main.AntiCheat.Value) return;
 
             RoleTypes? Role = player?.Data?.RoleType;
             Role ??= RoleTypes.Crewmate;
             bool IsImpostor = player.IsImpostorTeam();
             bool IsCrewmate = !player.IsImpostorTeam();
             string hashPuid = Utils.GetHashPuid(player);
+
+            if (callId is (byte)RpcCalls.SendChat or (byte)RpcCalls.SendQuickChat)
+            {
+                if (player.IsAlive() && GameStates.IsInGamePlay && !GameStates.IsMeeting && !GameStates.IsExilling)
+                    BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
+
+                return;
+            }
 
             if (callId is (byte)RpcCalls.EnterVent or (byte)RpcCalls.ExitVent)
             {
@@ -149,23 +232,16 @@ class AntiCheat
 
                     if (target != null)
                     {
-                        if (IsCrewmate || !player.IsAlive() || player.IsInVanish() || !target.IsAlive() || target.IsImpostorTeam())
+                        if (IsCrewmate || !player.IsAlive() || player.IsInVanish() || !target.IsAlive() || target.IsImpostorTeam()
+                            || ExtendedPlayerControl.TimeSinceKill.TryGetValue(player, out var value) && value < (float)GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown)
+                        {
                             BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
+                        }
                     }
                 }
 
                 return;
             }
-
-            /*
-            if (callId is (byte)RpcCalls.SendChat or (byte)RpcCalls.SendQuickChat)
-            {
-                if (player.IsAlive() && GameStates.IsInGamePlay && !GameStates.IsMeeting && !GameStates.IsExilling)
-                    BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
-
-                return;
-            }
-            */
 
             if (callId is (byte)RpcCalls.SetLevel)
             {
@@ -239,10 +315,11 @@ class AntiCheat
     // Check notify and cancel out request for invalid rpcs
     public static bool CheckCancelRPC(PlayerControl player, byte callId, MessageReader Oldreader)
     {
-        MessageReader reader = Oldreader;
         try
         {
-            if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || reader == null || !IsEnabled || !Main.AntiCheat.Value) return true;
+            MessageReader reader = MessageReader.Get(Oldreader);
+
+            if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.GetIsBetterHost() || reader == null || !IsEnabled || !Main.AntiCheat.Value) return true;
 
             RoleTypes Role = player.Data.RoleType;
             bool IsImpostor = player.IsImpostorTeam();
@@ -252,6 +329,15 @@ class AntiCheat
             {
                 BetterNotificationManager.NotifyCheat(player, $"Untrusted RPC received: {callId}");
                 return false;
+            }
+
+            if (callId is (byte)RpcCalls.StartMeeting or (byte)RpcCalls.ReportDeadBody)
+            {
+                if (GameStates.IsMeeting || GameStates.IsExilling)
+                {
+                    BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
+                    return false;
+                }
             }
 
             if (callId is (byte)RpcCalls.Shapeshift)

@@ -14,8 +14,8 @@ class PlayerControlPatch
 {
     public static float infotime = 0f;
     [HarmonyPatch(nameof(PlayerControl.FixedUpdate))]
-    [HarmonyPostfix]
-    public static void FixedUpdate_Postfix(PlayerControl __instance)
+    [HarmonyPrefix]
+    public static void FixedUpdate_Prefix(PlayerControl __instance)
     {
         // Set up player text info
         var NameText = GameObject.Find($"{__instance.gameObject.transform.name}/Names/NameText_TMP");
@@ -59,11 +59,13 @@ class PlayerControlPatch
         if (infotime <= 0)
         {
             SetPlayerInfo(__instance);
-            infotime = 0.4f;
+            infotime = 0.6f;
         }
 
         if (GameStates.IsInGame && GameStates.IsHost)
-            RPC.SyncAllNames(isBetterHost: false);
+        {
+            BetterHostManager.Update(__instance);
+        }
     }
 
     public static void SetPlayerInfo(PlayerControl player)
@@ -144,8 +146,7 @@ class PlayerControlPatch
         {
             if (Main.LobbyPlayerInfo.Value == true)
             {
-                string hexColor = Utils.Color32ToHex(Palette.PlayerColors[Host.CurrentOutfit.ColorId]);
-                NewName = $"<color={hexColor}>{player.Data.PlayerName}</color>";
+                NewName = player.GetPlayerNameAndColor();
             }
         }
         if (player.IsImpostorTeammate() && player != PlayerControl.LocalPlayer)
@@ -185,7 +186,7 @@ class PlayerControlPatch
             }
         }
 
-        if (!GameStates.IsInGamePlay)
+        if (GameStates.IsLobby)
         {
             if (Main.LobbyPlayerInfo.Value == true)
             {
@@ -226,6 +227,7 @@ class PlayerControlPatch
         if (PlayerControl.LocalPlayer.IsImpostorTeam() && GameStates.IsInGamePlay && !GameStates.IsHideNSeek && HudManager.Instance.CrewmatesKilled.isActiveAndEnabled)
             HudManager.Instance?.NotifyOfDeath();
 
+        ExtendedPlayerControl.TimeSinceKill[__instance] = 0f;
 
         Logger.LogPrivate($"{__instance.Data.PlayerName} Has killed {target.Data.PlayerName} as {Utils.GetRoleName(__instance.Data.RoleType)}", "EventLog");
     }

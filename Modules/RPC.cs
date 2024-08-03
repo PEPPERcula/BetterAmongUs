@@ -43,12 +43,14 @@ internal class RPCHandlerPatch
             return false;
         }
 
+        AntiCheat.CheckRPC(__instance, callId, reader);
+        RPC.HandleRPC(__instance, callId, reader);
+
         return true;
     }
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
-        AntiCheat.CheckRPC(__instance, callId, reader);
-        RPC.HandleRPC(__instance, callId, reader);
+        RPC.HandleCustomRPC(__instance, callId, reader);
     }
 }
 
@@ -77,15 +79,7 @@ internal static class RPC
         player.Exiled();
     }
 
-    public static async Task WaitForChatCooldown()
-    {
-        while (3f - HudManager.Instance.Chat.timeSinceLastMessage > 0f)
-        {
-            await Task.Delay(100);
-        }
-    }
-
-    public static async void SendHostChatToPlayer(PlayerControl player, string text, string? title = "", bool sendToBetterUser = true)
+    public static void SendHostChatToPlayer(PlayerControl player, string text, string? title = "", bool sendToBetterUser = true)
     {
         if (!GameStates.IsHost) return;
 
@@ -102,10 +96,7 @@ internal static class RPC
             return;
         }
 
-        return;
-
-        await WaitForChatCooldown();
-
+        /*
         PlayerControl asPlayer = Main.AllPlayerControls.Where(pc => pc.IsAlive()).OrderBy(pc => pc == PlayerControl.LocalPlayer ? 0 : 1).First();
 
         var oldName = asPlayer.CurrentOutfit.PlayerName;
@@ -121,46 +112,73 @@ internal static class RPC
         messageWriter.Write(text);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
 
-        MessageWriter writer2 = AmongUsClient.Instance.StartRpcImmediately(asPlayer.NetId, (byte)RpcCalls.SetName, SendOption.None, player.GetClientId());
-        writer2.Write(asPlayer.Data.NetId);
-        writer2.Write(oldName);
-        AmongUsClient.Instance.FinishRpcImmediately(writer2);
+        _ = new LateTask(() =>
+        {
+            MessageWriter writer2 = AmongUsClient.Instance.StartRpcImmediately(asPlayer.NetId, (byte)RpcCalls.SetName, SendOption.None, player.GetClientId());
+            writer2.Write(asPlayer.Data.NetId);
+            writer2.Write(oldName);
+            AmongUsClient.Instance.FinishRpcImmediately(writer2);
 
-        SyncAllNames();
+            SyncAllNames(force: true);
+        }, 0.08f, shoudLog: false); 
+        */
     }
 
-    public static void HandleRPC(PlayerControl player, byte callId, MessageReader reader)
+    public static void HandleCustomRPC(PlayerControl player, byte callId, MessageReader oldReader)
     {
         if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.Data == null) return;
+
+        if (!Enum.IsDefined(typeof(CustomRPC), (int)unchecked(callId))) return;
+
+        MessageReader reader = MessageReader.Get(oldReader);
 
         switch (callId)
         {
             case (byte)CustomRPC.BetterCheck:
                 if (reader.ReadByte() == player.Data.NetId)
                 {
+                    var IsBetterHost = reader.ReadBoolean();
+
+                    if (!player.IsHost() && IsBetterHost)
+                    {
+                        BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)} called as BetterHost");
+                        break;
+                    }
+
                     player.SetIsBetterUser(true);
-                    player.SetIsBetterHost(reader.ReadBoolean());
+                    player.SetIsBetterHost(IsBetterHost);
                 }
                 break;
             case (byte)CustomRPC.AddChat:
                 Utils.AddChatPrivate(reader.ReadString(), reader.ReadString());
                 break;
-            case (byte)CustomRPC.VersionCheck:
+            case (byte)CustomRPC.VersionCheck or (byte)CustomRPC.RequestRetryVersionCheck:
                 if (player.IsHost())
                 {
                     var BAU = "<color=#278720>♻</color><color=#0ed400><b>BetterAmongUs</b></color><color=#278720>♻</color>";
                     Utils.DisconnectSelf($"{BAU} does not support <color=#ff9cdc><b>TOHE</b></color>");
                 }
                 break;
+        }
+    }
+
+    public static void HandleRPC(PlayerControl player, byte callId, MessageReader oldReader)
+    {
+        if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.Data == null) return;
+
+        MessageReader reader = MessageReader.Get(oldReader);
+
+        switch (callId)
+        {
             case (byte)RpcCalls.SendChat:
+                var text = reader.ReadString();
+
                 if (player.IsHost() && player != PlayerControl.LocalPlayer)
                 {
-                    if (reader.BytesRemaining > 0)
+                    if (text.ToLower() == "/allow")
                     {
-                        if (reader.ReadString().ToLower() == "/allow")
-                        {
-                            CommandsPatch.Permission = player;
-                        }
+                        CommandsPatch.Permission = player;
+                        BetterNotificationManager.Notify($"{player.GetPlayerNameAndColor()} has granted permission!");
                     }
                 }
                 break;

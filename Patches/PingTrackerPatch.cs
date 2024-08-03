@@ -40,8 +40,7 @@ public class PingTrackerPatch
             // Add Host Info if not in lobby
             if (GameStates.IsInGamePlay && Host != null)
             {
-                string hostColor = Utils.Color32ToHex(Palette.PlayerColors[Host.CurrentOutfit.ColorId]);
-                sb.AppendFormat("<size=75%>Host: <color={0}>{1}</color></size>\n", hostColor, Host.CurrentOutfit.PlayerName);
+                sb.AppendFormat("<size=75%>Host: {0}</size>\n", Host.GetPlayerNameAndColor());
             }
 
             __instance.aspectPosition.DistanceFromEdge = new Vector3(4f, 0.1f, -5);

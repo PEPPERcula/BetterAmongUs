@@ -16,7 +16,7 @@ static class ExtendedPlayerInfo
 
     public static bool GetIsBetterHost(this PlayerControl player)
     {
-        if (IsBetterHost.ContainsKey(player))
+        if (player.IsHost() && IsBetterHost.ContainsKey(player))
             return IsBetterHost[player];
         else
             return false;

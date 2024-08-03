@@ -10,7 +10,7 @@ class GamePlayManager
     {
         [HarmonyPatch(nameof(LobbyBehaviour.OnDestroy))]
         [HarmonyPrefix]
-        private static void Prefix(/*LobbyBehaviour __instance*/)
+        private static void OnDestroy_Prefix(/*LobbyBehaviour __instance*/)
         {
             if (GameStates.IsInGame)
             {
@@ -19,7 +19,7 @@ class GamePlayManager
         }
         [HarmonyPatch(nameof(LobbyBehaviour.Start))]
         [HarmonyPostfix]
-        private static void Postfix(/*LobbyBehaviour __instance*/)
+        private static void Start_Postfix(/*LobbyBehaviour __instance*/)
         {
             _ = new LateTask(() =>
             {
@@ -28,6 +28,15 @@ class GamePlayManager
                     RPC.SyncAllNames(force: true);
                 }
             }, 1.5f, "LobbyBehaviourPatch SyncAllNames");
+        }
+
+        // Disabled annoying music
+        [HarmonyPatch(nameof(LobbyBehaviour.Update))]
+        [HarmonyPostfix]
+        public static void Update_Postfix(/*LobbyBehaviour __instance*/)
+        {
+            if (Main.DisableLobbyTheme.Value)
+                SoundManager.instance.StopSound(LobbyBehaviour.Instance.MapTheme);
         }
     }
 
@@ -55,7 +64,10 @@ class GamePlayManager
         [HarmonyPrefix]
         private static void Prefix(GameStartManager __instance)
         {
-            __instance.MinPlayers = 1;
+            if (GameStates.IsDev)
+            {
+                __instance.MinPlayers = 1;
+            }
         }
     }
 }

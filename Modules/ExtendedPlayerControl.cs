@@ -1,12 +1,15 @@
 ﻿using AmongUs.GameOptions;
+using Hazel;
 using InnerNet;
 using TMPro;
 using UnityEngine;
+using static Il2CppSystem.Net.Http.Headers.Parser;
 
 namespace BetterAmongUs;
 
 static class ExtendedPlayerControl
 {
+    public static Dictionary<PlayerControl, float> TimeSinceKill = [];
     // Get players client
     public static ClientData? GetClient(this PlayerControl player)
     {
@@ -27,6 +30,8 @@ static class ExtendedPlayerControl
         var client = player.GetClient();
         return client == null ? -1 : client.Id;
     }
+    // Get player name with outfit color
+    public static string GetPlayerNameAndColor(this PlayerControl player) => $"<color={Utils.Color32ToHex(Palette.PlayerColors[player.CurrentOutfit.ColorId])}>{player.Data.PlayerName}</color>";
     // Set players over head text
     public static void SetPlayerTextInfo(this PlayerControl player, string text, bool isBottom = false, bool isInfo = false)
     {
@@ -150,6 +155,8 @@ static class ExtendedPlayerControl
             return "#8cffff";
         }
     }
+    // Check if player is role type
+    public static bool Is(this PlayerControl player, RoleTypes role) => player?.Data?.RoleType == role;
     // Check if player is on imposter team
     public static bool IsImpostorTeam(this PlayerControl player) => player?.Data != null && (player.Data.RoleType is RoleTypes.Impostor or RoleTypes.ImpostorGhost or RoleTypes.Shapeshifter or RoleTypes.Phantom);
     // Check if player is a imposter teammate
