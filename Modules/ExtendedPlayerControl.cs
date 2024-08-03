@@ -3,13 +3,14 @@ using Hazel;
 using InnerNet;
 using TMPro;
 using UnityEngine;
-using static Il2CppSystem.Net.Http.Headers.Parser;
 
 namespace BetterAmongUs;
 
 static class ExtendedPlayerControl
 {
     public static Dictionary<PlayerControl, float> TimeSinceKill = [];
+    public static Dictionary<PlayerControl, int> TimesCalledMeeting = [];
+
     // Get players client
     public static ClientData? GetClient(this PlayerControl player)
     {

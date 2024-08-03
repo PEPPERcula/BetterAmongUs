@@ -15,7 +15,7 @@ class AntiCheat
 
     public static void Update()
     {
-        if (GameStates.IsInGame)
+        if (GameStates.IsInGamePlay)
         {
             foreach (var kvp in ExtendedPlayerControl.TimeSinceKill)
             {
@@ -27,6 +27,11 @@ class AntiCheat
             if (ExtendedPlayerControl.TimeSinceKill.Any())
             {
                 ExtendedPlayerControl.TimeSinceKill.Clear();
+            }
+
+            if (ExtendedPlayerControl.TimesCalledMeeting.Any())
+            {
+                ExtendedPlayerControl.TimesCalledMeeting.Clear();
             }
         }
 
@@ -331,12 +336,54 @@ class AntiCheat
                 return false;
             }
 
-            if (callId is (byte)RpcCalls.StartMeeting or (byte)RpcCalls.ReportDeadBody)
+            if (callId is (byte)RpcCalls.StartMeeting)
             {
-                if (GameStates.IsMeeting)
+                if (GameStates.IsMeeting || GameStates.IsHideNSeek || !player.IsAlive() || player.IsInVent() || player.shapeshifting
+                    || player.inMovingPlat || player.onLadder || player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
                 {
                     BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
-                    return false;
+                    if (GameStates.IsHost)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+
+                var deadPlayerInfo = GameData.Instance.GetPlayerById(reader.ReadByte());
+                bool isBodyReport = deadPlayerInfo != null;
+
+                if (isBodyReport)
+                {
+                    if (!UnityEngine.Object.FindAnyObjectByType<DeadBody>() || !deadPlayerInfo.IsDead || deadPlayerInfo == player.Data)
+                    {
+                        BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
+                        if (GameStates.IsHost)
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    }
+                }
+                else
+                {
+                    if (ExtendedPlayerControl.TimesCalledMeeting.TryGetValue(player, out var value) && value >= GameOptionsManager.Instance.currentNormalGameOptions.NumEmergencyMeetings)
+                    {
+                        BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
+                        if (GameStates.IsHost)
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    }
                 }
             }
 
