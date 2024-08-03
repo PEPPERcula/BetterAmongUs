@@ -1,6 +1,9 @@
 ﻿using AmongUs.Data;
+using Assets.CoreScripts;
 using HarmonyLib;
+using Hazel;
 using System.Text;
+using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 
@@ -12,6 +15,39 @@ class ChatPatch
 {
     public static List<string> ChatHistory = [];
     public static int CurrentHistorySelection = -1;
+
+    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSendChat))]
+    class RpcSendChatPatch
+    {
+        public static bool Prefix(PlayerControl __instance, string chatText, ref bool __result)
+        {
+            if (string.IsNullOrWhiteSpace(chatText))
+            {
+                __result = false;
+                return false;
+            }
+            if (!GameStates.IsBetterHostLobby)
+            {
+                __result = false;
+                return true;
+            }
+            chatText = Regex.Replace(chatText, "<.*?>", string.Empty);
+            if (AmongUsClient.Instance.AmClient && DestroyableSingleton<HudManager>.Instance)
+            {
+                DestroyableSingleton<HudManager>.Instance.Chat.AddChat(__instance, chatText, true);
+            }
+            if (chatText.IndexOf("who", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                DestroyableSingleton<UnityTelemetry>.Instance.SendWho();
+            }
+            chatText = "\n" + chatText;
+            MessageWriter messageWriter = AmongUsClient.Instance.StartRpc(__instance.NetId, 13, SendOption.Reliable);
+            messageWriter.Write(chatText);
+            messageWriter.EndMessage();
+            __result = true;
+            return false;
+        }
+    }
 
     [HarmonyPatch(typeof(ChatController))]
     class ChatControllerPatch
