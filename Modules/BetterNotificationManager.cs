@@ -72,7 +72,7 @@ class BetterNotificationManager
             BAUNotificationManagerObj.transform.position = AspectPosition.ComputeWorldPosition(localCamera, AspectPosition.EdgeAlignments.Bottom, new Vector3(-1.3f, 0.7f, localCamera.nearClipPlane + 0.1f));
 
             showTime -= Time.deltaTime;
-            if (showTime <= 0f)
+            if (showTime <= 0f && GameStates.IsInGame)
             {
                 BAUNotificationManagerObj.transform.Find("Sizer/ChatText (TMP)").GetComponent<TextMeshPro>().text = "";
                 BAUNotificationManagerObj.SetActive(false);
