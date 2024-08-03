@@ -17,21 +17,21 @@ class AntiCheat
     {
         if (GameStates.IsInGamePlay)
         {
-            foreach (var kvp in ExtendedPlayerControl.TimeSinceKill)
+            foreach (var kvp in ExtendedPlayerInfo.TimeSinceKill)
             {
-                ExtendedPlayerControl.TimeSinceKill[kvp.Key] += Time.deltaTime;
+                ExtendedPlayerInfo.TimeSinceKill[kvp.Key] += Time.deltaTime;
             }
         }
         else
         {
-            if (ExtendedPlayerControl.TimeSinceKill.Any())
+            if (ExtendedPlayerInfo.TimeSinceKill.Any())
             {
-                ExtendedPlayerControl.TimeSinceKill.Clear();
+                ExtendedPlayerInfo.TimeSinceKill.Clear();
             }
 
-            if (ExtendedPlayerControl.TimesCalledMeeting.Any())
+            if (ExtendedPlayerInfo.TimesCalledMeeting.Any())
             {
-                ExtendedPlayerControl.TimesCalledMeeting.Clear();
+                ExtendedPlayerInfo.TimesCalledMeeting.Clear();
             }
         }
 
@@ -238,7 +238,7 @@ class AntiCheat
                     if (target != null)
                     {
                         if (IsCrewmate || !player.IsAlive() || player.IsInVanish() || !target.IsAlive() || target.IsImpostorTeam()
-                            || ExtendedPlayerControl.TimeSinceKill.TryGetValue(player, out var value) && value < (float)GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown)
+                            || ExtendedPlayerInfo.TimeSinceKill.TryGetValue(player, out var value) && value < (float)GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown)
                         {
                             BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
                         }
@@ -372,7 +372,7 @@ class AntiCheat
                 }
                 else
                 {
-                    if (ExtendedPlayerControl.TimesCalledMeeting.TryGetValue(player, out var value) && value >= GameOptionsManager.Instance.currentNormalGameOptions.NumEmergencyMeetings)
+                    if (ExtendedPlayerInfo.TimesCalledMeeting.TryGetValue(player, out var value) && value >= GameOptionsManager.Instance.currentNormalGameOptions.NumEmergencyMeetings)
                     {
                         BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
                         if (GameStates.IsHost)

@@ -8,9 +8,6 @@ namespace BetterAmongUs;
 
 static class ExtendedPlayerControl
 {
-    public static Dictionary<PlayerControl, float> TimeSinceKill = [];
-    public static Dictionary<PlayerControl, int> TimesCalledMeeting = [];
-
     // Get players client
     public static ClientData? GetClient(this PlayerControl player)
     {
