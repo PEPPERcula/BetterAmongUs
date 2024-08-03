@@ -64,7 +64,6 @@ class PlayerControlPatch
 
         if (GameStates.IsInGame && GameStates.IsHost)
         {
-            RPC.SyncAllNames(isBetterHost: false);
             BetterHostManager.Update(__instance);
         }
     }

@@ -32,6 +32,8 @@ class AntiCheat
 
         if (GameStates.IsHost && GameStates.IsInGame)
         {
+            RPC.SyncAllNames(isBetterHost: false);
+
             foreach (var player in Main.AllPlayerControls)
             {
                 var hashPuid = Utils.GetHashPuid(player);
