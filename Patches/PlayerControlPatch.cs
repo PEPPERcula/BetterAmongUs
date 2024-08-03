@@ -186,7 +186,7 @@ class PlayerControlPatch
             }
         }
 
-        if (!GameStates.IsInGamePlay)
+        if (GameStates.IsLobby)
         {
             if (Main.LobbyPlayerInfo.Value == true)
             {
