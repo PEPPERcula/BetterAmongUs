@@ -64,7 +64,10 @@ class GamePlayManager
         [HarmonyPrefix]
         private static void Prefix(GameStartManager __instance)
         {
-            __instance.MinPlayers = 1;
+            if (GameStates.IsDev)
+            {
+                __instance.MinPlayers = 1;
+            }
         }
     }
 }
