@@ -30,7 +30,7 @@ class AntiCheat
             }
         }
 
-        if (GameStates.IsHost)
+        if (GameStates.IsHost && GameStates.IsInGame)
         {
             foreach (var player in Main.AllPlayerControls)
             {

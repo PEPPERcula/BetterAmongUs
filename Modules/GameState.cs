@@ -44,7 +44,7 @@ public static class GameStates
     public static bool IsExilling => ExileController.Instance != null && !(AirshipIsActive && Minigame.Instance != null && Minigame.Instance.isActiveAndEnabled);
     public static bool IsCountDown => GameStartManager.InstanceExists && GameStartManager.Instance.startState == GameStartManager.StartingStates.Countdown;
     public static bool IsShip => ShipStatus.Instance != null;
-    public static bool IsHost => AmongUsClient.Instance.AmHost;
+    public static bool IsHost => AmongUsClient.Instance != null && AmongUsClient.Instance.AmHost;
     public static bool IsBetterHostLobby => Main.BetterHost.Value || Main.AllPlayerControls.Any(pc => pc.GetIsBetterHost());
     public static bool IsCanMove => PlayerControl.LocalPlayer?.CanMove is true;
     public static bool IsDead => PlayerControl.LocalPlayer?.Data?.IsDead is true;
