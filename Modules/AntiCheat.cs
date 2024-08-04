@@ -96,24 +96,25 @@ class AntiCheat
                 {
                     if (__instance.Platform is Platforms.StandaloneWin10 or Platforms.Xbox)
                     {
-                        if (__instance.XboxPlatformId.ToString().Length is < 16 or > 17)
+                        if (__instance.XboxPlatformId.ToString().Length != 16)
                         {
-                            BetterNotificationManager.NotifyCheat(player, $"Platform Spoofer", newText: "Has been detected with a cheat");
+                                player.ReportPlayer(ReportReasons.Cheating_Hacking);
+                                BetterNotificationManager.NotifyCheat(player, $"Platform Spoofer", newText: "Has been detected with a cheat");
                         }
                     }
 
                     if (__instance.Platform is Platforms.Playstation)
                     {
-                        if (__instance.PsnPlatformId.ToString().Length is < 19 or > 20)
+                        if (__instance.PsnPlatformId.ToString().Length != 19)
                         {
-                            BetterNotificationManager.NotifyCheat(player, $"Platform Spoofer", newText: "Has been detected with a cheat");
+                                player.ReportPlayer(ReportReasons.Cheating_Hacking);
+                                BetterNotificationManager.NotifyCheat(player, $"Platform Spoofer", newText: "Has been detected with a cheat");
                         }
                     }
                 }
             }, 1.5f, shoudLog: false);
         }
     }
-
 
     // Handle RPC before anti cheat detection
     public static void HandleRPCBeforeCheck(PlayerControl player, byte callId, MessageReader Oldreader)
@@ -130,7 +131,7 @@ class AntiCheat
 
                 if (reader.BytesRemaining == 0 && !flag)
                 {
-                    AmongUsClient.Instance.ReportPlayer(player.GetClientId(), ReportReasons.Cheating_Hacking);
+                    player.ReportPlayer(ReportReasons.Cheating_Hacking);
                     SickoData[Utils.GetHashPuid(player)] = player.FriendCode;
                     BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "sickoData", "Sicko Menu RPC");
                     BetterNotificationManager.NotifyCheat(player, $"Sicko Menu", newText: "Has been detected with a cheat client");
@@ -152,7 +153,7 @@ class AntiCheat
 
                     if (!flag)
                     {
-                        AmongUsClient.Instance.ReportPlayer(player.GetClientId(), ReportReasons.Cheating_Hacking);
+                        player.ReportPlayer(ReportReasons.Cheating_Hacking);
                         AUMData[Utils.GetHashPuid(player)] = player.FriendCode;
                         BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "aumData", "AUM RPC");
                         BetterNotificationManager.NotifyCheat(player, $"AUM", newText: "Has been detected with a cheat client");
@@ -183,7 +184,7 @@ class AntiCheat
 
                 if (!flag && !flag2)
                 {
-                    AmongUsClient.Instance.ReportPlayer(player.GetClientId(), ReportReasons.Cheating_Hacking);
+                    player.ReportPlayer(ReportReasons.Cheating_Hacking);
                     AUMData[Utils.GetHashPuid(AUMPlayer)] = AUMPlayer.FriendCode;
                     BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "aumData", "AUM Chat RPC");
                     BetterNotificationManager.NotifyCheat(AUMPlayer, $"AUM", newText: "Has been detected with a cheat client");

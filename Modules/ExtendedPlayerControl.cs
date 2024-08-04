@@ -170,4 +170,15 @@ static class ExtendedPlayerControl
     // Check if player is the host
     public static bool IsHost(this PlayerControl player) => player?.Data != null && GameData.Instance?.GetHost()?.Puid == player.Data.Puid;
 
+    // Report player
+    public static void ReportPlayer(this PlayerControl player, ReportReasons reason = ReportReasons.None)
+    {
+        if (player != null)
+        {
+            if (!player.GetClient().HasBeenReported)
+            {
+                AmongUsClient.Instance.ReportPlayer(player.GetClientId(), reason);
+            }
+        }
+    }
 }
