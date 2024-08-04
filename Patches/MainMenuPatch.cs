@@ -99,8 +99,8 @@ internal class MainMenuPatch
             UnityEngine.Object.Destroy(button.GetComponent<AspectPosition>());
             for (int i = 0; i < buttons.ToList().Count; i++)
             {
-                float baseY = -2.7182f;
-                float newY = baseY + (0.35f * i);
+                float baseY = -2.7882f;
+                float newY = baseY + (0.38f * i);
                 button.transform.localPosition = new(-0.8118f, newY, -5f);
                 button.transform.localScale = new(0.78f, 0.78f, 0.78f);
             }
