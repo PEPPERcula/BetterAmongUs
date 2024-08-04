@@ -206,8 +206,6 @@ class AntiCheat
 
             RoleTypes? Role = player?.Data?.RoleType;
             Role ??= RoleTypes.Crewmate;
-            bool IsImpostor = player.IsImpostorTeam();
-            bool IsCrewmate = !player.IsImpostorTeam();
             string hashPuid = Utils.GetHashPuid(player);
 
             if (callId is (byte)RpcCalls.SendChat or (byte)RpcCalls.SendQuickChat)
@@ -220,7 +218,7 @@ class AntiCheat
 
             if (callId is (byte)RpcCalls.EnterVent or (byte)RpcCalls.ExitVent)
             {
-                if ((IsCrewmate && Role != RoleTypes.Engineer) || player.Data.IsDead)
+                if ((!player.IsImpostorTeam() && Role != RoleTypes.Engineer) || player.Data.IsDead)
                     BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
 
                 return;
@@ -242,7 +240,7 @@ class AntiCheat
 
                     if (target != null)
                     {
-                        if (IsCrewmate || !player.IsAlive() || player.IsInVanish() || !target.IsAlive() || target.IsImpostorTeam()
+                        if (!player.IsImpostorTeam() || !player.IsAlive() || player.IsInVanish() || !target.IsAlive() || target.IsImpostorTeam()
                            || ExtendedPlayerInfo.TimeSinceKill.TryGetValue(player, out var value) && value < (float)GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown)
                         {
                             BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
@@ -267,7 +265,7 @@ class AntiCheat
                 return;
             }
 
-            if (IsCrewmate)
+            if (!player.IsImpostorTeam())
             {
                 if (GameStates.IsInGamePlay)
                 {
@@ -296,7 +294,7 @@ class AntiCheat
                 }
             }
 
-            if (IsImpostor)
+            if (player.IsImpostorTeam())
             {
                 if (callId is (byte)RpcCalls.CompleteTask or (byte)RpcCalls.BootFromVent)
                 {
