@@ -4,6 +4,15 @@ A client-sided mod that enhances the experience for the popular game Among Us!
 
 <img src="https://github.com/D1GQ/BetterAmongUs/assets/83262852/ab10830c-a270-4be4-b79d-4fe911693e47" alt="BetterAmongUs-Logo" width="700" height="400">
 
+</p>
+<p align="center">
+
+<div style="text-align: center;">
+    <a href="https://discord.gg/a3eVJHp9p5" target="_blank">
+        <img src="https://img.shields.io/badge/Discord%20-%231DA1F2.svg?&style=for-the-badge&logo=discord&logoColor=white&color=5662f6" width="200" height="50"/>
+    </a>
+</div>
+
 ## Getting Started
 
 1. **Install the Mod**: Download the latest version from [Releases](https://github.com/D1GQ/BetterAmongUs/releases) and follow the installation instructions in the [BepInEx Installation Guide](https://docs.bepinex.dev/articles/user_guide/installation/index.html) to get BetterAmongUs up and running.
