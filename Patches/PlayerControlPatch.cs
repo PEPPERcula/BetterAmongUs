@@ -1,5 +1,6 @@
 ﻿using AmongUs.Data;
 using HarmonyLib;
+using Hazel;
 using Il2CppSystem.Linq;
 using LibCpp2IL;
 using System.Text;
@@ -215,6 +216,19 @@ class PlayerControlPatch
             player.SetPlayerTextInfo($"{sbInfo}", isInfo: true);
             player.SetPlayerTextInfo($"{Role}");
             player.SetPlayerTextInfo("", isBottom: true);
+        }
+    }
+
+    [HarmonyPatch(nameof(PlayerControl.SetColor))]
+    [HarmonyPostfix]
+    public static void SetColor_Postfix()
+    {
+        if (Main.BetterHost.Value && GameStates.IsLobby)
+        {
+            _ = new LateTask(() =>
+            {
+                RPC.SyncAllNames(force: true);
+            }, 0.25f, shoudLog: false);
         }
     }
 
