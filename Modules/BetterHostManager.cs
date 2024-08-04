@@ -65,7 +65,7 @@ class BetterHostManager
 
     public static bool CheckRPCAsHost(PlayerControl player, byte callId, MessageReader reader, ref bool canceled)
     {
-        if (player == null) return true;
+        if (player == null || !GameStates.IsHost) return true;
 
         bool shouldReturn = false;
 
@@ -97,6 +97,16 @@ class BetterHostManager
                 {
                     PlayerControl target = reader.ReadNetObject<PlayerControl>();
 
+                    bool condition = false;
+
+                    if (ExtendedPlayerInfo.TimeSinceKill.TryGetValue(player, out var value))
+                    {
+                        if (value >= GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown)
+                        {
+                            condition = true;
+                        }
+                    }
+
                     if (target != null)
                     {
                         if (player.IsAlive()
@@ -107,7 +117,7 @@ class BetterHostManager
                             && !player.shapeshifting
                             && !player.onLadder
                             && !player.MyPhysics.Animations.IsPlayingAnyLadderAnimation()
-                            && ExtendedPlayerInfo.TimeSinceKill.TryGetValue(player, out var value) && value >= (float)GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown
+                            && condition
                             && CheckRange(player.GetCustomPosition(), target.GetCustomPosition(), 3f))
                         {
                             if (target.IsAlive()
