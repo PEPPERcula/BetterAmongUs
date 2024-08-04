@@ -96,7 +96,7 @@ class AntiCheat
                 {
                     if (__instance.Platform is Platforms.StandaloneWin10 or Platforms.Xbox)
                     {
-                        if (__instance.XboxPlatformId.ToString().Length < 16)
+                        if (__instance.XboxPlatformId.ToString().Length is < 16 or > 17)
                         {
                             BetterNotificationManager.NotifyCheat(player, $"Platform Spoofer", newText: "Has been detected with a cheat");
                         }
@@ -104,7 +104,7 @@ class AntiCheat
 
                     if (__instance.Platform is Platforms.Playstation)
                     {
-                        if (__instance.PsnPlatformId.ToString().Length < 19)
+                        if (__instance.PsnPlatformId.ToString().Length is < 19 or > 20)
                         {
                             BetterNotificationManager.NotifyCheat(player, $"Platform Spoofer", newText: "Has been detected with a cheat");
                         }
