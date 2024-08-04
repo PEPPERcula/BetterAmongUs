@@ -33,6 +33,11 @@ class AntiCheat
             {
                 ExtendedPlayerInfo.TimesCalledMeeting.Clear();
             }
+
+            if (ExtendedPlayerInfo.HasNoisemakerNotify.Any())
+            {
+                ExtendedPlayerInfo.HasNoisemakerNotify.Clear();
+            }
         }
 
         if (GameStates.IsHost && GameStates.IsInGame)

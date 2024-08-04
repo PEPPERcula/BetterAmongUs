@@ -3,6 +3,7 @@ namespace BetterAmongUs;
 
 static class ExtendedPlayerInfo
 {
+    public static List<PlayerControl> HasNoisemakerNotify = [];
     public static Dictionary<PlayerControl, float> TimeSinceKill = [];
     public static Dictionary<PlayerControl, int> TimesCalledMeeting = [];
     private static Dictionary<PlayerControl, bool> IsBetterUser = new Dictionary<PlayerControl, bool>();
