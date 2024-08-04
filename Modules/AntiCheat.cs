@@ -243,7 +243,7 @@ class AntiCheat
                     if (target != null)
                     {
                         if (IsCrewmate || !player.IsAlive() || player.IsInVanish() || !target.IsAlive() || target.IsImpostorTeam()
-                           /*|| ExtendedPlayerInfo.TimeSinceKill.TryGetValue(player, out var value) && value < (float)GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown - 1.5f*/)
+                           || ExtendedPlayerInfo.TimeSinceKill.TryGetValue(player, out var value) && value < (float)GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown)
                         {
                             BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
                         }

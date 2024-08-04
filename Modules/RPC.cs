@@ -34,13 +34,16 @@ internal class RPCHandlerPatch
         }
 
         var canceled = false;
-        if (GameStates.IsHost && BetterHostManager.CheckRPCAsHost(__instance, callId, reader, ref canceled) != true)
+        if (GameStates.IsHost)
         {
-            if (canceled)
+            if (BetterHostManager.CheckRPCAsHost(__instance, callId, reader, ref canceled) != true)
             {
-                Logger.LogCheat($"RPC canceled by Host: {Enum.GetName((RpcCalls)callId)}{Enum.GetName((CustomRPC)callId)} - {callId}");
+                if (canceled)
+                {
+                    Logger.LogCheat($"RPC canceled by Host: {Enum.GetName((RpcCalls)callId)}{Enum.GetName((CustomRPC)callId)} - {callId}");
+                }
+                return false;
             }
-            return false;
         }
 
         AntiCheat.CheckRPC(__instance, callId, reader);
