@@ -11,10 +11,12 @@ class RolePatch
         [HarmonyPrefix]
         public static bool NotifyOfDeath_Prefix(NoisemakerRole __instance)
         {
-            if (__instance.Player == null || !__instance.Player.IsAlive())
+            if (ExtendedPlayerInfo.HasNoisemakerNotify.Contains(__instance.Player))
             {
                 return false;
             }
+
+            ExtendedPlayerInfo.HasNoisemakerNotify.Add(__instance.Player);
 
             return true;
         }

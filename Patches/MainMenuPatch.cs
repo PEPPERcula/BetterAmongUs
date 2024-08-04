@@ -1,10 +1,16 @@
 ﻿using HarmonyLib;
+using TMPro;
 using UnityEngine;
 
 namespace BetterAmongUs.Patches;
 
 internal class MainMenuPatch
 {
+    private static List<PassiveButton> buttons = [];
+    private static PassiveButton template;
+    private static PassiveButton creditsButton;
+    private static PassiveButton gitHubButton;
+    private static PassiveButton discordButton;
     private static readonly string OnlineMsg = "Online access has been temporarily disabled!";
 
     // Handle FileChecker
@@ -33,7 +39,7 @@ internal class MainMenuPatch
     {
         [HarmonyPatch(nameof(MainMenuManager.Start))]
         [HarmonyPostfix]
-        public static void Postfix(/*MainMenuManager __instance*/)
+        public static void Postfix(MainMenuManager __instance)
         {
             GameObject logo = GameObject.Find("LeftPanel/Sizer/LOGO-AU");
             GameObject sizer = logo.transform.parent.gameObject;
@@ -41,6 +47,93 @@ internal class MainMenuPatch
             sizer.transform.position = new Vector3(sizer.transform.position.x, sizer.transform.position.y, -0.5f);
             logo.transform.localScale = new Vector3(0.003f, 0.0025f, 0f);
             logo.GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("BetterAmongUs.Resources.Images.BetterAmongUs-Logo.png", 1f);
+
+            if (template == null) template = __instance.quitButton;
+
+            if (template == null) return;
+
+            buttons.Clear();
+
+            string creditsTextTitle = "<size=150%><color=#0dff00><b>-=Mod Credits=-</b></color></size>\n";
+            string creditsText = "<size=75%>◆ <color=#0088ff>Head Developer</color>: <b>D1GQ</b></size>";
+
+            if (creditsButton == null)
+            {
+                creditsButton = CreateButton(
+                    "CreditsButton",
+                    new(255, 255, 255, byte.MaxValue),
+                    new(200, 200, 200, byte.MaxValue),
+                    () =>
+                    {
+                        DisconnectPopup.Instance.ShowCustom(creditsTextTitle + creditsText);
+                    },
+                    "Mod Credits"); //"Credits"
+            }
+
+            if (gitHubButton == null)
+            {
+                gitHubButton = CreateButton(
+                    "GitHubButton",
+                    new(153, 153, 153, byte.MaxValue),
+                    new(209, 209, 209, byte.MaxValue),
+                    () => Application.OpenURL(Main.Github),
+                    "GitHub"); //"GitHub"
+            }
+
+            if (discordButton == null)
+            {
+                discordButton = CreateButton(
+                    "DiscordButton",
+                    new(88, 101, 242, byte.MaxValue),
+                    new(148, 161, byte.MaxValue, byte.MaxValue),
+                    () => Application.OpenURL(Main.Discord),
+                    "Discord"); //"Discord"
+            }
+        }
+
+        public static PassiveButton CreateButton(string name, Color32 normalColor, Color32 hoverColor, Action action, string label, Vector2? scale = null)
+        {
+            var button = UnityEngine.Object.Instantiate(template);
+            buttons.Add(button);
+            button.name = name;
+            UnityEngine.Object.Destroy(button.GetComponent<AspectPosition>());
+            for (int i = 0; i < buttons.ToList().Count; i++)
+            {
+                float baseY = -2.7182f;
+                float newY = baseY + (0.35f * i);
+                button.transform.localPosition = new(-0.8118f, newY, -5f);
+                button.transform.localScale = new(0.78f, 0.78f, 0.78f);
+            }
+
+            button.OnClick = new();
+            button.OnClick.AddListener(action);
+
+            var buttonText = button.transform.Find("FontPlacer/Text_TMP").GetComponent<TMP_Text>();
+            buttonText.DestroyTranslator();
+            buttonText.fontSize = buttonText.fontSizeMax = buttonText.fontSizeMin = 3.5f;
+            buttonText.enableWordWrapping = false;
+            buttonText.text = label;
+            var normalSprite = button.inactiveSprites.GetComponent<SpriteRenderer>();
+            var hoverSprite = button.activeSprites.GetComponent<SpriteRenderer>();
+            normalSprite.color = normalColor;
+            hoverSprite.color = hoverColor;
+
+            var container = buttonText.transform.parent;
+            UnityEngine.Object.Destroy(container.GetComponent<AspectPosition>());
+            UnityEngine.Object.Destroy(buttonText.GetComponent<AspectPosition>());
+            container.SetLocalX(0f);
+            buttonText.transform.SetLocalX(0f);
+            buttonText.horizontalAlignment = HorizontalAlignmentOptions.Center;
+
+            var buttonCollider = button.GetComponent<BoxCollider2D>();
+            if (scale.HasValue)
+            {
+                normalSprite.size = hoverSprite.size = buttonCollider.size = scale.Value;
+            }
+
+            buttonCollider.offset = new(0f, 0f);
+
+            return button;
         }
     }
 }
