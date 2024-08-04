@@ -234,14 +234,23 @@ class AntiCheat
 
             if (callId is (byte)RpcCalls.MurderPlayer)
             {
+                bool condition = false;
+
+                if (ExtendedPlayerInfo.TimeSinceKill.TryGetValue(player, out var value))
+                {
+                    if (value < GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown)
+                    {
+                        condition = true;
+                    }
+                }
+
                 if (reader.BytesRemaining > 0)
                 {
                     PlayerControl target = reader.ReadNetObject<PlayerControl>();
 
                     if (target != null)
                     {
-                        if (!player.IsImpostorTeam() || !player.IsAlive() || player.IsInVanish() || !target.IsAlive() || target.IsImpostorTeam()
-                           || ExtendedPlayerInfo.TimeSinceKill.TryGetValue(player, out var value) && value < (float)GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown)
+                        if (!player.IsImpostorTeam() || !player.IsAlive() || player.IsInVanish() || !target.IsAlive() || target.IsImpostorTeam() || condition)
                         {
                             BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
                         }
