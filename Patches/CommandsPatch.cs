@@ -313,6 +313,9 @@ class CommandsPatch
                                 case "tracker" or "7":
                                     role = RoleTypes.Tracker;
                                     break;
+                                case "noisemaker" or "8":
+                                    role = RoleTypes.Noisemaker;
+                                    break;
                                 default:
                                     Utils.AddChatPrivate($"<color=#730000>{error}\nInvalid RoleType!");
                                     return;
@@ -359,6 +362,9 @@ class CommandsPatch
                                     break;
                                 case "tracker" or "7":
                                     role = RoleTypes.Tracker;
+                                    break;
+                                case "noisemaker" or "8":
+                                    role = RoleTypes.Noisemaker;
                                     break;
                                 default:
                                     Utils.AddChatPrivate($"<color=#730000>{error}\nInvalid RoleType!");
