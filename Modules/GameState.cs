@@ -46,6 +46,7 @@ public static class GameStates
     public static bool IsShip => ShipStatus.Instance != null;
     public static bool IsHost => AmongUsClient.Instance != null && AmongUsClient.Instance.AmHost;
     public static bool IsBetterHostLobby => (PlayerControl.LocalPlayer.IsHost() && Main.BetterHost.Value) || Main.AllPlayerControls.Any(pc => pc.IsHost() && pc.BetterData().IsBetterHost);
+    public static bool IsTOHEHostLobby => Main.AllPlayerControls.Any(pc => pc.IsHost() && pc.BetterData().IsTOHEHost);
     public static bool IsCanMove => PlayerControl.LocalPlayer?.CanMove is true;
     public static bool IsDead => PlayerControl.LocalPlayer?.Data?.IsDead is true;
 }

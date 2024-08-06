@@ -158,6 +158,7 @@ internal static class RPC
             case (byte)CustomRPC.VersionCheck or (byte)CustomRPC.RequestRetryVersionCheck:
                 if (player.IsHost())
                 {
+                    player.BetterData().IsTOHEHost = true;
                     var BAU = "<color=#278720>♻</color><color=#0ed400><b>BetterAmongUs</b></color><color=#278720>♻</color>";
                     Utils.DisconnectSelf($"{BAU} does not support <color=#ff9cdc><b>TOHE</b></color>");
                 }
