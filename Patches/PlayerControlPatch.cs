@@ -67,6 +67,20 @@ class PlayerControlPatch
         {
             BetterHostManager.Update(__instance);
         }
+
+        if (GameStates.IsInGamePlay)
+        {
+            if (__instance.IsImpostorTeam())
+            {
+                __instance.BetterData().TimeSinceKill += Time.deltaTime;
+            }
+        }
+        else
+        {
+            __instance.BetterData().TimeSinceKill = 0f;
+            __instance.BetterData().TimesCalledMeeting = 0;
+            __instance.BetterData().HasNoisemakerNotify = false;
+        }
     }
 
     public static void SetPlayerInfo(PlayerControl player)
@@ -112,9 +126,9 @@ class PlayerControlPatch
         if (player.IsDev() && !GameStates.IsInGamePlay)
             sbTag.Append("<color=#6e6e6e>(<color=#0088ff>Dev</color>)</color>+++");
 
-        if (((player == PlayerControl.LocalPlayer && GameStates.IsHost && Main.BetterHost.Value) || player.GetIsBetterHost() == true) && !GameStates.IsInGamePlay)
+        if (((player == PlayerControl.LocalPlayer && GameStates.IsHost && Main.BetterHost.Value) || player.BetterData().IsBetterHost) && !GameStates.IsInGamePlay)
             sbTag.Append("<color=#0dff00>Better Host</color>+++");
-        else if ((player == PlayerControl.LocalPlayer || player.GetIsBetterUser() == true) && !GameStates.IsInGamePlay)
+        else if ((player == PlayerControl.LocalPlayer || player.BetterData().IsBetterUser) && !GameStates.IsInGamePlay)
             sbTag.Append("<color=#0dff00>Better User</color>+++");
 
         if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.SickoData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.SickoData.ContainsValue(friendCode))
@@ -241,7 +255,7 @@ class PlayerControlPatch
         if (PlayerControl.LocalPlayer.IsImpostorTeam() && GameStates.IsInGamePlay && !GameStates.IsHideNSeek && HudManager.Instance.CrewmatesKilled.isActiveAndEnabled)
             HudManager.Instance?.NotifyOfDeath();
 
-        ExtendedPlayerInfo.TimeSinceKill[__instance] = 0f;
+        __instance.BetterData().TimeSinceKill = 0f;
 
         Logger.LogPrivate($"{__instance.Data.PlayerName} Has killed {target.Data.PlayerName} as {Utils.GetRoleName(__instance.Data.RoleType)}", "EventLog");
     }

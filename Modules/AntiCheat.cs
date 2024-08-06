@@ -3,8 +3,6 @@ using HarmonyLib;
 using Hazel;
 using InnerNet;
 using UnityEngine;
-using static Logger;
-using static UnityEngine.GraphicsBuffer;
 
 namespace BetterAmongUs;
 
@@ -17,31 +15,6 @@ class AntiCheat
 
     public static void Update()
     {
-        if (GameStates.IsInGamePlay)
-        {
-            foreach (var kvp in ExtendedPlayerInfo.TimeSinceKill)
-            {
-                ExtendedPlayerInfo.TimeSinceKill[kvp.Key] += Time.deltaTime;
-            }
-        }
-        else
-        {
-            if (ExtendedPlayerInfo.TimeSinceKill.Any())
-            {
-                ExtendedPlayerInfo.TimeSinceKill.Clear();
-            }
-
-            if (ExtendedPlayerInfo.TimesCalledMeeting.Any())
-            {
-                ExtendedPlayerInfo.TimesCalledMeeting.Clear();
-            }
-
-            if (ExtendedPlayerInfo.HasNoisemakerNotify.Any())
-            {
-                ExtendedPlayerInfo.HasNoisemakerNotify.Clear();
-            }
-        }
-
         if (GameStates.IsHost && GameStates.IsInGame)
         {
             RPC.SyncAllNames(isBetterHost: false);
@@ -205,7 +178,7 @@ class AntiCheat
         {
             MessageReader reader = MessageReader.Get(Oldreader);
 
-            if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.GetIsBetterHost() || reader == null || !IsEnabled || !Main.AntiCheat.Value) return;
+            if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.BetterData().IsBetterHost || reader == null || !IsEnabled || !Main.AntiCheat.Value) return;
 
             RoleTypes? Role = player?.Data?.RoleType;
             Role ??= RoleTypes.Crewmate;
@@ -246,27 +219,18 @@ class AntiCheat
 
             if (callId is (byte)RpcCalls.MurderPlayer)
             {
-                bool condition = false;
-
-                if (ExtendedPlayerInfo.TimeSinceKill.TryGetValue(player, out var value))
-                {
-                    if (value < GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown)
-                    {
-                        condition = true;
-                    }
-                }
-
                 if (reader.BytesRemaining > 0)
                 {
                     PlayerControl target = reader.ReadNetObject<PlayerControl>();
 
                     if (target != null)
                     {
-                        if (!player.IsImpostorTeam() || !player.IsAlive() || player.IsInVanish() || !target.IsAlive() || target.IsImpostorTeam() || condition)
+                        if (!player.IsImpostorTeam() || !player.IsAlive() || player.IsInVanish() || !target.IsAlive() || target.IsImpostorTeam()
+                            || player.BetterData().TimeSinceKill < GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown)
                         {
                             BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
                             Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName((RpcCalls)callId)}: {!player.IsImpostorTeam()} - {!player.IsAlive()} - {player.IsInVanish()}" +
-                                $" - {!target.IsAlive()} - {target.IsImpostorTeam()} - {condition}");
+                                $" - {!target.IsAlive()} - {target.IsImpostorTeam()} - {player.BetterData().TimeSinceKill < GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown}");
                         }
                     }
                 }
@@ -354,7 +318,7 @@ class AntiCheat
         {
             MessageReader reader = MessageReader.Get(Oldreader);
 
-            if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.GetIsBetterHost() || reader == null || !IsEnabled || !Main.AntiCheat.Value) return true;
+            if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.BetterData().IsBetterHost || reader == null || !IsEnabled || !Main.AntiCheat.Value) return true;
 
             RoleTypes Role = player.Data.RoleType;
             bool IsImpostor = player.IsImpostorTeam();
@@ -406,11 +370,11 @@ class AntiCheat
                 }
                 else
                 {
-                    if (ExtendedPlayerInfo.TimesCalledMeeting.TryGetValue(player, out var value) && value >= GameOptionsManager.Instance.currentNormalGameOptions.NumEmergencyMeetings)
+                    if (player.BetterData().TimesCalledMeeting >= GameOptionsManager.Instance.currentNormalGameOptions.NumEmergencyMeetings)
                     {
                         BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
-                        Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName((RpcCalls)callId)}: {ExtendedPlayerInfo.TimesCalledMeeting[player]} -> {GameOptionsManager.Instance.currentNormalGameOptions.NumEmergencyMeetings}" +
-                            $" - {ExtendedPlayerInfo.TimesCalledMeeting[player] >= GameOptionsManager.Instance.currentNormalGameOptions.NumEmergencyMeetings}");
+                        Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName((RpcCalls)callId)}: {player.BetterData().TimesCalledMeeting} -> {GameOptionsManager.Instance.currentNormalGameOptions.NumEmergencyMeetings}" +
+                            $" - {player.BetterData().TimesCalledMeeting >= GameOptionsManager.Instance.currentNormalGameOptions.NumEmergencyMeetings}");
                         if (GameStates.IsHost)
                         {
                             return false;

@@ -99,12 +99,9 @@ class BetterHostManager
 
                     bool condition = false;
 
-                    if (ExtendedPlayerInfo.TimeSinceKill.TryGetValue(player, out var value))
+                    if (player.BetterData().TimeSinceKill >= GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown)
                     {
-                        if (value >= GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown)
-                        {
-                            condition = true;
-                        }
+                        condition = true;
                     }
 
                     if (target != null)
@@ -246,7 +243,7 @@ class BetterHostManager
 
         foreach (PlayerControl target in Main.AllPlayerControls)
         {
-            if (target == null || target == PlayerControl.LocalPlayer || target.GetIsBetterUser()) continue;
+            if (target == null || target == PlayerControl.LocalPlayer || target.BetterData().IsBetterUser) continue;
 
             string NewName = player.CurrentOutfit.PlayerName;
 
@@ -265,7 +262,7 @@ class BetterHostManager
 
                 if (player == PlayerControl.LocalPlayer)
                     sbTopTag.Append($"<color=#0dff00>Better Host</color>+++");
-                else if (player.GetIsBetterUser())
+                else if (player.BetterData().IsBetterUser)
                     sbTopTag.Append("<color=#0dff00>Better User</color>+++");
             }
             else if (GameStates.IsInGamePlay)

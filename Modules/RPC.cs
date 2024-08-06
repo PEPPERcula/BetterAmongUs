@@ -86,7 +86,7 @@ internal static class RPC
     {
         if (!GameStates.IsHost) return;
 
-        if (player.GetIsBetterUser())
+        if (player.BetterData().IsBetterUser)
         {
             if (sendToBetterUser)
             {
@@ -148,8 +148,8 @@ internal static class RPC
                         break;
                     }
 
-                    player.SetIsBetterUser(true);
-                    player.SetIsBetterHost(IsBetterHost);
+                    player.BetterData().IsBetterUser = true;
+                    player.BetterData().IsBetterHost = IsBetterHost;
                 }
                 break;
             case (byte)CustomRPC.AddChat:
