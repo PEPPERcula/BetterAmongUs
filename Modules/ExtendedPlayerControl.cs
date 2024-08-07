@@ -34,29 +34,29 @@ static class ExtendedPlayerControl
     public static void SetPlayerTextInfo(this PlayerControl player, string text, bool isBottom = false, bool isInfo = false)
     {
         if (player == null) return;
-        GameObject playerbase = player.gameObject;
-        string InfoType = isBottom ? "InfoText_B_TMP" : "InfoText_T_TMP";
+
+        string infoType = isBottom ? "InfoText_B_TMP" : "InfoText_T_TMP";
 
         if (isInfo)
         {
-            InfoType = "InfoText_Info_TMP";
-            GameObject TopText = GameObject.Find($"{playerbase.transform.name}/Names/NameText_TMP/InfoText_T_TMP");
-            if (TopText != null)
+            infoType = "InfoText_Info_TMP";
+            var topText = player.gameObject.transform.Find("Names/NameText_TMP/InfoText_T_TMP")?.GetComponent<TextMeshPro>();
+
+            if (topText != null && string.IsNullOrEmpty(Utils.GetRawText(topText.text)))
             {
-                if (TopText.GetComponent<TextMeshPro>()?.text.Replace("<size=65%>", string.Empty).Replace("</size>", string.Empty).Length < 1)
-                {
-                    text = "<voffset=-2.25em>" + text + "</voffset>";
-                }
+                text = "<voffset=-2.25em>" + text + "</voffset>";
             }
         }
 
         text = "<size=65%>" + text + "</size>";
-        GameObject TextObj = GameObject.Find($"{player?.gameObject.transform.name}/Names/NameText_TMP/{InfoType}");
-        if (TextObj != null)
+        var textObj = player.gameObject.transform.Find($"Names/NameText_TMP/{infoType}")?.GetComponent<TextMeshPro>();
+
+        if (textObj != null)
         {
-            TextObj.GetComponent<TextMeshPro>().text = text;
+            textObj.text = text;
         }
     }
+
     // Reset players over head text
     public static void ResetAllPlayerTextInfo(this PlayerControl player)
     {

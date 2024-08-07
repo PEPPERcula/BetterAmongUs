@@ -20,30 +20,29 @@ class PlayerControlPatch
     public static void FixedUpdate_Prefix(PlayerControl __instance)
     {
         // Set up player text info
-        var NameText = GameObject.Find($"{__instance.gameObject.transform.name}/Names/NameText_TMP");
-        var InfoText = GameObject.Find($"{__instance.gameObject.transform.name}/Names/NameText_TMP/InfoText_T_TMP");
-        if (NameText != null && InfoText == null)
+        var nameTextTransform = __instance.gameObject.transform.Find("Names/NameText_TMP");
+        var nameText = nameTextTransform?.gameObject;
+        var infoText = nameTextTransform?.Find("InfoText_T_TMP");
+
+        if (nameText != null && infoText == null)
         {
-            GameObject playerInfoDisplayInfo = UnityEngine.Object.Instantiate(NameText, NameText.transform);
-            playerInfoDisplayInfo.name = "InfoText_Info_TMP";
-            playerInfoDisplayInfo.transform.DestroyChildren();
-            playerInfoDisplayInfo.transform.position += new Vector3(0f, 0.25f);
-            playerInfoDisplayInfo.GetComponent<TextMeshPro>().text = string.Empty;
-            playerInfoDisplayInfo.SetActive(true);
+            void InstantiatePlayerInfoText(string name, Vector3 positionOffset)
+            {
+                var newTextObject = UnityEngine.Object.Instantiate(nameText, nameTextTransform);
+                newTextObject.name = name;
+                newTextObject.transform.DestroyChildren();
+                newTextObject.transform.position += positionOffset;
+                var textMesh = newTextObject.GetComponent<TextMeshPro>();
+                if (textMesh != null)
+                {
+                    textMesh.text = string.Empty;
+                }
+                newTextObject.SetActive(true);
+            }
 
-            GameObject playerInfoDisplayTop = UnityEngine.Object.Instantiate(NameText, NameText.transform);
-            playerInfoDisplayTop.name = "InfoText_T_TMP";
-            playerInfoDisplayTop.transform.DestroyChildren();
-            playerInfoDisplayTop.transform.position += new Vector3(0f, 0.15f);
-            playerInfoDisplayTop.GetComponent<TextMeshPro>().text = string.Empty;
-            playerInfoDisplayTop.SetActive(true);
-
-            GameObject playerInfoDisplayBottom = UnityEngine.Object.Instantiate(NameText, NameText.transform);
-            playerInfoDisplayBottom.name = "InfoText_B_TMP";
-            playerInfoDisplayBottom.transform.DestroyChildren();
-            playerInfoDisplayBottom.transform.position += new Vector3(0f, -0.15f);
-            playerInfoDisplayBottom.GetComponent<TextMeshPro>().text = string.Empty;
-            playerInfoDisplayBottom.SetActive(true);
+            InstantiatePlayerInfoText("InfoText_Info_TMP", new Vector3(0f, 0.25f));
+            InstantiatePlayerInfoText("InfoText_T_TMP", new Vector3(0f, 0.15f));
+            InstantiatePlayerInfoText("InfoText_B_TMP", new Vector3(0f, -0.15f));
         }
 
         // Set color blind text on player
@@ -93,10 +92,7 @@ class PlayerControlPatch
         // Set player text info
         if (!player.DataIsCollected())
         {
-            if (nameText.text is "???" or "Player")
-            {
-                nameText.text = "<color=#b5b5b5>Loading</color>";
-            }
+            nameText.text = "<color=#b5b5b5>Loading</color>";
             return;
         }
 
@@ -202,9 +198,9 @@ class PlayerControlPatch
         AppendTagInfo(sbTagTop, sbInfoTop);
         AppendTagInfo(sbTagBottom, sbInfoBottom);
 
-        player.SetPlayerTextInfo(sbInfo.ToString(), isInfo: true);
         player.SetPlayerTextInfo(sbInfoTop.ToString());
         player.SetPlayerTextInfo(sbInfoBottom.ToString(), isBottom: true);
+        player.SetPlayerTextInfo(sbInfo.ToString(), isInfo: true);
     }
 
 
