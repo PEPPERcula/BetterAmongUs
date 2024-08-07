@@ -70,6 +70,11 @@ static class ExtendedPlayerControl
     {
         if (player == null) return false;
 
+        if (player.isDummy)
+        {
+            return true;
+        }
+
         if (player.gameObject.transform.Find("Names/NameText_TMP").GetComponent<TextMeshPro>().text
         is "???" or "Player" or "<color=#b5b5b5>Loading</color>" or null
         || player.Data == null

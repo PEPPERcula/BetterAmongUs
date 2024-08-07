@@ -233,6 +233,7 @@ class AntiCheat
                             BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
                             Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName((RpcCalls)callId)}: {!player.IsImpostorTeam()} - {player.IsInVanish()}" +
                                 $" - {!target.IsAlive()} - {target.IsImpostorTeam()} - {player.BetterData().TimeSinceKill < GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown - 2.5f}");
+                            Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName((RpcCalls)callId)}: {player.BetterData().TimeSinceKill} < {GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown} or {GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown -2.5} -2.5");
                         }
                     }
                 }
