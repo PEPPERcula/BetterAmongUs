@@ -26,6 +26,24 @@ public class RoleManagerPatch
 
         int NumImpostors = GameOptionsManager.Instance.CurrentGameOptions.NumImpostors;
 
+        int NumPlayers = Main.AllPlayerControls.Length;
+
+        var impostorLimits = new Dictionary<int, int>
+        {
+            { 3, 1 },
+            { 5, 2 },
+            { 6, 3 }
+        };
+
+        foreach (var limit in impostorLimits)
+        {
+            if (NumPlayers <= limit.Key)
+            {
+                NumImpostors = Math.Min(NumImpostors, limit.Value);
+                break;
+            }
+        }
+
         List<PlayerControl> Impostors = [];
         List<PlayerControl> Crewmates = [];
 
