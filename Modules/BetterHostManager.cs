@@ -8,12 +8,10 @@ namespace BetterAmongUs;
 
 class BetterHostManager
 {
-    private static List<PlayerControl> VentStuck = [];
+    private static readonly List<PlayerControl> VentStuck = [];
 
-    public static void Update(PlayerControl player)
+    public static void PlayerUpdate(PlayerControl player)
     {
-        if (!Main.BetterHost.Value) return;
-
         // Lock up player vent button if it's invalid vent
         if (!VentStuck.Contains(player) && player.inVent && !player.Is(RoleTypes.Engineer) && !player.IsImpostorTeam())
         {
@@ -21,43 +19,6 @@ class BetterHostManager
             player.MyPhysics.RpcBootFromVent(player.GetPlayerVentId());
             VentStuck.Add(player);
         }
-    }
-
-    public static bool IsSpeedExceeding(float currentSpeed)
-    {
-        float leniency = 1.8f;
-        float thresholdSpeed = GetAverageSpeed() + leniency;
-        bool isExceeding = currentSpeed > thresholdSpeed;
-        return isExceeding;
-    }
-
-    public static float GetAverageSpeed()
-    {
-        float speedMod = GameStates.IsHideNSeek
-            ? GameOptionsManager.Instance.currentHideNSeekGameOptions.PlayerSpeedMod
-            : GameOptionsManager.Instance.currentNormalGameOptions.PlayerSpeedMod;
-
-        // Data points
-        float[] mods = { 0.5f, 1.5f, 2.0f }; // Add more as needed
-        float[] avgSpeeds = { 1.3f, 3.75f, 5.0f }; // Add corresponding speeds
-
-        int n = mods.Length;
-        float sumMod = 0, sumAvgSpeed = 0, sumModAvgSpeed = 0, sumModSquared = 0;
-
-        for (int i = 0; i < n; i++)
-        {
-            sumMod += mods[i];
-            sumAvgSpeed += avgSpeeds[i];
-            sumModAvgSpeed += mods[i] * avgSpeeds[i];
-            sumModSquared += mods[i] * mods[i];
-        }
-
-        float m = (n * sumModAvgSpeed - sumMod * sumAvgSpeed) / (n * sumModSquared - sumMod * sumMod);
-        float c = (sumAvgSpeed - m * sumMod) / n;
-
-        float estimatedAverageSpeed = m * speedMod + c;
-
-        return estimatedAverageSpeed;
     }
 
     public static bool CheckRange(Vector2 pos1, Vector2 pos2, float range) => Vector2.Distance(pos1, pos2) <= range;

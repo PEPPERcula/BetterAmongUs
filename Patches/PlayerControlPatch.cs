@@ -55,17 +55,17 @@ class PlayerControlPatch
             __instance.cosmetics.colorBlindText.text = string.Empty;
         }
 
+        if (GameStates.IsInGame && GameStates.IsHost && Main.BetterHost.Value)
+        {
+            BetterHostManager.PlayerUpdate(__instance);
+        }
+
         infotime -= Time.deltaTime;
 
         if (infotime <= 0)
         {
             SetPlayerInfo(__instance);
             infotime = 0.4f;
-        }
-
-        if (GameStates.IsInGame && GameStates.IsHost)
-        {
-            BetterHostManager.Update(__instance);
         }
 
         if (GameStates.IsInGamePlay)
@@ -93,6 +93,12 @@ class PlayerControlPatch
         if (!player.DataIsCollected())
         {
             nameText.text = "<color=#b5b5b5>Loading</color>";
+            return;
+        }
+
+        if (!Main.LobbyPlayerInfo.Value && GameStates.IsLobby)
+        {
+            player.ResetAllPlayerTextInfo();
             return;
         }
 
@@ -170,12 +176,6 @@ class PlayerControlPatch
         if (!player.IsInShapeshift())
         {
             player.RawSetName(NewName);
-        }
-
-        if (!Main.LobbyPlayerInfo.Value && GameStates.IsLobby)
-        {
-            player.ResetAllPlayerTextInfo();
-            return;
         }
 
         // Put +++ at the end of each tag
