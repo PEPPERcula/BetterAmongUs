@@ -107,7 +107,10 @@ class PlayerControlPatch
         string friendCode = player.Data.FriendCode;
         string friendCodeColor = (Regex.Replace(friendCode, hashtagPattern, string.Empty).Length is > 10 or < 5 || !Regex.IsMatch(friendCode, pattern) || !Regex.IsMatch(friendCode, hashtagPattern)) ? "#00f7ff" : "#ff0000";
         if (string.IsNullOrEmpty(friendCode) || friendCode == "")
+        {
             friendCode = "???";
+            friendCodeColor = "#ff0000";
+        }
         if (DataManager.Settings.Gameplay.StreamerMode == true)
             friendCode = string.Concat('*').Repeat(friendCode.Length);
 
@@ -145,6 +148,7 @@ class PlayerControlPatch
             sbTag.Append($"<color=#b554ff>ID: {player.PlayerId}</color>+++");
 
             sbTagTop.Append($"<color=#9e9e9e>{Utils.GetPlatformName(player, useTag: true)}</color>+++");
+
             sbTagTop.Append($"<color=#ffd829>Lv: {player.Data.PlayerLevel.ToString()}</color>+++");
 
             sbTagBottom.Append($"<color={friendCodeColor}>{friendCode}</color>+++");
@@ -179,10 +183,11 @@ class PlayerControlPatch
         {
             if (source.Length > 0)
             {
-                string[] parts = source.ToString().Split("+++");
+                string text = source.ToString();
+                string[] parts = text.Split("+++");
                 for (int i = 0; i < parts.Length; i++)
                 {
-                    if (!string.IsNullOrEmpty(parts[i]))
+                    if (!string.IsNullOrEmpty(Utils.GetRawText(parts[i])))
                     {
                         destination.Append(parts[i]);
                         if (i != parts.Length - 2)

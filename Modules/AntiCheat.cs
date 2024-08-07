@@ -449,7 +449,7 @@ class AntiCheat
                 }
             }
 
-            if (player.DataIsCollected() == true)
+            if (player.DataIsCollected() == true && !GameStates.IsLocalGame && GameStates.IsVanillaServer)
             {
                 if (callId is (byte)RpcCalls.SetName or (byte)RpcCalls.CheckName or (byte)RpcCalls.SetLevel)
                 {

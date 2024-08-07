@@ -70,7 +70,7 @@ static class ExtendedPlayerControl
     {
         if (player == null) return false;
 
-        if (player.isDummy)
+        if (player.isDummy || GameStates.IsLocalGame || !GameStates.IsVanillaServer)
         {
             return true;
         }

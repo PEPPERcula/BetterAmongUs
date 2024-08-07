@@ -8,7 +8,6 @@ namespace BetterAmongUs;
 
 class BetterHostManager
 {
-    private static Dictionary<byte, Dictionary<byte, string>> LastPlayerName = []; // Targetid, Playerid, Name
     private static List<PlayerControl> VentStuck = [];
 
     public static void Update(PlayerControl player)
@@ -295,27 +294,20 @@ class BetterHostManager
             }
 
             if (sbTopInfo.Length > 0)
-                NewName = $"<size=50%>{sbTopInfo}</size>\n{NewName}";
+                NewName = $"<size=65%>{sbTopInfo}</size>\n{NewName}";
             else
                 NewName = $"{NewName}";
 
             // Don't send rpc if name is the same!
-            if (LastPlayerName.TryGetValue(target.Data.PlayerId, out var playerNameDict))
+            if (player.BetterData().LastNameSetFor.TryGetValue(target.PlayerId, out var lastName) && lastName == NewName)
             {
-                if (playerNameDict.TryGetValue(player.Data.PlayerId, out var currentName) && currentName == NewName)
+                if (!force)
                 {
-                    if (!force)
-                    {
-                        return;
-                    }
+                    return;
                 }
             }
-            else
-            {
-                LastPlayerName[target.Data.PlayerId] = new Dictionary<byte, string>();
-            }
 
-            LastPlayerName[target.Data.PlayerId][player.Data.PlayerId] = NewName;
+            player.BetterData().LastNameSetFor[target.PlayerId] = NewName;
 
             player.RpcSetNamePrivate(NewName, target);
             Logger.Log($"Set {player.Data.PlayerName} name to {NewName.Replace("\n", "-")} for {target.Data.PlayerName}", "RPC");

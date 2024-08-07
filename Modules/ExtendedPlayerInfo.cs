@@ -2,6 +2,7 @@
 
 public class ExtendedPlayerInfo
 {
+    public Dictionary<byte, string> LastNameSetFor { get; set; } = [];
     public bool IsBetterUser { get; set; } = false;
     public bool IsBetterHost { get; set; } = false;
     public bool IsTOHEHost { get; set; } = false;
