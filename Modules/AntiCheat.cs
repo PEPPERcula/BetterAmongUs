@@ -44,7 +44,7 @@ class AntiCheat
 
     public static void PauseAntiCheat()
     {
-        float time = 2f;
+        float time = 4f;
         if (IsEnabled)
         {
             IsEnabled = false;
@@ -227,13 +227,11 @@ class AntiCheat
 
                     if (target != null)
                     {
-                        if (!player.IsImpostorTeam() || !player.IsAlive() || player.IsInVanish() || target.IsImpostorTeam()
-                            || player.BetterData().TimeSinceKill < GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown)
+                        if (!player.IsImpostorTeam() || !player.IsAlive() || player.IsInVanish() || target.IsImpostorTeam())
                         {
                             BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
                             Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName((RpcCalls)callId)}: {!player.IsImpostorTeam()} - {player.IsInVanish()}" +
-                                $" - {!target.IsAlive()} - {target.IsImpostorTeam()} - {player.BetterData().TimeSinceKill < GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown - 2.5f}");
-                            Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName((RpcCalls)callId)}: {player.BetterData().TimeSinceKill} < {GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown} or {GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown -2.5} -2.5");
+                                $" - {!target.IsAlive()} - {target.IsImpostorTeam()}");
                         }
                     }
                 }
@@ -335,7 +333,7 @@ class AntiCheat
 
             if (callId is (byte)RpcCalls.StartMeeting)
             {
-                if (GameStates.IsMeeting || GameStates.IsHideNSeek || !player.IsAlive() || player.IsInVent() || player.shapeshifting
+                if (GameStates.IsMeeting && MeetingHudUpdatePatch.timeOpen > 0.5f || GameStates.IsHideNSeek || !player.IsAlive() || player.IsInVent() || player.shapeshifting
                     || player.inMovingPlat || player.onLadder || player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
                 {
                     BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");

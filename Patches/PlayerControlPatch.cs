@@ -68,16 +68,8 @@ class PlayerControlPatch
             infotime = 0.4f;
         }
 
-        if (GameStates.IsInGamePlay)
+        if (!GameStates.IsInGamePlay)
         {
-            if (__instance.IsImpostorTeam())
-            {
-                __instance.BetterData().TimeSinceKill += Time.deltaTime;
-            }
-        }
-        else
-        {
-            __instance.BetterData().TimeSinceKill = 0f;
             __instance.BetterData().TimesCalledMeeting = 0;
             __instance.BetterData().HasNoisemakerNotify = false;
         }
@@ -230,8 +222,6 @@ class PlayerControlPatch
 
         if (PlayerControl.LocalPlayer.IsImpostorTeam() && GameStates.IsInGamePlay && !GameStates.IsHideNSeek && HudManager.Instance.CrewmatesKilled.isActiveAndEnabled)
             HudManager.Instance?.NotifyOfDeath();
-
-        __instance.BetterData().TimeSinceKill = 0f;
 
         Logger.LogPrivate($"{__instance.Data.PlayerName} Has killed {target.Data.PlayerName} as {Utils.GetRoleName(__instance.Data.RoleType)}", "EventLog");
     }

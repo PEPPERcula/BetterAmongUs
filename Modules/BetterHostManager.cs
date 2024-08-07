@@ -57,13 +57,6 @@ class BetterHostManager
                 {
                     PlayerControl target = reader.ReadNetObject<PlayerControl>();
 
-                    bool condition = false;
-
-                    if (player.BetterData().TimeSinceKill >= GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown)
-                    {
-                        condition = true;
-                    }
-
                     if (target != null)
                     {
                         if (player.IsAlive()
@@ -74,7 +67,6 @@ class BetterHostManager
                             && !player.shapeshifting
                             && !player.onLadder
                             && !player.MyPhysics.Animations.IsPlayingAnyLadderAnimation()
-                            && condition
                             && CheckRange(player.GetCustomPosition(), target.GetCustomPosition(), 3f))
                         {
                             if (target.IsAlive()
