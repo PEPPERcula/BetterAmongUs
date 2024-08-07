@@ -109,12 +109,12 @@ class BetterHostManager
                             && !player.onLadder
                             && !player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
                         {
-                            if (!target.IsInVent() && flag == false)
+                            if (!target.IsInVent() && !GameStates.IsMeeting && !GameStates.IsExilling && flag == false)
                             {
                                 break;
                             }
 
-                            player.RpcShapeshift(target, !target.IsInVent());
+                            player.RpcShapeshift(target, !target.IsInVent() && !GameStates.IsMeeting && !GameStates.IsExilling);
                             break;
                         }
                     }

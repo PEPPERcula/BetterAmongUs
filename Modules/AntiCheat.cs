@@ -403,17 +403,10 @@ class AntiCheat
                     return false;
                 }
 
-                else if (ShapeshiftAsTarget && (GameStates.IsMeeting || GameStates.IsExilling) || !flag)
-                {
-                    BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
-                    Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName((RpcCalls)callId)} 2: {GameStates.IsMeeting} - {GameStates.IsExilling} - {!flag}");
-                    return false;
-                }
-
                 else if (!flag && !GameStates.IsMeeting && !GameStates.IsExilling && !player.IsInVent())
                 {
                     BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
-                    Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName((RpcCalls)callId)} 3: {!flag} - {!GameStates.IsMeeting} - {!GameStates.IsExilling} - {!player.IsInVent()}");
+                    Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName((RpcCalls)callId)} 2: {!flag} - {!GameStates.IsMeeting} - {!GameStates.IsExilling} - {!player.IsInVent()}");
                     return false;
                 }
             }
