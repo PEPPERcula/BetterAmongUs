@@ -1,9 +1,11 @@
 using HarmonyLib;
+using Hazel;
 using System.Text;
 using TMPro;
 using UnityEngine;
 
 namespace BetterAmongUs;
+
 [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Start))]
 class MeetingHudStartPatch
 {
@@ -164,5 +166,15 @@ class MeetingHudUpdatePatch
         {
             TextObj.GetComponent<TextMeshPro>().text = text;
         }
+    }
+}
+
+[HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.OnDestroy))]
+class MeetingHud_OnDestroyPatch
+{
+    public static void Postfix()
+    {
+        Logger.LogHeader("Meeting Has Endded");
+        RPC.SyncAllNames(force: true);
     }
 }
