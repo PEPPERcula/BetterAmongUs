@@ -1,6 +1,5 @@
 ﻿using AmongUs.Data;
 using AmongUs.GameOptions;
-using BetterAmongUs.Role;
 using HarmonyLib;
 using Hazel;
 using Il2CppSystem.Text;

@@ -2,7 +2,7 @@
 using HarmonyLib;
 using Hazel;
 
-namespace BetterAmongUs.Role;
+namespace BetterAmongUs;
 
 [HarmonyPatch(typeof(RoleManager))]
 public class RoleManagerPatch
