@@ -20,8 +20,8 @@ public enum ReleaseTypes : int
 [BepInProcess("Among Us.exe")]
 public class Main : BasePlugin
 {
-    public const ReleaseTypes ReleaseBuildType = ReleaseTypes.Canary;
-    public const string CanaryNum = "6";
+    public const ReleaseTypes ReleaseBuildType = ReleaseTypes.Release;
+    public const string CanaryNum = "0";
     public const string HotfixNum = "0";
     public const bool IsHotFix = false;
     public const string PluginGuid = "com.d1gq.betteramongus";
