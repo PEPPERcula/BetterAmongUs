@@ -2,7 +2,6 @@
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
-using BetterAmongUs.Patches;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using Innersloth.IO;
@@ -27,7 +26,7 @@ public class Main : BasePlugin
     public const bool IsHotFix = false;
     public const string PluginGuid = "com.d1gq.betteramongus";
     public const string PluginVersion = "1.0.0";
-    public const string ReleaseDate = "08.07.2024"; // mm/dd/yyyy
+    public const string ReleaseDate = "08.08.2024"; // mm/dd/yyyy
     public const string Github = "https://github.com/D1GQ/BetterAmongUs";
     public const string Discord = "https://discord.gg/vjYrXpzNAn";
 
