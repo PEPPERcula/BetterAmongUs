@@ -32,7 +32,7 @@ class CommandsPatch
         "kick {id}---Kick a player from the game - <color=red>Host Only</color>---{player id}",
         "ban {id}---Ban a player from the game - <color=red>Host Only</color>---{player id}",
         "endgame {reason}---Force end the game - <color=red>Host Only</color>---{player id}",
-        "removeplayer {identifier}---Remove player from local <color=#4f92ff>Anti-Cheat</color> data---{Name, FriendCode, HashPuid}",
+        "removeplayer {identifier}---Remove player from local <color=#4f92ff>Anti-Cheat</color> data---{FriendCode, HashPuid}",
         };
     public static string[] DebugCommandListHelper =
         {
