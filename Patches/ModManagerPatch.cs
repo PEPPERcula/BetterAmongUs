@@ -10,7 +10,7 @@ public class ModManagerPatch
     [HarmonyPostfix]
     public static void LateUpdate_Postfix(ModManager __instance)
     {
-        // __instance.ShowModStamp();
+        __instance.ShowModStamp();
 
         if (__instance.ModStamp.gameObject.active == true)
             __instance.ModStamp.GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("BetterAmongUs.Resources.Images.BetterAmongUs-Mod.png", 250f);
