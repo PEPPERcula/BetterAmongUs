@@ -86,7 +86,7 @@ internal static class RPC
     {
         if (!GameStates.IsHost) return;
 
-        if (player.GetIsBetterUser())
+        if (player.BetterData().IsBetterUser)
         {
             if (sendToBetterUser)
             {
@@ -148,8 +148,8 @@ internal static class RPC
                         break;
                     }
 
-                    player.SetIsBetterUser(true);
-                    player.SetIsBetterHost(IsBetterHost);
+                    player.BetterData().IsBetterUser = true;
+                    player.BetterData().IsBetterHost = IsBetterHost;
                 }
                 break;
             case (byte)CustomRPC.AddChat:
@@ -158,6 +158,7 @@ internal static class RPC
             case (byte)CustomRPC.VersionCheck or (byte)CustomRPC.RequestRetryVersionCheck:
                 if (player.IsHost())
                 {
+                    player.BetterData().IsTOHEHost = true;
                     var BAU = "<color=#278720>♻</color><color=#0ed400><b>BetterAmongUs</b></color><color=#278720>♻</color>";
                     Utils.DisconnectSelf($"{BAU} does not support <color=#ff9cdc><b>TOHE</b></color>");
                 }

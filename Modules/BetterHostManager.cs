@@ -8,13 +8,10 @@ namespace BetterAmongUs;
 
 class BetterHostManager
 {
-    private static Dictionary<byte, Dictionary<byte, string>> LastPlayerName = []; // Targetid, Playerid, Name
-    private static List<PlayerControl> VentStuck = [];
+    private static readonly List<PlayerControl> VentStuck = [];
 
-    public static void Update(PlayerControl player)
+    public static void PlayerUpdate(PlayerControl player)
     {
-        if (!Main.BetterHost.Value) return;
-
         // Lock up player vent button if it's invalid vent
         if (!VentStuck.Contains(player) && player.inVent && !player.Is(RoleTypes.Engineer) && !player.IsImpostorTeam())
         {
@@ -22,43 +19,6 @@ class BetterHostManager
             player.MyPhysics.RpcBootFromVent(player.GetPlayerVentId());
             VentStuck.Add(player);
         }
-    }
-
-    public static bool IsSpeedExceeding(float currentSpeed)
-    {
-        float leniency = 1.8f;
-        float thresholdSpeed = GetAverageSpeed() + leniency;
-        bool isExceeding = currentSpeed > thresholdSpeed;
-        return isExceeding;
-    }
-
-    public static float GetAverageSpeed()
-    {
-        float speedMod = GameStates.IsHideNSeek
-            ? GameOptionsManager.Instance.currentHideNSeekGameOptions.PlayerSpeedMod
-            : GameOptionsManager.Instance.currentNormalGameOptions.PlayerSpeedMod;
-
-        // Data points
-        float[] mods = { 0.5f, 1.5f, 2.0f }; // Add more as needed
-        float[] avgSpeeds = { 1.3f, 3.75f, 5.0f }; // Add corresponding speeds
-
-        int n = mods.Length;
-        float sumMod = 0, sumAvgSpeed = 0, sumModAvgSpeed = 0, sumModSquared = 0;
-
-        for (int i = 0; i < n; i++)
-        {
-            sumMod += mods[i];
-            sumAvgSpeed += avgSpeeds[i];
-            sumModAvgSpeed += mods[i] * avgSpeeds[i];
-            sumModSquared += mods[i] * mods[i];
-        }
-
-        float m = (n * sumModAvgSpeed - sumMod * sumAvgSpeed) / (n * sumModSquared - sumMod * sumMod);
-        float c = (sumAvgSpeed - m * sumMod) / n;
-
-        float estimatedAverageSpeed = m * speedMod + c;
-
-        return estimatedAverageSpeed;
     }
 
     public static bool CheckRange(Vector2 pos1, Vector2 pos2, float range) => Vector2.Distance(pos1, pos2) <= range;
@@ -97,16 +57,6 @@ class BetterHostManager
                 {
                     PlayerControl target = reader.ReadNetObject<PlayerControl>();
 
-                    bool condition = false;
-
-                    if (ExtendedPlayerInfo.TimeSinceKill.TryGetValue(player, out var value))
-                    {
-                        if (value >= GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown)
-                        {
-                            condition = true;
-                        }
-                    }
-
                     if (target != null)
                     {
                         if (player.IsAlive()
@@ -117,7 +67,6 @@ class BetterHostManager
                             && !player.shapeshifting
                             && !player.onLadder
                             && !player.MyPhysics.Animations.IsPlayingAnyLadderAnimation()
-                            && condition
                             && CheckRange(player.GetCustomPosition(), target.GetCustomPosition(), 3f))
                         {
                             if (target.IsAlive()
@@ -152,12 +101,12 @@ class BetterHostManager
                             && !player.onLadder
                             && !player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
                         {
-                            if (!target.IsInVent() && flag == false)
+                            if (!target.IsInVent() && !GameStates.IsMeeting && !GameStates.IsExilling && flag == false)
                             {
                                 break;
                             }
 
-                            player.RpcShapeshift(target, !target.IsInVent());
+                            player.RpcShapeshift(target, !target.IsInVent() && !GameStates.IsMeeting && !GameStates.IsExilling);
                             break;
                         }
                     }
@@ -246,7 +195,7 @@ class BetterHostManager
 
         foreach (PlayerControl target in Main.AllPlayerControls)
         {
-            if (target == null || target == PlayerControl.LocalPlayer || target.GetIsBetterUser()) continue;
+            if (target == null || target == PlayerControl.LocalPlayer || target.BetterData().IsBetterUser) continue;
 
             string NewName = player.CurrentOutfit.PlayerName;
 
@@ -265,7 +214,7 @@ class BetterHostManager
 
                 if (player == PlayerControl.LocalPlayer)
                     sbTopTag.Append($"<color=#0dff00>Better Host</color>+++");
-                else if (player.GetIsBetterUser())
+                else if (player.BetterData().IsBetterUser)
                     sbTopTag.Append("<color=#0dff00>Better User</color>+++");
             }
             else if (GameStates.IsInGamePlay)
@@ -298,27 +247,20 @@ class BetterHostManager
             }
 
             if (sbTopInfo.Length > 0)
-                NewName = $"<size=50%>{sbTopInfo}</size>\n{NewName}";
+                NewName = $"<size=65%>{sbTopInfo}</size>\n{NewName}";
             else
                 NewName = $"{NewName}";
 
             // Don't send rpc if name is the same!
-            if (LastPlayerName.TryGetValue(target.Data.PlayerId, out var playerNameDict))
+            if (player.BetterData().LastNameSetFor.TryGetValue(target.PlayerId, out var lastName) && lastName == NewName)
             {
-                if (playerNameDict.TryGetValue(player.Data.PlayerId, out var currentName) && currentName == NewName)
+                if (!force)
                 {
-                    if (!force)
-                    {
-                        return;
-                    }
+                    return;
                 }
             }
-            else
-            {
-                LastPlayerName[target.Data.PlayerId] = new Dictionary<byte, string>();
-            }
 
-            LastPlayerName[target.Data.PlayerId][player.Data.PlayerId] = NewName;
+            player.BetterData().LastNameSetFor[target.PlayerId] = NewName;
 
             player.RpcSetNamePrivate(NewName, target);
             Logger.Log($"Set {player.Data.PlayerName} name to {NewName.Replace("\n", "-")} for {target.Data.PlayerName}", "RPC");

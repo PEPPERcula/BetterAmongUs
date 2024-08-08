@@ -1,9 +1,11 @@
 using HarmonyLib;
+using Hazel;
 using System.Text;
 using TMPro;
 using UnityEngine;
 
 namespace BetterAmongUs;
+
 [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Start))]
 class MeetingHudStartPatch
 {
@@ -50,9 +52,13 @@ class MeetingHudStartPatch
 [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Update))]
 class MeetingHudUpdatePatch
 {
+    public static float timeOpen = 0f;
+
     // Set player meeting info
     public static void Postfix(MeetingHud __instance)
     {
+        timeOpen += Time.deltaTime;
+
         foreach (var pva in __instance.playerStates)
         {
             if (pva == null) return;
@@ -164,5 +170,16 @@ class MeetingHudUpdatePatch
         {
             TextObj.GetComponent<TextMeshPro>().text = text;
         }
+    }
+}
+
+[HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.OnDestroy))]
+class MeetingHud_OnDestroyPatch
+{
+    public static void Postfix()
+    {
+        MeetingHudUpdatePatch.timeOpen = 0f;
+        Logger.LogHeader("Meeting Has Endded");
+        RPC.SyncAllNames(force: true);
     }
 }

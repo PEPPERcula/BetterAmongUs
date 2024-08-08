@@ -219,6 +219,8 @@ public static class Utils
             case Platforms.Unknown:
                 PlatformName = "None";
                 break;
+            default:
+                return string.Empty;
         }
 
         if (useTag == false)

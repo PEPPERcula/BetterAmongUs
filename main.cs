@@ -2,7 +2,6 @@
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
-using BetterAmongUs.Patches;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using Innersloth.IO;
@@ -22,14 +21,14 @@ public enum ReleaseTypes : int
 public class Main : BasePlugin
 {
     public const ReleaseTypes ReleaseBuildType = ReleaseTypes.Canary;
-    public const string CanaryNum = "5";
-    public const string HotfixNum = "3";
-    public const bool IsHotFix = true;
+    public const string CanaryNum = "6";
+    public const string HotfixNum = "0";
+    public const bool IsHotFix = false;
     public const string PluginGuid = "com.d1gq.betteramongus";
     public const string PluginVersion = "1.0.0";
-    public const string ReleaseDate = "08.01.2024"; // mm/dd/yyyy
+    public const string ReleaseDate = "08.08.2024"; // mm/dd/yyyy
     public const string Github = "https://github.com/D1GQ/BetterAmongUs";
-    public const string Discord = "https://discord.gg/a3eVJHp9p5";
+    public const string Discord = "https://discord.gg/vjYrXpzNAn";
 
     public static string GetVersionText(bool newLine = false)
     {

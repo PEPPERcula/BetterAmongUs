@@ -26,6 +26,24 @@ public class RoleManagerPatch
 
         int NumImpostors = GameOptionsManager.Instance.CurrentGameOptions.NumImpostors;
 
+        int NumPlayers = Main.AllPlayerControls.Length;
+
+        var impostorLimits = new Dictionary<int, int>
+        {
+            { 3, 1 },
+            { 5, 2 },
+            { 6, 3 }
+        };
+
+        foreach (var limit in impostorLimits)
+        {
+            if (NumPlayers <= limit.Key)
+            {
+                NumImpostors = Math.Min(NumImpostors, limit.Value);
+                break;
+            }
+        }
+
         List<PlayerControl> Impostors = [];
         List<PlayerControl> Crewmates = [];
 
@@ -132,7 +150,7 @@ public class RoleManagerPatch
                 var impRoles = Shuffle(ImpostorRoles);
                 foreach (var kvp in impRoles)
                 {
-                    if (RNG() < GameOptionsManager.Instance.CurrentGameOptions.RoleOptions.GetChancePerGame(kvp.Key) && kvp.Value > 0)
+                    if (RNG() <= GameOptionsManager.Instance.CurrentGameOptions.RoleOptions.GetChancePerGame(kvp.Key) && kvp.Value > 0)
                     {
                         ImpostorMultiplier[Utils.GetHashPuid(pc)] += 15;
                         ImpostorRoles[kvp.Key]--;
@@ -158,7 +176,7 @@ public class RoleManagerPatch
                 var crewRoles = Shuffle(CrewmateRoles);
                 foreach (var kvp in crewRoles)
                 {
-                    if (RNG() < GameOptionsManager.Instance.CurrentGameOptions.RoleOptions.GetChancePerGame(kvp.Key) && kvp.Value > 0)
+                    if (RNG() <= GameOptionsManager.Instance.CurrentGameOptions.RoleOptions.GetChancePerGame(kvp.Key) && kvp.Value > 0)
                     {
                         ImpostorMultiplier[Utils.GetHashPuid(pc)] = 0;
                         CrewmateRoles[kvp.Key]--;
@@ -189,6 +207,49 @@ public class RoleManagerPatch
         }, 1f, "RoleManager SyncAllNames");
 
         Logger.LogHeader($"Better Role Assignment Has Finished", "RoleManager");
+
+        return false;
+    }
+
+    [HarmonyPatch(nameof(RoleManager.AssignRoleOnDeath))]
+    [HarmonyPrefix]
+    public static bool AssignRoleOnDeath_Prefix(/*RoleManager __instance*/ [HarmonyArgument(0)] PlayerControl player)
+    {
+        if (!Main.BetterRoleAlgorithma.Value) return true;
+
+        Dictionary<RoleTypes, int> GhostRoles = new() // Role, Amount
+        {
+            { RoleTypes.GuardianAngel, 0 },
+        };
+
+        List<RoleTypes> Roles = [.. GhostRoles.Keys];
+
+        foreach (RoleTypes role in Roles)
+        {
+            GhostRoles[role] = GameOptionsManager.Instance.CurrentGameOptions.RoleOptions.GetNumPerGame(role);
+        }
+
+        foreach (var allDeadPlayers in Main.AllPlayerControls.Where(pc => !pc.IsAlive()))
+        {
+            for (int i = 0; i < Roles.Count; i++)
+            {
+                if (allDeadPlayers.Is(Roles[i]))
+                {
+                    GhostRoles[Roles[i]]--;
+                }
+            }
+        }
+
+        var ghostRoles = Shuffle(GhostRoles);
+
+        foreach (var kvp in ghostRoles)
+        {
+            if (kvp.Value > 0 && RNG() <= GameOptionsManager.Instance.CurrentGameOptions.RoleOptions.GetChancePerGame(kvp.Key))
+            {
+                player.RpcSetRole(kvp.Key);
+                break;
+            }
+        }
 
         return false;
     }

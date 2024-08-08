@@ -123,6 +123,7 @@ class ChatPatch
             ChatBubble pooledBubble = __instance.GetPooledBubble();
             try
             {
+                chatText = chatText.Replace("\n", "");
                 pooledBubble.transform.SetParent(__instance.scroller.Inner);
                 pooledBubble.transform.localScale = Vector3.one;
                 bool flag = sourcePlayer == PlayerControl.LocalPlayer;
@@ -170,9 +171,9 @@ class ChatPatch
                     if (sourcePlayer.IsDev())
                         sbTag.Append("<color=#0088ff>Dev</color>+++");
 
-                    if (((sourcePlayer == PlayerControl.LocalPlayer && GameStates.IsHost && Main.BetterHost.Value) || sourcePlayer.GetIsBetterHost() == true) && !GameStates.IsInGamePlay)
+                    if (((sourcePlayer == PlayerControl.LocalPlayer && GameStates.IsHost && Main.BetterHost.Value) || sourcePlayer.BetterData().IsBetterHost) && !GameStates.IsInGamePlay)
                         sbTag.Append("<color=#0dff00>Better Host</color>+++");
-                    else if ((sourcePlayer == PlayerControl.LocalPlayer || sourcePlayer.GetIsBetterUser() == true) && !GameStates.IsInGamePlay)
+                    else if ((sourcePlayer == PlayerControl.LocalPlayer || sourcePlayer.BetterData().IsBetterUser) && !GameStates.IsInGamePlay)
                         sbTag.Append("<color=#0dff00>Better User</color>+++");
 
                     if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.SickoData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.SickoData.ContainsValue(friendCode))
@@ -242,15 +243,15 @@ class ChatPatch
             __instance.textArea.AllowSymbols = true;
             __instance.textArea.AllowPaste = true;
             __instance.textArea.AllowEmail = true;
-            __instance.textArea.characterLimit = 120;
-            __instance.charCountText.text = "0/120";
+            __instance.textArea.characterLimit = 118;
+            __instance.charCountText.text = "0/118";
         }
         [HarmonyPatch(nameof(FreeChatInputField.UpdateCharCount))]
         [HarmonyPostfix]
         public static void UpdateCharCount_Postfix(FreeChatInputField __instance)
         {
             int length = __instance.textArea.text.Length;
-            __instance.charCountText.text = string.Format("{0}/120", length);
+            __instance.charCountText.text = string.Format("{0}/118", length);
             __instance.charCountText.color = GetCharColor(length, UnityEngine.Color.white);
         }
     }
@@ -260,7 +261,7 @@ class ChatPatch
 
         switch (length)
         {
-            case int n when n > 119:
+            case int n when n > 117:
                 if (ColorUtility.TryParseHtmlString("#ff0000", out UnityEngine.Color newColor1))
                     color = newColor1;
                 break;

@@ -97,27 +97,31 @@ internal class MainMenuPatch
             buttons.Add(button);
             button.name = name;
             UnityEngine.Object.Destroy(button.GetComponent<AspectPosition>());
-            for (int i = 0; i < buttons.ToList().Count; i++)
-            {
-                float baseY = -2.7182f;
-                float newY = baseY + (0.35f * i);
-                button.transform.localPosition = new(-0.8118f, newY, -5f);
-                button.transform.localScale = new(0.78f, 0.78f, 0.78f);
-            }
 
+            // Set button position and scale
+            float baseY = -2.7882f;
+            float newY = baseY + (0.38f * (buttons.Count - 1));
+            button.transform.localPosition = new Vector3(-0.8118f, newY, -5f);
+            button.transform.localScale = new Vector3(0.78f, 0.78f, 0.78f);
+
+            // Set button action
             button.OnClick = new();
             button.OnClick.AddListener(action);
 
+            // Set button text
             var buttonText = button.transform.Find("FontPlacer/Text_TMP").GetComponent<TMP_Text>();
             buttonText.DestroyTranslator();
             buttonText.fontSize = buttonText.fontSizeMax = buttonText.fontSizeMin = 3.5f;
             buttonText.enableWordWrapping = false;
             buttonText.text = label;
+
+            // Set button colors
             var normalSprite = button.inactiveSprites.GetComponent<SpriteRenderer>();
             var hoverSprite = button.activeSprites.GetComponent<SpriteRenderer>();
             normalSprite.color = normalColor;
             hoverSprite.color = hoverColor;
 
+            // Align text
             var container = buttonText.transform.parent;
             UnityEngine.Object.Destroy(container.GetComponent<AspectPosition>());
             UnityEngine.Object.Destroy(buttonText.GetComponent<AspectPosition>());
@@ -125,15 +129,17 @@ internal class MainMenuPatch
             buttonText.transform.SetLocalX(0f);
             buttonText.horizontalAlignment = HorizontalAlignmentOptions.Center;
 
+            // Set button collider
             var buttonCollider = button.GetComponent<BoxCollider2D>();
             if (scale.HasValue)
             {
                 normalSprite.size = hoverSprite.size = buttonCollider.size = scale.Value;
             }
 
-            buttonCollider.offset = new(0f, 0f);
+            buttonCollider.offset = new Vector2(0f, 0f);
 
             return button;
         }
+
     }
 }
