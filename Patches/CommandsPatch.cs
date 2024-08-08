@@ -32,6 +32,7 @@ class CommandsPatch
         "kick {id}---Kick a player from the game - <color=red>Host Only</color>---{player id}",
         "ban {id}---Ban a player from the game - <color=red>Host Only</color>---{player id}",
         "endgame {reason}---Force end the game - <color=red>Host Only</color>---{player id}",
+        "removeplayer {identifier}---Remove player from local <color=#4f92ff>Anti-Cheat</color> data---{Name, FriendCode, HashPuid}",
         };
     public static string[] DebugCommandListHelper =
         {
@@ -249,6 +250,19 @@ class CommandsPatch
                         {
                             GameManager.Instance.RpcEndGame(GameOverReason.HumansByTask, false);
                         }
+                    }
+                }
+                break;
+            case "removeplayer":
+                if (!string.IsNullOrEmpty(subArgs))
+                {
+                    if (BetterDataManager.RemovePlayer(subArgs) == true)
+                    {
+                        Utils.AddChatPrivate($"<color=#0dff00>{subArgs} successfully removed from local <color=#4f92ff>Anti-Cheat</color> data!</color>");
+                    }
+                    else
+                    {
+                        Utils.AddChatPrivate($"{error}\nCould not find player data from identifier");
                     }
                 }
                 break;

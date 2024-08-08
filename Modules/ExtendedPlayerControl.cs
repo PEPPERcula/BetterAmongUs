@@ -91,7 +91,7 @@ static class ExtendedPlayerControl
     // Kick player
     public static void Kick(this PlayerControl player, bool ban = false, string setReasonInfo = "")
     {
-        if (!GameStates.IsHost || !player.DataIsCollected())
+        if (!GameStates.IsHost || !player.DataIsCollected() || player.IsHost())
         {
             return;
         }
