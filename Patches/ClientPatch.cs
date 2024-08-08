@@ -1,10 +1,12 @@
 ﻿using HarmonyLib;
+using InnerNet;
 using UnityEngine;
 
 namespace BetterAmongUs.Patches;
 
 public class ClientPatch
 {
+    // Log game exit
     [HarmonyPatch(typeof(AmongUsClient))]
     public class AmongUsClientPatch
     {
@@ -15,6 +17,7 @@ public class ClientPatch
             Logger.Log($"Client has left game for: {Enum.GetName(reason)}", "AmongUsClientPatch");
         }
     }
+    // Set text color
     [HarmonyPatch(typeof(CosmeticsLayer))]
     public class CosmeticsLayerPatch
     {
@@ -32,7 +35,7 @@ public class ClientPatch
             return false;
         }
     }
-
+    // Clean up menu
     [HarmonyPatch(typeof(RegionMenu))]
     public class RegionMenuPatch
     {

@@ -1,13 +1,11 @@
 ﻿using AmongUs.Data;
 using HarmonyLib;
-using Hazel;
 using Il2CppSystem.Linq;
 using LibCpp2IL;
 using System.Text;
 using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace BetterAmongUs.Patches;
 
@@ -60,6 +58,7 @@ class PlayerControlPatch
             BetterHostManager.PlayerUpdate(__instance);
         }
 
+        // Set text info
         infotime -= Time.deltaTime;
 
         if (infotime <= 0)
@@ -68,6 +67,7 @@ class PlayerControlPatch
             infotime = 0.4f;
         }
 
+        // Reset player data in lobby
         if (!GameStates.IsInGamePlay)
         {
             __instance.BetterData().TimesCalledMeeting = 0;

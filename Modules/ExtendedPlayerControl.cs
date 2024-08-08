@@ -88,6 +88,22 @@ static class ExtendedPlayerControl
         return true;
     }
 
+    // Kick player
+    public static void Kick(this PlayerControl player, bool ban = false, string setReasonInfo = "")
+    {
+        if (!GameStates.IsHost || !player.DataIsCollected())
+        {
+            return;
+        }
+
+        if (setReasonInfo != "")
+        {
+            player.RpcSetName(setReasonInfo);
+        }
+
+        AmongUsClient.Instance.KickPlayer(player.GetClientId(), ban);
+    }
+
     // RPCs
     public static void RpcSendHostChat(this PlayerControl player, string text, string title = "<color=#ffffff><b>(<color=#00ff44>System Message</color>)</b>", bool sendToBetterUser = true)
     {

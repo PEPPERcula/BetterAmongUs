@@ -222,7 +222,7 @@ class CommandsPatch
                     {
                         var player = cmdTarget;
                         var cmdFlag = command[0][1..].ToLower().Trim() != "kick";
-                        AmongUsClient.Instance.KickPlayer(player.GetClientId(), cmdFlag);
+                        player.Kick(cmdFlag);
                     }
                 }
                 break;
