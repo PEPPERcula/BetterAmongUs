@@ -1,6 +1,5 @@
 ﻿using AmongUs.Data;
 using AmongUs.GameOptions;
-using BetterAmongUs.Role;
 using HarmonyLib;
 using Hazel;
 using Il2CppSystem.Text;
@@ -32,6 +31,7 @@ class CommandsPatch
         "kick {id}---Kick a player from the game - <color=red>Host Only</color>---{player id}",
         "ban {id}---Ban a player from the game - <color=red>Host Only</color>---{player id}",
         "endgame {reason}---Force end the game - <color=red>Host Only</color>---{player id}",
+        "removeplayer {identifier}---Remove player from local <color=#4f92ff>Anti-Cheat</color> data---{FriendCode, HashPuid}",
         };
     public static string[] DebugCommandListHelper =
         {
@@ -222,7 +222,7 @@ class CommandsPatch
                     {
                         var player = cmdTarget;
                         var cmdFlag = command[0][1..].ToLower().Trim() != "kick";
-                        AmongUsClient.Instance.KickPlayer(player.GetClientId(), cmdFlag);
+                        player.Kick(cmdFlag);
                     }
                 }
                 break;
@@ -249,6 +249,19 @@ class CommandsPatch
                         {
                             GameManager.Instance.RpcEndGame(GameOverReason.HumansByTask, false);
                         }
+                    }
+                }
+                break;
+            case "removeplayer":
+                if (!string.IsNullOrEmpty(subArgs))
+                {
+                    if (BetterDataManager.RemovePlayer(subArgs) == true)
+                    {
+                        Utils.AddChatPrivate($"{subArgs} successfully removed from local <color=#4f92ff>Anti-Cheat</color> data!");
+                    }
+                    else
+                    {
+                        Utils.AddChatPrivate($"{error}\nCould not find player data from identifier");
                     }
                 }
                 break;

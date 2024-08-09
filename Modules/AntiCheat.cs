@@ -25,18 +25,15 @@ class AntiCheat
 
                 if (SickoData.ContainsKey(hashPuid))
                 {
-                    player.RpcSetName($"<color=#ffea00>{player.Data.PlayerName}</color> Has been banned by <color=#4f92ff>Anti-Cheat</color>, Reason: Known Sicko Menu User<size=0%>");
-                    AmongUsClient.Instance.KickPlayer(player.GetClientId(), true);
+                    player.Kick(true, $"<color=#ffea00>{player.Data.PlayerName}</color> Has been banned by <color=#4f92ff>Anti-Cheat</color>, Reason: Known Sicko Menu User<size=0%>");
                 }
                 else if (AUMData.ContainsKey(hashPuid))
                 {
-                    player.RpcSetName($"<color=#ffea00>{player.Data.PlayerName}</color> Has been banned by <color=#4f92ff>Anti-Cheat</color>, Reason: Known AUM User<size=0%>");
-                    AmongUsClient.Instance.KickPlayer(player.GetClientId(), true);
+                    player.Kick(true, $"<color=#ffea00>{player.Data.PlayerName}</color> Has been banned by <color=#4f92ff>Anti-Cheat</color>, Reason: Known AUM User<size=0%>");
                 }
                 else if (PlayerData.ContainsKey(hashPuid))
                 {
-                    player.RpcSetName($"<color=#ffea00>{player.Data.PlayerName}</color> Has been banned by <color=#4f92ff>Anti-Cheat</color>, Reason: Known Cheater<size=0%>");
-                    AmongUsClient.Instance.KickPlayer(player.GetClientId(), true);
+                    player.Kick(true, $"<color=#ffea00>{player.Data.PlayerName}</color> Has been banned by <color=#4f92ff>Anti-Cheat</color>, Reason: Known Cheater<size=0%>");
                 }
             }
         }

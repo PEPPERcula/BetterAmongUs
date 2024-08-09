@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Collections.Generic;
+using System.Text.Json;
 
 namespace BetterAmongUs;
 
@@ -120,6 +121,97 @@ class BetterDataManager
 
         json = JsonSerializer.Serialize(jsonData, new JsonSerializerOptions { WriteIndented = true });
         File.WriteAllText(filePath, json);
+    }
+
+    public static bool RemovePlayer(string identifier)
+    {
+        bool successful = false;
+        string filePath = GetFilePath("BetterData");
+        string json = File.ReadAllText(filePath);
+        var jsonData = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, Dictionary<string, string>>>>(json)
+                       ?? new Dictionary<string, Dictionary<string, Dictionary<string, string>>>();
+
+        if (jsonData != null)
+        {
+            if (jsonData.ContainsKey("cheatData"))
+            {
+                RemoveIdentifierFromSection(jsonData["cheatData"], identifier, ref successful);
+            }
+
+            if (jsonData.ContainsKey("sickoData"))
+            {
+                RemoveIdentifierFromSection(jsonData["sickoData"], identifier, ref successful);
+            }
+
+            if (jsonData.ContainsKey("aumData"))
+            {
+                RemoveIdentifierFromSection(jsonData["aumData"], identifier, ref successful);
+            }
+
+            json = JsonSerializer.Serialize(jsonData, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(filePath, json);
+        }
+
+        return successful;
+    }
+
+    private static void RemoveIdentifierFromSection(Dictionary<string, Dictionary<string, string>> sectionData, string identifier, ref bool successful)
+    {
+        string keyToRemove = null;
+
+        foreach (var entry in sectionData)
+        {
+            if (entry.Key == identifier || entry.Value.ContainsValue(identifier))
+            {
+                keyToRemove = entry.Key;
+                break;
+            }
+        }
+
+        if (keyToRemove != null)
+        {
+            sectionData.Remove(keyToRemove);
+            successful = true;
+        }
+
+        if (successful)
+        {
+            foreach (var data in AntiCheat.PlayerData)
+            {
+                if (data.Value != identifier)
+                {
+                    AntiCheat.PlayerData.Remove(identifier);
+                }
+                else
+                {
+                    AntiCheat.PlayerData.Remove(data.Key);
+                }
+            }
+
+            foreach (var data in AntiCheat.SickoData)
+            {
+                if (data.Value != identifier)
+                {
+                    AntiCheat.SickoData.Remove(identifier);
+                }
+                else
+                {
+                    AntiCheat.SickoData.Remove(data.Key);
+                }
+            }
+
+            foreach (var data in AntiCheat.AUMData)
+            {
+                if (data.Value != identifier)
+                {
+                    AntiCheat.AUMData.Remove(identifier);
+                }
+                else
+                {
+                    AntiCheat.AUMData.Remove(data.Key);
+                }
+            }
+        }
     }
 
     public static void ClearCheatData()
