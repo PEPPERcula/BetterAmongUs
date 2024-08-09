@@ -27,7 +27,7 @@ public class Main : BasePlugin
     public const string PluginGuid = "com.d1gq.betteramongus";
     public const string PluginVersion = "1.0.0";
     public const string ReleaseDate = "08.08.2024"; // mm/dd/yyyy
-    public const string Github = "https://github.com/D1GQ/BetterAmongUs";
+    public const string Github = "https://github.com/D1GQ/BetterAmongUs-Public";
     public const string Discord = "https://discord.gg/vjYrXpzNAn";
 
     public static string GetVersionText(bool newLine = false)
