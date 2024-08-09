@@ -45,6 +45,11 @@ class FileChecker
         // Unauthorized file or ban detected.
         if (HasUnauthorizedFile)
         {
+            if (GameStates.IsInGame)
+            {
+                Utils.DisconnectSelf(OnlineMsg);
+            }
+
             GameObject playOnlineButton = GameObject.Find("PlayOnlineButton");
 
             if (playOnlineButton != null)
@@ -80,6 +85,11 @@ class FileChecker
         if (EOSManager.Instance.editAccountUsername.gameObject.active || EOSManager.Instance.askToMergeAccount.gameObject.active)
         {
             HasTrySpoofFriendCode = true;
+        }
+
+        if (GameStates.IsInGame)
+        {
+            CheckIfUnauthorizedFiles();
         }
     }
 
