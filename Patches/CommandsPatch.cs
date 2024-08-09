@@ -266,7 +266,7 @@ class CommandsPatch
                 }
                 break;
             default:
-                if (GameStates.IsDev)
+                if (GameStates.IsDev && Main.ReleaseBuildType == ReleaseTypes.Dev)
                 {
                     checkDebugCommand = true;
                     break;
@@ -633,7 +633,7 @@ class CommandsPatch
     {
         var closestCommand = CommandListHelper.FirstOrDefault(c => c.StartsWith(typedCommand, StringComparison.OrdinalIgnoreCase));
 
-        if (closestCommand == null && PlayerControl.LocalPlayer.IsDev())
+        if (closestCommand == null && GameStates.IsDev && Main.ReleaseBuildType == ReleaseTypes.Dev)
             closestCommand = DebugCommandListHelper.FirstOrDefault(c => c.StartsWith(typedCommand, StringComparison.OrdinalIgnoreCase));
 
         return closestCommand ?? string.Empty;

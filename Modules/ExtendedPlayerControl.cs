@@ -142,7 +142,7 @@ static class ExtendedPlayerControl
     public static Vector2 GetCustomPosition(this PlayerControl player) => new(player.transform.position.x, player.transform.position.y);
 
     // Check if player is a dev
-    public static bool IsDev(this PlayerControl player) => player != null && Main.DevUser.Contains(Utils.GetHashPuid(player));
+    public static bool IsDev(this PlayerControl player) => player != null && Main.DevUser.Contains($"{Utils.GetHashPuid(player)}+{player.Data.FriendCode}");
     // Check if player is alive
     public static bool IsAlive(this PlayerControl player) => player?.Data != null && !player.Data.IsDead;
     // Check if player is in a vent
