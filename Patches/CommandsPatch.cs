@@ -257,7 +257,7 @@ class CommandsPatch
                 {
                     if (BetterDataManager.RemovePlayer(subArgs) == true)
                     {
-                        Utils.AddChatPrivate($"<color=#0dff00>{subArgs} successfully removed from local <color=#4f92ff>Anti-Cheat</color> data!</color>");
+                        Utils.AddChatPrivate($"{subArgs} successfully removed from local <color=#4f92ff>Anti-Cheat</color> data!");
                     }
                     else
                     {

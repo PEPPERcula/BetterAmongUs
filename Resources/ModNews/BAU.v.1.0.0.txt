@@ -1,5 +1,4 @@
-﻿#Skip
-#Number:100001
+﻿#Number:110001
 #Title:Better Among Us v1.0.0
 #SubTitle:<color=#4d4d4d>Is it truly better though?</color>
 #ShortTitle:BAU v1.0.0
@@ -7,14 +6,20 @@
 #-----------------------------
 We are thrilled to announce the release of <b>BetterAmongUs</b> v1.0.0
 #
-<size=150%>Change Log</size>
+BetterAmongUs comes packed with a variety of features designed to improve your gameplay experience:
+#
+- <b>Built-in Client-Sided Anti-Cheat</b>: Enjoy a fair game by preventing cheaters from ruining your fun.
+- <b>Host Enhancements</b>: Gain more control as a host with additional options and settings.
+- <b>Better Options</b>: Customize your game with a range of new and improved options.
+- <b>Commands</b>: Utilize a set of commands to manage and enhance gameplay.
+- <b>Client Improvements</b>: Experience smoother gameplay with various client-side improvements.
+- <b>And More!</b>: Stay tuned for more exciting features coming your way!
 #
 #
-
-<size=150%>Known Issues</size>
+<size=150%>Issues & Bugs</size>
 #
+- If you encounter any issues or have feedback, please report them on our <nobr><link="https://github.com/D1GQ/BetterAmongUs-Public/issues">Github Issues Page</nobr></link> or Bug Reports channel in the <nobr><link="https://discord.gg/a3eVJHp9p5">BAU Discord Server</nobr></link>.
 #
-
 Thank you for your support, and we hope you enjoy the new features of <b>BetterAmongUs</b>!
 #
-<size=125%><nobr><link="https://github.com/D1GQ/BetterAmongUs">Github</nobr></link> </size>
+<size=150%><nobr><link="https://discord.gg/vjYrXpzNAn">Discord</nobr></link> </size> <size=150%><nobr><link="https://github.com/D1GQ/BetterAmongUs-Public">Github</nobr></link> </size>
