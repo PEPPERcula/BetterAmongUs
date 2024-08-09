@@ -22,8 +22,8 @@ public class Main : BasePlugin
 {
     public const ReleaseTypes ReleaseBuildType = ReleaseTypes.Release;
     public const string CanaryNum = "0";
-    public const string HotfixNum = "0";
-    public const bool IsHotFix = false;
+    public const string HotfixNum = "1";
+    public const bool IsHotFix = true;
     public const string PluginGuid = "com.d1gq.betteramongus";
     public const string PluginVersion = "1.0.0";
     public const string ReleaseDate = "08.08.2024"; // mm/dd/yyyy
@@ -60,7 +60,7 @@ public class Main : BasePlugin
 
     public static string[] DevUser =
     [
-        "8f23c48e2",
+        "8f23c48e2+notegusty#8646",
     ];
 
     public static PlayerControl[] AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(pc => pc != null).ToArray();
