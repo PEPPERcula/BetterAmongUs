@@ -29,7 +29,19 @@ static class ExtendedPlayerControl
         return client == null ? -1 : client.Id;
     }
     // Get player name with outfit color
-    public static string GetPlayerNameAndColor(this PlayerControl player) => $"<color={Utils.Color32ToHex(Palette.PlayerColors[player.CurrentOutfit.ColorId])}>{player.Data.PlayerName}</color>";
+    public static string GetPlayerNameAndColor(this PlayerControl player)
+    {
+        if (player?.Data == null) return string.Empty;
+
+        try
+        {
+            return $"<color={Utils.Color32ToHex(Palette.PlayerColors[player.CurrentOutfit.ColorId])}>{player.Data.PlayerName}</color>";
+        }
+        catch
+        {
+            return player.Data.PlayerName;
+        }
+    }
     // Set players over head text
     public static void SetPlayerTextInfo(this PlayerControl player, string text, bool isBottom = false, bool isInfo = false)
     {
