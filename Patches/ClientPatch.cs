@@ -31,7 +31,7 @@ public class ClientPatch
         [HarmonyPrefix]
         public static bool CanKick_Prefix(ref bool __result)
         {
-            __result = GameStates.IsHost;
+            __result = GameStates.IsHost || (GameStates.IsInGamePlay && (GameStates.IsMeeting || GameStates.IsExilling));
             return false;
         }
     }
