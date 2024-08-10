@@ -14,6 +14,7 @@ class FileChecker
     public static bool HasTrySpoofFriendCode = false;
     public static bool HasUnauthorizedFile = false;
     public static bool HasShownPopUp = false;
+    private static float waitTime = 5f;
 
     // Set up if unauthorized files have been found.
     public static void UpdateUnauthorizedFiles()
@@ -87,9 +88,12 @@ class FileChecker
             HasTrySpoofFriendCode = true;
         }
 
-        if (GameStates.IsInGame)
+        waitTime -= Time.deltaTime;
+
+        if (waitTime <= 0 && GameStates.IsInGame)
         {
             CheckIfUnauthorizedFiles();
+            waitTime = 5f;
         }
     }
 
