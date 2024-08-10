@@ -93,6 +93,7 @@ class PlayerControlPatch
             if (!Main.LobbyPlayerInfo.Value && GameStates.IsLobby)
             {
                 player.ResetAllPlayerTextInfo();
+                player.RawSetName(player.Data.PlayerName);
                 return;
             }
 
