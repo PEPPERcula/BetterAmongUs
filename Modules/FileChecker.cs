@@ -14,6 +14,7 @@ class FileChecker
     public static bool HasTrySpoofFriendCode = false;
     public static bool HasUnauthorizedFile = false;
     public static bool HasShownPopUp = false;
+    private static float waitTime = 5f;
 
     // Set up if unauthorized files have been found.
     public static void UpdateUnauthorizedFiles()
@@ -45,6 +46,11 @@ class FileChecker
         // Unauthorized file or ban detected.
         if (HasUnauthorizedFile)
         {
+            if (GameStates.IsInGame)
+            {
+                Utils.DisconnectSelf(OnlineMsg);
+            }
+
             GameObject playOnlineButton = GameObject.Find("PlayOnlineButton");
 
             if (playOnlineButton != null)
@@ -80,6 +86,14 @@ class FileChecker
         if (EOSManager.Instance.editAccountUsername.gameObject.active || EOSManager.Instance.askToMergeAccount.gameObject.active)
         {
             HasTrySpoofFriendCode = true;
+        }
+
+        waitTime -= Time.deltaTime;
+
+        if (waitTime <= 0 && GameStates.IsInGame)
+        {
+            CheckIfUnauthorizedFiles();
+            waitTime = 5f;
         }
     }
 

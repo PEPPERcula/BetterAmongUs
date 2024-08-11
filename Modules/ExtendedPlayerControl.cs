@@ -29,7 +29,19 @@ static class ExtendedPlayerControl
         return client == null ? -1 : client.Id;
     }
     // Get player name with outfit color
-    public static string GetPlayerNameAndColor(this PlayerControl player) => $"<color={Utils.Color32ToHex(Palette.PlayerColors[player.CurrentOutfit.ColorId])}>{player.Data.PlayerName}</color>";
+    public static string GetPlayerNameAndColor(this PlayerControl player)
+    {
+        if (player?.Data == null) return string.Empty;
+
+        try
+        {
+            return $"<color={Utils.Color32ToHex(Palette.PlayerColors[player.CurrentOutfit.ColorId])}>{player.Data.PlayerName}</color>";
+        }
+        catch
+        {
+            return player.Data.PlayerName;
+        }
+    }
     // Set players over head text
     public static void SetPlayerTextInfo(this PlayerControl player, string text, bool isBottom = false, bool isInfo = false)
     {
@@ -142,7 +154,7 @@ static class ExtendedPlayerControl
     public static Vector2 GetCustomPosition(this PlayerControl player) => new(player.transform.position.x, player.transform.position.y);
 
     // Check if player is a dev
-    public static bool IsDev(this PlayerControl player) => player != null && Main.DevUser.Contains(Utils.GetHashPuid(player));
+    public static bool IsDev(this PlayerControl player) => player != null && Main.DevUser.Contains($"{Utils.GetHashPuid(player)}+{player.Data.FriendCode}");
     // Check if player is alive
     public static bool IsAlive(this PlayerControl player) => player?.Data != null && !player.Data.IsDead;
     // Check if player is in a vent

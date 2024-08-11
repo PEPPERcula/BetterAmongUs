@@ -33,6 +33,7 @@ class OnGameJoinedPatch
                     MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.BetterCheck, SendOption.None, -1);
                     messageWriter.Write((byte)PlayerControl.LocalPlayer.NetId);
                     messageWriter.Write(flag);
+                    messageWriter.Write(Main.GetVersionText().Replace(" ", ""));
                     AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
                 }
             }, 1.5f, "OnGameJoinedPatch");
@@ -58,6 +59,7 @@ public static class OnPlayerJoinedPatch
                 MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, unchecked((byte)CustomRPC.BetterCheck), SendOption.None, -1);
                 messageWriter.Write((byte)PlayerControl.LocalPlayer.NetId);
                 messageWriter.Write(flag);
+                messageWriter.Write(Main.GetVersionText().Replace(" ", ""));
                 AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
 
                 RPC.SyncAllNames(force: true);

@@ -55,6 +55,7 @@ public static class OptionsMenuBehaviourPatch
                 MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, unchecked((byte)CustomRPC.BetterCheck), SendOption.None, -1);
                 messageWriter.Write((byte)PlayerControl.LocalPlayer.NetId);
                 messageWriter.Write(flag);
+                messageWriter.Write(Main.GetVersionText().Replace(" ", ""));
                 AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
 
                 RPC.SyncAllNames(force: true);

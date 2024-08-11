@@ -105,8 +105,9 @@ public static class Utils
             _ = new LateTask(() =>
             {
                 var lines = "<color=#ebbd34>----------------------------------------------------------------------------------------------</color>";
+                DisconnectPopup.Instance.gameObject.SetActive(true);
                 DisconnectPopup.Instance._textArea.enableWordWrapping = false;
-                DisconnectPopup.Instance.ShowCustom($"{lines}\n\n\n<size=150%>{reason}</size>\n\n\n{lines}");
+                DisconnectPopup.Instance._textArea.text = $"{lines}\n\n\n<size=150%>{reason}</size>\n\n\n{lines}";
             }, 0.1f, "DisconnectSelf 2");
         }, 0.2f, "DisconnectSelf 1");
     }

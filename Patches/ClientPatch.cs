@@ -17,6 +17,24 @@ public class ClientPatch
             Logger.Log($"Client has left game for: {Enum.GetName(reason)}", "AmongUsClientPatch");
         }
     }
+    [HarmonyPatch(typeof(InnerNetClient))]
+    public class InnerNetClientPatch
+    {
+        [HarmonyPatch(nameof(InnerNetClient.CanBan))]
+        [HarmonyPrefix]
+        public static bool CanBan_Prefix(ref bool __result)
+        {
+            __result = GameStates.IsHost;
+            return false;
+        }
+        [HarmonyPatch(nameof(InnerNetClient.CanKick))]
+        [HarmonyPrefix]
+        public static bool CanKick_Prefix(ref bool __result)
+        {
+            __result = GameStates.IsHost || (GameStates.IsInGamePlay && (GameStates.IsMeeting || GameStates.IsExilling));
+            return false;
+        }
+    }
     // Set text color
     [HarmonyPatch(typeof(CosmeticsLayer))]
     public class CosmeticsLayerPatch

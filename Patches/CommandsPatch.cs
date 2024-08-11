@@ -190,12 +190,15 @@ class CommandsPatch
                 Main.CommandPrefix.Value = subArgs;
                 break;
             case "name":
+                bool hasSet = false;
+
                 if (GameStates.IsHost)
                 {
                     PlayerControl.LocalPlayer.RpcSetName(command[1]);
                     _ = new LateTask(() =>
                     {
                         RPC.SyncAllNames();
+                        hasSet = true;
                     }, 1f, $"Command {Main.CommandPrefix.Value}name");
                 }
                 else if (command.Length > 1 && !string.IsNullOrWhiteSpace(command[1]) && System.Text.RegularExpressions.Regex.IsMatch(command[1], @"^[a-zA-Z0-9]+$"))
@@ -203,6 +206,7 @@ class CommandsPatch
                     if (HandleHasPermission(command) == true)
                     {
                         PlayerControl.LocalPlayer.CmdCheckName(command[1]);
+                        hasSet = true;
                     }
                 }
                 else
@@ -211,9 +215,12 @@ class CommandsPatch
                     return;
                 }
 
-                PlayerControl.LocalPlayer.Data.PlayerName = command[1];
-                DataManager.Player.customization.Name = command[1];
-                Utils.AddChatPrivate($"Player name has been sent to: {command[1]}");
+                if (hasSet)
+                {
+                    PlayerControl.LocalPlayer.Data.PlayerName = command[1];
+                    DataManager.Player.customization.Name = command[1];
+                    Utils.AddChatPrivate($"Player name has been sent to: {command[1]}");
+                }
                 break;
             case "kick" or "ban":
                 if (HandlePlayerArgument(command, subArgs) == true)
@@ -266,7 +273,7 @@ class CommandsPatch
                 }
                 break;
             default:
-                if (GameStates.IsDev)
+                if (GameStates.IsDev && Main.ReleaseBuildType == ReleaseTypes.Dev)
                 {
                     checkDebugCommand = true;
                     break;
@@ -475,7 +482,7 @@ class CommandsPatch
     {
         string error = "<color=#f50000><size=150%><b>Error:</b></size></color>";
 
-        if (HasPermission != true && !GameStates.IsHost && !GameStates.IsDev)
+        if (HasPermission != true || !GameStates.IsHost && !GameStates.IsDev)
         {
             Utils.AddChatPrivate($"{error}\n<color=#e0b700><b>{command[0]}</b></color> Is only available with the host permission!\nask the host to type /allow in chat to get permissions");
             return false;
@@ -633,7 +640,7 @@ class CommandsPatch
     {
         var closestCommand = CommandListHelper.FirstOrDefault(c => c.StartsWith(typedCommand, StringComparison.OrdinalIgnoreCase));
 
-        if (closestCommand == null && PlayerControl.LocalPlayer.IsDev())
+        if (closestCommand == null && GameStates.IsDev && Main.ReleaseBuildType == ReleaseTypes.Dev)
             closestCommand = DebugCommandListHelper.FirstOrDefault(c => c.StartsWith(typedCommand, StringComparison.OrdinalIgnoreCase));
 
         return closestCommand ?? string.Empty;

@@ -7,6 +7,7 @@ namespace BetterAmongUs.Patches;
 internal class MainMenuPatch
 {
     private static List<PassiveButton> buttons = [];
+    private static List<GameObject> buttonsObj = [];
     private static PassiveButton template;
     private static PassiveButton creditsButton;
     private static PassiveButton gitHubButton;
@@ -27,8 +28,9 @@ internal class MainMenuPatch
                 var icon = "<color=#278720>♻</color>";
                 var warning = "<color=#e60000>⚠</color>";
                 FileChecker.HasShownPopUp = true;
+                DisconnectPopup.Instance.gameObject.SetActive(true);
                 DisconnectPopup.Instance._textArea.enableWordWrapping = false;
-                DisconnectPopup.Instance.ShowCustom($"{lines}\n<b><size=200%>{icon}<color=#0ed400>Better Among Us</color>{icon}</size></b>\n<color=#757575><u><size=150%>{warning}<color=#8f0000>{FileChecker.UnauthorizedReason}</color>{warning}</size></u>\n\n<color=white>\n{OnlineMsg}\n{lines}");
+                DisconnectPopup.Instance._textArea.text = $"{lines}\n<b><size=200%>{icon}<color=#0ed400>Better Among Us</color>{icon}</size></b>\n<color=#757575><u><size=150%>{warning}<color=#8f0000>{FileChecker.UnauthorizedReason}</color>{warning}</size></u>\n\n<color=white>\n{OnlineMsg}\n{lines}";
             }
         }
     }
@@ -53,6 +55,7 @@ internal class MainMenuPatch
             if (template == null) return;
 
             buttons.Clear();
+            buttonsObj.Clear();
 
             string creditsTextTitle = "<size=150%><color=#0dff00><b>-=Mod Credits=-</b></color></size>\n";
             string creditsText = "<size=75%>◆ <color=#0088ff>Head Developer</color>: <b>D1GQ</b></size>";
@@ -91,10 +94,24 @@ internal class MainMenuPatch
             }
         }
 
+        [HarmonyPatch(nameof(MainMenuManager.LateUpdate))]
+        [HarmonyPostfix]
+        public static void LateUpdate_Postfix(MainMenuManager __instance)
+        {
+            bool Flag = __instance?.screenTint?.GetComponent<SpriteRenderer>() != null
+                && !__instance.screenTint.GetComponent<SpriteRenderer>().enabled;
+
+            foreach (var item in buttonsObj) 
+            {
+                item.SetActive(Flag);
+            }
+        }
+
         public static PassiveButton CreateButton(string name, Color32 normalColor, Color32 hoverColor, Action action, string label, Vector2? scale = null)
         {
             var button = UnityEngine.Object.Instantiate(template);
             buttons.Add(button);
+            buttonsObj.Add(button.gameObject);
             button.name = name;
             UnityEngine.Object.Destroy(button.GetComponent<AspectPosition>());
 

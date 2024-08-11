@@ -228,7 +228,7 @@ public class DebugMenu : MonoBehaviour
 
     public void Toggle()
     {
-        if (!GameStates.IsDev) return;
+        if (!GameStates.IsDev || Main.ReleaseBuildType != ReleaseTypes.Dev) return;
 
         WindowEnabled = !WindowEnabled;
     }
