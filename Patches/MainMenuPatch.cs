@@ -118,7 +118,7 @@ internal class MainMenuPatch
             // Set button position and scale
             float baseY = -2.7882f;
             float newY = baseY + (0.38f * (buttons.Count - 1));
-            button.transform.localPosition = new Vector3(-0.8118f, newY, -5f);
+            button.transform.localPosition = new Vector3(-0.6118f, newY, -5f);
             button.transform.localScale = new Vector3(0.78f, 0.78f, 0.78f);
 
             // Set button action

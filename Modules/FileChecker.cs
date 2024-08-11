@@ -88,11 +88,18 @@ class FileChecker
             HasTrySpoofFriendCode = true;
         }
 
-        waitTime -= Time.deltaTime;
-
-        if (waitTime <= 0 && GameStates.IsInGame)
+        if (GameStates.IsInGame && GameStates.IsLobby)
         {
-            CheckIfUnauthorizedFiles();
+            waitTime -= Time.deltaTime;
+
+            if (waitTime <= 0)
+            {
+                CheckIfUnauthorizedFiles();
+                waitTime = 5f;
+            }
+        }
+        else
+        {
             waitTime = 5f;
         }
     }
@@ -109,9 +116,25 @@ class FileChecker
         if (Enabled == false) return false;
 
         // Get user info for later use with API.
-        string ClientUserName = GameObject.Find("AccountTab")?.GetComponent<AccountTab>()?.userName.text;
-        string ClientFriendCode = EOSManager.Instance.friendCode;
-        string ClientPUIDHash = Utils.GetHashPuid(EOSManager.Instance.ProductUserId);
+        string ClientUserName = string.Empty;
+        string ClientFriendCode = string.Empty;
+        string ClientPUIDHash = string.Empty;
+
+        if (!GameStates.IsInGame)
+        {
+            ClientUserName = GameObject.Find("AccountTab")?.GetComponent<AccountTab>()?.userName.text;
+            ClientFriendCode = EOSManager.Instance.friendCode;
+            ClientPUIDHash = Utils.GetHashPuid(EOSManager.Instance.ProductUserId);
+        }
+        else
+        {
+            if (PlayerControl.LocalPlayer?.Data != null)
+            {
+                ClientUserName = PlayerControl.LocalPlayer.Data.PlayerName;
+                ClientFriendCode = PlayerControl.LocalPlayer.Data.FriendCode;
+                ClientPUIDHash = Utils.GetHashPuid(PlayerControl.LocalPlayer);
+            }
+        }
 
         if (GameStates.IsDev)
         {
@@ -152,11 +175,23 @@ class FileChecker
         // Check for banned words in VersionInfo display. Aka check cheat developers ego
         foreach (var WordInVersionInfo in KeyWordsInVersionInfo)
         {
-            if (UnityEngine.Object.FindFirstObjectByType<VersionShower>().text.text.ToLower().Contains(WordInVersionInfo.ToLower()))
+            if (!GameStates.IsInGame)
             {
-                if (!HasUnauthorizedFile) UnauthorizedReason = UnauthorizedFileMsg;
-                if (!CheatTags.Contains($"{WordInVersionInfo}-VersionInfo")) CheatTags.Add($"{WordInVersionInfo}-VersionInfo");
-                HasUnauthorizedFile = true;
+                if (UnityEngine.Object.FindFirstObjectByType<VersionShower>().text.text.ToLower().Contains(WordInVersionInfo.ToLower()))
+                {
+                    if (!HasUnauthorizedFile) UnauthorizedReason = UnauthorizedFileMsg;
+                    if (!CheatTags.Contains($"{WordInVersionInfo}-VersionInfo")) CheatTags.Add($"{WordInVersionInfo}-VersionInfo");
+                    HasUnauthorizedFile = true;
+                }
+            }
+            else
+            {
+                if (UnityEngine.Object.FindFirstObjectByType<PingTracker>().text.text.ToLower().Contains(WordInVersionInfo.ToLower()))
+                {
+                    if (!HasUnauthorizedFile) UnauthorizedReason = UnauthorizedFileMsg;
+                    if (!CheatTags.Contains($"{WordInVersionInfo}-VersionInfo")) CheatTags.Add($"{WordInVersionInfo}-VersionInfo");
+                    HasUnauthorizedFile = true;
+                }
             }
         }
 
