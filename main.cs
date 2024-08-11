@@ -22,7 +22,7 @@ public class Main : BasePlugin
 {
     public const ReleaseTypes ReleaseBuildType = ReleaseTypes.Release;
     public const string CanaryNum = "0";
-    public const string HotfixNum = "2";
+    public const string HotfixNum = "3";
     public const bool IsHotFix = true;
     public const string PluginGuid = "com.d1gq.betteramongus";
     public const string PluginVersion = "1.0.0";
