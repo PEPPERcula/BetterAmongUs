@@ -182,7 +182,8 @@ class AntiCheat
         {
             MessageReader reader = MessageReader.Get(Oldreader);
 
-            if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.BetterData().IsBetterHost || reader == null || !IsEnabled || !Main.AntiCheat.Value) return;
+            if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.BetterData().IsBetterHost || reader == null || !IsEnabled || !Main.AntiCheat.Value
+                || GameStates.IsBetterHostLobby && !GameStates.IsHost) return;
 
             RoleTypes? Role = player?.Data?.RoleType;
             Role ??= RoleTypes.Crewmate;
@@ -321,7 +322,8 @@ class AntiCheat
         {
             MessageReader reader = MessageReader.Get(Oldreader);
 
-            if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.BetterData().IsBetterHost || reader == null || !IsEnabled || !Main.AntiCheat.Value) return true;
+            if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.BetterData().IsBetterHost || reader == null || !IsEnabled || !Main.AntiCheat.Value
+                || GameStates.IsBetterHostLobby && !GameStates.IsHost) return true;
 
             RoleTypes Role = player.Data.RoleType;
             bool IsImpostor = player.IsImpostorTeam();
