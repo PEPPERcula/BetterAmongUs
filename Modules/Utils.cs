@@ -96,20 +96,28 @@ public static class Utils
     public static string GetRoleName(RoleTypes role) => Main.GetRoleName[(int)role];
     public static string Color32ToHex(Color32 color) => $"#{color.r:X2}{color.g:X2}{color.b:X2}{255:X2}";
     // Disconnect client
-    public static void DisconnectSelf(string reason)
+    public static void DisconnectSelf(string reason, bool showReason = true)
     {
         AmongUsClient.Instance.ExitGame(0);
         _ = new LateTask(() =>
         {
             SceneChanger.ChangeScene("MainMenu");
-            _ = new LateTask(() =>
+            if (showReason)
             {
-                var lines = "<color=#ebbd34>----------------------------------------------------------------------------------------------</color>";
-                DisconnectPopup.Instance.gameObject.SetActive(true);
-                DisconnectPopup.Instance._textArea.enableWordWrapping = false;
-                DisconnectPopup.Instance._textArea.text = $"{lines}\n\n\n<size=150%>{reason}</size>\n\n\n{lines}";
-            }, 0.1f, "DisconnectSelf 2");
+                _ = new LateTask(() =>
+                {
+                    var lines = "<color=#ebbd34>----------------------------------------------------------------------------------------------</color>";
+                    ShowPopUp($"{lines}\n\n\n<size=150%>{reason}</size>\n\n\n{lines}");
+                }, 0.1f, "DisconnectSelf 2");
+            }
         }, 0.2f, "DisconnectSelf 1");
+    }
+    // Show dc pop up with text
+    public static void ShowPopUp(string text, bool enableWordWrapping = false)
+    {
+        DisconnectPopup.Instance.gameObject.SetActive(true);
+        DisconnectPopup.Instance._textArea.enableWordWrapping = enableWordWrapping;
+        DisconnectPopup.Instance._textArea.text = text;
     }
 
     public static Dictionary<string, Sprite> CachedSprites = [];
