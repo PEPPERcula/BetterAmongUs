@@ -36,7 +36,7 @@ class CommandsPatch
         };
     public static string[] DebugCommandListHelper =
         {
-        "getposition---Get current player position",
+        "getposition---Get current player position - <color=#ff00f7>DeBug</color>",
         "role {role}---Set your role for the next game - <color=red>Host Only</color> - <color=#ff00f7>DeBug</color>",
         "setrole {id} {role}---Set another players role for the next game - <color=red>Host Only</color> - <color=#ff00f7>DeBug</color>",
         "syncallnames---Sync all players names for better host - <color=red>Host Only</color> - <color=#ff00f7>DeBug</color>",
