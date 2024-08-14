@@ -60,33 +60,36 @@ class AntiCheat
         [HarmonyPostfix]
         public static void Deserialize_Postfix(PlatformSpecificData __instance)
         {
-            _ = new LateTask(() =>
-                {
-                var player = Main.AllPlayerControls.FirstOrDefault(pc => pc.GetClient().PlatformData == __instance);
-
-                if (player != null)
-                {
-                    if (__instance.Platform is Platforms.StandaloneWin10 or Platforms.Xbox)
+            if (GameStates.IsLobby)
+            {
+                _ = new LateTask(() =>
                     {
-                        if (__instance.XboxPlatformId.ToString().Length is < 10 or > 16)
+                        var player = Main.AllPlayerControls.FirstOrDefault(pc => pc.GetClient().PlatformData == __instance);
+
+                        if (player != null)
                         {
-                                player.ReportPlayer(ReportReasons.Cheating_Hacking);
-                                BetterNotificationManager.NotifyCheat(player, $"Platform Spoofer", newText: "Has been detected with a cheat");
-                                Logger.LogCheat($"{player.Data.PlayerName} Platform Spoofer: {__instance.XboxPlatformId}");
+                            if (__instance.Platform is Platforms.StandaloneWin10 or Platforms.Xbox)
+                            {
+                                if (__instance.XboxPlatformId.ToString().Length is < 10 or > 16)
+                                {
+                                    player.ReportPlayer(ReportReasons.Cheating_Hacking);
+                                    BetterNotificationManager.NotifyCheat(player, $"Platform Spoofer", newText: "Has been detected with a cheat");
+                                    Logger.LogCheat($"{player.Data.PlayerName} Platform Spoofer: {__instance.XboxPlatformId}");
+                                }
                             }
-                    }
 
-                    if (__instance.Platform is Platforms.Playstation)
-                    {
-                        if (__instance.PsnPlatformId.ToString().Length is < 14 or > 20)
-                        {
-                                player.ReportPlayer(ReportReasons.Cheating_Hacking);
-                                BetterNotificationManager.NotifyCheat(player, $"Platform Spoofer", newText: "Has been detected with a cheat");
-                                Logger.LogCheat($"{player.Data.PlayerName} Platform Spoofer: {__instance.PsnPlatformId}");
+                            if (__instance.Platform is Platforms.Playstation)
+                            {
+                                if (__instance.PsnPlatformId.ToString().Length is < 14 or > 20)
+                                {
+                                    player.ReportPlayer(ReportReasons.Cheating_Hacking);
+                                    BetterNotificationManager.NotifyCheat(player, $"Platform Spoofer", newText: "Has been detected with a cheat");
+                                    Logger.LogCheat($"{player.Data.PlayerName} Platform Spoofer: {__instance.PsnPlatformId}");
+                                }
+                            }
                         }
-                    }
-                }
-            }, 3.5f, shoudLog: false);
+                    }, 3.5f, shoudLog: false);
+            }
         }
     }
 
