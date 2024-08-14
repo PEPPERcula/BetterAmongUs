@@ -72,7 +72,7 @@ class AntiCheat
                         {
                                 player.ReportPlayer(ReportReasons.Cheating_Hacking);
                                 BetterNotificationManager.NotifyCheat(player, $"Platform Spoofer", newText: "Has been detected with a cheat");
-                                Logger.LogCheat($"{player.Data.PlayerName} Platform Spoofer: {__instance.XboxPlatformId} is not 10 to 16 characters");
+                                Logger.LogCheat($"{player.Data.PlayerName} Platform Spoofer: {__instance.XboxPlatformId}");
                             }
                     }
 
@@ -82,7 +82,7 @@ class AntiCheat
                         {
                                 player.ReportPlayer(ReportReasons.Cheating_Hacking);
                                 BetterNotificationManager.NotifyCheat(player, $"Platform Spoofer", newText: "Has been detected with a cheat");
-                                Logger.LogCheat($"{player.Data.PlayerName} Platform Spoofer: {__instance.PsnPlatformId} is not 14 to 19 characters");
+                                Logger.LogCheat($"{player.Data.PlayerName} Platform Spoofer: {__instance.PsnPlatformId}");
                         }
                     }
                 }
