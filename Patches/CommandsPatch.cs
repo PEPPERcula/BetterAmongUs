@@ -40,7 +40,8 @@ class CommandsPatch
         "role {role}---Set your role for the next game - <color=red>Host Only</color> - <color=#ff00f7>DeBug</color>",
         "setrole {id} {role}---Set another players role for the next game - <color=red>Host Only</color> - <color=#ff00f7>DeBug</color>",
         "syncallnames---Sync all players names for better host - <color=red>Host Only</color> - <color=#ff00f7>DeBug</color>",
-        "suicide---Set self as dead <color=#ff00f7>DeBug</color>",
+        "suicide---Kill self <color=#ff00f7>DeBug</color>",
+        "exile---Set self as dead <color=#ff00f7>DeBug</color>",
         "revive---Set self as alive<color=#ff00f7>DeBug</color>",
         };
 
@@ -411,6 +412,12 @@ class CommandsPatch
                     }
                     break;   
                 case "suicide":
+                    if (HandleIsHost(command) == true)
+                    {
+                        PlayerControl.LocalPlayer.MurderPlayer(PlayerControl.LocalPlayer, MurderResultFlags.Succeeded);
+                    }
+                    break;
+                case "exile":
                     if (HandleIsHost(command) == true)
                     {
                         PlayerControl.LocalPlayer.Exiled();
