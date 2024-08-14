@@ -6,13 +6,15 @@ namespace BetterAmongUs;
 class BetterNotificationManager
 {
     public static GameObject BAUNotificationManagerObj;
-    private static Dictionary<string, float> NotifyQueue = [];
-    private static float showTime = 0f;
+    public static Dictionary<string, float> NotifyQueue = [];
+    public static float showTime = 0f;
     private static Camera localCamera;
-    private static bool Notifying = false;
+    public static bool Notifying = false;
 
     public static void Notify(string text, float Time = 5f)
     {
+        if (!Main.BetterNotifications.Value) return;
+
         if (BAUNotificationManagerObj != null)
         {
             if (Notifying) 
@@ -46,8 +48,7 @@ class BetterNotificationManager
 
         if (GameStates.IsHost && kickPlayer)
         {
-            player.RpcSetName($"<color=#ffea00>{player.Data.PlayerName}</color> Has been banned by <color=#4f92ff>Anti-Cheat</color>, Reason: {reason}<size=0%>");
-            AmongUsClient.Instance.KickPlayer(player.GetClientId(), true);
+            player.Kick(true, $"<color=#ffea00>{player.Data.PlayerName}</color> Has been banned by <color=#4f92ff>Anti-Cheat</color>, Reason: <color=#fc0000>{reason}</color>");
         }
 
         Logger.LogCheat(Utils.GetRawText(text));
