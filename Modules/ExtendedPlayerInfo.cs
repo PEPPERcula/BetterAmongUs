@@ -1,4 +1,6 @@
-﻿namespace BetterAmongUs;
+﻿using AmongUs.GameOptions;
+
+namespace BetterAmongUs;
 
 public class ExtendedPlayerInfo
 {
@@ -9,20 +11,20 @@ public class ExtendedPlayerInfo
     public bool BannedByAntiCheat { get; set; } = false;
     public bool HasNoisemakerNotify { get; set; } = false;
     public int TimesCalledMeeting { get; set; } = 0;
-
+    public RoleTypes DeadDisplayRole { get; set; }
 }
 
 public static class PlayerControlExtensions
 {
-    private static readonly Dictionary<PlayerControl, ExtendedPlayerInfo> playerInfo = [];
+    private static readonly Dictionary<NetworkedPlayerInfo, ExtendedPlayerInfo> playerInfo = [];
 
     public static ExtendedPlayerInfo BetterData(this PlayerControl player)
     {
-        if (!playerInfo.ContainsKey(player))
+        if (!playerInfo.ContainsKey(player.Data))
         {
-            playerInfo[player] = new ExtendedPlayerInfo();
+            playerInfo[player.Data] = new ExtendedPlayerInfo();
         }
 
-        return playerInfo[player];
+        return playerInfo[player.Data];
     }
 }

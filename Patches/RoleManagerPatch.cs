@@ -215,6 +215,8 @@ public class RoleManagerPatch
     [HarmonyPrefix]
     public static bool AssignRoleOnDeath_Prefix(/*RoleManager __instance*/ [HarmonyArgument(0)] PlayerControl player)
     {
+        player.BetterData().DeadDisplayRole = player.Data.RoleType;
+
         if (!Main.BetterRoleAlgorithma.Value) return true;
 
         Dictionary<RoleTypes, int> GhostRoles = new() // Role, Amount
@@ -247,13 +249,11 @@ public class RoleManagerPatch
             if (kvp.Value > 0 && RNG() <= GameOptionsManager.Instance.CurrentGameOptions.RoleOptions.GetChancePerGame(kvp.Key))
             {
                 player.RpcSetRole(kvp.Key);
-                break;
-            }
-            else
-            {
-                player.RpcSetRole(player.Data.Role.DefaultGhostRole);
+                return false;
             }
         }
+
+        player.RpcSetRole(player.Data.Role.DefaultGhostRole);
 
         return false;
     }

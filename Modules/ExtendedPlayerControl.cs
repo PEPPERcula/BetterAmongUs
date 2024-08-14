@@ -162,7 +162,20 @@ static class ExtendedPlayerControl
     // Check if player is in a vent
     public static bool IsInVent(this PlayerControl player) => player != null && (player.inVent || player.walkingToVent || player.MyPhysics?.Animations?.IsPlayingEnterVentAnimation() == true);
     // Check if player role name
-    public static string GetRoleName(this PlayerControl player) => player?.Data != null && Main.GetRoleName.TryGetValue((int)player.Data.RoleType, out var roleName) ? roleName : string.Empty;
+    public static string GetRoleName(this PlayerControl player)
+    {
+        if (!player.IsAlive() && !player.IsGhostRole() && Main.GetRoleName.TryGetValue((int)player.BetterData().DeadDisplayRole, out var roleName))
+        {
+            return roleName;
+        }
+
+        if (player?.Data != null && Main.GetRoleName.TryGetValue((int)player.Data.RoleType, out var roleName2))
+        {
+            return roleName2;
+        }
+
+        return string.Empty;
+    }
     // Check if player is Shapeshifting
     public static bool IsInShapeshift(this PlayerControl player) => player != null && (player.shapeshiftTargetPlayerId > -1 || player.shapeshifting);
     // Check if player is in vanish as Phantom
@@ -190,6 +203,8 @@ static class ExtendedPlayerControl
     }
     // Check if player is role type
     public static bool Is(this PlayerControl player, RoleTypes role) => player?.Data?.RoleType == role;
+    // Check if player is Ghost role type
+    public static bool IsGhostRole(this PlayerControl player) => player?.Data?.RoleType is RoleTypes.GuardianAngel;
     // Check if player is on imposter team
     public static bool IsImpostorTeam(this PlayerControl player) => player?.Data != null && (player.Data.RoleType is RoleTypes.Impostor or RoleTypes.ImpostorGhost or RoleTypes.Shapeshifter or RoleTypes.Phantom);
     // Check if player is a imposter teammate
