@@ -21,7 +21,7 @@ class CommandsPatch
         {
         "help---Get help with commands",
         "commands---Get a list of all available commands",
-        "dump---Dump at the entire log to the user's desktop",
+        "dump---Dump the entire log to the user's desktop",
         "player {id}---Get a Players information---{player id}",
         "players---Get all Player information",
         "whisper {id} {msg}---Privately send an message to a player---{player id}",
@@ -32,6 +32,7 @@ class CommandsPatch
         "ban {id}---Ban a player from the game - <color=red>Host Only</color>---{player id}",
         "endgame {reason}---Force end the game - <color=red>Host Only</color>---{player id}",
         "removeplayer {identifier}---Remove player from local <color=#4f92ff>Anti-Cheat</color> data---{FriendCode, HashPuid}",
+        "removeall---Remove all players from local <color=#4f92ff>Anti-Cheat</color> data",
         };
     public static string[] DebugCommandListHelper =
         {
@@ -271,6 +272,10 @@ class CommandsPatch
                         Utils.AddChatPrivate($"{error}\nCould not find player data from identifier");
                     }
                 }
+                break;
+            case "removeall":
+                BetterDataManager.ClearCheatData();
+                Utils.AddChatPrivate($"All data successfully removed from local <color=#4f92ff>Anti-Cheat</color>!");
                 break;
             default:
                 if (GameStates.IsDev && Main.ReleaseBuildType == ReleaseTypes.Dev)
