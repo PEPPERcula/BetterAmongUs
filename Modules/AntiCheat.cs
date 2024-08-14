@@ -25,15 +25,15 @@ class AntiCheat
 
                 if (SickoData.ContainsKey(hashPuid))
                 {
-                    player.Kick(true, $"<color=#ffea00>{player.Data.PlayerName}</color> Has been banned by <color=#4f92ff>Anti-Cheat</color>, Reason: <color=#00f583>Known Sicko Menu User</color>");
+                    player.Kick(true, $"<color=#ffea00>{player.Data.PlayerName}</color> banned by <color=#4f92ff>Anti-Cheat</color>!\n Reason: <color=#00f583>Known Sicko Menu User</color>");
                 }
                 else if (AUMData.ContainsKey(hashPuid))
                 {
-                    player.Kick(true, $"<color=#ffea00>{player.Data.PlayerName}</color> Has been banned by <color=#4f92ff>Anti-Cheat</color>, Reason: <color=#4f0000>Known AUM User</color>");
+                    player.Kick(true, $"<color=#ffea00>{player.Data.PlayerName}</color> banned by <color=#4f92ff>Anti-Cheat</color>!\n Reason: <color=#4f0000>Known AUM User</color>");
                 }
                 else if (PlayerData.ContainsKey(hashPuid))
                 {
-                    player.Kick(true, $"<color=#ffea00>{player.Data.PlayerName}</color> Has been banned by <color=#4f92ff>Anti-Cheat</color>, Reason: <color=#fc0000>Known Cheater</color>");
+                    player.Kick(true, $"<color=#ffea00>{player.Data.PlayerName}</color> banned by <color=#4f92ff>Anti-Cheat</color>!\n Reason: <color=#fc0000>Known Cheater</color>");
                 }
             }
         }
@@ -60,6 +60,8 @@ class AntiCheat
         [HarmonyPostfix]
         public static void Deserialize_Postfix(PlatformSpecificData __instance)
         {
+            if (!Main.AntiCheat.Value) return;
+
             if (GameStates.IsLobby)
             {
                 _ = new LateTask(() =>
