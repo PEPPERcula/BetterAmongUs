@@ -249,6 +249,10 @@ public class RoleManagerPatch
                 player.RpcSetRole(kvp.Key);
                 break;
             }
+            else
+            {
+                player.RpcSetRole(player.Data.Role.DefaultGhostRole);
+            }
         }
 
         return false;
