@@ -6,6 +6,7 @@ public class ExtendedPlayerInfo
     public bool IsBetterUser { get; set; } = false;
     public bool IsBetterHost { get; set; } = false;
     public bool IsTOHEHost { get; set; } = false;
+    public bool BannedByAntiCheat { get; set; } = false;
     public bool HasNoisemakerNotify { get; set; } = false;
     public int TimesCalledMeeting { get; set; } = 0;
 

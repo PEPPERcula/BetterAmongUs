@@ -5,6 +5,8 @@ using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using Innersloth.IO;
+using System.Security.Cryptography;
+using System.Text;
 using UnityEngine;
 
 namespace BetterAmongUs;
@@ -22,13 +24,42 @@ public class Main : BasePlugin
 {
     public const ReleaseTypes ReleaseBuildType = ReleaseTypes.Release;
     public const string CanaryNum = "0";
-    public const string HotfixNum = "3";
-    public const bool IsHotFix = true;
+    public const string HotfixNum = "0";
+    public const bool IsHotFix = false;
     public const string PluginGuid = "com.d1gq.betteramongus";
-    public const string PluginVersion = "1.0.0";
-    public const string ReleaseDate = "08.11.2024"; // mm/dd/yyyy
+    public const string PluginVersion = "1.0.1";
+    public const string ReleaseDate = "08.13.2024"; // mm/dd/yyyy
     public const string Github = "https://github.com/D1GQ/BetterAmongUs-Public";
     public const string Discord = "https://discord.gg/vjYrXpzNAn";
+
+    public static string modSignature
+    {
+        get
+        {
+            string GetHash(string puid)
+            {
+                using SHA256 sha256 = SHA256.Create();
+                byte[] sha256Bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(puid));
+                string sha256Hash = BitConverter.ToString(sha256Bytes).Replace("-", "").ToLower();
+                return sha256Hash.Substring(0, 16) + sha256Hash.Substring(sha256Hash.Length - 8);
+            }
+
+            var versionData = new StringBuilder()
+                .Append(Enum.GetName(typeof(ReleaseTypes), ReleaseBuildType))
+                .Append(CanaryNum)
+                .Append(HotfixNum)
+                .Append(PluginGuid)
+                .Append(GetVersionText().Replace(" ", "."))
+                .Append(ReleaseDate)
+                .Append(Github)
+                .Append(Discord)
+                .Append(string.Join(",", Enum.GetNames(typeof(CustomRPC))))
+                .Append(string.Join(",", GetRoleName.Values))
+                .ToString();
+
+            return GetHash(versionData);
+        }
+    }
 
     public static string GetVersionText(bool newLine = false)
     {
@@ -55,6 +86,7 @@ public class Main : BasePlugin
 
     public static List<string> SupportedAmongUsVersions =
     [
+        "2024.8.13",
         "2024.6.18",
     ];
 
@@ -128,6 +160,7 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> AntiCheat { get; private set; }
     public static ConfigEntry<bool> BetterHost { get; private set; }
     public static ConfigEntry<bool> BetterRoleAlgorithma { get; private set; }
+    public static ConfigEntry<bool> BetterNotifications { get; private set; }
     public static ConfigEntry<bool> LobbyPlayerInfo { get; private set; }
     public static ConfigEntry<bool> DisableLobbyTheme { get; private set; }
     public static ConfigEntry<bool> UnlockFPS { get; private set; }
@@ -138,6 +171,7 @@ public class Main : BasePlugin
         AntiCheat = Config.Bind("Better Options", "AntiCheat", true);
         BetterHost = Config.Bind("Better Options", "BetterHost", false);
         BetterRoleAlgorithma = Config.Bind("Better Options", "BetterRoleAlgorithma", true);
+        BetterNotifications = Config.Bind("Better Options", "BetterNotifications", true);
         LobbyPlayerInfo = Config.Bind("Better Options", "LobbyPlayerInfo", true);
         DisableLobbyTheme = Config.Bind("Better Options", "DisableLobbyTheme", true);
         UnlockFPS = Config.Bind("Better Options", "UnlockFPS", false);

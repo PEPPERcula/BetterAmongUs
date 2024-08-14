@@ -6,6 +6,45 @@ namespace BetterAmongUs.Patches;
 
 public class ClientPatch
 {
+    // Show warning message for newer and older versions of among us
+    [HarmonyPatch(typeof(EOSManager))]
+    public class EOSManagerPatch
+    {
+        [HarmonyPatch(nameof(EOSManager.EndFinalPartsOfLoginFlow))]
+        [HarmonyPostfix]
+        public static void EndFinalPartsOfLoginFlow_Postfix()
+        {
+            var varSupportedVersions = Main.SupportedAmongUsVersions;
+            Version currentVersion = new Version(Main.AmongUsVersion);
+            Version firstSupportedVersion = new Version(varSupportedVersions.First());
+            Version lastSupportedVersion = new Version(varSupportedVersions.Last());
+
+            if (currentVersion > firstSupportedVersion)
+            {
+                var verText = $"<b>{varSupportedVersions.First()}</b>";
+                if (firstSupportedVersion != lastSupportedVersion)
+                {
+                    verText = $"<b>{varSupportedVersions.Last()}</b> - <b>{varSupportedVersions.First()}</b>";
+                }
+                Utils.ShowPopUp($"<size=200%>-= <color=#ff2200><b>Warning</b></color> =-</size>\n\n" +
+                    $"<size=125%><color=#0dff00>Better Among Us {Main.GetVersionText()}</color>\nsupports <color=#4f92ff>Among Us {verText}</color>,\n" +
+                    $"<color=#4f92ff>Among Us <b>{Main.AmongUsVersion}</b></color> is above the supported versions!\n" +
+                    $"<color=#ae1700>You may encounter minor to game breaking bugs.</color></size>");
+            }
+            else if (currentVersion < lastSupportedVersion)
+            {
+                var verText = $"<b>{varSupportedVersions.First()}</b>";
+                if (firstSupportedVersion != lastSupportedVersion)
+                {
+                    verText = $"<b>{varSupportedVersions.Last()}</b> - <b>{varSupportedVersions.First()}</b>";
+                }
+                Utils.ShowPopUp($"<size=200%>-= <color=#ff2200><b>Warning</b></color> =-</size>\n\n" +
+                    $"<size=125%><color=#0dff00>Better Among Us {Main.GetVersionText()}</color>\nsupports <color=#4f92ff>Among Us {verText}</color>,\n" +
+                    $"<color=#4f92ff>Among Us <b>{Main.AmongUsVersion}</b></color> is below the supported versions!\n" +
+                    $"<color=#ae1700>You may encounter minor to game breaking bugs.</color></size>");
+            }
+        }
+    }
     // Log game exit
     [HarmonyPatch(typeof(AmongUsClient))]
     public class AmongUsClientPatch

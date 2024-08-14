@@ -106,7 +106,10 @@ class PlayerControlPatch
             string pattern = @"^[a-zA-Z0-9#]+$";
             string hashtagPattern = @"^#[0-9]{4}$";
             string friendCode = player.Data.FriendCode;
-            string friendCodeColor = (Regex.Replace(friendCode, hashtagPattern, string.Empty).Length is > 10 or < 5 || !Regex.IsMatch(friendCode, pattern) || !Regex.IsMatch(friendCode, hashtagPattern)) ? "#00f7ff" : "#ff0000";
+            string friendCodeColor = (Regex.Replace(friendCode, hashtagPattern, string.Empty).Length is > 10 or < 5
+                || !Regex.IsMatch(friendCode, pattern)
+                || !Regex.IsMatch(friendCode, hashtagPattern)
+                || friendCode.Contains(' ')) ? "#00f7ff" : "#ff0000";
             if (string.IsNullOrEmpty(friendCode) || friendCode == "")
             {
                 friendCode = "???";

@@ -28,9 +28,7 @@ internal class MainMenuPatch
                 var icon = "<color=#278720>♻</color>";
                 var warning = "<color=#e60000>⚠</color>";
                 FileChecker.HasShownPopUp = true;
-                DisconnectPopup.Instance.gameObject.SetActive(true);
-                DisconnectPopup.Instance._textArea.enableWordWrapping = false;
-                DisconnectPopup.Instance._textArea.text = $"{lines}\n<b><size=200%>{icon}<color=#0ed400>Better Among Us</color>{icon}</size></b>\n<color=#757575><u><size=150%>{warning}<color=#8f0000>{FileChecker.UnauthorizedReason}</color>{warning}</size></u>\n\n<color=white>\n{OnlineMsg}\n{lines}";
+                Utils.ShowPopUp($"{lines}\n<b><size=200%>{icon}<color=#0ed400>Better Among Us</color>{icon}</size></b>\n<color=#757575><u><size=150%>{warning}<color=#8f0000>{FileChecker.UnauthorizedReason}</color>{warning}</size></u>\n\n<color=white>\n{OnlineMsg}\n{lines}");
             }
         }
     }

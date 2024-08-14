@@ -12,6 +12,7 @@ public static class OptionsMenuBehaviourPatch
     private static ClientOptionItem AntiCheat;
     private static ClientOptionItem BetterHost;
     private static ClientOptionItem BetterRoleAlgorithma;
+    private static ClientOptionItem BetterNotifications;
     private static ClientOptionItem LobbyPlayerInfo;
     private static ClientOptionItem DisableLobbyTheme;
     private static ClientOptionItem UnlockFPS;
@@ -65,6 +66,18 @@ public static class OptionsMenuBehaviourPatch
         if (BetterRoleAlgorithma == null || BetterRoleAlgorithma.ToggleButton == null)
         {
             BetterRoleAlgorithma = ClientOptionItem.Create("<color=#4f92ff>Better Role Algorithma</color>", Main.BetterRoleAlgorithma, __instance, toggleCheck: () => !toggleCheckInGamePlay("<color=#4f92ff>Better Role Algorithma</color>"));
+        }  
+        
+        if (BetterNotifications == null || BetterNotifications.ToggleButton == null)
+        {
+            BetterNotifications = ClientOptionItem.Create("<color=#4f92ff>Better Notifications</color>", Main.BetterNotifications, __instance, BetterNotificationsToggle);
+
+            static void BetterNotificationsToggle()
+            {
+                BetterNotificationManager.NotifyQueue.Clear();
+                BetterNotificationManager.showTime = 0f;
+                BetterNotificationManager.Notifying = false;
+            }
         }
 
         if (LobbyPlayerInfo == null || LobbyPlayerInfo.ToggleButton == null)
