@@ -103,14 +103,16 @@ static class ExtendedPlayerControl
     // Kick player
     public static void Kick(this PlayerControl player, bool ban = false, string setReasonInfo = "")
     {
-        if (!GameStates.IsHost || !player.DataIsCollected() || player.IsHost())
+        if (!GameStates.IsHost || !player.DataIsCollected() || player.IsHost() || player.BetterData().BannedByAntiCheat)
         {
             return;
         }
 
+        player.BetterData().BannedByAntiCheat = true;
+
         if (setReasonInfo != "")
         {
-            player.RpcSetName(setReasonInfo);
+            player.RpcSetName(setReasonInfo + "<size=0%>");
         }
 
         AmongUsClient.Instance.KickPlayer(player.GetClientId(), ban);

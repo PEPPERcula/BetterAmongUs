@@ -81,7 +81,7 @@ class OnPlayerLeftPatch
 }
 
 [HarmonyPatch(typeof(GameData), nameof(GameData.ShowNotification))]
-class GameDataPatch
+class GameDataShowNotificationPatch
 {
     public static bool Prefix(AmongUsClient __instance, ref string playerName, ref DisconnectReasons reason)
     {
