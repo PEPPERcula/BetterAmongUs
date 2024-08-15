@@ -89,7 +89,7 @@ class CommandsPatch
                         list += $"\n{mid}<color=#e0b700><b>{Main.CommandPrefix.Value}{allCommands[i].Split(' ')[0].Split("---")[0]}</b></color> <size=65%><color=#735e00>{allCommands[i].Split("---")[1]}.</color></size>";
                     }
                 }
-                if (GameStates.IsDev)
+                if (GameStates.IsDev && Main.ReleaseBuildType == ReleaseTypes.Dev)
                 {
                     list += "\n" + close + "\n";
                     list += "<color=#00751f><b><size=150%>Debug Command List</size></b></color>\n" + open;
