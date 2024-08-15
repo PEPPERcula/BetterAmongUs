@@ -82,13 +82,18 @@ public class ClientPatch
         [HarmonyPrefix]
         public static bool SetColorBlindColor_Prefix(CosmeticsLayer __instance, [HarmonyArgument(0)] int color)
         {
-            if (__instance.colorBlindText == null || !__instance.showColorBlindText)
+            try
             {
-                return false;
+                if (__instance.colorBlindText == null || !__instance.showColorBlindText)
+                {
+                    return false;
+                }
+                __instance.colorBlindText.text = __instance.GetColorBlindText();
+                __instance.colorBlindText.color = Palette.PlayerColors[color];
+                __instance.colorBlindText.transform.localPosition = new Vector3(0f, -1.5f, 0.4999f);
             }
-            __instance.colorBlindText.text = __instance.GetColorBlindText();
-            __instance.colorBlindText.color = Palette.PlayerColors[color];
-            __instance.colorBlindText.transform.localPosition = new Vector3(0f, -1.5f, 0.4999f);
+            catch { }
+
             return false;
         }
     }
@@ -126,6 +131,22 @@ public class ClientPatch
                 int row = i % buttonsPerColumn;
                 buttons[i].transform.localPosition = startPosition + new Vector3(col * buttonSpacingSide, -row * buttonSpacing, 0f);
             }
+        }
+    }
+    // fix report name on anti cheat ban
+    [HarmonyPatch(typeof(ReportReasonScreen))]
+    class ReportReasonScreenPatch
+    {
+        [HarmonyPatch(nameof(ReportReasonScreen.Show))]
+        [HarmonyPrefix]
+        public static void Show_Prefix(ref string playerName)
+        {
+            if (playerName.Contains("Anti-Cheat"))
+            {
+                string extractedText = playerName.Split(new[] { "<color=#ffea00>", "</color>" }, StringSplitOptions.None)[1];
+                playerName = extractedText;
+            }
+
         }
     }
 }

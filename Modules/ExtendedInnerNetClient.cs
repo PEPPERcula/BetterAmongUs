@@ -25,9 +25,9 @@ static class ExtendedInnerNetClient
             messageWriter.ForEach(mW => mW.Write("RPC TEST"));
             AmongUsClient.Instance.FinishRpcDesync(messageWriter);
     */
-    public static List<MessageWriter> StartRpcDesync(this InnerNetClient client, uint playerNetId, byte callId, SendOption option, int ignoreClientId = -1)
+    public static List<MessageWriter> StartRpcDesync(this InnerNetClient client, uint playerNetId, byte callId, SendOption option, int ignoreClientId = -1, Func<ClientData, bool> clientCheck = null)
     {
-        List<MessageWriter> messageWriters = [];
+        List<MessageWriter> messageWriters = new List<MessageWriter>();
 
         if (ignoreClientId < 0)
         {
@@ -37,12 +37,17 @@ static class ExtendedInnerNetClient
         {
             foreach (var allClients in AmongUsClient.Instance.allClients.ToArray().Where(c => c.Id != ignoreClientId))
             {
-                messageWriters.Add(client.StartRpcImmediately(playerNetId, callId, option, allClients.Id));
+                if (clientCheck == null || clientCheck.Invoke(allClients))
+                {
+                    messageWriters.Add(client.StartRpcImmediately(playerNetId, callId, option, allClients.Id));
+                }
             }
         }
 
         return messageWriters;
     }
+
+
 
     public static void FinishRpcDesync(this InnerNetClient client, List<MessageWriter> messageWriters)
     {

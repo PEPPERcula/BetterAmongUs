@@ -25,15 +25,15 @@ class AntiCheat
 
                 if (SickoData.ContainsKey(hashPuid))
                 {
-                    player.Kick(true, $"<color=#ffea00>{player.Data.PlayerName}</color> Has been banned by <color=#4f92ff>Anti-Cheat</color>, Reason: <color=#00f583>Known Sicko Menu User</color>");
+                    player.Kick(true, $"<color=#ffea00>{player.Data.PlayerName}</color> banned by <color=#4f92ff>Anti-Cheat</color>!\n Reason: <color=#00f583>Known Sicko Menu User</color>");
                 }
                 else if (AUMData.ContainsKey(hashPuid))
                 {
-                    player.Kick(true, $"<color=#ffea00>{player.Data.PlayerName}</color> Has been banned by <color=#4f92ff>Anti-Cheat</color>, Reason: <color=#4f0000>Known AUM User</color>");
+                    player.Kick(true, $"<color=#ffea00>{player.Data.PlayerName}</color> banned by <color=#4f92ff>Anti-Cheat</color>!\n Reason: <color=#4f0000>Known AUM User</color>");
                 }
                 else if (PlayerData.ContainsKey(hashPuid))
                 {
-                    player.Kick(true, $"<color=#ffea00>{player.Data.PlayerName}</color> Has been banned by <color=#4f92ff>Anti-Cheat</color>, Reason: <color=#fc0000>Known Cheater</color>");
+                    player.Kick(true, $"<color=#ffea00>{player.Data.PlayerName}</color> banned by <color=#4f92ff>Anti-Cheat</color>!\n Reason: <color=#fc0000>Known Cheater</color>");
                 }
             }
         }
@@ -60,33 +60,38 @@ class AntiCheat
         [HarmonyPostfix]
         public static void Deserialize_Postfix(PlatformSpecificData __instance)
         {
-            _ = new LateTask(() =>
-                {
-                var player = Main.AllPlayerControls.FirstOrDefault(pc => pc.GetClient().PlatformData == __instance);
+            if (!Main.AntiCheat.Value) return;
 
-                if (player != null)
-                {
-                    if (__instance.Platform is Platforms.StandaloneWin10 or Platforms.Xbox)
+            if (GameStates.IsLobby)
+            {
+                _ = new LateTask(() =>
                     {
-                        if (__instance.XboxPlatformId.ToString().Length is < 10 or > 16)
+                        var player = Main.AllPlayerControls.FirstOrDefault(pc => pc.GetClient().PlatformData == __instance);
+
+                        if (player != null)
                         {
-                                player.ReportPlayer(ReportReasons.Cheating_Hacking);
-                                BetterNotificationManager.NotifyCheat(player, $"Platform Spoofer", newText: "Has been detected with a cheat");
-                                Logger.LogCheat($"{player.Data.PlayerName} Platform Spoofer: {__instance.XboxPlatformId}");
+                            if (__instance.Platform is Platforms.StandaloneWin10 or Platforms.Xbox)
+                            {
+                                if (__instance.XboxPlatformId.ToString().Length is < 10 or > 16)
+                                {
+                                    player.ReportPlayer(ReportReasons.Cheating_Hacking);
+                                    BetterNotificationManager.NotifyCheat(player, $"Platform Spoofer", newText: "Has been detected with a cheat");
+                                    Logger.LogCheat($"{player.Data.PlayerName} Platform Spoofer: {__instance.XboxPlatformId}");
+                                }
                             }
-                    }
 
-                    if (__instance.Platform is Platforms.Playstation)
-                    {
-                        if (__instance.PsnPlatformId.ToString().Length is < 14 or > 20)
-                        {
-                                player.ReportPlayer(ReportReasons.Cheating_Hacking);
-                                BetterNotificationManager.NotifyCheat(player, $"Platform Spoofer", newText: "Has been detected with a cheat");
-                                Logger.LogCheat($"{player.Data.PlayerName} Platform Spoofer: {__instance.PsnPlatformId}");
+                            if (__instance.Platform is Platforms.Playstation)
+                            {
+                                if (__instance.PsnPlatformId.ToString().Length is < 14 or > 20)
+                                {
+                                    player.ReportPlayer(ReportReasons.Cheating_Hacking);
+                                    BetterNotificationManager.NotifyCheat(player, $"Platform Spoofer", newText: "Has been detected with a cheat");
+                                    Logger.LogCheat($"{player.Data.PlayerName} Platform Spoofer: {__instance.PsnPlatformId}");
+                                }
+                            }
                         }
-                    }
-                }
-            }, 3.5f, shoudLog: false);
+                    }, 3.5f, shoudLog: false);
+            }
         }
     }
 
@@ -177,7 +182,8 @@ class AntiCheat
         {
             MessageReader reader = MessageReader.Get(Oldreader);
 
-            if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.BetterData().IsBetterHost || reader == null || !IsEnabled || !Main.AntiCheat.Value) return;
+            if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.BetterData().IsBetterHost || reader == null || !IsEnabled || !Main.AntiCheat.Value
+                || GameStates.IsBetterHostLobby && !GameStates.IsHost) return;
 
             RoleTypes? Role = player?.Data?.RoleType;
             Role ??= RoleTypes.Crewmate;
@@ -316,7 +322,28 @@ class AntiCheat
         {
             MessageReader reader = MessageReader.Get(Oldreader);
 
-            if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.BetterData().IsBetterHost || reader == null || !IsEnabled || !Main.AntiCheat.Value) return true;
+            if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.BetterData().IsBetterHost || reader == null) return true;
+
+            // Prevent ban exploit
+            if (callId is (byte)RpcCalls.MurderPlayer)
+            {
+                if (reader.BytesRemaining > 0)
+                {
+                    PlayerControl target = reader.ReadNetObject<PlayerControl>();
+
+                    if (target != null)
+                    {
+                        if (!target.IsAlive() && target == PlayerControl.LocalPlayer)
+                        {
+                            BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
+                            Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName((RpcCalls)callId)} 2: {!target.IsAlive()}");
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            if (!IsEnabled || !Main.AntiCheat.Value || GameStates.IsBetterHostLobby && !GameStates.IsHost) return true;
 
             RoleTypes Role = player.Data.RoleType;
             bool IsImpostor = player.IsImpostorTeam();

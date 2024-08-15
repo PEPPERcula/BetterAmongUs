@@ -40,6 +40,9 @@ class CommandsPatch
         "role {role}---Set your role for the next game - <color=red>Host Only</color> - <color=#ff00f7>DeBug</color>",
         "setrole {id} {role}---Set another players role for the next game - <color=red>Host Only</color> - <color=#ff00f7>DeBug</color>",
         "syncallnames---Sync all players names for better host - <color=red>Host Only</color> - <color=#ff00f7>DeBug</color>",
+        "suicide---Kill self <color=#ff00f7>DeBug</color>",
+        "exile---Set self as dead <color=#ff00f7>DeBug</color>",
+        "revive---Set self as alive<color=#ff00f7>DeBug</color>",
         };
 
 
@@ -86,7 +89,7 @@ class CommandsPatch
                         list += $"\n{mid}<color=#e0b700><b>{Main.CommandPrefix.Value}{allCommands[i].Split(' ')[0].Split("---")[0]}</b></color> <size=65%><color=#735e00>{allCommands[i].Split("---")[1]}.</color></size>";
                     }
                 }
-                if (GameStates.IsDev)
+                if (GameStates.IsDev && Main.ReleaseBuildType == ReleaseTypes.Dev)
                 {
                     list += "\n" + close + "\n";
                     list += "<color=#00751f><b><size=150%>Debug Command List</size></b></color>\n" + open;
@@ -406,6 +409,24 @@ class CommandsPatch
                     {
                         RPC.SyncAllNames(force: true);
                         Utils.AddChatPrivate("<color=#0dff00>All player names have been updated and synced!</color>");
+                    }
+                    break;   
+                case "suicide":
+                    if (HandleIsHost(command) == true)
+                    {
+                        PlayerControl.LocalPlayer.MurderPlayer(PlayerControl.LocalPlayer, MurderResultFlags.Succeeded);
+                    }
+                    break;
+                case "exile":
+                    if (HandleIsHost(command) == true)
+                    {
+                        PlayerControl.LocalPlayer.Exiled();
+                    }
+                    break;
+                case "revive":
+                    if (HandleIsHost(command) == true)
+                    {
+                        PlayerControl.LocalPlayer.Revive();
                     }
                     break;
                 default:

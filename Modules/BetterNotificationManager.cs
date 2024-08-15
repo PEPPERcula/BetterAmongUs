@@ -48,7 +48,7 @@ class BetterNotificationManager
 
         if (GameStates.IsHost && kickPlayer)
         {
-            player.Kick(true, $"<color=#ffea00>{player.Data.PlayerName}</color> Has been banned by <color=#4f92ff>Anti-Cheat</color>, Reason: <color=#fc0000>{reason}</color>");
+            player.Kick(true, $"<color=#ffea00>{player.Data.PlayerName}</color> banned by <color=#4f92ff>Anti-Cheat</color>!\n Reason: <color=#fc0000>{reason}</color>");
         }
 
         Logger.LogCheat(Utils.GetRawText(text));
