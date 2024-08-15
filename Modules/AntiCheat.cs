@@ -322,8 +322,28 @@ class AntiCheat
         {
             MessageReader reader = MessageReader.Get(Oldreader);
 
-            if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.BetterData().IsBetterHost || reader == null || !IsEnabled || !Main.AntiCheat.Value
-                || GameStates.IsBetterHostLobby && !GameStates.IsHost) return true;
+            if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.BetterData().IsBetterHost || reader == null) return true;
+
+            // Prevent ban exploit
+            if (callId is (byte)RpcCalls.MurderPlayer)
+            {
+                if (reader.BytesRemaining > 0)
+                {
+                    PlayerControl target = reader.ReadNetObject<PlayerControl>();
+
+                    if (target != null)
+                    {
+                        if (!target.IsAlive() && target == PlayerControl.LocalPlayer)
+                        {
+                            BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
+                            Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName((RpcCalls)callId)} 2: {!target.IsAlive()}");
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            if (!IsEnabled || !Main.AntiCheat.Value || GameStates.IsBetterHostLobby && !GameStates.IsHost) return true;
 
             RoleTypes Role = player.Data.RoleType;
             bool IsImpostor = player.IsImpostorTeam();
