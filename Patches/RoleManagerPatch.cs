@@ -253,7 +253,8 @@ public class RoleManagerPatch
     [HarmonyPrefix]
     public static bool AssignRoleOnDeath_Prefix(/*RoleManager __instance*/ [HarmonyArgument(0)] PlayerControl player)
     {
-        player.BetterData().DeadDisplayRole = player.Data.RoleType;
+        if (player.Data.RoleType != RoleTypes.CrewmateGhost && player.Data.RoleType != RoleTypes.ImpostorGhost)
+            player.BetterData().DeadDisplayRole = player.Data.RoleType;
 
         if (!Main.BetterRoleAlgorithma.Value) return true;
 
