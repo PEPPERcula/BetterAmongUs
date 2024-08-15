@@ -11,6 +11,11 @@ public class RoleManagerPatch
     public static Dictionary<string, int> ImpostorMultiplier = []; // HashPuid, Multiplier
     private static Random random = new Random();
 
+    static readonly Func<InnerNet.ClientData, bool> clientCheck = (clientData) =>
+    {
+        return clientData?.BetterData()?.IsBetterUser != true;
+    };
+
     // Better role algorithm
     [HarmonyPatch(nameof(RoleManager.SelectRoles))]
     [HarmonyPrefix]
@@ -123,14 +128,14 @@ public class RoleManagerPatch
                     // Desync role to other clients to prevent revealing the true role
                     if (IsImpostorRole(role) && role is not RoleTypes.Phantom)
                     {
-                        List<MessageWriter> messageWriter = AmongUsClient.Instance.StartRpcDesync(player.NetId, (byte)RpcCalls.SetRole, SendOption.None, player.GetClientId());
+                        List<MessageWriter> messageWriter = AmongUsClient.Instance.StartRpcDesync(player.NetId, (byte)RpcCalls.SetRole, SendOption.None, player.GetClientId(), clientCheck);
                         messageWriter.ForEach(mW => mW.Write((ushort)RoleTypes.Impostor));
                         messageWriter.ForEach(mW => mW.Write(false));
                         AmongUsClient.Instance.FinishRpcDesync(messageWriter);
                     }
                     else if (role is not RoleTypes.Noisemaker)
                     {
-                        List<MessageWriter> messageWriter = AmongUsClient.Instance.StartRpcDesync(player.NetId, (byte)RpcCalls.SetRole, SendOption.None, player.GetClientId());
+                        List<MessageWriter> messageWriter = AmongUsClient.Instance.StartRpcDesync(player.NetId, (byte)RpcCalls.SetRole, SendOption.None, player.GetClientId(), clientCheck);
                         messageWriter.ForEach(mW => mW.Write((ushort)RoleTypes.Crewmate));
                         messageWriter.ForEach(mW => mW.Write(false));
                         AmongUsClient.Instance.FinishRpcDesync(messageWriter);
@@ -176,7 +181,7 @@ public class RoleManagerPatch
                         // Desync role to other clients to prevent revealing the true role
                         if (kvp.Key is not RoleTypes.Phantom)
                         {
-                            List<MessageWriter> messageWriter = AmongUsClient.Instance.StartRpcDesync(pc.NetId, (byte)RpcCalls.SetRole, SendOption.None, pc.GetClientId());
+                            List<MessageWriter> messageWriter = AmongUsClient.Instance.StartRpcDesync(pc.NetId, (byte)RpcCalls.SetRole, SendOption.None, pc.GetClientId(), clientCheck);
                             messageWriter.ForEach(mW => mW.Write((ushort)RoleTypes.Impostor));
                             messageWriter.ForEach(mW => mW.Write(false));
                             AmongUsClient.Instance.FinishRpcDesync(messageWriter);
@@ -210,7 +215,7 @@ public class RoleManagerPatch
                         // Desync role to other clients to prevent revealing the true role
                         if (kvp.Key is not RoleTypes.Noisemaker)
                         {
-                            List<MessageWriter> messageWriter = AmongUsClient.Instance.StartRpcDesync(pc.NetId, (byte)RpcCalls.SetRole, SendOption.None, pc.GetClientId());
+                            List<MessageWriter> messageWriter = AmongUsClient.Instance.StartRpcDesync(pc.NetId, (byte)RpcCalls.SetRole, SendOption.None, pc.GetClientId(), clientCheck);
                             messageWriter.ForEach(mW => mW.Write((ushort)RoleTypes.Crewmate));
                             messageWriter.ForEach(mW => mW.Write(false));
                             AmongUsClient.Instance.FinishRpcDesync(messageWriter);
@@ -283,7 +288,7 @@ public class RoleManagerPatch
             {
                 player.RpcSetRole(kvp.Key);
                 // Desync role to other clients to prevent revealing the true role
-                List<MessageWriter> messageWriter = AmongUsClient.Instance.StartRpcDesync(player.NetId, (byte)RpcCalls.SetRole, SendOption.None, player.GetClientId());
+                List<MessageWriter> messageWriter = AmongUsClient.Instance.StartRpcDesync(player.NetId, (byte)RpcCalls.SetRole, SendOption.None, player.GetClientId(), clientCheck);
                 messageWriter.ForEach(mW => mW.Write((ushort)player.Data.Role.DefaultGhostRole));
                 messageWriter.ForEach(mW => mW.Write(false));
                 AmongUsClient.Instance.FinishRpcDesync(messageWriter);
