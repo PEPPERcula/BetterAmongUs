@@ -86,6 +86,7 @@ class GamePlayManager
         {
             if (__instance.startState == GameStartManager.StartingStates.Countdown)
             {
+                SoundManager.instance.StopSound(__instance.gameStartSound);
                 __instance.ResetStartState();
                 return false;
             }
