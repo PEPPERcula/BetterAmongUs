@@ -7,9 +7,10 @@ namespace BetterAmongUs;
 class BetterDataManager
 {
     private static string filePath = GetFilePath("BetterData");
-    private static string filePathFolder = Path.Combine(Main.GetGamePathToAmongUs(), $"Better_Data");
-    public static string banPlayerListFile = Path.Combine(filePathFolder, "BanPlayerList.txt");
-    public static string banNameListFile = Path.Combine(filePathFolder, "BanNameList.txt");
+    public static string filePathFolder = Path.Combine(Main.GetGamePathToAmongUs(), $"Better_Data");
+    public static string filePathFolderSaveInfo = Path.Combine(filePathFolder, $"SaveInfo");
+    public static string banPlayerListFile = Path.Combine(filePathFolderSaveInfo, "BanPlayerList.txt");
+    public static string banNameListFile = Path.Combine(filePathFolderSaveInfo, "BanNameList.txt");
 
     public static string GetFilePath(string name)
     {
@@ -21,6 +22,11 @@ class BetterDataManager
         if (!Directory.Exists(filePathFolder))
         {
             Directory.CreateDirectory(filePathFolder);
+        }
+
+        if (!Directory.Exists(filePathFolderSaveInfo))
+        {
+            Directory.CreateDirectory(filePathFolderSaveInfo);
         }
 
         if (!File.Exists(banPlayerListFile))

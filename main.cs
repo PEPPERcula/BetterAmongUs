@@ -131,10 +131,10 @@ public class Main : BasePlugin
             if (File.Exists(Path.Combine($"{Environment.CurrentDirectory}/Among Us_Data/Plugins/x86", "steam_api.dll")))
                 File.WriteAllText(Path.Combine(Environment.CurrentDirectory, "steam_appid.txt"), "945360");
 
-            if (File.Exists(Path.Combine(Environment.CurrentDirectory, "better-log.txt")))
-                File.WriteAllText(Path.Combine(Environment.CurrentDirectory, "better-previous-log.txt"), File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "better-log.txt")));
+            if (File.Exists(Path.Combine(BetterDataManager.filePathFolder, "better-log.txt")))
+                File.WriteAllText(Path.Combine(BetterDataManager.filePathFolder, "better-previous-log.txt"), File.ReadAllText(Path.Combine(BetterDataManager.filePathFolder, "better-log.txt")));
 
-            File.WriteAllText(Path.Combine(Environment.CurrentDirectory, "better-log.txt"), "");
+            File.WriteAllText(Path.Combine(BetterDataManager.filePathFolder, "better-log.txt"), "");
             BetterAmongUs.Logger.Log("Better Among Us successfully loaded!");
 
             // Set up debug menu

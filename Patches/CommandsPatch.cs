@@ -107,7 +107,7 @@ class CommandsPatch
             case "dump":
                 if (GameStates.IsInGamePlay && !GameStates.IsDev) return;
 
-                string logFilePath = Path.Combine(Environment.CurrentDirectory, "better-log.txt");
+                string logFilePath = Path.Combine(BetterDataManager.filePathFolder, "better-log.txt");
                 string log = File.ReadAllText(logFilePath);
                 string newLog = string.Empty;
                 string[] logArray = log.Split(new[] { Environment.NewLine }, StringSplitOptions.None);

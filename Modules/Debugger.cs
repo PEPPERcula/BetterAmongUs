@@ -6,7 +6,7 @@ class Logger
     public static void Log(string info, string tag = "Log")
     {
         string mark = $"{DateTime.Now:HH:mm} [BetterLog][{tag}]";
-        string logFilePath = Path.Combine(Environment.CurrentDirectory, "better-log.txt");
+        string logFilePath = Path.Combine(BetterDataManager.filePathFolder, "better-log.txt");
         string newLine = $"{mark}: {info}";
         File.AppendAllText(logFilePath, newLine + Environment.NewLine);
         Main.Logger.LogInfo($"[{tag}] {info}");
@@ -34,7 +34,7 @@ class Logger
         }
 
         string mark = $"{DateTime.Now:HH:mm} [BetterLog][PrivateLog][{tag}]";
-        string logFilePath = Path.Combine(Environment.CurrentDirectory, "better-log.txt");
+        string logFilePath = Path.Combine(BetterDataManager.filePathFolder, "better-log.txt");
         string newLine = $"{mark}: " + Encryptor.Encrypt($"{info}");
         File.AppendAllText(logFilePath, newLine + Environment.NewLine);
     }
