@@ -59,6 +59,16 @@ internal class RPCHandlerPatch
 
 internal static class RPC
 {
+    public static void SendBetterCheck()
+    {
+        var flag = GameStates.IsHost && Main.BetterHost.Value;
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, unchecked((byte)CustomRPC.BetterCheck), SendOption.None, -1);
+        messageWriter.Write((byte)PlayerControl.LocalPlayer.NetId);
+        messageWriter.Write(flag);
+        messageWriter.Write(Main.GetVersionText().Replace(" ", ""));
+        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+    }
+
     public static void SetNamePrivate(PlayerControl player, string name, PlayerControl target)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetName, SendOption.Reliable, target.GetClientId());

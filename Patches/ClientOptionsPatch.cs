@@ -52,12 +52,7 @@ public static class OptionsMenuBehaviourPatch
             BetterHost = ClientOptionItem.Create("<color=#4f92ff>Better Host</color>", Main.BetterHost, __instance, BetterHostButtonToggle, () => !toggleCheckInGamePlay("<color=#4f92ff>Better Host</color>"));
             static void BetterHostButtonToggle()
             {
-                var flag = GameStates.IsHost && Main.BetterHost.Value;
-                MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, unchecked((byte)CustomRPC.BetterCheck), SendOption.None, -1);
-                messageWriter.Write((byte)PlayerControl.LocalPlayer.NetId);
-                messageWriter.Write(flag);
-                messageWriter.Write(Main.GetVersionText().Replace(" ", ""));
-                AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+                RPC.SendBetterCheck();
 
                 RPC.SyncAllNames(force: true);
             }
