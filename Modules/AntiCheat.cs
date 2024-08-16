@@ -2,6 +2,7 @@
 using HarmonyLib;
 using Hazel;
 using InnerNet;
+using UnityEngine;
 using UnityEngine.Purchasing;
 
 namespace BetterAmongUs;
@@ -306,15 +307,6 @@ class AntiCheat
 
                 player.BetterData().TimeSinceLastTask = 0f;
                 player.BetterData().LastTaskId = taskId;
-            }
-
-            if (callId is (byte)RpcCalls.BootFromVent)
-            {
-                if (player.IsImpostorTeam() || player.myTasks.ToArray().Any(task => task.Id == (uint)TaskTypes.VentCleaning && !task.IsComplete))
-                {
-                    BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
-                    Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName((RpcCalls)callId)}: {player.IsImpostorTeam()} - {player.myTasks.ToArray().Any(task => task.Id == (uint)TaskTypes.VentCleaning && !task.IsComplete)}");
-                }
             }
 
             if (callId is (byte)RpcCalls.Pet or (byte)RpcCalls.CancelPet)

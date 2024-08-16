@@ -171,8 +171,8 @@ class BetterHostManager
                 {
                     _ = new LateTask(() =>
                     {
-                        RPC.SyncAllNames();
-                    }, 0.25f, shoudLog: false);
+                        RPC.SyncAllNames(force: true);
+                    }, 1f, shoudLog: false);
 
                     shouldReturn = true;
                 }
