@@ -232,7 +232,7 @@ class FileChecker
     {
         foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
         {
-            if (assembly.FullName.Contains(modName))
+            if (assembly.FullName.Contains(modName, StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }
