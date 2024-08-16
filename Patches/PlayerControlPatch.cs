@@ -209,7 +209,8 @@ class PlayerControlPatch
             player.SetPlayerTextInfo(sbInfoTop.ToString());
             player.SetPlayerTextInfo(sbInfoBottom.ToString(), isBottom: true);
             player.SetPlayerTextInfo(sbInfo.ToString(), isInfo: true);
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             Logger.Error(ex.ToString());
         }

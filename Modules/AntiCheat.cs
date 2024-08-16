@@ -2,7 +2,6 @@
 using HarmonyLib;
 using Hazel;
 using InnerNet;
-using UnityEngine;
 
 namespace BetterAmongUs;
 
@@ -309,7 +308,7 @@ class AntiCheat
                 return;
             }
         }
-        catch (Exception ex) 
+        catch (Exception ex)
         {
             Logger.Error(ex.ToString());
         }

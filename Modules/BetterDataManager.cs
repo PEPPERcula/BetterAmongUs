@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text;
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace BetterAmongUs;
 
@@ -115,7 +113,7 @@ class BetterDataManager
                 return jsonData[category][name];
             }
         }
-        catch (Exception ex) 
+        catch (Exception ex)
         {
             Logger.Error(ex.ToString());
         }

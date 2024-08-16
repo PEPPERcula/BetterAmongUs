@@ -1,8 +1,8 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
-using UnityEngine;
 using System.Text;
+using UnityEngine;
 
 namespace BetterAmongUs;
 

@@ -1,5 +1,4 @@
 using HarmonyLib;
-using Hazel;
 using UnityEngine;
 
 namespace BetterAmongUs.Patches;
@@ -61,8 +60,8 @@ public static class OptionsMenuBehaviourPatch
         if (BetterRoleAlgorithma == null || BetterRoleAlgorithma.ToggleButton == null)
         {
             BetterRoleAlgorithma = ClientOptionItem.Create("<color=#4f92ff>Better Role Algorithma</color>", Main.BetterRoleAlgorithma, __instance, toggleCheck: () => !toggleCheckInGamePlay("<color=#4f92ff>Better Role Algorithma</color>"));
-        }  
-        
+        }
+
         if (BetterNotifications == null || BetterNotifications.ToggleButton == null)
         {
             BetterNotifications = ClientOptionItem.Create("<color=#4f92ff>Better Notifications</color>", Main.BetterNotifications, __instance, BetterNotificationsToggle);

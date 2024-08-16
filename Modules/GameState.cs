@@ -1,5 +1,4 @@
 using AmongUs.GameOptions;
-using BetterAmongUs.Patches;
 
 namespace BetterAmongUs;
 
