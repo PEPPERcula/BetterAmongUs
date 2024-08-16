@@ -114,7 +114,7 @@ class PlayerControlPatch
                 || friendCode.Contains(' ')) ? "#00f7ff" : "#ff0000";
             if (string.IsNullOrEmpty(friendCode) || friendCode == "")
             {
-                friendCode = "No FriendCode";
+                friendCode = "No Friend Code";
                 friendCodeColor = "#ff0000";
             }
             if (DataManager.Settings.Gameplay.StreamerMode == true)
