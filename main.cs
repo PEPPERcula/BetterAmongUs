@@ -125,7 +125,7 @@ public class Main : BasePlugin
 
             Harmony.PatchAll();
             BetterDataManager.SetUp();
-            BetterDataManager.LoadCheatData();
+            BetterDataManager.LoadData();
             LoadOptions();
 
             if (File.Exists(Path.Combine($"{Environment.CurrentDirectory}/Among Us_Data/Plugins/x86", "steam_api.dll")))
