@@ -2,6 +2,7 @@ using BetterAmongUs.Patches;
 using HarmonyLib;
 using Hazel;
 using InnerNet;
+using UnityEngine.ProBuilder;
 
 namespace BetterAmongUs;
 
@@ -66,6 +67,26 @@ public static class OnPlayerJoinedPatch
 
                 if (Main.BetterHost.Value)
                     client.Character.RpcSendHostChat(HudManagerPatch.WelcomeMessage, sendToBetterUser: false);
+
+                // Auto ban player on ban list
+                var player = Utils.PlayerFromClientId(client.Id);
+                if (player != null)
+                {
+                    string banListContent = File.ReadAllText(BetterDataManager.banListFile);
+
+                    string[] listArray = banListContent.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+
+                    foreach (string text in listArray)
+                    {
+                        if (!string.IsNullOrEmpty(player.Data.FriendCode) && text.Contains(player.Data.FriendCode)
+                            || !string.IsNullOrEmpty(Utils.GetHashPuid(player)) && text.Contains(Utils.GetHashPuid(player)))
+                        {
+                            player.Kick(true, $"{player.Data.PlayerName} has been banned due to being on the ban list!");
+                            break;
+                        }
+                    }
+                }
+
             }
         }, 2.5f, "OnPlayerJoinedPatch", false);
     }
