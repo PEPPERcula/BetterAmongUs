@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Hazel;
+using TMPro;
 
 namespace BetterAmongUs.Patches;
 
@@ -62,12 +63,36 @@ class GamePlayManager
     {
         [HarmonyPatch(nameof(GameStartManager.Update))]
         [HarmonyPrefix]
-        private static void Prefix(GameStartManager __instance)
+        private static void Update_Prefix(GameStartManager __instance)
         {
-            if (GameStates.IsDev)
+            __instance.MinPlayers = 1;
+        }
+        [HarmonyPatch(nameof(GameStartManager.Update))]
+        [HarmonyPostfix]
+        private static void Update_Postfix(GameStartManager __instance)
+        {
+            __instance.GameStartTextParent.SetActive(false);
+            __instance.StartButton.gameObject.SetActive(true);
+            if (__instance.startState == GameStartManager.StartingStates.Countdown)
             {
-                __instance.MinPlayers = 1;
+                __instance.StartButton.buttonText.text = string.Format("Cancel: {0}", (int)__instance.countDownTimer + 1);
             }
+            else
+            {
+                __instance.StartButton.buttonText.text = "Start Game";
+            }
+        }
+        [HarmonyPatch(nameof(GameStartManager.BeginGame))]
+        [HarmonyPrefix]
+        private static bool BeginGame_Prefix(GameStartManager __instance)
+        {
+            if (__instance.startState == GameStartManager.StartingStates.Countdown)
+            {
+                __instance.ResetStartState();
+                return false;
+            }
+
+            return true;
         }
     }
 }
