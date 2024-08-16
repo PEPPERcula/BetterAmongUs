@@ -167,6 +167,17 @@ class BetterHostManager
                 }
                 break;
 
+            case (byte)RpcCalls.CompleteTask:
+                {
+                    _ = new LateTask(() =>
+                    {
+                        RPC.SyncAllNames();
+                    }, 0.25f, shoudLog: false);
+
+                    shouldReturn = true;
+                }
+                break;
+
             default:
                 shouldReturn = true;
                 break;

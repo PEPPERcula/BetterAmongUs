@@ -10,6 +10,9 @@ public class ExtendedPlayerInfo
     public bool IsBetterHost { get; set; } = false;
     public bool IsTOHEHost { get; set; } = false;
     public bool BannedByAntiCheat { get; set; } = false;
+
+    // Track Game Info
+
     public bool HasNoisemakerNotify { get; set; } = false;
     public float TimeSinceLastTask { get; set; } = 5f;
     public uint LastTaskId { get; set; } = 0;

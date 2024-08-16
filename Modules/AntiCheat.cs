@@ -287,27 +287,16 @@ class AntiCheat
                 }
             }
 
-            if (player.IsImpostorTeam())
-            {
-                if (callId is (byte)RpcCalls.CompleteTask or (byte)RpcCalls.BootFromVent)
-                {
-                    BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
-                    Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName((RpcCalls)callId)}: {player.IsImpostorTeam()}");
-
-                    return;
-                }
-            }
-
             if (callId is (byte)RpcCalls.CompleteTask)
             {
                 var taskId = reader.ReadPackedUInt32();
 
-                if (!player.myTasks.ToArray().Any(task => task.Id == taskId)
-                    || GameStates.IsMeeting || player.BetterData().LastTaskId != taskId && player.BetterData().TimeSinceLastTask < 3f)
+                if (player.IsImpostorTeam() || !player.myTasks.ToArray().Any(task => task.Id == taskId)
+                    || GameStates.IsMeeting || player.BetterData().LastTaskId == taskId || player.BetterData().LastTaskId != taskId && player.BetterData().TimeSinceLastTask < 1.25f)
                 {
                     BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
-                    Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName((RpcCalls)callId)}: {!player.myTasks.ToArray().Any(task => task.Id == taskId)} - {GameStates.IsMeeting}" +
-                        $" - {player.BetterData().LastTaskId != taskId} && {player.BetterData().TimeSinceLastTask < 3f}");
+                    Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName((RpcCalls)callId)}: {player.IsImpostorTeam()} - {!player.Data.Tasks.ToArray().Any(task => task.Id == taskId)} - {GameStates.IsMeeting}" +
+                        $" - {player.BetterData().LastTaskId == taskId} - {player.BetterData().LastTaskId != taskId} && {player.BetterData().TimeSinceLastTask < 1.25f}");
 
                     player.BetterData().TimeSinceLastTask = 0f;
                     player.BetterData().LastTaskId = taskId;
@@ -317,6 +306,15 @@ class AntiCheat
 
                 player.BetterData().TimeSinceLastTask = 0f;
                 player.BetterData().LastTaskId = taskId;
+            }
+
+            if (callId is (byte)RpcCalls.BootFromVent)
+            {
+                if (player.IsImpostorTeam() || player.myTasks.ToArray().Any(task => task.Id == (uint)TaskTypes.VentCleaning && !task.IsComplete))
+                {
+                    BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
+                    Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName((RpcCalls)callId)}: {player.IsImpostorTeam()} - {player.myTasks.ToArray().Any(task => task.Id == (uint)TaskTypes.VentCleaning && !task.IsComplete)}");
+                }
             }
 
             if (callId is (byte)RpcCalls.Pet or (byte)RpcCalls.CancelPet)
