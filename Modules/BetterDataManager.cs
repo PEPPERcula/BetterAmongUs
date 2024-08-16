@@ -7,8 +7,9 @@ namespace BetterAmongUs;
 class BetterDataManager
 {
     private static string filePath = GetFilePath("BetterData");
-    private static string filePathFolder = Path.Combine(Main.GetGamePathToAmongUs(), $"BetterSaveFolder");
-    public static string banListFile = Path.Combine(filePathFolder, "BanList.txt");
+    private static string filePathFolder = Path.Combine(Main.GetGamePathToAmongUs(), $"Better_Data");
+    public static string banPlayerListFile = Path.Combine(filePathFolder, "BanPlayerList.txt");
+    public static string banNameListFile = Path.Combine(filePathFolder, "BanNameList.txt");
 
     public static string GetFilePath(string name)
     {
@@ -22,9 +23,14 @@ class BetterDataManager
             Directory.CreateDirectory(filePathFolder);
         }
 
-        if (!File.Exists(banListFile))
+        if (!File.Exists(banPlayerListFile))
         {
-            File.WriteAllText(banListFile, "// Example\nFriendCode#0000\nHashPUID\n// Or\nFriendCode#0000, HashPUID");
+            File.WriteAllText(banPlayerListFile, "// Example\nFriendCode#0000\nHashPUID\n// Or\nFriendCode#0000, HashPUID");
+        }
+
+        if (!File.Exists(banNameListFile))
+        {
+            File.WriteAllText(banNameListFile, "// Example\nBanName1\nBanName2");
         }
 
         if (!File.Exists(filePath))
@@ -133,10 +139,10 @@ class BetterDataManager
             }
 
             // Check if the file already contains the new entry
-            if (!File.Exists(banListFile) || !File.ReadLines(banListFile).Any(line => line.Equals(newText)))
+            if (!File.Exists(banPlayerListFile) || !File.ReadLines(banPlayerListFile).Any(line => line.Equals(newText)))
             {
                 // Append the new string to the file if it's not already present
-                File.AppendAllText(banListFile, Environment.NewLine + newText);
+                File.AppendAllText(banPlayerListFile, Environment.NewLine + newText);
             }
         }
     }

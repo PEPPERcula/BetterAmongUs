@@ -2,6 +2,7 @@ using BetterAmongUs.Patches;
 using HarmonyLib;
 using Hazel;
 using InnerNet;
+using System.Text.RegularExpressions;
 using UnityEngine.ProBuilder;
 
 namespace BetterAmongUs;
@@ -62,21 +63,43 @@ public static class OnPlayerJoinedPatch
                 var player = Utils.PlayerFromClientId(client.Id);
                 if (player != null)
                 {
-                    string banListContent = File.ReadAllText(BetterDataManager.banListFile);
+                    string banPlayerListContent = File.ReadAllText(BetterDataManager.banPlayerListFile);
 
-                    string[] listArray = banListContent.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+                    string[] listPlayerArray = banPlayerListContent.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
 
-                    foreach (string text in listArray)
+                    foreach (string text in listPlayerArray)
                     {
                         if (!string.IsNullOrEmpty(player.Data.FriendCode) && text.Contains(player.Data.FriendCode)
                             || !string.IsNullOrEmpty(Utils.GetHashPuid(player)) && text.Contains(Utils.GetHashPuid(player)))
                         {
-                            player.Kick(true, $"{player.Data.PlayerName} has been banned due to being on the ban list!");
+                            player.Kick(true, $"{player.Data.PlayerName} has been banned due to being on the ban player list!");
                             break;
                         }
                     }
-                }
 
+                    // Normalize and remove spaces and special characters from names
+                    Func<string, string> normalizeName = name => new string(name.Where(c => char.IsLetterOrDigit(c)).ToArray()).ToLower();
+
+                    // Read all banned names into a HashSet with normalized names
+                    HashSet<string> bannedNames = new HashSet<string>(
+                        File.ReadLines(BetterDataManager.banNameListFile)
+                            .Select(normalizeName)
+                            .Where(name => !string.IsNullOrWhiteSpace(name))
+                    );
+
+                    string normalizedPlayerName = normalizeName(player.Data.PlayerName);
+
+                    // Check if any banned name is a prefix of the player's normalized name
+                    bool isNameBanned = bannedNames.Any(bannedName =>
+                        normalizedPlayerName.StartsWith(bannedName)
+                    );
+
+                    if (!string.IsNullOrEmpty(normalizedPlayerName) && isNameBanned)
+                    {
+                        player.Kick(false, $"{player.Data.PlayerName} has been kicked due to their name being on the ban name list!");
+                    }
+
+                }
             }
         }, 2.5f, "OnPlayerJoinedPatch", false);
     }
