@@ -72,6 +72,12 @@ class PlayerControlPatch
         {
             __instance.BetterData().TimesCalledMeeting = 0;
             __instance.BetterData().HasNoisemakerNotify = false;
+            __instance.BetterData().TimeSinceLastTask = 5f;
+            __instance.BetterData().LastTaskId = 999;
+        }
+        else
+        {
+            __instance.BetterData().TimeSinceLastTask += Time.deltaTime;
         }
     }
 
@@ -131,12 +137,15 @@ class PlayerControlPatch
             var sbInfoBottom = new StringBuilder();
 
             // Put +++ at the end of each tag
-            if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.SickoData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.SickoData.ContainsValue(friendCode))
-                sbTag.Append("<color=#00f583>Sicko User</color>+++");
-            else if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.AUMData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.AUMData.ContainsValue(friendCode))
-                sbTag.Append("<color=#4f0000>AUM User</color>+++");
-            else if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.PlayerData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.PlayerData.ContainsValue(friendCode))
-                sbTag.Append("<color=#fc0000>Known Cheater</color>+++");
+            if (!player.isDummy)
+            {
+                if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.SickoData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.SickoData.ContainsValue(friendCode))
+                    sbTag.Append("<color=#00f583>Sicko User</color>+++");
+                else if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.AUMData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.AUMData.ContainsValue(friendCode))
+                    sbTag.Append("<color=#4f0000>AUM User</color>+++");
+                else if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.PlayerData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.PlayerData.ContainsValue(friendCode))
+                    sbTag.Append("<color=#fc0000>Known Cheater</color>+++");
+            }
 
             if (GameStates.IsInGame && GameStates.IsLobby && !GameStates.IsFreePlay)
             {
@@ -167,6 +176,10 @@ class PlayerControlPatch
                 if (player.IsImpostorTeammate() || player == PlayerControl.LocalPlayer || !PlayerControl.LocalPlayer.IsAlive() || DebugMenu.RevealRoles)
                 {
                     string Role = $"<color={player.GetTeamHexColor()}>{player.GetRoleName()}</color>";
+                    if (!player.IsImpostorTeam() && player.myTasks.Count > 0)
+                    {
+                        Role += $" <color=#cbcbcb>({player.myTasks.ToArray().Where(task => task.IsComplete).Count()}/{player.myTasks.Count})</color>";
+                    }
                     sbTagTop.Append($"{Role}+++");
                 }
             }

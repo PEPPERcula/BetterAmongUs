@@ -2,6 +2,7 @@
 using HarmonyLib;
 using Hazel;
 using InnerNet;
+using UnityEngine.Purchasing;
 
 namespace BetterAmongUs;
 
@@ -297,6 +298,27 @@ class AntiCheat
                 }
             }
 
+            if (callId is (byte)RpcCalls.CompleteTask)
+            {
+                var taskId = reader.ReadPackedUInt32();
+
+                if (!player.myTasks.ToArray().Any(task => task.Id == taskId)
+                    || GameStates.IsMeeting || player.BetterData().LastTaskId != taskId && player.BetterData().TimeSinceLastTask < 3f)
+                {
+                    BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
+                    Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName((RpcCalls)callId)}: {!player.myTasks.ToArray().Any(task => task.Id == taskId)} - {GameStates.IsMeeting}" +
+                        $" - {player.BetterData().LastTaskId != taskId} && {player.BetterData().TimeSinceLastTask < 3f}");
+
+                    player.BetterData().TimeSinceLastTask = 0f;
+                    player.BetterData().LastTaskId = taskId;
+
+                    return;
+                }
+
+                player.BetterData().TimeSinceLastTask = 0f;
+                player.BetterData().LastTaskId = taskId;
+            }
+
             if (callId is (byte)RpcCalls.Pet or (byte)RpcCalls.CancelPet)
             {
                 if (player?.CurrentOutfit?.PetId == "pet_EmptyPet")
@@ -465,10 +487,16 @@ class AntiCheat
 
             if (player.DataIsCollected() == true && !GameStates.IsLocalGame && GameStates.IsVanillaServer)
             {
-                if (callId is (byte)RpcCalls.SetName or (byte)RpcCalls.CheckName or (byte)RpcCalls.SetLevel)
+                if (callId is (byte)RpcCalls.CheckName or (byte)RpcCalls.SetLevel)
                 {
                     BetterNotificationManager.NotifyCheat(player, $"Invalid Set RPC: {Enum.GetName((RpcCalls)callId)}");
                     Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName((RpcCalls)callId)}: {player.DataIsCollected() == true}");
+
+                    if (callId is (byte)RpcCalls.CheckName)
+                    {
+                        var name = reader.ReadString();
+                        Logger.LogCheat($"{player.Data.PlayerName} Has tried to change their name to '{name}' but has been undone!");
+                    }
                     return false;
                 }
             }

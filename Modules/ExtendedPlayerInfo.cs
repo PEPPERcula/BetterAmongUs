@@ -11,6 +11,8 @@ public class ExtendedPlayerInfo
     public bool IsTOHEHost { get; set; } = false;
     public bool BannedByAntiCheat { get; set; } = false;
     public bool HasNoisemakerNotify { get; set; } = false;
+    public float TimeSinceLastTask { get; set; } = 5f;
+    public uint LastTaskId { get; set; } = 0;
     public int TimesCalledMeeting { get; set; } = 0;
     public RoleTypes DeadDisplayRole { get; set; }
 }

@@ -119,6 +119,10 @@ class MeetingHudUpdatePatch
 
                 string RoleHexColor = target.IsImpostorTeam() ? "#ff1919" : "#8cffff";
                 string Role = $"<color={RoleHexColor}>{target.GetRoleName()}</color>";
+                if (!target.IsImpostorTeam() && target.myTasks.Count > 0)
+                {
+                    Role += $" <color=#cbcbcb>({target.myTasks.ToArray().Where(task => task.IsComplete).Count()}/{target.myTasks.Count})</color>";
+                }
                 if (!target.IsImpostorTeammate())
                 {
                     if (PlayerControl.LocalPlayer.IsAlive() && target != PlayerControl.LocalPlayer)

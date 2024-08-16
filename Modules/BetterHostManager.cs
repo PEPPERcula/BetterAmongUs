@@ -220,6 +220,10 @@ class BetterHostManager
             else if (GameStates.IsInGamePlay)
             {
                 string Role = $"<color={player.GetTeamHexColor()}>{player.GetRoleName()}</color>";
+                if (!player.IsImpostorTeam() && player.myTasks.Count > 0)
+                {
+                    Role += $" <color=#cbcbcb>({player.myTasks.ToArray().Where(task => task.IsComplete).Count()}/{player.myTasks.Count})</color>";
+                }
                 if (player.IsImpostorTeam() is false || target.IsImpostorTeam() is false)
                 {
                     if (target.IsAlive() && player != target)
