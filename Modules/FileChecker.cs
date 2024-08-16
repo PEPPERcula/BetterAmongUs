@@ -7,7 +7,7 @@ class FileChecker
 {
     private static bool Enabled = true;
     private static readonly ReadOnlyCollection<string> UnsupportedBepInExMods = new(new List<string> { "TOHE", "YuAntiCheat" }); // Put BepInEx BepInPlugin name, not dll name here lol.
-    private static readonly ReadOnlyCollection<string> BannedBepInExMods = new(new List<string> { "MalumMenu", "MalumMenu-Yu", "MalumMenuYu", "AUnlocker" }); // Put BepInEx BepInPlugin name, not dll name here lol.
+    private static readonly ReadOnlyCollection<string> BannedBepInExMods = new(new List<string> { "MalumMenu", "MalumMenu-Yu", "MalumMenuYu"/*, "AUnlocker" */}); // Put BepInEx BepInPlugin name, not dll name here lol.
     private static readonly ReadOnlyCollection<string> KeyWordsInVersionInfo = new(new List<string> { "Malum", "Sicko", "AUM" }); // Banned words for version text
     public static string UnauthorizedReason = string.Empty;
     public static List<string> CheatTags = []; // For API report
