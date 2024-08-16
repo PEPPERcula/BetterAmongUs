@@ -8,7 +8,7 @@ class BetterDataManager
 {
     private static string filePath = GetFilePath("BetterData");
     private static string filePathFolder = Path.Combine(Main.GetGamePathToAmongUs(), $"BetterSaveFolder");
-    public static string banListFile = Path.Combine(filePathFolder, "BanList.json");
+    public static string banListFile = Path.Combine(filePathFolder, "BanList.txt");
 
     public static string GetFilePath(string name)
     {
