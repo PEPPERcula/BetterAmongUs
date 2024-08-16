@@ -103,6 +103,8 @@ class PlayerControlPatch
             string NewName = player.Data.PlayerName;
             string hashPuid = Utils.GetHashPuid(player);
 
+            string platform = Utils.GetPlatformName(player, useTag: true);
+
             string pattern = @"^[a-zA-Z0-9#]+$";
             string hashtagPattern = @"^#[0-9]{4}$";
             string friendCode = player.Data.FriendCode;
@@ -112,11 +114,14 @@ class PlayerControlPatch
                 || friendCode.Contains(' ')) ? "#00f7ff" : "#ff0000";
             if (string.IsNullOrEmpty(friendCode) || friendCode == "")
             {
-                friendCode = "???";
+                friendCode = "No FriendCode";
                 friendCodeColor = "#ff0000";
             }
             if (DataManager.Settings.Gameplay.StreamerMode == true)
+            {
                 friendCode = string.Concat('*').Repeat(friendCode.Length);
+                platform = "Platform Hidden";
+            }
 
             var sbTag = new StringBuilder();
             var sbInfo = new StringBuilder();
@@ -151,7 +156,7 @@ class PlayerControlPatch
                     sbTag.Append("<color=#0dff00>Better User</color>+++");
                 sbTag.Append($"<color=#b554ff>ID: {player.PlayerId}</color>+++");
 
-                sbTagTop.Append($"<color=#9e9e9e>{Utils.GetPlatformName(player, useTag: true)}</color>+++");
+                sbTagTop.Append($"<color=#9e9e9e>{platform}</color>+++");
 
                 sbTagTop.Append($"<color=#ffd829>Lv: {player.Data.PlayerLevel.ToString()}</color>+++");
 
