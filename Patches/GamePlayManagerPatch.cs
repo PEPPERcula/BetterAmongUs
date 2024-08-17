@@ -1,4 +1,8 @@
 ﻿using HarmonyLib;
+using Newtonsoft.Json.Utilities;
+using System.Text;
+using TMPro;
+using UnityEngine;
 
 namespace BetterAmongUs.Patches;
 
@@ -92,6 +96,92 @@ class GamePlayManager
             }
 
             return true;
+        }
+    }
+    [HarmonyPatch(typeof(EndGameManager))]
+    public class EndGameManagerPatch
+    {
+        [HarmonyPatch(nameof(EndGameManager.SetEverythingUp))]
+        [HarmonyPostfix]
+        private static void SetEverythingUp_Postfix(EndGameManager __instance)
+        {
+            GameObject SummaryObj = UnityEngine.Object.Instantiate(__instance.WinText.gameObject, __instance.WinText.transform.parent.transform);
+            SummaryObj.name = "SummaryObj (TMP)";
+            SummaryObj.transform.SetSiblingIndex(0);
+            Camera localCamera;
+            if (DestroyableSingleton<HudManager>.InstanceExists)
+            {
+                localCamera = DestroyableSingleton<HudManager>.Instance.GetComponentInChildren<Camera>();
+            }
+            else
+            {
+                localCamera = Camera.main;
+            }
+
+            SummaryObj.transform.position = AspectPosition.ComputeWorldPosition(localCamera, AspectPosition.EdgeAlignments.LeftTop, new Vector3(1f, 0.2f, -5f));
+            SummaryObj.transform.localScale = new Vector3(0.22f, 0.22f, 0.22f);
+            TextMeshPro SummaryText = SummaryObj.GetComponent<TextMeshPro>();
+            if (SummaryText != null)
+            {
+                SummaryText.autoSizeTextContainer = false;
+                SummaryText.enableAutoSizing = false;
+                SummaryText.lineSpacing = -25f;
+                SummaryText.alignment = TextAlignmentOptions.TopLeft;
+                SummaryText.color = Color.white;
+
+                NetworkedPlayerInfo[] playersData = GameData.Instance.AllPlayers.ToArray();
+
+                string SummaryHeader = "<align=\"center\">Game Summary</align>";
+
+                StringBuilder sb = new StringBuilder();
+
+                foreach (var data in playersData)
+                {
+                    var name = $"<color={Utils.Color32ToHex(Palette.PlayerColors[data.DefaultOutfit.ColorId])}>{data.PlayerName}</color>";
+                    string playerTheme(string text) => $"<color={Utils.GetTeamHexColor(data.Role.TeamType)}>{text}</color>";
+
+                    string roleInfo;
+                    if (data.Role.IsImpostor)
+                    {
+                        roleInfo = $"({playerTheme(Utils.GetRoleName(data.RoleType))}) → {playerTheme($"Kills: {data.BetterData().RoleInfo.Kills}")}";
+                    }
+                    else
+                    {
+                        roleInfo = $"({playerTheme(Utils.GetRoleName(data.RoleType))}) → {playerTheme($"Tasks: {data.Tasks.ToArray().Where(task => task.Complete).Count()}/{data.Tasks.Count}")}";
+                    }
+
+                    string deathReason;
+                    if (data.Disconnected)
+                    {
+                        deathReason = "『<color=#838383><b>D/C</b></color>』";
+                    }
+                    else if (!data.IsDead)
+                    {
+                        deathReason = "『<color=#80ff00><b>Alive</b></color>』";
+                        ;
+                    }
+                    else if (data.IsDead)
+                    {
+                        deathReason = "『<color=#ff0600><b>Dead</b></color>』";
+                    }
+                    else
+                    {
+                        deathReason = "『<color=#838383<b>Unknown</b></color>』";
+                    }
+
+                    sb.AppendLine($"- {deathReason} {name} {roleInfo}\n");
+                }
+
+                SummaryText.text = $"{SummaryHeader}\n\n<size=58%>{sb}</size>";
+            }
+        }
+        [HarmonyPatch(nameof(EndGameManager.ShowButtons))]
+        [HarmonyPrefix]
+        private static bool ShowButtons_Prefix(EndGameManager __instance)
+        {
+            __instance.FrontMost.gameObject.SetActive(false);
+            __instance.Navigation.ShowDefaultNavigation();
+            return false;
         }
     }
 }

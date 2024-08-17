@@ -74,6 +74,7 @@ class PlayerControlPatch
             __instance.BetterData().HasNoisemakerNotify = false;
             __instance.BetterData().TimeSinceLastTask = 5f;
             __instance.BetterData().LastTaskId = 999;
+            __instance.BetterData().RoleInfo.Kills = 0;
         }
         else
         {
@@ -253,6 +254,8 @@ class PlayerControlPatch
             HudManager.Instance?.NotifyOfDeath();
 
         Logger.LogPrivate($"{__instance.Data.PlayerName} Has killed {target.Data.PlayerName} as {Utils.GetRoleName(__instance.Data.RoleType)}", "EventLog");
+
+        __instance.BetterData().RoleInfo.Kills += 1;
     }
     [HarmonyPatch(nameof(PlayerControl.Shapeshift))]
     [HarmonyPostfix]

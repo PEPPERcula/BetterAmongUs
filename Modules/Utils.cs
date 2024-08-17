@@ -106,6 +106,18 @@ public static class Utils
     }
     // Get name for role
     public static string GetRoleName(RoleTypes role) => Main.GetRoleName[(int)role];
+    // Get hex color for team
+    public static string GetTeamHexColor(RoleTeamTypes team)
+    {
+        if (team == RoleTeamTypes.Impostor)
+        {
+            return "#f00202";
+        }
+        else
+        {
+            return "#8cffff";
+        }
+    }
     public static string Color32ToHex(Color32 color) => $"#{color.r:X2}{color.g:X2}{color.b:X2}{255:X2}";
     // Disconnect client
     public static void DisconnectSelf(string reason, bool showReason = true)
