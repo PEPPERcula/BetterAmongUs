@@ -11,6 +11,8 @@ class OnGameJoinedPatch
     {
         try
         {
+            PlayerControlExtensions.playerInfo.Clear();
+
             PlayerControlPatch.infotime = 0f;
 
             AntiCheat.PauseAntiCheat();
@@ -22,15 +24,6 @@ class OnGameJoinedPatch
                 host.SetColor(-2);
                 host.SetColor(host.CurrentOutfit.ColorId);
             }
-
-            _ = new LateTask(() =>
-            {
-                // Send Better Among Us Check RPC
-                if (GameStates.IsInGame)
-                {
-                    RPC.SendBetterCheck();
-                }
-            }, 1.5f, "OnGameJoinedPatch");
 
             Logger.Log($"Successfully joined {GameCode.IntToGameName(AmongUsClient.Instance.GameId)}", "OnGameJoinedPatch");
         }

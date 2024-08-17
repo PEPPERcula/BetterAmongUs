@@ -160,7 +160,8 @@ class PlayerControlPatch
 
                 if (player.IsDev() && !GameStates.IsInGamePlay)
                     sbTag.Append("<color=#6e6e6e>(<color=#0088ff>Dev</color>)</color>+++");
-                if (((player == PlayerControl.LocalPlayer && GameStates.IsHost && Main.BetterHost.Value) || player.BetterData().IsBetterHost) && !GameStates.IsInGamePlay)
+                if (((player == PlayerControl.LocalPlayer && GameStates.IsHost && Main.BetterHost.Value)
+                    || (player != PlayerControl.LocalPlayer && player.BetterData().IsBetterHost && player.IsHost())) && !GameStates.IsInGamePlay)
                     sbTag.Append("<color=#0dff00>Better Host</color>+++");
                 else if ((player == PlayerControl.LocalPlayer || player.BetterData().IsBetterUser) && !GameStates.IsInGamePlay)
                     sbTag.Append("<color=#0dff00>Better User</color>+++");

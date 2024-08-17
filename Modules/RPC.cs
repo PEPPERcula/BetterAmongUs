@@ -81,8 +81,8 @@ internal static class RPC
     public static void SendBetterCheck()
     {
         var flag = GameStates.IsHost && Main.BetterHost.Value;
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, unchecked((byte)CustomRPC.BetterCheck), SendOption.None, -1);
-        messageWriter.Write((byte)PlayerControl.LocalPlayer.NetId);
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.BetterCheck, SendOption.None, -1);
+        messageWriter.Write(true);
         messageWriter.Write(flag);
         messageWriter.Write(Main.GetVersionText().Replace(" ", ""));
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
@@ -91,7 +91,7 @@ internal static class RPC
     public static void SetNamePrivate(PlayerControl player, string name, PlayerControl target)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetName, SendOption.Reliable, target.GetClientId());
-        writer.Write(player.NetId);
+        writer.Write(player.Data.NetId);
         writer.Write(name);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
@@ -167,17 +167,17 @@ internal static class RPC
         switch (callId)
         {
             case (byte)CustomRPC.BetterCheck:
-                if (reader.ReadByte() == player.Data.NetId)
                 {
+                    var SetBetterUser = reader.ReadBoolean();
                     var IsBetterHost = reader.ReadBoolean();
 
                     if (!player.IsHost() && IsBetterHost)
                     {
-                        BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)} called as BetterHost");
+                        BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((CustomRPC)callId)} called as BetterHost");
                         break;
                     }
 
-                    player.BetterData().IsBetterUser = true;
+                    player.BetterData().IsBetterUser = SetBetterUser;
                     player.BetterData().IsBetterHost = IsBetterHost;
                 }
                 break;
