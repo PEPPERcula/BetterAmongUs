@@ -263,6 +263,8 @@ public class RoleManagerPatch
 
     public static void HideAndSeekBetterRoleAssignment()
     {
+        Logger.LogHeader($"Better Role Assignment Has Started", "RoleManager");
+
         foreach (var addplayer in Main.AllPlayerControls.Where(pc => !ImpostorMultiplier.ContainsKey(Utils.GetHashPuid(pc))))
             ImpostorMultiplier[Utils.GetHashPuid(addplayer)] = 0;
 
@@ -272,6 +274,21 @@ public class RoleManagerPatch
 
         List<PlayerControl> Impostors = [];
         List<PlayerControl> Crewmates = [];
+
+        // Set imp from settings
+        int SetImpostor = GameOptionsManager.Instance.currentHideNSeekGameOptions.ImpostorPlayerID;
+
+        if (SetImpostor >= 0)
+        {
+            var player = Utils.PlayerFromId(SetImpostor);
+            if (player != null)
+            {
+                Impostors.Add(player);
+                player.RpcSetRole(RoleTypes.Impostor);
+                player.roleAssigned = true;
+                Logger.Log($"Settings Assigned {Utils.GetRoleName(RoleTypes.Impostor)} role to {player.Data.PlayerName}", "RoleManager");
+            }
+        }
 
         // Override player role assignment
         if (SetPlayerRole.Keys.Any())
