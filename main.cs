@@ -27,8 +27,8 @@ public class Main : BasePlugin
     public const string HotfixNum = "0";
     public const bool IsHotFix = false;
     public const string PluginGuid = "com.d1gq.betteramongus";
-    public const string PluginVersion = "1.0.2";
-    public const string ReleaseDate = "08.16.2024"; // mm/dd/yyyy
+    public const string PluginVersion = "1.0.3";
+    public const string ReleaseDate = "08.17.2024"; // mm/dd/yyyy
     public const string Github = "https://github.com/D1GQ/BetterAmongUs-Public";
     public const string Discord = "https://discord.gg/vjYrXpzNAn";
 
@@ -161,6 +161,7 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> BetterHost { get; private set; }
     public static ConfigEntry<bool> BetterRoleAlgorithma { get; private set; }
     public static ConfigEntry<bool> BetterNotifications { get; private set; }
+    public static ConfigEntry<bool> UseBannedPlayerAndName { get; private set; }
     public static ConfigEntry<bool> LobbyPlayerInfo { get; private set; }
     public static ConfigEntry<bool> DisableLobbyTheme { get; private set; }
     public static ConfigEntry<bool> UnlockFPS { get; private set; }
@@ -172,6 +173,7 @@ public class Main : BasePlugin
         BetterHost = Config.Bind("Better Options", "BetterHost", false);
         BetterRoleAlgorithma = Config.Bind("Better Options", "BetterRoleAlgorithma", true);
         BetterNotifications = Config.Bind("Better Options", "BetterNotifications", true);
+        UseBannedPlayerAndName = Config.Bind("Better Options", "UseBannedPlayerAndName", true);
         LobbyPlayerInfo = Config.Bind("Better Options", "LobbyPlayerInfo", true);
         DisableLobbyTheme = Config.Bind("Better Options", "DisableLobbyTheme", true);
         UnlockFPS = Config.Bind("Better Options", "UnlockFPS", false);
