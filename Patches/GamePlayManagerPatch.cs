@@ -155,7 +155,7 @@ class GamePlayManager
             {
                 SummaryText.autoSizeTextContainer = false;
                 SummaryText.enableAutoSizing = false;
-                SummaryText.lineSpacing = -25f;
+                SummaryText.lineSpacing = -15f;
                 SummaryText.alignment = TextAlignmentOptions.TopLeft;
                 SummaryText.color = Color.white;
 
@@ -166,7 +166,72 @@ class GamePlayManager
                     .ThenBy(pd => !pd.Role.IsImpostor)
                     .ToArray();        // Dead players after live players
 
-                string SummaryHeader = "<align=\"center\">Game Summary</align>";
+                string winTeam;
+                string winTag;
+                string winColor;
+
+                switch (EndGameResult.CachedGameOverReason)
+                {
+                    case GameOverReason.HumansByTask:
+                        winTeam = "Cremates";
+                        winTag = "Tasks Complete";
+                        winColor = "#8cffff";
+                        break;
+                    case GameOverReason.HumansByVote:
+                        winTeam = "Cremates";
+                        winTag = "Imposters Voted";
+                        winColor = "#8cffff";
+                        break;
+                    case GameOverReason.ImpostorDisconnect:
+                        winTeam = "Cremates";
+                        winTag = "Impostors D/C";
+                        winColor = "#8cffff";
+                        break;
+                    case GameOverReason.ImpostorByKill:
+                        winTeam = "Imposters";
+                        winTag = "Outnumbered";
+                        winColor = "#f00202";
+                        break;
+                    case GameOverReason.ImpostorBySabotage:
+                        winTeam = "Imposters";
+                        winTag = "Sabotaged";
+                        winColor = "#f00202";
+                        break;
+                    case GameOverReason.ImpostorByVote:
+                        winTeam = "Imposters";
+                        winTag = "Cremates Voted";
+                        winColor = "#f00202";
+                        break;
+                    case GameOverReason.HumansDisconnect:
+                        winTeam = "Imposters";
+                        winTag = "Cremates D/C";
+                        winColor = "#f00202";
+                        break;
+
+                    // H&S
+
+                    case GameOverReason.HideAndSeek_ByTimer:
+                        winTeam = "Hiders";
+                        winTag = "Time Out";
+                        winColor = "#8cffff";
+                        break;
+                    case GameOverReason.HideAndSeek_ByKills:
+                        winTeam = "Seeker";
+                        winTag = "No Survivors";
+                        winColor = "#f00202";
+                        break;
+
+
+                    default:
+                        winTeam = "Unknown";
+                        winTag = "Unknown";
+                        winColor = "#ffffff";
+                        break;
+                }
+
+                string SummaryHeader = "<align=\"center\"><size=150%>   Game Summary</size></align>";
+                SummaryHeader += $"\n\n<size=90%><color={winColor}>{winTeam} Win</color></size>\n" +
+                    $"<size=60%>By {winTag}</size>";
 
                 StringBuilder sb = new StringBuilder();
 
