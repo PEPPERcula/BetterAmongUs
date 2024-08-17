@@ -276,7 +276,7 @@ class AntiCheat
             {
                 var taskId = reader.ReadPackedUInt32();
 
-                if (player.IsImpostorTeam() || !player.myTasks.ToArray().Any(task => task.Id == taskId)
+                if (player.IsImpostorTeam() || !player.Data.Tasks.ToArray().Any(task => task.Id == taskId)
                     || GameStates.IsMeeting || player.BetterData().LastTaskId == taskId || player.BetterData().LastTaskId != taskId
                     && player.BetterData().TimeSinceLastTask < 1.25f)
                 {
