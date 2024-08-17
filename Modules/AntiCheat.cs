@@ -269,22 +269,6 @@ class AntiCheat
 
                         return;
                     }
-                    if (callId is (byte)RpcCalls.UpdateSystem)
-                    {
-                        byte Type = reader.ReadByte();
-                        if (Type is (byte)SystemTypes.Reactor
-                            or (byte)SystemTypes.Laboratory
-                            or (byte)SystemTypes.Comms
-                            or (byte)SystemTypes.LifeSupp
-                            or (byte)SystemTypes.MushroomMixupSabotage
-                            or (byte)SystemTypes.HeliSabotage)
-                        {
-                            BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)} - {Enum.GetName((SystemTypes)callId)}");
-                            Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName((RpcCalls)callId)}: {!player.IsImpostorTeam()}");
-                        }
-
-                        return;
-                    }
                 }
             }
 
@@ -324,6 +308,31 @@ class AntiCheat
         {
             Logger.Error(ex.ToString());
         }
+    }
+
+    // Check game states when sabotaging
+    public static bool RpcUpdateSystemCheck(PlayerControl player, SystemTypes systemType, byte amount)
+    {
+        if (!player.IsImpostorTeam() || !GameStates.IsSystemActive(systemType) && GameStates.IsAnySabotageActive() || Utils.SystemTypeIsSabotage(systemType)
+            || ShipStatus.Instance.AllDoors.ToArray().Any(door => !door.IsOpen))
+        {
+            BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName(systemType)}");
+            Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName(systemType)} Start Sabotage: {!player.IsImpostorTeam()} || {!GameStates.IsSystemActive(systemType)}" +
+                $"&& {GameStates.IsAnySabotageActive()} || {Utils.SystemTypeIsSabotage(systemType)} || {ShipStatus.Instance.AllDoors.ToArray().Any(door => !door.IsOpen)}");
+            return false;
+        }
+
+        // Fix Sabo
+        if (amount == 16)
+        {
+            if (!GameStates.IsSystemActive(systemType))
+            {
+                BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName(systemType)}");
+                Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName(systemType)} Fix Sabotage: {!GameStates.IsSystemActive(systemType)}");
+            }
+        }
+
+        return true;
     }
 
     // Check notify and cancel out request for invalid rpcs

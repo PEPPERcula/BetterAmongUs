@@ -17,6 +17,67 @@ public static class GameStates
     public static bool DleksIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Dleks;
     public static bool AirshipIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Airship;
     public static bool FungleIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Fungle;
+    public static byte GetActiveMapId => GameOptionsManager.Instance.CurrentGameOptions.MapId;
+    public static bool IsSystemActive(SystemTypes type)
+    {
+        if (IsHideNSeek || !ShipStatus.Instance.Systems.TryGetValue(type, out var system))
+        {
+            return false;
+        }
+
+        int mapId = GetActiveMapId;
+
+        return type switch
+        {
+            SystemTypes.Electrical when mapId != 5 => system.Cast<SwitchSystem>()?.IsActive ?? false,
+            SystemTypes.Reactor when mapId != 2 => system.Cast<ReactorSystemType>()?.IsActive ?? false,
+            SystemTypes.Laboratory when mapId == 2 => system.Cast<ReactorSystemType>()?.IsActive ?? false,
+            SystemTypes.LifeSupp when mapId is 0 or 3 => system.Cast<LifeSuppSystemType>()?.IsActive ?? false,
+            SystemTypes.HeliSabotage when mapId == 4 => system.Cast<HeliSabotageSystem>()?.IsActive ?? false,
+            SystemTypes.Comms when mapId is 1 or 5 => system.Cast<HqHudSystemType>()?.IsActive ?? false,
+            SystemTypes.Comms => system.Cast<HudOverrideSystemType>()?.IsActive ?? false,
+            SystemTypes.MushroomMixupSabotage when mapId == 5 => system.Cast<MushroomMixupSabotageSystem>()?.IsActive ?? false,
+            _ => false
+        };
+    }
+    public static bool IsCriticalSabotageActive()
+    {
+        var deathSabotages = new[]
+        {
+        SystemTypes.Reactor,
+        SystemTypes.Laboratory,
+        SystemTypes.LifeSupp,
+        SystemTypes.HeliSabotage,
+    };
+
+        return deathSabotages.Any(IsSystemActive);
+    }
+    public static bool IsNoneCriticalSabotageActive()
+    {
+        var noneDeathSabotages = new[]
+        {
+        SystemTypes.Electrical,
+        SystemTypes.Comms,
+        SystemTypes.MushroomMixupSabotage
+    };
+
+        return noneDeathSabotages.Any(IsSystemActive);
+    }
+    public static bool IsAnySabotageActive()
+    {
+        var allSabotages = new[]
+        {
+        SystemTypes.Electrical,
+        SystemTypes.Reactor,
+        SystemTypes.Laboratory,
+        SystemTypes.LifeSupp,
+        SystemTypes.HeliSabotage,
+        SystemTypes.Comms,
+        SystemTypes.MushroomMixupSabotage
+    };
+
+        return allSabotages.Any(IsSystemActive);
+    }
     public static bool IsInGame => InGame;
     public static bool IsLobby => AmongUsClient.Instance?.GameState == InnerNet.InnerNetClient.GameStates.Joined;
     public static bool IsInIntro => IntroCutscene.Instance != null;

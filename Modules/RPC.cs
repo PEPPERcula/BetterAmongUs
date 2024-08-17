@@ -1,6 +1,7 @@
 ﻿using BetterAmongUs.Patches;
 using HarmonyLib;
 using Hazel;
+using InnerNet;
 
 namespace BetterAmongUs;
 
@@ -54,6 +55,24 @@ internal class RPCHandlerPatch
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
         RPC.HandleCustomRPC(__instance, callId, reader);
+    }
+}
+
+[HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.UpdateSystem), typeof(SystemTypes), typeof(PlayerControl), typeof(MessageReader))]
+public static class MessageReaderUpdateSystemPatch
+{
+    public static bool Prefix(/*ShipStatus __instance,*/ [HarmonyArgument(0)] SystemTypes systemType, [HarmonyArgument(1)] PlayerControl player, [HarmonyArgument(2)] MessageReader reader)
+    {
+        if (GameStates.IsHideNSeek) return false;
+        
+        var amount = MessageReader.Get(reader).ReadByte();
+        if (AntiCheat.RpcUpdateSystemCheck(player, systemType, amount) != true)
+        {
+            Logger.LogCheat($"RPC canceled by Anti-Cheat: {Enum.GetName(typeof(SystemTypes), (int)systemType)} - {amount}");
+            return false;
+        }
+
+        return true;
     }
 }
 

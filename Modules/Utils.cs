@@ -63,6 +63,18 @@ public static class Utils
             throw;
         }
     }
+    public static bool SystemTypeIsSabotage(SystemTypes type) => type is SystemTypes.Reactor
+                    or SystemTypes.Laboratory
+                    or SystemTypes.Comms
+                    or SystemTypes.LifeSupp
+                    or SystemTypes.MushroomMixupSabotage
+                    or SystemTypes.HeliSabotage;
+    public static bool SystemTypeIsSabotage(int typeNum) => (SystemTypes)typeNum is SystemTypes.Reactor
+                or SystemTypes.Laboratory
+                or SystemTypes.Comms
+                or SystemTypes.LifeSupp
+                or SystemTypes.MushroomMixupSabotage
+                or SystemTypes.HeliSabotage;
     // Get players HashPuid
     public static string GetHashPuid(PlayerControl player)
     {
