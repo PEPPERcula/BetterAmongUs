@@ -23,6 +23,20 @@ public class RoleManagerPatch
     {
         if (!Main.BetterRoleAlgorithma.Value) return true;
 
+        if (!GameStates.IsHideNSeek)
+        {
+            RegularBetterRoleAssignment();
+        }
+        else
+        {
+            HideAndSeekBetterRoleAssignment();
+        }
+
+        return false;
+    }
+
+    public static void RegularBetterRoleAssignment()
+    {
         Logger.LogHeader($"Better Role Assignment Has Started", "RoleManager");
 
         // Set roles up
@@ -245,8 +259,101 @@ public class RoleManagerPatch
         }, 1f, "RoleManager SyncAllNames");
 
         Logger.LogHeader($"Better Role Assignment Has Finished", "RoleManager");
+    }
 
-        return false;
+    public static void HideAndSeekBetterRoleAssignment()
+    {
+        foreach (var addplayer in Main.AllPlayerControls.Where(pc => !ImpostorMultiplier.ContainsKey(Utils.GetHashPuid(pc))))
+            ImpostorMultiplier[Utils.GetHashPuid(addplayer)] = 0;
+
+        int NumImpostors = 1;
+
+        int NumPlayers = Main.AllPlayerControls.Length;
+
+        List<PlayerControl> Impostors = [];
+        List<PlayerControl> Crewmates = [];
+
+        // Override player role assignment
+        if (SetPlayerRole.Keys.Any())
+        {
+            foreach (var kvp in SetPlayerRole.Where(kvp => kvp.Key != null).OrderBy(kvp => kvp.Key == PlayerControl.LocalPlayer ? 0 : 1))
+            {
+                var player = kvp.Key;
+                var role = kvp.Value;
+
+                if (role is RoleTypes.Impostor)
+                {
+                    if (Impostors.Count < NumImpostors)
+                    {
+                        Impostors.Add(player);
+                        player.RpcSetRole(RoleTypes.Impostor);
+                        player.roleAssigned = true;
+                        Logger.Log($"Override Assigned {Utils.GetRoleName(RoleTypes.Impostor)} role to {player.Data.PlayerName}", "RoleManager");
+                    }
+                    else continue;
+                }
+                else if (role is RoleTypes.Engineer)
+                {
+                    Crewmates.Add(player);
+                    player.RpcSetRole(RoleTypes.Engineer);
+                    player.roleAssigned = true;
+                    Logger.Log($"Override Assigned {Utils.GetRoleName(RoleTypes.Engineer)} role to {player.Data.PlayerName}", "RoleManager");
+                }
+            }
+        }
+
+        // Get players in random order
+        List<PlayerControl> players = Main.AllPlayerControls
+            .Where(player => !Impostors.Contains(player) && !Crewmates.Contains(player) && player.roleAssigned == false)
+            .ToList();
+
+        int n = players.Count;
+        while (n > 1)
+        {
+            n--;
+            int k = random.Next(n + 1);
+            PlayerControl value = players[k];
+            players[k] = players[n];
+            players[n] = value;
+        }
+
+        // Assign roles
+        foreach (PlayerControl pc in players)
+        {
+            if (pc == null || pc.roleAssigned == true) continue;
+
+            if (Impostors.Count < NumImpostors && RNG() > ImpostorMultiplier[Utils.GetHashPuid(pc)])
+            {
+                if (!Impostors.Contains(pc))
+                {
+                    ImpostorMultiplier[Utils.GetHashPuid(pc)] += 15;
+                    Impostors.Add(pc);
+                    pc.RpcSetRole(RoleTypes.Impostor);
+                    pc.roleAssigned = true;
+                    Logger.Log($"Assigned {Utils.GetRoleName(RoleTypes.Impostor)} role to {pc.Data.PlayerName}", "RoleManager");
+                }
+            }
+            else
+            {
+                if (!Crewmates.Contains(pc))
+                {
+                    ImpostorMultiplier[Utils.GetHashPuid(pc)] = 0;
+                    Crewmates.Add(pc);
+                    pc.RpcSetRole(RoleTypes.Engineer);
+                    pc.roleAssigned = true;
+                    Logger.Log($"Assigned {Utils.GetRoleName(RoleTypes.Engineer)} role to {pc.Data.PlayerName}", "RoleManager");
+                }
+            }
+        }
+
+        SetPlayerRole.Clear();
+
+        _ = new LateTask(() =>
+        {
+            RPC.SyncAllNames(false, true, Main.BetterHost.Value);
+        }, 1f, "RoleManager SyncAllNames");
+
+        Logger.LogHeader($"Better Role Assignment Has Finished", "RoleManager");
     }
 
     [HarmonyPatch(nameof(RoleManager.AssignRoleOnDeath))]
