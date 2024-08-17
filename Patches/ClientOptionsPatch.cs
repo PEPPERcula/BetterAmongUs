@@ -77,7 +77,7 @@ public static class OptionsMenuBehaviourPatch
         
         if (UseBannedPlayerAndName == null || UseBannedPlayerAndName.ToggleButton == null)
         {
-            UseBannedPlayerAndName = ClientOptionItem.Create("<color=#4f92ff>Use Banned Player & Name List</color>", Main.UseBannedPlayerAndName, __instance);
+            UseBannedPlayerAndName = ClientOptionItem.Create("Banned Player & Name List", Main.UseBannedPlayerAndName, __instance);
         }
 
         if (LobbyPlayerInfo == null || LobbyPlayerInfo.ToggleButton == null)
