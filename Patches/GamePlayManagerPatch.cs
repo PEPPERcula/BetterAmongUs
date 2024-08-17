@@ -73,6 +73,12 @@ class GamePlayManager
         [HarmonyPostfix]
         private static void Update_Postfix(GameStartManager __instance)
         {
+            if (!GameStates.IsHost)
+            {
+                __instance.StartButton.gameObject.SetActive(false);
+                return;
+
+            }
             __instance.GameStartTextParent.SetActive(false);
             __instance.StartButton.gameObject.SetActive(true);
             if (__instance.startState == GameStartManager.StartingStates.Countdown)
@@ -92,6 +98,13 @@ class GamePlayManager
             {
                 SoundManager.instance.StopSound(__instance.gameStartSound);
                 __instance.ResetStartState();
+                return false;
+            }
+
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                __instance.startState = GameStartManager.StartingStates.Countdown;
+                __instance.FinallyBegin();
                 return false;
             }
 
@@ -129,7 +142,12 @@ class GamePlayManager
                 SummaryText.alignment = TextAlignmentOptions.TopLeft;
                 SummaryText.color = Color.white;
 
-                NetworkedPlayerInfo[] playersData = GameData.Instance.AllPlayers.ToArray();
+                NetworkedPlayerInfo[] playersData = GameData.Instance.AllPlayers
+                    .ToArray()
+                    .OrderBy(pd => pd.Disconnected)  // Disconnected players last
+                    .ThenBy(pd => pd.IsDead)
+                    .ThenBy(pd => !pd.Role.IsImpostor)
+                    .ToArray();        // Dead players after live players
 
                 string SummaryHeader = "<align=\"center\">Game Summary</align>";
 
@@ -169,7 +187,7 @@ class GamePlayManager
                         deathReason = "『<color=#838383<b>Unknown</b></color>』";
                     }
 
-                    sb.AppendLine($"- {deathReason} {name} {roleInfo}\n");
+                    sb.AppendLine($"- {name} {roleInfo} {deathReason}\n");
                 }
 
                 SummaryText.text = $"{SummaryHeader}\n\n<size=58%>{sb}</size>";
