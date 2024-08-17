@@ -179,7 +179,7 @@ class PlayerControlPatch
                     string Role = $"<color={player.GetTeamHexColor()}>{player.GetRoleName()}</color>";
                     if (!player.IsImpostorTeam() && player.myTasks.Count > 0)
                     {
-                        Role += $" <color=#cbcbcb>({player.myTasks.ToArray().Where(task => task.IsComplete).Count()}/{player.myTasks.Count})</color>";
+                        Role += $" <color=#cbcbcb>({player.Data.Tasks.ToArray().Where(task => task.Complete).Count()}/{player.Data.Tasks.Count})</color>";
                     }
                     sbTagTop.Append($"{Role}+++");
                 }
