@@ -71,7 +71,7 @@ class PlayerControlPatch
         if (!GameStates.IsInGamePlay)
         {
             __instance.BetterData().TimesCalledMeeting = 0;
-            __instance.BetterData().HasNoisemakerNotify = false;
+            __instance.BetterData().RoleInfo.HasNoisemakerNotify = false;
             __instance.BetterData().TimeSinceLastTask = 5f;
             __instance.BetterData().LastTaskId = 999;
             __instance.BetterData().RoleInfo.Kills = 0;

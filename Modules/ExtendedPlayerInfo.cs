@@ -12,18 +12,17 @@ public class ExtendedPlayerInfo
     public bool BannedByAntiCheat { get; set; } = false;
 
     // Track Game Info
-
-    public bool HasNoisemakerNotify { get; set; } = false;
     public float TimeSinceLastTask { get; set; } = 5f;
     public uint LastTaskId { get; set; } = 0;
     public int TimesCalledMeeting { get; set; } = 0;
-    public RoleTypes DeadDisplayRole { get; set; }
     public ExtendedRoleInfo? RoleInfo { get; set; }
 }
 
 public class ExtendedRoleInfo
 {
     public int Kills { get; set; } = 0;
+    public bool HasNoisemakerNotify { get; set; } = false;
+    public RoleTypes DeadDisplayRole { get; set; }
 }
 
 public static class PlayerControlExtensions

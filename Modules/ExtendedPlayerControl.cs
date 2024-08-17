@@ -163,7 +163,7 @@ static class ExtendedPlayerControl
     // Check if player role name
     public static string GetRoleName(this PlayerControl player)
     {
-        if (!player.IsAlive() && !player.IsGhostRole() && Main.GetRoleName.TryGetValue((int)player.BetterData().DeadDisplayRole, out var roleName))
+        if (!player.IsAlive() && !player.IsGhostRole() && Main.GetRoleName.TryGetValue((int)player.BetterData().RoleInfo.DeadDisplayRole, out var roleName))
         {
             return roleName;
         }
