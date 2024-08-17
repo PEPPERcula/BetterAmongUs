@@ -1,6 +1,7 @@
 ﻿using BetterAmongUs.Patches;
 using HarmonyLib;
 using Hazel;
+using InnerNet;
 
 namespace BetterAmongUs;
 
@@ -57,12 +58,40 @@ internal class RPCHandlerPatch
     }
 }
 
+[HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.UpdateSystem), typeof(SystemTypes), typeof(PlayerControl), typeof(MessageReader))]
+public static class MessageReaderUpdateSystemPatch
+{
+    public static bool Prefix(/*ShipStatus __instance,*/ [HarmonyArgument(0)] SystemTypes systemType, [HarmonyArgument(1)] PlayerControl player, [HarmonyArgument(2)] MessageReader reader)
+    {
+        if (GameStates.IsHideNSeek) return false;
+        
+        var amount = MessageReader.Get(reader).ReadByte();
+        if (AntiCheat.RpcUpdateSystemCheck(player, systemType, amount) != true)
+        {
+            Logger.LogCheat($"RPC canceled by Anti-Cheat: {Enum.GetName(typeof(SystemTypes), (int)systemType)} - {amount}");
+            return false;
+        }
+
+        return true;
+    }
+}
+
 internal static class RPC
 {
+    public static void SendBetterCheck()
+    {
+        var flag = GameStates.IsHost && Main.BetterHost.Value;
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.BetterCheck, SendOption.None, -1);
+        messageWriter.Write(true);
+        messageWriter.Write(flag);
+        messageWriter.Write(Main.GetVersionText().Replace(" ", ""));
+        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+    }
+
     public static void SetNamePrivate(PlayerControl player, string name, PlayerControl target)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetName, SendOption.Reliable, target.GetClientId());
-        writer.Write(player.NetId);
+        writer.Write(player.Data.NetId);
         writer.Write(name);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
@@ -138,17 +167,17 @@ internal static class RPC
         switch (callId)
         {
             case (byte)CustomRPC.BetterCheck:
-                if (reader.ReadByte() == player.Data.NetId)
                 {
+                    var SetBetterUser = reader.ReadBoolean();
                     var IsBetterHost = reader.ReadBoolean();
 
                     if (!player.IsHost() && IsBetterHost)
                     {
-                        BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)} called as BetterHost");
+                        BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((CustomRPC)callId)} called as BetterHost");
                         break;
                     }
 
-                    player.BetterData().IsBetterUser = true;
+                    player.BetterData().IsBetterUser = SetBetterUser;
                     player.BetterData().IsBetterHost = IsBetterHost;
                 }
                 break;

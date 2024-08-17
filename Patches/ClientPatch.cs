@@ -73,6 +73,16 @@ public class ClientPatch
             __result = GameStates.IsHost || (GameStates.IsInGamePlay && (GameStates.IsMeeting || GameStates.IsExilling));
             return false;
         }
+        [HarmonyPatch(nameof(InnerNetClient.KickPlayer))]
+        [HarmonyPrefix]
+        public static void KickPlayer_Prefix(ref int clientId, ref bool ban)
+        {
+            if (ban)
+            {
+                NetworkedPlayerInfo info = Utils.PlayerFromClientId(clientId).Data;
+                BetterDataManager.SaveBanList(info.FriendCode, info.Puid);
+            }
+        }
     }
     // Set text color
     [HarmonyPatch(typeof(CosmeticsLayer))]
@@ -146,7 +156,6 @@ public class ClientPatch
                 string extractedText = playerName.Split(new[] { "<color=#ffea00>", "</color>" }, StringSplitOptions.None)[1];
                 playerName = extractedText;
             }
-
         }
     }
 }

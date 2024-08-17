@@ -1,5 +1,4 @@
 using HarmonyLib;
-using Hazel;
 using UnityEngine;
 
 namespace BetterAmongUs.Patches;
@@ -52,12 +51,7 @@ public static class OptionsMenuBehaviourPatch
             BetterHost = ClientOptionItem.Create("<color=#4f92ff>Better Host</color>", Main.BetterHost, __instance, BetterHostButtonToggle, () => !toggleCheckInGamePlay("<color=#4f92ff>Better Host</color>"));
             static void BetterHostButtonToggle()
             {
-                var flag = GameStates.IsHost && Main.BetterHost.Value;
-                MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, unchecked((byte)CustomRPC.BetterCheck), SendOption.None, -1);
-                messageWriter.Write((byte)PlayerControl.LocalPlayer.NetId);
-                messageWriter.Write(flag);
-                messageWriter.Write(Main.GetVersionText().Replace(" ", ""));
-                AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+                RPC.SendBetterCheck();
 
                 RPC.SyncAllNames(force: true);
             }
@@ -66,8 +60,8 @@ public static class OptionsMenuBehaviourPatch
         if (BetterRoleAlgorithma == null || BetterRoleAlgorithma.ToggleButton == null)
         {
             BetterRoleAlgorithma = ClientOptionItem.Create("<color=#4f92ff>Better Role Algorithma</color>", Main.BetterRoleAlgorithma, __instance, toggleCheck: () => !toggleCheckInGamePlay("<color=#4f92ff>Better Role Algorithma</color>"));
-        }  
-        
+        }
+
         if (BetterNotifications == null || BetterNotifications.ToggleButton == null)
         {
             BetterNotifications = ClientOptionItem.Create("<color=#4f92ff>Better Notifications</color>", Main.BetterNotifications, __instance, BetterNotificationsToggle);

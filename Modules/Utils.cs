@@ -63,6 +63,18 @@ public static class Utils
             throw;
         }
     }
+    public static bool SystemTypeIsSabotage(SystemTypes type) => type is SystemTypes.Reactor
+                    or SystemTypes.Laboratory
+                    or SystemTypes.Comms
+                    or SystemTypes.LifeSupp
+                    or SystemTypes.MushroomMixupSabotage
+                    or SystemTypes.HeliSabotage;
+    public static bool SystemTypeIsSabotage(int typeNum) => (SystemTypes)typeNum is SystemTypes.Reactor
+                or SystemTypes.Laboratory
+                or SystemTypes.Comms
+                or SystemTypes.LifeSupp
+                or SystemTypes.MushroomMixupSabotage
+                or SystemTypes.HeliSabotage;
     // Get players HashPuid
     public static string GetHashPuid(PlayerControl player)
     {
@@ -94,6 +106,18 @@ public static class Utils
     }
     // Get name for role
     public static string GetRoleName(RoleTypes role) => Main.GetRoleName[(int)role];
+    // Get hex color for team
+    public static string GetTeamHexColor(RoleTeamTypes team)
+    {
+        if (team == RoleTeamTypes.Impostor)
+        {
+            return "#f00202";
+        }
+        else
+        {
+            return "#8cffff";
+        }
+    }
     public static string Color32ToHex(Color32 color) => $"#{color.r:X2}{color.g:X2}{color.b:X2}{255:X2}";
     // Disconnect client
     public static void DisconnectSelf(string reason, bool showReason = true)

@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using Rewired;
 
 namespace BetterAmongUs.Patches;
 
@@ -12,12 +11,12 @@ class RolePatch
         [HarmonyPrefix]
         public static bool NotifyOfDeath_Prefix(NoisemakerRole __instance)
         {
-            if (__instance.Player.BetterData().HasNoisemakerNotify)
+            if (__instance.Player.BetterData().RoleInfo.HasNoisemakerNotify)
             {
                 return false;
             }
 
-            __instance.Player.BetterData().HasNoisemakerNotify = true;
+            __instance.Player.BetterData().RoleInfo.HasNoisemakerNotify = true;
 
             return true;
         }

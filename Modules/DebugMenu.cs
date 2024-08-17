@@ -53,6 +53,11 @@ public class DebugMenu : MonoBehaviour
             BetterDataManager.ClearCheatData();
         });
 
+        AddButtonToTab(Main, "Send Better RPC", () =>
+        {
+            RPC.SendBetterCheck();
+        }, true);
+
         AddButtonToTab(HostOnly, "Sync All Names", () =>
         {
             RPC.SyncAllNames();

@@ -1,5 +1,4 @@
 ﻿using AmongUs.GameOptions;
-using Hazel;
 using InnerNet;
 using TMPro;
 using UnityEngine;
@@ -103,7 +102,7 @@ static class ExtendedPlayerControl
     // Kick player
     public static void Kick(this PlayerControl player, bool ban = false, string setReasonInfo = "")
     {
-        if (!GameStates.IsHost || !player.DataIsCollected() || player.IsHost() || player.BetterData().BannedByAntiCheat)
+        if (!GameStates.IsHost || PlayerControl.LocalPlayer == player || !player.DataIsCollected() || player.IsHost() || player.BetterData().BannedByAntiCheat || player.isDummy)
         {
             return;
         }
@@ -164,7 +163,7 @@ static class ExtendedPlayerControl
     // Check if player role name
     public static string GetRoleName(this PlayerControl player)
     {
-        if (!player.IsAlive() && !player.IsGhostRole() && Main.GetRoleName.TryGetValue((int)player.BetterData().DeadDisplayRole, out var roleName))
+        if (!player.IsAlive() && !player.IsGhostRole() && Main.GetRoleName.TryGetValue((int)player.BetterData().RoleInfo.DeadDisplayRole, out var roleName))
         {
             return roleName;
         }

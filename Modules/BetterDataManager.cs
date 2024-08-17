@@ -1,10 +1,15 @@
-﻿using System.Collections.Generic;
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace BetterAmongUs;
 
 class BetterDataManager
 {
+    private static string filePath = GetFilePath("BetterData");
+    public static string filePathFolder = Path.Combine(Main.GetGamePathToAmongUs(), $"Better_Data");
+    public static string filePathFolderSaveInfo = Path.Combine(filePathFolder, $"SaveInfo");
+    public static string banPlayerListFile = Path.Combine(filePathFolderSaveInfo, "BanPlayerList.txt");
+    public static string banNameListFile = Path.Combine(filePathFolderSaveInfo, "BanNameList.txt");
+
     public static string GetFilePath(string name)
     {
         return Path.Combine(Main.GetDataPathToAmongUs(), $"{name}.json");
@@ -12,7 +17,25 @@ class BetterDataManager
 
     public static void SetUp()
     {
-        string filePath = GetFilePath("BetterData");
+        if (!Directory.Exists(filePathFolder))
+        {
+            Directory.CreateDirectory(filePathFolder);
+        }
+
+        if (!Directory.Exists(filePathFolderSaveInfo))
+        {
+            Directory.CreateDirectory(filePathFolderSaveInfo);
+        }
+
+        if (!File.Exists(banPlayerListFile))
+        {
+            File.WriteAllText(banPlayerListFile, "// Example\nFriendCode#0000\nHashPUID\n// Or\nFriendCode#0000, HashPUID");
+        }
+
+        if (!File.Exists(banNameListFile))
+        {
+            File.WriteAllText(banNameListFile, "// Example\nBanName1\nBanName2");
+        }
 
         if (!File.Exists(filePath))
         {
@@ -90,13 +113,44 @@ class BetterDataManager
                 return jsonData[category][name];
             }
         }
-        catch (Exception ex) 
+        catch (Exception ex)
         {
             Logger.Error(ex.ToString());
         }
 
         return string.Empty;
     }
+
+    public static void SaveBanList(string friendCode = "", string hashPUID = "")
+    {
+        if (!string.IsNullOrEmpty(friendCode) || !string.IsNullOrEmpty(hashPUID))
+        {
+            // Create the new string with the separator if both are not empty
+            string newText = string.Empty;
+
+            if (!string.IsNullOrEmpty(friendCode))
+            {
+                newText = friendCode;
+            }
+
+            if (!string.IsNullOrEmpty(hashPUID))
+            {
+                if (!string.IsNullOrEmpty(newText))
+                {
+                    newText += ", ";
+                }
+                newText += Utils.GetHashPuid(hashPUID);
+            }
+
+            // Check if the file already contains the new entry
+            if (!File.Exists(banPlayerListFile) || !File.ReadLines(banPlayerListFile).Any(line => line.Equals(newText)))
+            {
+                // Append the new string to the file if it's not already present
+                File.AppendAllText(banPlayerListFile, Environment.NewLine + newText);
+            }
+        }
+    }
+
 
     public static void SaveCheatData(string puid, string friendCode, string name, string category = "cheatData", string reason = "None")
     {
@@ -249,6 +303,11 @@ class BetterDataManager
         AntiCheat.AUMData.Clear();
 
         Logger.LogCheat("Cleared cheat memory and data");
+    }
+
+    public static void LoadData()
+    {
+        LoadCheatData();
     }
 
     public static void LoadCheatData()

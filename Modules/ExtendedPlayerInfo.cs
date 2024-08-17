@@ -10,35 +10,54 @@ public class ExtendedPlayerInfo
     public bool IsBetterHost { get; set; } = false;
     public bool IsTOHEHost { get; set; } = false;
     public bool BannedByAntiCheat { get; set; } = false;
-    public bool HasNoisemakerNotify { get; set; } = false;
+
+    // Track Game Info
+    public float TimeSinceLastTask { get; set; } = 5f;
+    public uint LastTaskId { get; set; } = 0;
     public int TimesCalledMeeting { get; set; } = 0;
+    public DisconnectReasons DisconnectReason { get; set; } = DisconnectReasons.Unknown;
+    public ExtendedRoleInfo? RoleInfo { get; set; }
+}
+
+public class ExtendedRoleInfo
+{
+    public int Kills { get; set; } = 0;
+    public bool HasNoisemakerNotify { get; set; } = false;
     public RoleTypes DeadDisplayRole { get; set; }
 }
 
 public static class PlayerControlExtensions
 {
-    private static readonly Dictionary<NetworkedPlayerInfo, ExtendedPlayerInfo> playerInfo = [];
+    public static readonly Dictionary<string, ExtendedPlayerInfo> playerInfo = [];
 
     // Get BetterData from PlayerControl
-    public static ExtendedPlayerInfo BetterData(this PlayerControl player)
+    public static ExtendedPlayerInfo? BetterData(this PlayerControl player)
     {
-        if (!playerInfo.ContainsKey(player.Data))
+        if (player == null) return null;
+
+        if (!playerInfo.ContainsKey(player.Data.Puid))
         {
-            playerInfo[player.Data] = new ExtendedPlayerInfo();
+            playerInfo[player.Data.Puid] = new ExtendedPlayerInfo
+            {
+                RoleInfo = new ExtendedRoleInfo()
+            };
         }
 
-        return playerInfo[player.Data];
+        return playerInfo[player.Data.Puid];
     }
 
     // Get BetterData from NetworkedPlayerInfo
-    public static ExtendedPlayerInfo BetterData(this NetworkedPlayerInfo info)
+    public static ExtendedPlayerInfo? BetterData(this NetworkedPlayerInfo info)
     {
-        if (!playerInfo.ContainsKey(info))
+        if (!playerInfo.ContainsKey(info.Puid))
         {
-            playerInfo[info] = new ExtendedPlayerInfo();
+            playerInfo[info.Puid] = new ExtendedPlayerInfo
+            {
+                RoleInfo = new ExtendedRoleInfo()
+            };
         }
 
-        return playerInfo[info];
+        return playerInfo[info.Puid];
     }
 
     // Get BetterData from ClientData
@@ -48,12 +67,15 @@ public static class PlayerControlExtensions
 
         if (player != null)
         {
-            if (!playerInfo.ContainsKey(player.Data))
+            if (!playerInfo.ContainsKey(player.Data.Puid))
             {
-                playerInfo[player.Data] = new ExtendedPlayerInfo();
+                playerInfo[player.Data.Puid] = new ExtendedPlayerInfo
+                {
+                    RoleInfo = new ExtendedRoleInfo()
+                };
             }
 
-            return playerInfo[player.Data];
+            return playerInfo[player.Data.Puid];
         }
 
         return null;

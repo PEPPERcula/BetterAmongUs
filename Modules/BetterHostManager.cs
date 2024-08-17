@@ -1,8 +1,8 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
-using UnityEngine;
 using System.Text;
+using UnityEngine;
 
 namespace BetterAmongUs;
 
@@ -167,6 +167,17 @@ class BetterHostManager
                 }
                 break;
 
+            case (byte)RpcCalls.CompleteTask:
+                {
+                    _ = new LateTask(() =>
+                    {
+                        RPC.SyncAllNames(force: true);
+                    }, 1f, shoudLog: false);
+
+                    shouldReturn = true;
+                }
+                break;
+
             default:
                 shouldReturn = true;
                 break;
@@ -220,6 +231,10 @@ class BetterHostManager
             else if (GameStates.IsInGamePlay)
             {
                 string Role = $"<color={player.GetTeamHexColor()}>{player.GetRoleName()}</color>";
+                if (!player.IsImpostorTeam() && player.myTasks.Count > 0)
+                {
+                    Role += $" <color=#cbcbcb>({player.Data.Tasks.ToArray().Where(task => task.Complete).Count()}/{player.Data.Tasks.Count})</color>";
+                }
                 if (player.IsImpostorTeam() is false || target.IsImpostorTeam() is false)
                 {
                     if (target.IsAlive() && player != target)

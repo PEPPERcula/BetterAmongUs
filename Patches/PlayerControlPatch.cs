@@ -71,7 +71,14 @@ class PlayerControlPatch
         if (!GameStates.IsInGamePlay)
         {
             __instance.BetterData().TimesCalledMeeting = 0;
-            __instance.BetterData().HasNoisemakerNotify = false;
+            __instance.BetterData().RoleInfo.HasNoisemakerNotify = false;
+            __instance.BetterData().TimeSinceLastTask = 5f;
+            __instance.BetterData().LastTaskId = 999;
+            __instance.BetterData().RoleInfo.Kills = 0;
+        }
+        else
+        {
+            __instance.BetterData().TimeSinceLastTask += Time.deltaTime;
         }
     }
 
@@ -103,6 +110,8 @@ class PlayerControlPatch
             string NewName = player.Data.PlayerName;
             string hashPuid = Utils.GetHashPuid(player);
 
+            string platform = Utils.GetPlatformName(player, useTag: true);
+
             string pattern = @"^[a-zA-Z0-9#]+$";
             string hashtagPattern = @"^#[0-9]{4}$";
             string friendCode = player.Data.FriendCode;
@@ -112,11 +121,14 @@ class PlayerControlPatch
                 || friendCode.Contains(' ')) ? "#00f7ff" : "#ff0000";
             if (string.IsNullOrEmpty(friendCode) || friendCode == "")
             {
-                friendCode = "???";
+                friendCode = "No Friend Code";
                 friendCodeColor = "#ff0000";
             }
             if (DataManager.Settings.Gameplay.StreamerMode == true)
+            {
                 friendCode = string.Concat('*').Repeat(friendCode.Length);
+                platform = "Platform Hidden";
+            }
 
             var sbTag = new StringBuilder();
             var sbInfo = new StringBuilder();
@@ -126,12 +138,15 @@ class PlayerControlPatch
             var sbInfoBottom = new StringBuilder();
 
             // Put +++ at the end of each tag
-            if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.SickoData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.SickoData.ContainsValue(friendCode))
-                sbTag.Append("<color=#00f583>Sicko User</color>+++");
-            else if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.AUMData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.AUMData.ContainsValue(friendCode))
-                sbTag.Append("<color=#4f0000>AUM User</color>+++");
-            else if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.PlayerData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.PlayerData.ContainsValue(friendCode))
-                sbTag.Append("<color=#fc0000>Known Cheater</color>+++");
+            if (!player.isDummy)
+            {
+                if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.SickoData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.SickoData.ContainsValue(friendCode))
+                    sbTag.Append("<color=#00f583>Sicko User</color>+++");
+                else if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.AUMData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.AUMData.ContainsValue(friendCode))
+                    sbTag.Append("<color=#4f0000>AUM User</color>+++");
+                else if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.PlayerData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.PlayerData.ContainsValue(friendCode))
+                    sbTag.Append("<color=#fc0000>Known Cheater</color>+++");
+            }
 
             if (GameStates.IsInGame && GameStates.IsLobby && !GameStates.IsFreePlay)
             {
@@ -145,13 +160,14 @@ class PlayerControlPatch
 
                 if (player.IsDev() && !GameStates.IsInGamePlay)
                     sbTag.Append("<color=#6e6e6e>(<color=#0088ff>Dev</color>)</color>+++");
-                if (((player == PlayerControl.LocalPlayer && GameStates.IsHost && Main.BetterHost.Value) || player.BetterData().IsBetterHost) && !GameStates.IsInGamePlay)
+                if (((player == PlayerControl.LocalPlayer && GameStates.IsHost && Main.BetterHost.Value)
+                    || (player != PlayerControl.LocalPlayer && player.BetterData().IsBetterHost && player.IsHost())) && !GameStates.IsInGamePlay)
                     sbTag.Append("<color=#0dff00>Better Host</color>+++");
                 else if ((player == PlayerControl.LocalPlayer || player.BetterData().IsBetterUser) && !GameStates.IsInGamePlay)
                     sbTag.Append("<color=#0dff00>Better User</color>+++");
                 sbTag.Append($"<color=#b554ff>ID: {player.PlayerId}</color>+++");
 
-                sbTagTop.Append($"<color=#9e9e9e>{Utils.GetPlatformName(player, useTag: true)}</color>+++");
+                sbTagTop.Append($"<color=#9e9e9e>{platform}</color>+++");
 
                 sbTagTop.Append($"<color=#ffd829>Lv: {player.Data.PlayerLevel.ToString()}</color>+++");
 
@@ -162,6 +178,10 @@ class PlayerControlPatch
                 if (player.IsImpostorTeammate() || player == PlayerControl.LocalPlayer || !PlayerControl.LocalPlayer.IsAlive() || DebugMenu.RevealRoles)
                 {
                     string Role = $"<color={player.GetTeamHexColor()}>{player.GetRoleName()}</color>";
+                    if (!player.IsImpostorTeam() && player.myTasks.Count > 0)
+                    {
+                        Role += $" <color=#cbcbcb>({player.Data.Tasks.ToArray().Where(task => task.Complete).Count()}/{player.Data.Tasks.Count})</color>";
+                    }
                     sbTagTop.Append($"{Role}+++");
                 }
             }
@@ -204,7 +224,8 @@ class PlayerControlPatch
             player.SetPlayerTextInfo(sbInfoTop.ToString());
             player.SetPlayerTextInfo(sbInfoBottom.ToString(), isBottom: true);
             player.SetPlayerTextInfo(sbInfo.ToString(), isInfo: true);
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             Logger.Error(ex.ToString());
         }
@@ -234,6 +255,8 @@ class PlayerControlPatch
             HudManager.Instance?.NotifyOfDeath();
 
         Logger.LogPrivate($"{__instance.Data.PlayerName} Has killed {target.Data.PlayerName} as {Utils.GetRoleName(__instance.Data.RoleType)}", "EventLog");
+
+        __instance.BetterData().RoleInfo.Kills += 1;
     }
     [HarmonyPatch(nameof(PlayerControl.Shapeshift))]
     [HarmonyPostfix]

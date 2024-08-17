@@ -28,7 +28,7 @@ public class Main : BasePlugin
     public const bool IsHotFix = false;
     public const string PluginGuid = "com.d1gq.betteramongus";
     public const string PluginVersion = "1.0.2";
-    public const string ReleaseDate = "08.15.2024"; // mm/dd/yyyy
+    public const string ReleaseDate = "08.16.2024"; // mm/dd/yyyy
     public const string Github = "https://github.com/D1GQ/BetterAmongUs-Public";
     public const string Discord = "https://discord.gg/vjYrXpzNAn";
 
@@ -125,16 +125,16 @@ public class Main : BasePlugin
 
             Harmony.PatchAll();
             BetterDataManager.SetUp();
-            BetterDataManager.LoadCheatData();
+            BetterDataManager.LoadData();
             LoadOptions();
 
             if (File.Exists(Path.Combine($"{Environment.CurrentDirectory}/Among Us_Data/Plugins/x86", "steam_api.dll")))
                 File.WriteAllText(Path.Combine(Environment.CurrentDirectory, "steam_appid.txt"), "945360");
 
-            if (File.Exists(Path.Combine(Environment.CurrentDirectory, "better-log.txt")))
-                File.WriteAllText(Path.Combine(Environment.CurrentDirectory, "better-previous-log.txt"), File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "better-log.txt")));
+            if (File.Exists(Path.Combine(BetterDataManager.filePathFolder, "better-log.txt")))
+                File.WriteAllText(Path.Combine(BetterDataManager.filePathFolder, "better-previous-log.txt"), File.ReadAllText(Path.Combine(BetterDataManager.filePathFolder, "better-log.txt")));
 
-            File.WriteAllText(Path.Combine(Environment.CurrentDirectory, "better-log.txt"), "");
+            File.WriteAllText(Path.Combine(BetterDataManager.filePathFolder, "better-log.txt"), "");
             BetterAmongUs.Logger.Log("Better Among Us successfully loaded!");
 
             // Set up debug menu
