@@ -409,6 +409,8 @@ public class RoleManagerPatch
 
         foreach (var kvp in ghostRoles)
         {
+            if (player.IsImpostorTeam() && kvp.Key is RoleTypes.GuardianAngel) continue;
+
             if (kvp.Value > 0 && RNG() <= GameOptionsManager.Instance.CurrentGameOptions.RoleOptions.GetChancePerGame(kvp.Key))
             {
                 player.RpcSetRole(kvp.Key);
