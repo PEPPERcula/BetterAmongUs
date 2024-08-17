@@ -15,6 +15,7 @@ public class ExtendedPlayerInfo
     public float TimeSinceLastTask { get; set; } = 5f;
     public uint LastTaskId { get; set; } = 0;
     public int TimesCalledMeeting { get; set; } = 0;
+    public DisconnectReasons DisconnectReason { get; set; } = DisconnectReasons.Unknown;
     public ExtendedRoleInfo? RoleInfo { get; set; }
 }
 
@@ -27,7 +28,7 @@ public class ExtendedRoleInfo
 
 public static class PlayerControlExtensions
 {
-    private static readonly Dictionary<string, ExtendedPlayerInfo> playerInfo = [];
+    public static readonly Dictionary<string, ExtendedPlayerInfo> playerInfo = [];
 
     // Get BetterData from PlayerControl
     public static ExtendedPlayerInfo? BetterData(this PlayerControl player)

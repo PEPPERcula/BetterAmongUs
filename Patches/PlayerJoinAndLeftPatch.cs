@@ -111,10 +111,22 @@ class OnPlayerLeftPatch
     }
 }
 
+[HarmonyPatch(typeof(GameData))]
+[HarmonyPatch("HandleDisconnect")]
+[HarmonyPatch(MethodType.Normal)]
+[HarmonyPatch(new Type[] { typeof(PlayerControl), typeof(DisconnectReasons) })]
+class GameDataHandleDisconnectPatch
+{
+    public static void Prefix(/*GameData __instance,*/ [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] DisconnectReasons reason)
+    {
+        player.BetterData().DisconnectReason = reason;
+    }
+}
+
 [HarmonyPatch(typeof(GameData), nameof(GameData.ShowNotification))]
 class GameDataShowNotificationPatch
 {
-    public static bool Prefix(AmongUsClient __instance, ref string playerName, ref DisconnectReasons reason)
+    public static bool Prefix(/*GameData __instance,*/ ref string playerName, ref DisconnectReasons reason)
     {
         string ReasonText;
         switch (reason)

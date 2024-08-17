@@ -19,6 +19,23 @@ class GamePlayManager
             {
                 AntiCheat.PauseAntiCheat();
             }
+
+            // Clear unused Better Data
+            var keysToRemove = new List<string>();
+
+            foreach (var betterInfo in PlayerControlExtensions.playerInfo)
+            {
+                if (!Main.AllPlayerControls.Any(pc => pc.Data.Puid == betterInfo.Key))
+                {
+                    keysToRemove.Add(betterInfo.Key);
+                }
+            }
+
+            foreach (var key in keysToRemove)
+            {
+                PlayerControlExtensions.playerInfo.Remove(key);
+            }
+
         }
         [HarmonyPatch(nameof(LobbyBehaviour.Start))]
         [HarmonyPostfix]

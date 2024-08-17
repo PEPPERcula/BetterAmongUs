@@ -76,7 +76,35 @@ class MeetingHudUpdatePatch
 
             if (!flag)
             {
-                SetPlayerTextInfoMeeting(pva, "<color=#6b6b6b>Disconnected</color>", isInfo: true);
+                string DisconnectText;
+                var playerData = GameData.Instance.GetPlayerById(pva.TargetPlayerId);
+                switch (playerData.BetterData().DisconnectReason)
+                {
+                    case DisconnectReasons.ExitGame:
+                        DisconnectText = "Left The Game";
+                        break;
+                    case DisconnectReasons.Banned:
+                        if (playerData.BetterData().BannedByAntiCheat)
+                        {
+                            DisconnectText = "Banned By Anti-Cheat>";
+                        }
+                        else
+                        {
+                            DisconnectText = "Banned By Host";
+                        }
+                        break;
+                    case DisconnectReasons.Kicked:
+                        DisconnectText = "Kicked By Host";
+                        break;
+                    case DisconnectReasons.Hacking:
+                        DisconnectText = "Banned By Server";
+                        break;
+                        default:
+                        DisconnectText = "Disconnected";
+                        break;
+                }
+
+                SetPlayerTextInfoMeeting(pva, $"<color=#6b6b6b>{DisconnectText}</color>", isInfo: true);
                 SetPlayerTextInfoMeeting(pva, "");
                 pva.transform.Find("votePlayerBase").gameObject.SetActive(false);
                 pva.transform.Find("deadX_border").gameObject.SetActive(false);
