@@ -109,15 +109,14 @@ static class ExtendedPlayerControl
 
         player.BetterData().BannedByAntiCheat = true;
 
+        player.BetterData().SaveLastName = player.Data.PlayerName;
+
         if (setReasonInfo != "")
         {
             player.RpcSetName(setReasonInfo + "<size=0%>");
         }
 
-        NetworkedPlayerInfo playerData = player.Data;
-        string saveName = player.Data.PlayerName;
         AmongUsClient.Instance.KickPlayer(player.GetClientId(), ban);
-        playerData.PlayerName = saveName;
     }
 
     // RPCs

@@ -8,6 +8,7 @@ public static class PlayerControlDataExtension
 {
     public class ExtendedPlayerInfo
     {
+        public NetworkedPlayerInfo? ThisPlayerData { get; set; }
         public Dictionary<byte, string> LastNameSetFor { get; set; } = [];
         public bool IsBetterUser { get; set; } = false;
         public bool IsBetterHost { get; set; } = false;
@@ -15,6 +16,8 @@ public static class PlayerControlDataExtension
         public bool BannedByAntiCheat { get; set; } = false;
 
         // Track Game Info
+        public string SaveLastName { get; set; } = string.Empty;
+        public string LastName => SaveLastName == string.Empty ? ThisPlayerData.PlayerName : SaveLastName;
         public int OpenSabotageNum { get; set; } = 0;
         public bool IsFixingPanelSabotage => OpenSabotageNum != 0;
         public float TimeSinceLastTask { get; set; } = 5f;
@@ -63,6 +66,7 @@ public static class PlayerControlDataExtension
         {
             playerInfo[player.Data.Puid] = new ExtendedPlayerInfo
             {
+                ThisPlayerData = player.Data,
                 RoleInfo = new ExtendedRoleInfo()
             };
         }
@@ -77,6 +81,7 @@ public static class PlayerControlDataExtension
         {
             playerInfo[info.Puid] = new ExtendedPlayerInfo
             {
+                ThisPlayerData = info,
                 RoleInfo = new ExtendedRoleInfo()
             };
         }
@@ -95,6 +100,7 @@ public static class PlayerControlDataExtension
             {
                 playerInfo[player.Data.Puid] = new ExtendedPlayerInfo
                 {
+                    ThisPlayerData = player.Data,
                     RoleInfo = new ExtendedRoleInfo()
                 };
             }
