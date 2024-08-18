@@ -163,7 +163,7 @@ class PlayerControlPatch
 
                 sbTagBottom.Append($"<color={friendCodeColor}>{friendCode}</color>+++");
             }
-            else if (GameStates.IsInGame || GameStates.IsFreePlay)
+            else if (GameStates.IsInGame || GameStates.IsFreePlay && !GameStates.IsHideNSeek)
             {
                 if (player.IsImpostorTeammate() || player == PlayerControl.LocalPlayer || !PlayerControl.LocalPlayer.IsAlive() || DebugMenu.RevealRoles)
                 {
