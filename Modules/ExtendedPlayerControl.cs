@@ -114,10 +114,10 @@ static class ExtendedPlayerControl
             player.RpcSetName(setReasonInfo + "<size=0%>");
         }
 
-        byte savePlayerId = player.PlayerId;
+        NetworkedPlayerInfo playerData = player.Data;
         string saveName = player.Data.PlayerName;
         AmongUsClient.Instance.KickPlayer(player.GetClientId(), ban);
-        GameData.Instance.GetPlayerById(savePlayerId).PlayerName = saveName;
+        playerData.PlayerName = saveName;
     }
 
     // RPCs
