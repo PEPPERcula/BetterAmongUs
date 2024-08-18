@@ -68,13 +68,15 @@ public static class Utils
                     or SystemTypes.Comms
                     or SystemTypes.LifeSupp
                     or SystemTypes.MushroomMixupSabotage
-                    or SystemTypes.HeliSabotage;
+                    or SystemTypes.HeliSabotage
+                    or SystemTypes.Electrical;
     public static bool SystemTypeIsSabotage(int typeNum) => (SystemTypes)typeNum is SystemTypes.Reactor
                 or SystemTypes.Laboratory
                 or SystemTypes.Comms
                 or SystemTypes.LifeSupp
                 or SystemTypes.MushroomMixupSabotage
-                or SystemTypes.HeliSabotage;
+                or SystemTypes.HeliSabotage
+                or SystemTypes.Electrical;
     // Get players HashPuid
     public static string GetHashPuid(PlayerControl player)
     {
