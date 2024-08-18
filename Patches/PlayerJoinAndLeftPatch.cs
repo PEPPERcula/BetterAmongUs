@@ -11,7 +11,7 @@ class OnGameJoinedPatch
     {
         try
         {
-            PlayerControlExtensions.playerInfo.Clear();
+            PlayerControlDataExtension.playerInfo.Clear();
 
             PlayerControlPatch.infotime = 0f;
 

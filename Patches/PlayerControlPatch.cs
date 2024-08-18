@@ -69,21 +69,7 @@ class PlayerControlPatch
         }
 
         // Reset player data in lobby
-        if (!GameStates.IsInGamePlay)
-        {
-            __instance.BetterData().TimesCalledMeeting = 0;
-            __instance.BetterData().RoleInfo.HasNoisemakerNotify = false;
-            __instance.BetterData().TimeSinceLastTask = 5f;
-            __instance.BetterData().LastTaskId = 999;
-            __instance.BetterData().RoleInfo.Kills = 0;
-        }
-        else
-        {
-            __instance.BetterData().TimeSinceLastTask += Time.deltaTime;
-
-            if (__instance.IsAlive() || __instance.Data.RoleType == RoleTypes.GuardianAngel)
-                __instance.BetterData().RoleInfo.DeadDisplayRole = __instance.Data.RoleType;
-        }
+        PlayerControlDataExtension.ResetPlayerData(__instance);
     }
 
     public static void SetPlayerInfo(PlayerControl player)
