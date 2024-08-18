@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using BetterAmongUs.Patches;
 using InnerNet;
 using TMPro;
 using UnityEngine;
@@ -109,14 +110,23 @@ static class ExtendedPlayerControl
 
         player.BetterData().BannedByAntiCheat = true;
 
-        player.BetterData().SaveLastName = player.Data.PlayerName;
+        NetworkedPlayerInfo playerInfo = player.Data;
+        string saveName = player.Data.PlayerName;
 
         if (setReasonInfo != "")
         {
             player.RpcSetName(setReasonInfo + "<size=0%>");
         }
 
-        AmongUsClient.Instance.KickPlayer(player.GetClientId(), ban);
+        _ = new LateTask(() =>
+        {
+            AmongUsClient.Instance.KickPlayer(player.GetClientId(), ban);
+
+            _ = new LateTask(() =>
+            {
+                playerInfo.PlayerName = saveName;
+            }, 0.15f, shoudLog: false);
+        }, 0.25f, shoudLog: false);
     }
 
     // RPCs

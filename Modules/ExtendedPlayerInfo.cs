@@ -16,8 +16,6 @@ public static class PlayerControlDataExtension
         public bool BannedByAntiCheat { get; set; } = false;
 
         // Track Game Info
-        public string SaveLastName { get; set; } = string.Empty;
-        public string LastName => SaveLastName == string.Empty ? ThisPlayerData.PlayerName : SaveLastName;
         public int OpenSabotageNum { get; set; } = 0;
         public bool IsFixingPanelSabotage => OpenSabotageNum != 0;
         public float TimeSinceLastTask { get; set; } = 5f;
