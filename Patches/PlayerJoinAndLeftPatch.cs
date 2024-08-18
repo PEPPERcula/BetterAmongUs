@@ -102,8 +102,6 @@ class OnPlayerLeftPatch
 {
     public static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData data, [HarmonyArgument(1)] DisconnectReasons reason)
     {
-        if ((GameStates.IsInGame || GameStates.IsFreePlay) && !GameStates.IsLobby && !GameStates.IsHideNSeek && HudManager.Instance.CrewmatesKilled.isActiveAndEnabled)
-            HudManager.Instance?.NotifyOfDisconnect(data.Character);
     }
 }
 

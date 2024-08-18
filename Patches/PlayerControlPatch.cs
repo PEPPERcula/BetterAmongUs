@@ -241,9 +241,6 @@ class PlayerControlPatch
     {
         if (target == null) return;
 
-        if (PlayerControl.LocalPlayer.IsImpostorTeam() && GameStates.IsInGamePlay && !GameStates.IsHideNSeek && HudManager.Instance.CrewmatesKilled.isActiveAndEnabled)
-            HudManager.Instance?.NotifyOfDeath();
-
         Logger.LogPrivate($"{__instance.Data.PlayerName} Has killed {target.Data.PlayerName} as {Utils.GetRoleName(__instance.Data.RoleType)}", "EventLog");
 
         __instance.BetterData().RoleInfo.Kills += 1;
