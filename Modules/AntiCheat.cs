@@ -314,6 +314,9 @@ class AntiCheat
     // Check game states when sabotaging
     public static bool RpcUpdateSystemCheck(PlayerControl player, SystemTypes systemType, byte amount)
     {
+        if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.BetterData().IsBetterHost || !IsEnabled || !Main.AntiCheat.Value
+            || GameStates.IsBetterHostLobby && !GameStates.IsHost) return true;
+
         if (Utils.SystemTypeIsSabotage(systemType))
         {
             if (!player.IsImpostorTeam() || !GameStates.IsSystemActive(systemType) && GameStates.IsAnySabotageActive()

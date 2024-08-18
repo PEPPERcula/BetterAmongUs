@@ -1,4 +1,5 @@
 ﻿using AmongUs.Data;
+using AmongUs.GameOptions;
 using HarmonyLib;
 using Il2CppSystem.Linq;
 using LibCpp2IL;
@@ -79,6 +80,9 @@ class PlayerControlPatch
         else
         {
             __instance.BetterData().TimeSinceLastTask += Time.deltaTime;
+
+            if (__instance.IsAlive() || __instance.Data.RoleType == RoleTypes.GuardianAngel)
+                __instance.BetterData().RoleInfo.DeadDisplayRole = __instance.Data.RoleType;
         }
     }
 
