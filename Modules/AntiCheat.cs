@@ -362,7 +362,7 @@ class AntiCheat
                     {
                         if (!target.IsAlive() && target == PlayerControl.LocalPlayer)
                         {
-                            BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
+                            BetterNotificationManager.NotifyCheat(player, $"Invalid Action: Attempted To Ban Exploit");
                             Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName((RpcCalls)callId)} 2: {!target.IsAlive()}");
                             return false;
                         }
@@ -501,6 +501,7 @@ class AntiCheat
                     if (callId is (byte)RpcCalls.CheckName)
                     {
                         var name = reader.ReadString();
+                        Utils.AddChatPrivate($"{player.GetPlayerNameAndColor()} Has tried to change their name to '{name}' but has been undone!");
                         Logger.LogCheat($"{player.Data.PlayerName} Has tried to change their name to '{name}' but has been undone!");
                     }
                     return false;
