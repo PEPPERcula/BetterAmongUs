@@ -90,6 +90,11 @@ internal static class RPC
 
     public static void SetNamePrivate(PlayerControl player, string name, PlayerControl target)
     {
+        if (!GameStates.IsHost || !GameStates.IsVanillaServer)
+        {
+            return;
+        }
+
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetName, SendOption.Reliable, target.GetClientId());
         writer.Write(player.Data.NetId);
         writer.Write(name);
@@ -98,7 +103,10 @@ internal static class RPC
 
     public static void SyncAllNames(bool isForMeeting = false, bool force = false, bool isBetterHost = true)
     {
-        if (!GameStates.IsHost) return;
+        if (!GameStates.IsHost || !GameStates.IsVanillaServer)
+        {
+            return;
+        }
 
         foreach (PlayerControl player in Main.AllPlayerControls)
             BetterHostManager.SetPlayersInfoAsHost(player, isForMeeting, force, isBetterHost);

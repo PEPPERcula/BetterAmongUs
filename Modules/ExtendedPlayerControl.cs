@@ -54,7 +54,7 @@ static class ExtendedPlayerControl
             infoType = "InfoText_Info_TMP";
             var topText = player.gameObject.transform.Find("Names/NameText_TMP/InfoText_T_TMP")?.GetComponent<TextMeshPro>();
 
-            if (topText != null && string.IsNullOrEmpty(Utils.GetRawText(topText.text)))
+            if (topText != null && string.IsNullOrEmpty(Utils.RemoveHtmlText(topText.text)))
             {
                 text = "<voffset=-2.25em>" + text + "</voffset>";
             }
@@ -115,18 +115,16 @@ static class ExtendedPlayerControl
 
         if (setReasonInfo != "")
         {
-            player.RpcSetName(setReasonInfo + "<size=0%>");
+            playerInfo.PlayerName = setReasonInfo + "<size=0%>";
+            player.SetName(setReasonInfo + "<size=0%>");
         }
+
+        AmongUsClient.Instance.KickPlayer(player.GetClientId(), ban);
 
         _ = new LateTask(() =>
         {
-            AmongUsClient.Instance.KickPlayer(player.GetClientId(), ban);
-
-            _ = new LateTask(() =>
-            {
-                playerInfo.PlayerName = saveName;
-            }, 0.15f, shoudLog: false);
-        }, 0.25f, shoudLog: false);
+            playerInfo.PlayerName = saveName;
+        }, 0.15f, shoudLog: false);
     }
 
     // RPCs

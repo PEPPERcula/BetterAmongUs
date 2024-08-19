@@ -51,7 +51,7 @@ class BetterNotificationManager
             player.Kick(true, $"<color=#ffea00>{player.Data.PlayerName}</color> banned by <color=#4f92ff>Anti-Cheat</color>!\n Reason: <color=#fc0000>{reason}</color>");
         }
 
-        Logger.LogCheat(Utils.GetRawText(text));
+        Logger.LogCheat(Utils.RemoveHtmlText(text));
     }
 
     public static void Update()

@@ -195,7 +195,7 @@ class PlayerControlPatch
                     string[] parts = text.Split("+++");
                     for (int i = 0; i < parts.Length; i++)
                     {
-                        if (!string.IsNullOrEmpty(Utils.GetRawText(parts[i])))
+                        if (!string.IsNullOrEmpty(Utils.RemoveHtmlText(parts[i])))
                         {
                             destination.Append(parts[i]);
                             if (i != parts.Length - 2)
@@ -221,6 +221,17 @@ class PlayerControlPatch
         }
     }
 
+    [HarmonyPatch(nameof(PlayerControl.RpcSetName))]
+    [HarmonyPrefix]
+    public static bool RpcSetName_Prefix([HarmonyArgument(0)] string name)
+    {
+        if (!GameStates.IsVanillaServer && Utils.IsHtmlText(name))
+        {
+            return false;
+        }
+
+        return true;
+    }
 
     [HarmonyPatch(nameof(PlayerControl.SetColor))]
     [HarmonyPostfix]

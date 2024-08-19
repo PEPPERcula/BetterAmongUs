@@ -7,14 +7,18 @@ class Logger
     {
         string mark = $"{DateTime.Now:HH:mm} [BetterLog][{tag}]";
         string logFilePath = Path.Combine(BetterDataManager.filePathFolder, "better-log.txt");
-        string newLine = $"{mark}: {info}";
+        string newLine = $"{mark}: {Utils.RemoveHtmlText(info)}";
         File.AppendAllText(logFilePath, newLine + Environment.NewLine);
         Main.Logger.LogInfo($"[{tag}] {info}");
     }
     public static void LogHeader(string info, string tag = "Log") => Log($"   <-------------- {info} -------------->", tag);
     public static void LogCheat(string info, string tag = "AntiCheat") => Log(info, tag);
     public static void Error(string info, string tag = "Error") => Log(info, tag);
-    public static void Test() => Log("------------------> TEST <------------------", "TEST");
+    public static void Test()
+    {
+        Log("------------------> TEST <------------------", "TEST");
+        InGame("TEST");
+    }
     // Log in game join msg
     public static void InGame(string info)
     {

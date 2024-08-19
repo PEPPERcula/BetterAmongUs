@@ -1,5 +1,6 @@
 using HarmonyLib;
 using UnityEngine;
+using static Rewired.Data.UserDataStore_PlayerPrefs.ControllerAssignmentSaveInfo;
 
 namespace BetterAmongUs.Patches;
 
@@ -53,6 +54,11 @@ public static class OptionsMenuBehaviourPatch
             static void BetterHostButtonToggle()
             {
                 RPC.SendBetterCheck();
+
+                foreach (var kvp in PlayerControlDataExtension.playerInfo)
+                {
+                    PlayerControlDataExtension.playerInfo[kvp.Key].LastNameSetFor.Clear();
+                }
 
                 RPC.SyncAllNames(force: true);
             }
