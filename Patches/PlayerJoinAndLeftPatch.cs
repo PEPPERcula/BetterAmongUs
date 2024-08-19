@@ -11,7 +11,7 @@ class OnGameJoinedPatch
     {
         try
         {
-            PlayerControlExtensions.playerInfo.Clear();
+            PlayerControlDataExtension.playerInfo.Clear();
 
             PlayerControlPatch.infotime = 0f;
 
@@ -50,45 +50,55 @@ public static class OnPlayerJoinedPatch
                     client.Character.RpcSendHostChat(HudManagerPatch.WelcomeMessage, sendToBetterUser: false);
 
                 // Auto ban player on ban list
-                var player = Utils.PlayerFromClientId(client.Id);
-                if (player != null)
+                if (Main.UseBannedList.Value)
                 {
-                    string banPlayerListContent = File.ReadAllText(BetterDataManager.banPlayerListFile);
-
-                    string[] listPlayerArray = banPlayerListContent.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
-
-                    foreach (string text in listPlayerArray)
+                    var player = Utils.PlayerFromClientId(client.Id);
+                    if (player != null)
                     {
-                        if (!string.IsNullOrEmpty(player.Data.FriendCode) && text.Contains(player.Data.FriendCode)
-                            || !string.IsNullOrEmpty(Utils.GetHashPuid(player)) && text.Contains(Utils.GetHashPuid(player)))
+                        try
                         {
-                            player.Kick(true, $"{player.Data.PlayerName} has been banned due to being on the ban player list!");
-                            break;
+                            string banPlayerListContent = File.ReadAllText(BetterDataManager.banPlayerListFile);
+
+                            string[] listPlayerArray = banPlayerListContent.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+
+                            foreach (string text in listPlayerArray)
+                            {
+                                if (!string.IsNullOrEmpty(player.Data.FriendCode) && text.Contains(player.Data.FriendCode)
+                                    || !string.IsNullOrEmpty(Utils.GetHashPuid(player)) && text.Contains(Utils.GetHashPuid(player)))
+                                {
+                                    player.Kick(true, $"has been banned due to being on the ban player list!");
+                                    break;
+                                }
+                            }
                         }
+                        catch { }
+
+                        try
+                        {
+                            // Normalize and remove spaces and special characters from names
+                            Func<string, string> normalizeName = name => new string(name.Where(c => char.IsLetterOrDigit(c)).ToArray()).ToLower();
+
+                            // Read all banned names into a HashSet with normalized names
+                            HashSet<string> bannedNames = new HashSet<string>(
+                                File.ReadLines(BetterDataManager.banNameListFile)
+                                    .Select(normalizeName)
+                                    .Where(name => !string.IsNullOrWhiteSpace(name))
+                            );
+
+                            string normalizedPlayerName = normalizeName(player.Data.PlayerName);
+
+                            // Check if any banned name is a prefix of the player's normalized name
+                            bool isNameBanned = bannedNames.Any(bannedName =>
+                                normalizedPlayerName.StartsWith(bannedName)
+                            );
+
+                            if (!string.IsNullOrEmpty(normalizedPlayerName) && isNameBanned)
+                            {
+                                player.Kick(false, $"has been kicked due to their name being on the ban name list!");
+                            }
+                        }
+                        catch { }
                     }
-
-                    // Normalize and remove spaces and special characters from names
-                    Func<string, string> normalizeName = name => new string(name.Where(c => char.IsLetterOrDigit(c)).ToArray()).ToLower();
-
-                    // Read all banned names into a HashSet with normalized names
-                    HashSet<string> bannedNames = new HashSet<string>(
-                        File.ReadLines(BetterDataManager.banNameListFile)
-                            .Select(normalizeName)
-                            .Where(name => !string.IsNullOrWhiteSpace(name))
-                    );
-
-                    string normalizedPlayerName = normalizeName(player.Data.PlayerName);
-
-                    // Check if any banned name is a prefix of the player's normalized name
-                    bool isNameBanned = bannedNames.Any(bannedName =>
-                        normalizedPlayerName.StartsWith(bannedName)
-                    );
-
-                    if (!string.IsNullOrEmpty(normalizedPlayerName) && isNameBanned)
-                    {
-                        player.Kick(false, $"{player.Data.PlayerName} has been kicked due to their name being on the ban name list!");
-                    }
-
                 }
             }
         }, 2.5f, "OnPlayerJoinedPatch", false);
@@ -99,8 +109,6 @@ class OnPlayerLeftPatch
 {
     public static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData data, [HarmonyArgument(1)] DisconnectReasons reason)
     {
-        if ((GameStates.IsInGame || GameStates.IsFreePlay) && !GameStates.IsLobby && !GameStates.IsHideNSeek && HudManager.Instance.CrewmatesKilled.isActiveAndEnabled)
-            HudManager.Instance?.NotifyOfDisconnect(data.Character);
     }
 }
 

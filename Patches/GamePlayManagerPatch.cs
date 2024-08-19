@@ -23,7 +23,7 @@ class GamePlayManager
             // Clear unused Better Data
             var keysToRemove = new List<string>();
 
-            foreach (var betterInfo in PlayerControlExtensions.playerInfo)
+            foreach (var betterInfo in PlayerControlDataExtension.playerInfo)
             {
                 if (!Main.AllPlayerControls.Any(pc => pc.Data.Puid == betterInfo.Key))
                 {
@@ -33,7 +33,7 @@ class GamePlayManager
 
             foreach (var key in keysToRemove)
             {
-                PlayerControlExtensions.playerInfo.Remove(key);
+                PlayerControlDataExtension.playerInfo.Remove(key);
             }
 
         }

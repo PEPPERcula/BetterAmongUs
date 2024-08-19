@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using BetterAmongUs.Patches;
 using InnerNet;
 using TMPro;
 using UnityEngine;
@@ -53,7 +54,7 @@ static class ExtendedPlayerControl
             infoType = "InfoText_Info_TMP";
             var topText = player.gameObject.transform.Find("Names/NameText_TMP/InfoText_T_TMP")?.GetComponent<TextMeshPro>();
 
-            if (topText != null && string.IsNullOrEmpty(Utils.GetRawText(topText.text)))
+            if (topText != null && string.IsNullOrEmpty(Utils.RemoveHtmlText(topText.text)))
             {
                 text = "<voffset=-2.25em>" + text + "</voffset>";
             }
@@ -100,21 +101,30 @@ static class ExtendedPlayerControl
     }
 
     // Kick player
-    public static void Kick(this PlayerControl player, bool ban = false, string setReasonInfo = "")
+    public static void Kick(this PlayerControl player, bool ban = false, string setReasonInfo = "", bool AntiCheatBan = false)
     {
-        if (!GameStates.IsHost || PlayerControl.LocalPlayer == player || !player.DataIsCollected() || player.IsHost() || player.BetterData().BannedByAntiCheat || player.isDummy)
+        if (!GameStates.IsHost || PlayerControl.LocalPlayer == player || !player.DataIsCollected() || player.IsHost() || player.isDummy)
         {
             return;
         }
 
-        player.BetterData().BannedByAntiCheat = true;
+        player.BetterData().BannedByAntiCheat = AntiCheatBan && ban;
+
+        NetworkedPlayerInfo playerInfo = player.Data;
+        string saveName = player.Data.PlayerName;
 
         if (setReasonInfo != "")
         {
-            player.RpcSetName(setReasonInfo + "<size=0%>");
+            playerInfo.PlayerName = $"<color=#ffea00>{saveName}</color> {setReasonInfo}<size=0%>";
+            player.SetName($"<color=#ffea00>{saveName}</color> {setReasonInfo}<size=0%>");
         }
 
         AmongUsClient.Instance.KickPlayer(player.GetClientId(), ban);
+
+        _ = new LateTask(() =>
+        {
+            playerInfo.PlayerName = saveName;
+        }, 0.15f, shoudLog: false);
     }
 
     // RPCs

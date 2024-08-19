@@ -90,6 +90,11 @@ internal static class RPC
 
     public static void SetNamePrivate(PlayerControl player, string name, PlayerControl target)
     {
+        if (!GameStates.IsHost || !GameStates.IsVanillaServer)
+        {
+            return;
+        }
+
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetName, SendOption.Reliable, target.GetClientId());
         writer.Write(player.Data.NetId);
         writer.Write(name);
@@ -98,7 +103,10 @@ internal static class RPC
 
     public static void SyncAllNames(bool isForMeeting = false, bool force = false, bool isBetterHost = true)
     {
-        if (!GameStates.IsHost) return;
+        if (!GameStates.IsHost || !GameStates.IsVanillaServer)
+        {
+            return;
+        }
 
         foreach (PlayerControl player in Main.AllPlayerControls)
             BetterHostManager.SetPlayersInfoAsHost(player, isForMeeting, force, isBetterHost);
@@ -214,6 +222,38 @@ internal static class RPC
                         BetterNotificationManager.Notify($"{player.GetPlayerNameAndColor()} has granted permission!");
                     }
                 }
+
+                // Check banned words
+                if (Main.UseBannedList.Value)
+                {
+                    try
+                    {
+                        Func<string, string> normalizeText = text => new string(text.Where(c => char.IsLetterOrDigit(c)).ToArray()).ToLower();
+
+                        HashSet<string> bannedWords = new HashSet<string>(
+                            File.ReadLines(BetterDataManager.banWordListFile)
+                                .Select(normalizeText)
+                                .Where(text => !string.IsNullOrWhiteSpace(text))
+                        );
+
+                        string normalizedMessage = normalizeText(text);
+
+                        bool isWordBanned = bannedWords.Any(bannedWord =>
+                            normalizedMessage.Contains(bannedWord)
+                        );
+
+                        if (!string.IsNullOrEmpty(normalizedMessage) && isWordBanned)
+                        {
+                            _ = new LateTask(() =>
+                            {
+                                player.Kick(false, $"has been kicked due to\nchat message containing a banned word!");
+                            }, 1f, shoudLog: false);
+                        }
+                    }
+                    catch { }
+                }
+
+
                 break;
         }
     }

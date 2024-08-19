@@ -1,4 +1,5 @@
 ﻿using AmongUs.Data;
+using AmongUs.GameOptions;
 using HarmonyLib;
 using Il2CppSystem.Linq;
 using LibCpp2IL;
@@ -68,18 +69,7 @@ class PlayerControlPatch
         }
 
         // Reset player data in lobby
-        if (!GameStates.IsInGamePlay)
-        {
-            __instance.BetterData().TimesCalledMeeting = 0;
-            __instance.BetterData().RoleInfo.HasNoisemakerNotify = false;
-            __instance.BetterData().TimeSinceLastTask = 5f;
-            __instance.BetterData().LastTaskId = 999;
-            __instance.BetterData().RoleInfo.Kills = 0;
-        }
-        else
-        {
-            __instance.BetterData().TimeSinceLastTask += Time.deltaTime;
-        }
+        PlayerControlDataExtension.ResetPlayerData(__instance);
     }
 
     public static void SetPlayerInfo(PlayerControl player)
@@ -173,7 +163,7 @@ class PlayerControlPatch
 
                 sbTagBottom.Append($"<color={friendCodeColor}>{friendCode}</color>+++");
             }
-            else if (GameStates.IsInGame || GameStates.IsFreePlay)
+            else if ((GameStates.IsInGame || GameStates.IsFreePlay) && !GameStates.IsHideNSeek)
             {
                 if (player.IsImpostorTeammate() || player == PlayerControl.LocalPlayer || !PlayerControl.LocalPlayer.IsAlive() || DebugMenu.RevealRoles)
                 {
@@ -205,7 +195,7 @@ class PlayerControlPatch
                     string[] parts = text.Split("+++");
                     for (int i = 0; i < parts.Length; i++)
                     {
-                        if (!string.IsNullOrEmpty(Utils.GetRawText(parts[i])))
+                        if (!string.IsNullOrEmpty(Utils.RemoveHtmlText(parts[i])))
                         {
                             destination.Append(parts[i]);
                             if (i != parts.Length - 2)
@@ -231,6 +221,17 @@ class PlayerControlPatch
         }
     }
 
+    [HarmonyPatch(nameof(PlayerControl.RpcSetName))]
+    [HarmonyPrefix]
+    public static bool RpcSetName_Prefix([HarmonyArgument(0)] string name)
+    {
+        if (!GameStates.IsVanillaServer && Utils.IsHtmlText(name))
+        {
+            return false;
+        }
+
+        return true;
+    }
 
     [HarmonyPatch(nameof(PlayerControl.SetColor))]
     [HarmonyPostfix]
@@ -250,9 +251,6 @@ class PlayerControlPatch
     public static void MurderPlayer_Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
     {
         if (target == null) return;
-
-        if (PlayerControl.LocalPlayer.IsImpostorTeam() && GameStates.IsInGamePlay && !GameStates.IsHideNSeek && HudManager.Instance.CrewmatesKilled.isActiveAndEnabled)
-            HudManager.Instance?.NotifyOfDeath();
 
         Logger.LogPrivate($"{__instance.Data.PlayerName} Has killed {target.Data.PlayerName} as {Utils.GetRoleName(__instance.Data.RoleType)}", "EventLog");
 

@@ -68,13 +68,15 @@ public static class Utils
                     or SystemTypes.Comms
                     or SystemTypes.LifeSupp
                     or SystemTypes.MushroomMixupSabotage
-                    or SystemTypes.HeliSabotage;
+                    or SystemTypes.HeliSabotage
+                    or SystemTypes.Electrical;
     public static bool SystemTypeIsSabotage(int typeNum) => (SystemTypes)typeNum is SystemTypes.Reactor
                 or SystemTypes.Laboratory
                 or SystemTypes.Comms
                 or SystemTypes.LifeSupp
                 or SystemTypes.MushroomMixupSabotage
-                or SystemTypes.HeliSabotage;
+                or SystemTypes.HeliSabotage
+                or SystemTypes.Electrical;
     // Get players HashPuid
     public static string GetHashPuid(PlayerControl player)
     {
@@ -98,12 +100,36 @@ public static class Utils
     // Remove Html Tags Template
     public static string RemoveHtmlTagsTemplate(string str) => Regex.Replace(str, "", "");
     // Get raw text
-    public static string GetRawText(string text)
+    public static string RemoveHtmlText(string text)
     {
         text = Regex.Replace(text, "<[^>]*>", "");
         text = Regex.Replace(text, "{[^}]*}", "");
+        text = text.Replace("\n", " ").Replace("\r", " ");
+        text = text.Trim();
+
         return text;
     }
+
+
+    public static bool IsHtmlText(string text)
+    {
+        if (Regex.IsMatch(text, "<[^>]*>"))
+        {
+            return true;
+        }
+        if (Regex.IsMatch(text, "{[^}]*}"))
+        {
+            return true;
+        }
+        if (text.Contains("\n") || text.Contains("\r"))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+
     // Get name for role
     public static string GetRoleName(RoleTypes role) => Main.GetRoleName[(int)role];
     // Get hex color for team

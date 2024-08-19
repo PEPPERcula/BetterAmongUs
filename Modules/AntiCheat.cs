@@ -4,6 +4,7 @@ using Hazel;
 using InnerNet;
 using UnityEngine;
 using UnityEngine.Purchasing;
+using UnityEngine.Rendering;
 
 namespace BetterAmongUs;
 
@@ -26,15 +27,15 @@ class AntiCheat
 
                 if (SickoData.ContainsKey(hashPuid))
                 {
-                    player.Kick(true, $"<color=#ffea00>{player.Data.PlayerName}</color> banned by <color=#4f92ff>Anti-Cheat</color>!\n Reason: <color=#00f583>Known Sicko Menu User</color>");
+                    player.Kick(true, $"banned by <color=#4f92ff>Anti-Cheat</color>!\n Reason: <color=#00f583>Known Sicko Menu User</color>", true);
                 }
                 else if (AUMData.ContainsKey(hashPuid))
                 {
-                    player.Kick(true, $"<color=#ffea00>{player.Data.PlayerName}</color> banned by <color=#4f92ff>Anti-Cheat</color>!\n Reason: <color=#4f0000>Known AUM User</color>");
+                    player.Kick(true, $"banned by <color=#4f92ff>Anti-Cheat</color>!\n Reason: <color=#4f0000>Known AUM User</color>", true);
                 }
                 else if (PlayerData.ContainsKey(hashPuid))
                 {
-                    player.Kick(true, $"<color=#ffea00>{player.Data.PlayerName}</color> banned by <color=#4f92ff>Anti-Cheat</color>!\n Reason: <color=#fc0000>Known Cheater</color>");
+                    player.Kick(true, $"banned by <color=#4f92ff>Anti-Cheat</color>!\n Reason: <color=#fc0000>Known Cheater</color>", true);
                 }
             }
         }
@@ -294,6 +295,15 @@ class AntiCheat
                 player.BetterData().LastTaskId = taskId;
             }
 
+            if (callId is (byte)RpcCalls.CloseDoorsOfType)
+            {
+                if (!player.IsImpostorTeam())
+                {
+                    BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
+                    Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName((RpcCalls)callId)}: {!player.IsImpostorTeam()}");
+                }
+            }
+
             if (callId is (byte)RpcCalls.Pet or (byte)RpcCalls.CancelPet)
             {
                 if (player?.CurrentOutfit?.PetId == "pet_EmptyPet")
@@ -314,22 +324,130 @@ class AntiCheat
     // Check game states when sabotaging
     public static bool RpcUpdateSystemCheck(PlayerControl player, SystemTypes systemType, byte amount)
     {
-        if (!player.IsImpostorTeam() || !GameStates.IsSystemActive(systemType) && GameStates.IsAnySabotageActive() || Utils.SystemTypeIsSabotage(systemType)
-            || ShipStatus.Instance.AllDoors.ToArray().Any(door => !door.IsOpen))
+        byte hostNum = 128; // Only host should ever send this number
+        byte singleFixNum = 0;
+        byte minLightNum = 0;
+        byte MaxLightNum = 4;
+        byte fixNum = 16; // 16 and 17
+        byte openPanelNum = 64; // 64 and 65
+        byte closePanelNum = 32; // 32 and 33
+
+        // Set fixing status
+        if (Utils.SystemTypeIsSabotage(systemType))
         {
-            BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName(systemType)}");
-            Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName(systemType)} Start Sabotage: {!player.IsImpostorTeam()} || {!GameStates.IsSystemActive(systemType)}" +
-                $"&& {GameStates.IsAnySabotageActive()} || {Utils.SystemTypeIsSabotage(systemType)} || {ShipStatus.Instance.AllDoors.ToArray().Any(door => !door.IsOpen)}");
-            return false;
+            if (amount == openPanelNum && !player.BetterData().IsFixingPanelSabotage)
+            {
+                player.BetterData().OpenSabotageNum = 1;
+            }
+            else if (amount == openPanelNum + 1 && !player.BetterData().IsFixingPanelSabotage)
+            {
+                player.BetterData().OpenSabotageNum = 2;
+            }
+
+            if (amount == closePanelNum && player.BetterData().OpenSabotageNum == 1)
+            {
+                player.BetterData().OpenSabotageNum = 0;
+            }
+            else if (amount == closePanelNum + 1 && player.BetterData().OpenSabotageNum == 2)
+            {
+                player.BetterData().OpenSabotageNum = 0;
+            }
         }
 
-        // Fix Sabo
-        if (amount == 16)
+        if (!GameStates.IsHost || PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer
+            || player.BetterData().IsBetterHost || !IsEnabled || !Main.AntiCheat.Value
+            || GameStates.IsBetterHostLobby && !GameStates.IsHost) return true;
+
+        // Single Fix: 0
+        // Lights: 0-1-2-3-4
+        // Fix 1: 16
+        // Fix 2: 17
+        // Panel 1: Open/Hold 64 - Close/Release 32
+        // Panel 2: Open/Hold 65 - Close/Release 33
+        // Cheat Sabo: 128 
+
+        // Activate sabotage
+        if (systemType == SystemTypes.Sabotage)
         {
-            if (!GameStates.IsSystemActive(systemType))
+            SystemTypes SaboType = (SystemTypes)amount;
+
+            if (!player.IsImpostorTeam() || GameStates.IsAnySabotageActive() || !Utils.SystemTypeIsSabotage(SaboType))
+            {
+                BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName(SaboType)}");
+                Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName(SaboType)}: {!player.IsImpostorTeam()} || {GameStates.IsAnySabotageActive()} " +
+                    $"|| {!Utils.SystemTypeIsSabotage(SaboType)}");
+                return false;
+            }
+        }
+
+        // Fix sabotage
+        else if (Utils.SystemTypeIsSabotage(systemType))
+        {
+            if (amount == hostNum && !player.IsHost())
             {
                 BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName(systemType)}");
-                Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName(systemType)} Fix Sabotage: {!GameStates.IsSystemActive(systemType)}");
+                Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName(systemType)}: {amount == hostNum} && {!player.IsHost()}");
+                return false;
+            }
+
+            if (!GameStates.IsSystemActive(systemType))
+            {
+                if (systemType is SystemTypes.Electrical)
+                {
+                    BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName(systemType)}");
+                    Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName(systemType)}: {systemType is SystemTypes.Electrical}");
+                }
+
+                return false;
+            }
+
+            if (player.BetterData().IsFixingPanelSabotage)
+            {
+                if (player.BetterData().OpenSabotageNum == 0)
+                {
+                    BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName(systemType)}");
+                    Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName(systemType)}: {player.BetterData().OpenSabotageNum == 0}");
+                    return false;
+                }
+
+                if (amount == openPanelNum && amount == openPanelNum + 1)
+                {
+                    BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName(systemType)}");
+                    Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName(systemType)}: {amount == openPanelNum} && {amount == openPanelNum + 1}");
+                    return false;
+                }
+
+                if (player.BetterData().OpenSabotageNum == 1 && amount == openPanelNum + 1
+                    || player.BetterData().OpenSabotageNum == 2 && amount == openPanelNum)
+                {
+                    BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName(systemType)}");
+                    Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName(systemType)}: {player.BetterData().OpenSabotageNum == 1} && {amount == openPanelNum + 1} " +
+                        $"|| {player.BetterData().OpenSabotageNum == 2} && {amount == openPanelNum}");
+                    return false;
+                }
+            }
+            else
+            {
+                if (amount != fixNum && amount != fixNum + 1
+                    && amount != closePanelNum && amount != closePanelNum + 1
+                    && amount > MaxLightNum)
+                {
+                    BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName(systemType)}");
+                    Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName(systemType)}: {amount != fixNum} && {amount != fixNum + 1}" +
+                        $" && {amount != closePanelNum} && {amount != closePanelNum + 1}" +
+                        $" && {amount > MaxLightNum}");
+                    return false;
+                }
+
+                if (systemType == SystemTypes.Electrical)
+                {
+                    if (amount > MaxLightNum)
+                    {
+                        BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName(systemType)}");
+                        Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName(systemType)}: {amount > MaxLightNum}");
+                        return false;
+                    }
+                }
             }
         }
 
@@ -354,11 +472,18 @@ class AntiCheat
 
                     if (target != null)
                     {
-                        if (!target.IsAlive() && target == PlayerControl.LocalPlayer)
+                        if (target == PlayerControl.LocalPlayer)
                         {
-                            BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
-                            Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName((RpcCalls)callId)} 2: {!target.IsAlive()}");
-                            return false;
+                            if (target.BetterData().CheckBanExploit && !target.IsAlive())
+                            {
+                                BetterNotificationManager.NotifyCheat(player, $"Invalid Action: Attempted To Ban Exploit");
+                                Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName((RpcCalls)callId)} 2: {target.BetterData().CheckBanExploit} && {!target.IsAlive()}");
+                                return false;
+                            }
+                            else
+                            {
+                                target.BetterData().CheckBanExploit = true;
+                            }
                         }
                     }
                 }
@@ -495,6 +620,7 @@ class AntiCheat
                     if (callId is (byte)RpcCalls.CheckName)
                     {
                         var name = reader.ReadString();
+                        Utils.AddChatPrivate($"{player.GetPlayerNameAndColor()} Has tried to change their name to '{name}' but has been undone!");
                         Logger.LogCheat($"{player.Data.PlayerName} Has tried to change their name to '{name}' but has been undone!");
                     }
                     return false;

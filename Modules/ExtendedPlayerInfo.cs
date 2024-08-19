@@ -1,34 +1,61 @@
 ﻿using AmongUs.GameOptions;
 using InnerNet;
+using UnityEngine;
 
 namespace BetterAmongUs;
 
-public class ExtendedPlayerInfo
+public static class PlayerControlDataExtension
 {
-    public Dictionary<byte, string> LastNameSetFor { get; set; } = [];
-    public bool IsBetterUser { get; set; } = false;
-    public bool IsBetterHost { get; set; } = false;
-    public bool IsTOHEHost { get; set; } = false;
-    public bool BannedByAntiCheat { get; set; } = false;
+    public class ExtendedPlayerInfo
+    {
+        public NetworkedPlayerInfo? ThisPlayerData { get; set; }
+        public Dictionary<byte, string> LastNameSetFor { get; set; } = [];
+        public bool IsBetterUser { get; set; } = false;
+        public bool IsBetterHost { get; set; } = false;
+        public bool IsTOHEHost { get; set; } = false;
+        public bool BannedByAntiCheat { get; set; } = false;
+        public bool CheckBanExploit { get; set; } = false;
 
-    // Track Game Info
-    public float TimeSinceLastTask { get; set; } = 5f;
-    public uint LastTaskId { get; set; } = 0;
-    public int TimesCalledMeeting { get; set; } = 0;
-    public DisconnectReasons DisconnectReason { get; set; } = DisconnectReasons.Unknown;
-    public ExtendedRoleInfo? RoleInfo { get; set; }
-}
+        // Track Game Info
+        public int OpenSabotageNum { get; set; } = 0;
+        public bool IsFixingPanelSabotage => OpenSabotageNum != 0;
+        public float TimeSinceLastTask { get; set; } = 5f;
+        public uint LastTaskId { get; set; } = 0;
+        public int TimesCalledMeeting { get; set; } = 0;
+        public DisconnectReasons DisconnectReason { get; set; } = DisconnectReasons.Unknown;
+        public ExtendedRoleInfo? RoleInfo { get; set; }
+    }
 
-public class ExtendedRoleInfo
-{
-    public int Kills { get; set; } = 0;
-    public bool HasNoisemakerNotify { get; set; } = false;
-    public RoleTypes DeadDisplayRole { get; set; }
-}
+    public class ExtendedRoleInfo
+    {
+        public int Kills { get; set; } = 0;
+        public bool HasNoisemakerNotify { get; set; } = false;
+        public RoleTypes DeadDisplayRole { get; set; }
+    }
 
-public static class PlayerControlExtensions
-{
     public static readonly Dictionary<string, ExtendedPlayerInfo> playerInfo = [];
+
+    // Reset info when needed
+    public static void ResetPlayerData(PlayerControl player)
+    {
+        if (GameStates.IsLobby)
+        {
+            player.BetterData().TimesCalledMeeting = 0;
+            player.BetterData().RoleInfo.HasNoisemakerNotify = false;
+            player.BetterData().TimeSinceLastTask = 5f;
+            player.BetterData().LastTaskId = 999;
+            player.BetterData().RoleInfo.Kills = 0;
+            player.BetterData().OpenSabotageNum = 0;
+            player.BetterData().CheckBanExploit = false;
+        }
+        else
+        {
+            player.BetterData().TimeSinceLastTask += Time.deltaTime;
+
+            if (player.IsAlive() || player.Data.RoleType == RoleTypes.GuardianAngel)
+                player.BetterData().RoleInfo.DeadDisplayRole = player.Data.RoleType;
+        }
+    }
 
     // Get BetterData from PlayerControl
     public static ExtendedPlayerInfo? BetterData(this PlayerControl player)
@@ -39,6 +66,7 @@ public static class PlayerControlExtensions
         {
             playerInfo[player.Data.Puid] = new ExtendedPlayerInfo
             {
+                ThisPlayerData = player.Data,
                 RoleInfo = new ExtendedRoleInfo()
             };
         }
@@ -53,6 +81,7 @@ public static class PlayerControlExtensions
         {
             playerInfo[info.Puid] = new ExtendedPlayerInfo
             {
+                ThisPlayerData = info,
                 RoleInfo = new ExtendedRoleInfo()
             };
         }
@@ -71,6 +100,7 @@ public static class PlayerControlExtensions
             {
                 playerInfo[player.Data.Puid] = new ExtendedPlayerInfo
                 {
+                    ThisPlayerData = player.Data,
                     RoleInfo = new ExtendedRoleInfo()
                 };
             }

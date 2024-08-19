@@ -228,7 +228,7 @@ class BetterHostManager
                 else if (player.BetterData().IsBetterUser)
                     sbTopTag.Append("<color=#0dff00>Better User</color>+++");
             }
-            else if (GameStates.IsInGamePlay)
+            else if (GameStates.IsInGamePlay && !GameStates.IsHideNSeek)
             {
                 string Role = $"<color={player.GetTeamHexColor()}>{player.GetRoleName()}</color>";
                 if (!player.IsImpostorTeam() && player.myTasks.Count > 0)
@@ -267,9 +267,9 @@ class BetterHostManager
                 NewName = $"{NewName}";
 
             // Don't send rpc if name is the same!
-            if (player.BetterData().LastNameSetFor.TryGetValue(target.PlayerId, out var lastName) && lastName == NewName)
+            if (player.BetterData().LastNameSetFor.TryGetValue(target.PlayerId, out var lastName))
             {
-                if (!force)
+                if (lastName == NewName || !force)
                 {
                     return;
                 }

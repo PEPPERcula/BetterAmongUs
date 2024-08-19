@@ -55,25 +55,6 @@ public class HudManagerPatch
 
             if (GameStates.InGame && __instance?.Chat?.gameObject.active != true)
                 __instance.Chat.gameObject.SetActive(true);
-
-            GameObject TaskDisplay = GameObject.Find("TaskDisplay");
-            GameObject ProgressTracker = GameObject.Find("ProgressTracker");
-            if (TaskDisplay != null && ProgressTracker != null)
-            {
-                if (PlayerControl.LocalPlayer.IsImpostorTeam())
-                {
-                    __instance.CrewmatesKilled.gameObject.SetActive(true);
-                    __instance.CrewmatesKilled.gameObject.transform.SetLocalZ(-25);
-                    TaskDisplay.transform.localPosition = new Vector3(0f, -0.4f, -5f);
-                    ProgressTracker.transform.localPosition = new Vector3(-2.8733f, 3.1f);
-                }
-                else if (__instance.CrewmatesKilled.isActiveAndEnabled)
-                {
-                    __instance.CrewmatesKilled.gameObject.SetActive(GameManager.Instance.ShowCrewmatesKilled());
-                    TaskDisplay.transform.localPosition = new Vector3(0f, 0f);
-                    ProgressTracker.transform.localPosition = new Vector3(-2.8733f, 2.7f, 0);
-                }
-            }
         }
         catch { }
     }

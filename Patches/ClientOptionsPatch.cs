@@ -1,5 +1,6 @@
 using HarmonyLib;
 using UnityEngine;
+using static Rewired.Data.UserDataStore_PlayerPrefs.ControllerAssignmentSaveInfo;
 
 namespace BetterAmongUs.Patches;
 
@@ -12,6 +13,7 @@ public static class OptionsMenuBehaviourPatch
     private static ClientOptionItem BetterHost;
     private static ClientOptionItem BetterRoleAlgorithma;
     private static ClientOptionItem BetterNotifications;
+    private static ClientOptionItem UseBannedList;
     private static ClientOptionItem LobbyPlayerInfo;
     private static ClientOptionItem DisableLobbyTheme;
     private static ClientOptionItem UnlockFPS;
@@ -53,6 +55,11 @@ public static class OptionsMenuBehaviourPatch
             {
                 RPC.SendBetterCheck();
 
+                foreach (var kvp in PlayerControlDataExtension.playerInfo)
+                {
+                    PlayerControlDataExtension.playerInfo[kvp.Key].LastNameSetFor.Clear();
+                }
+
                 RPC.SyncAllNames(force: true);
             }
         }
@@ -72,6 +79,11 @@ public static class OptionsMenuBehaviourPatch
                 BetterNotificationManager.showTime = 0f;
                 BetterNotificationManager.Notifying = false;
             }
+        }
+        
+        if (UseBannedList == null || UseBannedList.ToggleButton == null)
+        {
+            UseBannedList = ClientOptionItem.Create("Use Ban Lists", Main.UseBannedList, __instance);
         }
 
         if (LobbyPlayerInfo == null || LobbyPlayerInfo.ToggleButton == null)

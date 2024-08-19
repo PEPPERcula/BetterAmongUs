@@ -29,7 +29,7 @@ public static class GameStates
 
         return type switch
         {
-            SystemTypes.Electrical when mapId != 5 => system.Cast<SwitchSystem>()?.IsActive ?? false,
+            SystemTypes.Electrical when mapId != 5 => !system.Cast<SwitchSystem>()?.IsActive == false,
             SystemTypes.Reactor when mapId != 2 => system.Cast<ReactorSystemType>()?.IsActive ?? false,
             SystemTypes.Laboratory when mapId == 2 => system.Cast<ReactorSystemType>()?.IsActive ?? false,
             SystemTypes.LifeSupp when mapId is 0 or 3 => system.Cast<LifeSuppSystemType>()?.IsActive ?? false,
