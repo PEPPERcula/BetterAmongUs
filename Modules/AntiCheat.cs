@@ -472,11 +472,18 @@ class AntiCheat
 
                     if (target != null)
                     {
-                        if (!target.IsAlive() && target == PlayerControl.LocalPlayer)
+                        if (target == PlayerControl.LocalPlayer)
                         {
-                            BetterNotificationManager.NotifyCheat(player, $"Invalid Action: Attempted To Ban Exploit");
-                            Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName((RpcCalls)callId)} 2: {!target.IsAlive()}");
-                            return false;
+                            if (target.BetterData().CheckBanExploit && !target.IsAlive())
+                            {
+                                BetterNotificationManager.NotifyCheat(player, $"Invalid Action: Attempted To Ban Exploit");
+                                Logger.LogCheat($"{player.Data.PlayerName} {Enum.GetName((RpcCalls)callId)} 2: {target.BetterData().CheckBanExploit} && {!target.IsAlive()}");
+                                return false;
+                            }
+                            else
+                            {
+                                target.BetterData().CheckBanExploit = true;
+                            }
                         }
                     }
                 }

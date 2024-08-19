@@ -14,6 +14,7 @@ public static class PlayerControlDataExtension
         public bool IsBetterHost { get; set; } = false;
         public bool IsTOHEHost { get; set; } = false;
         public bool BannedByAntiCheat { get; set; } = false;
+        public bool CheckBanExploit { get; set; } = false;
 
         // Track Game Info
         public int OpenSabotageNum { get; set; } = 0;
@@ -37,7 +38,7 @@ public static class PlayerControlDataExtension
     // Reset info when needed
     public static void ResetPlayerData(PlayerControl player)
     {
-        if (!GameStates.IsInGamePlay)
+        if (GameStates.IsLobby)
         {
             player.BetterData().TimesCalledMeeting = 0;
             player.BetterData().RoleInfo.HasNoisemakerNotify = false;
@@ -45,6 +46,7 @@ public static class PlayerControlDataExtension
             player.BetterData().LastTaskId = 999;
             player.BetterData().RoleInfo.Kills = 0;
             player.BetterData().OpenSabotageNum = 0;
+            player.BetterData().CheckBanExploit = false;
         }
         else
         {
