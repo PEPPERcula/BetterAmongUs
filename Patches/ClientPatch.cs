@@ -151,7 +151,7 @@ public class ClientPatch
         [HarmonyPrefix]
         public static void Show_Prefix(ref string playerName)
         {
-            if (playerName.Contains("Anti-Cheat"))
+            if (Utils.IsHtmlText(playerName))
             {
                 string extractedText = playerName.Split(new[] { "<color=#ffea00>", "</color>" }, StringSplitOptions.None)[1];
                 playerName = extractedText;

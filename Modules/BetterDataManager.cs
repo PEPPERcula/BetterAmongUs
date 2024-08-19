@@ -9,6 +9,7 @@ class BetterDataManager
     public static string filePathFolderSaveInfo = Path.Combine(filePathFolder, $"SaveInfo");
     public static string banPlayerListFile = Path.Combine(filePathFolderSaveInfo, "BanPlayerList.txt");
     public static string banNameListFile = Path.Combine(filePathFolderSaveInfo, "BanNameList.txt");
+    public static string banWordListFile = Path.Combine(filePathFolderSaveInfo, "BanWordList.txt");
 
     public static string GetFilePath(string name)
     {
@@ -35,6 +36,11 @@ class BetterDataManager
         if (!File.Exists(banNameListFile))
         {
             File.WriteAllText(banNameListFile, "// Example\nBanName1\nBanName2");
+        }
+
+        if (!File.Exists(banWordListFile))
+        {
+            File.WriteAllText(banWordListFile, "// Example\nStart");
         }
 
         if (!File.Exists(filePath))

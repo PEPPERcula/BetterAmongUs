@@ -101,22 +101,22 @@ static class ExtendedPlayerControl
     }
 
     // Kick player
-    public static void Kick(this PlayerControl player, bool ban = false, string setReasonInfo = "")
+    public static void Kick(this PlayerControl player, bool ban = false, string setReasonInfo = "", bool AntiCheatBan = false)
     {
-        if (!GameStates.IsHost || PlayerControl.LocalPlayer == player || !player.DataIsCollected() || player.IsHost() || player.BetterData().BannedByAntiCheat || player.isDummy)
+        if (!GameStates.IsHost || PlayerControl.LocalPlayer == player || !player.DataIsCollected() || player.IsHost() || player.isDummy)
         {
             return;
         }
 
-        player.BetterData().BannedByAntiCheat = true;
+        player.BetterData().BannedByAntiCheat = AntiCheatBan && ban;
 
         NetworkedPlayerInfo playerInfo = player.Data;
         string saveName = player.Data.PlayerName;
 
         if (setReasonInfo != "")
         {
-            playerInfo.PlayerName = setReasonInfo + "<size=0%>";
-            player.SetName(setReasonInfo + "<size=0%>");
+            playerInfo.PlayerName = $"<color=#ffea00>{saveName}</color> {setReasonInfo}<size=0%>";
+            player.SetName($"<color=#ffea00>{saveName}</color> {setReasonInfo}<size=0%>");
         }
 
         AmongUsClient.Instance.KickPlayer(player.GetClientId(), ban);

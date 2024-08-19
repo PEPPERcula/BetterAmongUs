@@ -13,7 +13,7 @@ public static class OptionsMenuBehaviourPatch
     private static ClientOptionItem BetterHost;
     private static ClientOptionItem BetterRoleAlgorithma;
     private static ClientOptionItem BetterNotifications;
-    private static ClientOptionItem UseBannedPlayerAndName;
+    private static ClientOptionItem UseBannedList;
     private static ClientOptionItem LobbyPlayerInfo;
     private static ClientOptionItem DisableLobbyTheme;
     private static ClientOptionItem UnlockFPS;
@@ -81,9 +81,9 @@ public static class OptionsMenuBehaviourPatch
             }
         }
         
-        if (UseBannedPlayerAndName == null || UseBannedPlayerAndName.ToggleButton == null)
+        if (UseBannedList == null || UseBannedList.ToggleButton == null)
         {
-            UseBannedPlayerAndName = ClientOptionItem.Create("Banned Player & Name List", Main.UseBannedPlayerAndName, __instance);
+            UseBannedList = ClientOptionItem.Create("Use Ban Lists", Main.UseBannedList, __instance);
         }
 
         if (LobbyPlayerInfo == null || LobbyPlayerInfo.ToggleButton == null)
