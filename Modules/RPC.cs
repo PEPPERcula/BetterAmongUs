@@ -64,7 +64,7 @@ public static class MessageReaderUpdateSystemPatch
     public static bool Prefix(/*ShipStatus __instance,*/ [HarmonyArgument(0)] SystemTypes systemType, [HarmonyArgument(1)] PlayerControl player, [HarmonyArgument(2)] MessageReader reader)
     {
         if (GameStates.IsHideNSeek) return false;
-        
+
         var amount = MessageReader.Get(reader).ReadByte();
         if (AntiCheat.RpcUpdateSystemCheck(player, systemType, amount) != true)
         {

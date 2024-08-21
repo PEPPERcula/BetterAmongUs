@@ -66,7 +66,7 @@ class GamePlayManager
     {
         [HarmonyPatch(nameof(GameManager.EndGame))]
         [HarmonyPostfix]
-        private static void Postfix(/*GameManager __instance*/)
+        private static void EndGame_Postfix(/*GameManager __instance*/)
         {
             if (GameStates.IsHost)
             {
@@ -128,6 +128,13 @@ class GamePlayManager
 
             return true;
         }
+
+        [HarmonyPatch(nameof(GameStartManager.FinallyBegin))]
+        [HarmonyPrefix]
+        private static void FinallyBegin_Prefix(/*GameStartManager __instance*/)
+        {
+            Logger.LogHeader($"Game Has Started - {Enum.GetName(typeof(MapNames), GameStates.GetActiveMapId)}/{GameStates.GetActiveMapId}", "GamePlayManager");
+        }
     }
     [HarmonyPatch(typeof(EndGameManager))]
     public class EndGameManagerPatch
@@ -136,6 +143,10 @@ class GamePlayManager
         [HarmonyPostfix]
         private static void SetEverythingUp_Postfix(EndGameManager __instance)
         {
+            Logger.LogHeader($"Game Has Ended - {Enum.GetName(typeof(MapNames), GameStates.GetActiveMapId)}/{GameStates.GetActiveMapId}", "GamePlayManager");
+
+            Logger.LogHeader($"Game Summary Start", "GameSummary");
+
             GameObject SummaryObj = UnityEngine.Object.Instantiate(__instance.WinText.gameObject, __instance.WinText.transform.parent.transform);
             SummaryObj.name = "SummaryObj (TMP)";
             SummaryObj.transform.SetSiblingIndex(0);
@@ -230,6 +241,8 @@ class GamePlayManager
                         break;
                 }
 
+                Logger.Log($"{winTeam}: {winTag}", "GameSummary");
+
                 string SummaryHeader = "<align=\"center\"><size=150%>   Game Summary</size></align>";
                 SummaryHeader += $"\n\n<size=90%><color={winColor}>{winTeam} Won</color></size>" +
                     $"\n<size=60%>\nBy {winTag}</size>";
@@ -238,7 +251,7 @@ class GamePlayManager
 
                 foreach (var data in playersData)
                 {
-                    var name = $"<color={Utils.Color32ToHex(Palette.PlayerColors[data.DefaultOutfit.ColorId])}>{data.PlayerName}</color>";
+                    var name = $"<color={Utils.Color32ToHex(Palette.PlayerColors[data.DefaultOutfit.ColorId])}>{data.BetterData().RealName}</color>";
                     string playerTheme(string text) => $"<color={Utils.GetTeamHexColor(data.Role.TeamType)}>{text}</color>";
 
                     string roleInfo;
@@ -270,10 +283,13 @@ class GamePlayManager
                         deathReason = "『<color=#838383<b>Unknown</b></color>』";
                     }
 
+                    Logger.Log($"{name} {roleInfo} {deathReason}", "GameSummary");
+
                     sb.AppendLine($"- {name} {roleInfo} {deathReason}\n");
                 }
 
                 SummaryText.text = $"{SummaryHeader}\n\n<size=58%>{sb}</size>";
+                Logger.LogHeader($"Game Summary End", "GameSummary");
             }
         }
         [HarmonyPatch(nameof(EndGameManager.ShowButtons))]

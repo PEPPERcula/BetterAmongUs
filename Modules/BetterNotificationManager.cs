@@ -35,23 +35,23 @@ class BetterNotificationManager
 
     public static void NotifyCheat(PlayerControl player, string reason, string newText = "", bool kickPlayer = true)
     {
-        string text = $"Player: <color=#0097b5>{player?.CurrentOutfit.PlayerName}</color> Has been detected doing an unauthorized action: <b><color=#fc0000>{reason}</color></b>";
+        string text = $"Player: <color=#0097b5>{player?.BetterData().RealName}</color> Has been detected doing an unauthorized action: <b><color=#fc0000>{reason}</color></b>";
         if (newText != "")
-            text = $"Player: <color=#0097b5>{player?.CurrentOutfit.PlayerName}</color> " + newText + $": <b><color=#fc0000>{reason}</color></b>";
+            text = $"Player: <color=#0097b5>{player?.BetterData().RealName}</color> " + newText + $": <b><color=#fc0000>{reason}</color></b>";
 
         if (!AntiCheat.PlayerData.ContainsKey(Utils.GetHashPuid(player)))
         {
             AntiCheat.PlayerData[Utils.GetHashPuid(player)] = player.Data.FriendCode;
-            BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "cheatData", reason);
+            BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player?.BetterData().RealName, "cheatData", reason);
             Notify(text, Time: 8f);
         }
+
+        Logger.LogCheat(Utils.RemoveHtmlText(text));
 
         if (GameStates.IsHost && kickPlayer)
         {
             player.Kick(true, $"banned by <color=#4f92ff>Anti-Cheat</color>!\n Reason: <color=#fc0000>{reason}</color>", true);
         }
-
-        Logger.LogCheat(Utils.RemoveHtmlText(text));
     }
 
     public static void Update()

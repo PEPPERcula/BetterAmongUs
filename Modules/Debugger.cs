@@ -11,7 +11,7 @@ class Logger
         File.AppendAllText(logFilePath, newLine + Environment.NewLine);
         Main.Logger.LogInfo($"[{tag}] {info}");
     }
-    public static void LogHeader(string info, string tag = "Log") => Log($"   <-------------- {info} -------------->", tag);
+    public static void LogHeader(string info, string tag = "LogHeader") => Log($"   >-------------- {info} --------------<", tag);
     public static void LogCheat(string info, string tag = "AntiCheat") => Log(info, tag);
     public static void Error(string info, string tag = "Error") => Log(info, tag);
     public static void Test()
