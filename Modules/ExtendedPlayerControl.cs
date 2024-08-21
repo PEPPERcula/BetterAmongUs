@@ -111,7 +111,7 @@ static class ExtendedPlayerControl
         player.BetterData().BannedByAntiCheat = AntiCheatBan && ban;
 
         NetworkedPlayerInfo playerInfo = player.Data;
-        string saveName = player.Data.PlayerName;
+        string saveName = player.BetterData().RealName;
 
         if (setReasonInfo != "")
         {

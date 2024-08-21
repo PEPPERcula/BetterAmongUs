@@ -1,7 +1,9 @@
 ﻿using AmongUs.Data;
 using AmongUs.GameOptions;
 using HarmonyLib;
+using Hazel;
 using Il2CppSystem.Linq;
+using InnerNet;
 using LibCpp2IL;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -223,12 +225,14 @@ class PlayerControlPatch
 
     [HarmonyPatch(nameof(PlayerControl.RpcSetName))]
     [HarmonyPrefix]
-    public static bool RpcSetName_Prefix([HarmonyArgument(0)] string name)
+    public static bool RpcSetName_Prefix(PlayerControl __instance, [HarmonyArgument(0)] string name)
     {
         if (!GameStates.IsVanillaServer && Utils.IsHtmlText(name))
         {
             return false;
         }
+
+        __instance.BetterData().RealName = name;
 
         return true;
     }

@@ -8,19 +8,20 @@ public static class PlayerControlDataExtension
 {
     public class ExtendedPlayerInfo
     {
-        public NetworkedPlayerInfo? ThisPlayerData { get; set; }
+        public NetworkedPlayerInfo? _Data { get; set; }
+        public string RealName { get; set; } = string.Empty;
         public Dictionary<byte, string> LastNameSetFor { get; set; } = [];
         public bool IsBetterUser { get; set; } = false;
         public bool IsBetterHost { get; set; } = false;
         public bool IsTOHEHost { get; set; } = false;
         public bool BannedByAntiCheat { get; set; } = false;
-        public bool CheckBanExploit { get; set; } = false;
+        public int TimesAttemptedKilled { get; set; } = 0;
 
         // Track Game Info
         public int OpenSabotageNum { get; set; } = 0;
         public bool IsFixingPanelSabotage => OpenSabotageNum != 0;
         public float TimeSinceLastTask { get; set; } = 5f;
-        public uint LastTaskId { get; set; } = 0;
+        public uint LastTaskId { get; set; } = 999;
         public int TimesCalledMeeting { get; set; } = 0;
         public DisconnectReasons DisconnectReason { get; set; } = DisconnectReasons.Unknown;
         public ExtendedRoleInfo? RoleInfo { get; set; }
@@ -46,7 +47,7 @@ public static class PlayerControlDataExtension
             player.BetterData().LastTaskId = 999;
             player.BetterData().RoleInfo.Kills = 0;
             player.BetterData().OpenSabotageNum = 0;
-            player.BetterData().CheckBanExploit = false;
+            player.BetterData().TimesAttemptedKilled = 0;
         }
         else
         {
@@ -66,7 +67,7 @@ public static class PlayerControlDataExtension
         {
             playerInfo[player.Data.Puid] = new ExtendedPlayerInfo
             {
-                ThisPlayerData = player.Data,
+                _Data = player.Data,
                 RoleInfo = new ExtendedRoleInfo()
             };
         }
@@ -81,7 +82,7 @@ public static class PlayerControlDataExtension
         {
             playerInfo[info.Puid] = new ExtendedPlayerInfo
             {
-                ThisPlayerData = info,
+                _Data = info,
                 RoleInfo = new ExtendedRoleInfo()
             };
         }
@@ -100,7 +101,7 @@ public static class PlayerControlDataExtension
             {
                 playerInfo[player.Data.Puid] = new ExtendedPlayerInfo
                 {
-                    ThisPlayerData = player.Data,
+                    _Data = player.Data,
                     RoleInfo = new ExtendedRoleInfo()
                 };
             }
