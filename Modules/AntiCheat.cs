@@ -493,11 +493,11 @@ class AntiCheat
                             if (target.BetterData().TimesAttemptedKilled >= 5 && !target.IsAlive())
                             {
                                 BetterNotificationManager.NotifyCheat(player, $"Invalid Action: Attempted To Ban Exploit");
-                                Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)} 2: {target.BetterData().CheckBanExploit} && {!target.IsAlive()}");
+                                Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)} 2: {target.BetterData().TimesAttemptedKilled >= 5} && {!target.IsAlive()}");
                                 return false;
                             }
 
-                            // Cancel murder on client
+                            // Cancel murder on client if not alive
                             if (!target.IsAlive())
                             {
                                 return false;

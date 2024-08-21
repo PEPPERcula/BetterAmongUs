@@ -108,23 +108,14 @@ static class ExtendedPlayerControl
             return;
         }
 
-        player.BetterData().BannedByAntiCheat = AntiCheatBan && ban;
-
-        NetworkedPlayerInfo playerInfo = player.Data;
-        string saveName = player.BetterData().RealName;
-
         if (setReasonInfo != "")
         {
-            playerInfo.PlayerName = $"<color=#ffea00>{saveName}</color> {setReasonInfo}<size=0%>";
-            player.SetName($"<color=#ffea00>{saveName}</color> {setReasonInfo}<size=0%>");
+            GameDataShowNotificationPatch.BetterShowNotification(player.Data, forceReasonText: setReasonInfo);
         }
 
         AmongUsClient.Instance.KickPlayer(player.GetClientId(), ban);
 
-        _ = new LateTask(() =>
-        {
-            playerInfo.PlayerName = saveName;
-        }, 0.15f, shoudLog: false);
+        player.BetterData().BannedByAntiCheat = AntiCheatBan && ban;
     }
 
     // RPCs

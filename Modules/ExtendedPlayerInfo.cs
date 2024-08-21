@@ -36,6 +36,8 @@ public static class PlayerControlDataExtension
 
     public static readonly Dictionary<string, ExtendedPlayerInfo> playerInfo = [];
 
+    public static void ClearData(this ExtendedPlayerInfo BetterData) => playerInfo[BetterData._Data.Puid] = new ExtendedPlayerInfo();
+
     // Reset info when needed
     public static void ResetPlayerData(PlayerControl player)
     {
