@@ -35,7 +35,13 @@ public static class OnPlayerJoinedPatch
 {
     public static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData client)
     {
+        var player = Utils.PlayerFromClientId(client.Id);
         PlayerControlPatch.infotime = 0f;
+
+        if (player != null)
+        {
+            player.BetterData().ClearData();
+        }
 
         _ = new LateTask(() =>
         {
@@ -52,7 +58,6 @@ public static class OnPlayerJoinedPatch
                 // Auto ban player on ban list
                 if (Main.UseBannedList.Value)
                 {
-                    var player = Utils.PlayerFromClientId(client.Id);
                     if (player != null)
                     {
                         try
@@ -121,46 +126,68 @@ class GameDataHandleDisconnectPatch
     public static void Prefix(/*GameData __instance,*/ [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] DisconnectReasons reason)
     {
         player.BetterData().DisconnectReason = reason;
+
+        GameDataShowNotificationPatch.BetterShowNotification(player.Data, reason);
     }
 }
 
 [HarmonyPatch(typeof(GameData), nameof(GameData.ShowNotification))]
 class GameDataShowNotificationPatch
 {
-    public static bool Prefix(/*GameData __instance,*/ ref string playerName, ref DisconnectReasons reason)
+    public static void BetterShowNotification(NetworkedPlayerInfo playerData, DisconnectReasons reason = DisconnectReasons.Unknown, string forceReasonText = "")
     {
-        string ReasonText;
-        switch (reason)
+        if (playerData.BetterData().BannedByAntiCheat) return;
+
+        string playerName = playerData.BetterData().RealName;
+
+        if (forceReasonText != "")
         {
-            case DisconnectReasons.ExitGame:
-                ReasonText = $"{playerName} Left the game!";
-                break;
-            case DisconnectReasons.ClientTimeout:
-                ReasonText = $"{playerName} Disconnected!";
-                break;
-            case DisconnectReasons.Kicked:
-                ReasonText = $"{playerName} Was kicked by {AmongUsClient.Instance.GetHost().Character.Data.PlayerName}!";
-                break;
-            case DisconnectReasons.Banned:
-                ReasonText = $"{playerName} Was banned by {AmongUsClient.Instance.GetHost().Character.Data.PlayerName}!";
-                break;
-            case DisconnectReasons.Hacking:
-                ReasonText = $"{playerName} Was banned by Innersloth Anti-Cheat!";
-                break;
-            case DisconnectReasons.Error:
-                ReasonText = $"{playerName} Was kicked due to an error!";
-                break;
-            case DisconnectReasons.Unknown:
-                ReasonText = $"{playerName} Left the game due to unknown reason?";
-                break;
-            default:
-                ReasonText = $"{playerName} Left the game!";
-                break;
+            var ReasonText = $"{playerData.BetterData().RealName} {forceReasonText}";
+
+            Logger.Log(ReasonText);
+
+            DestroyableSingleton<HudManager>.Instance.Notifier.AddDisconnectMessage(ReasonText);
         }
+        else
+        {
+            string ReasonText;
 
-        Logger.Log(ReasonText);
+            switch (reason)
+            {
+                case DisconnectReasons.ExitGame:
+                    ReasonText = $"{playerName} Left the game!";
+                    break;
+                case DisconnectReasons.ClientTimeout:
+                    ReasonText = $"{playerName} Disconnected!";
+                    break;
+                case DisconnectReasons.Kicked:
+                    ReasonText = $"{playerName} Was kicked by {AmongUsClient.Instance.GetHost().Character.Data.PlayerName}!";
+                    break;
+                case DisconnectReasons.Banned:
+                    ReasonText = $"{playerName} Was banned by {AmongUsClient.Instance.GetHost().Character.Data.PlayerName}!";
+                    break;
+                case DisconnectReasons.Hacking:
+                    ReasonText = $"{playerName} Was banned by Innersloth Anti-Cheat!";
+                    break;
+                case DisconnectReasons.Error:
+                    ReasonText = $"{playerName} Was kicked due to an error!";
+                    break;
+                case DisconnectReasons.Unknown:
+                    ReasonText = $"{playerName} Left the game due to unknown reason?";
+                    break;
+                default:
+                    ReasonText = $"{playerName} Left the game!";
+                    break;
+            }
 
-        DestroyableSingleton<HudManager>.Instance.Notifier.AddDisconnectMessage(ReasonText);
+            Logger.Log(ReasonText);
+
+            DestroyableSingleton<HudManager>.Instance.Notifier.AddDisconnectMessage(ReasonText);
+        }
+    }
+
+    public static bool Prefix()
+    {
         return false;
     }
 }
