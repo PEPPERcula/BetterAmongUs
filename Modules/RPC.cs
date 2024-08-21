@@ -22,7 +22,7 @@ enum CustomRPC : int
 }
 
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.HandleRpc))]
-internal class RPCHandlerPatch
+internal class PlayerControlRPCHandlerPatch
 {
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
@@ -55,6 +55,21 @@ internal class RPCHandlerPatch
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
         RPC.HandleCustomRPC(__instance, callId, reader);
+    }
+}
+
+[HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.HandleRpc))]
+internal class PlayerPhysicsRPCHandlerPatch
+{
+    public static void Prefix(PlayerPhysics __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
+    {
+        if (AntiCheat.CheckCancelRPC(__instance.myPlayer, callId, reader) != true)
+        {
+            Logger.LogCheat($"RPC canceled by Anti-Cheat: {Enum.GetName((RpcCalls)callId)}{Enum.GetName((CustomRPC)callId)} - {callId}");
+        }
+
+        AntiCheat.CheckRPC(__instance.myPlayer, callId, reader);
+        RPC.HandleRPC(__instance.myPlayer, callId, reader);
     }
 }
 

@@ -61,6 +61,42 @@ class GamePlayManager
         }
     }
 
+    [HarmonyPatch(typeof(IntroCutscene))]
+    public class IntroCutscenePatch
+    {
+        [HarmonyPatch(nameof(IntroCutscene.ShowRole))]
+        [HarmonyPostfix]
+        private static void ShowRole_Postfix(IntroCutscene __instance)
+        {
+            static Color HexToColor(string hex)
+            {
+                if (hex.StartsWith("#"))
+                {
+                    hex = hex.Substring(1);
+                }
+
+                byte r = byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
+                byte g = byte.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
+                byte b = byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
+
+                return new Color32(r, g, b, 255);
+            }
+
+            _ = new LateTask(() =>
+            {
+                Color RoleColor = HexToColor(Utils.GetRoleColor(PlayerControl.LocalPlayer.Data.RoleType));
+
+                __instance.ImpostorText.gameObject.SetActive(false);
+                __instance.TeamTitle.gameObject.SetActive(false);
+                __instance.FrontMost.gameObject.SetActive(false);
+                __instance.BackgroundBar.material.color = RoleColor;
+                __instance.YouAreText.color = RoleColor;
+                __instance.RoleText.color = RoleColor;
+                __instance.RoleBlurbText.color = RoleColor;
+            }, 0.0025f, shoudLog: false);
+        }
+    }
+
     [HarmonyPatch(typeof(GameManager))]
     public class GameManagerPatch
     {
