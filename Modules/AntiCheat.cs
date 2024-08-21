@@ -230,14 +230,6 @@ class AntiCheat
                 {
                     PlayerControl target = reader.ReadNetObject<PlayerControl>();
 
-                    if (GameStates.IsHost)
-                    {
-                        BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
-                        Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {GameStates.IsHost}");
-
-                        return;
-                    }
-
                     if (target != null)
                     {
                         if (!player.IsImpostorTeam() || !player.IsAlive() || player.IsInVanish() || target.IsImpostorTeam())
@@ -332,6 +324,8 @@ class AntiCheat
     // Check game states when sabotaging
     public static bool RpcUpdateSystemCheck(PlayerControl player, SystemTypes systemType, byte amount)
     {
+        return true;
+
         byte hostNum = 128; // Only host should ever send this number
         byte singleFixNum = 0;
         byte minLightNum = 0;
