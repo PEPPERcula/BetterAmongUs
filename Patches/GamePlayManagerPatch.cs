@@ -21,21 +21,24 @@ class GamePlayManager
             }
 
             // Clear unused Better Data
-            var keysToRemove = new List<string>();
-
-            foreach (var betterInfo in PlayerControlDataExtension.playerInfo)
+            try
             {
-                if (!Main.AllPlayerControls.Any(pc => pc.Data.Puid == betterInfo.Key))
+                var keysToRemove = new List<string>();
+
+                foreach (var betterInfo in PlayerControlDataExtension.playerInfo)
                 {
-                    keysToRemove.Add(betterInfo.Key);
+                    if (!Main.AllPlayerControls.Any(pc => pc.Data.Puid == betterInfo.Key))
+                    {
+                        keysToRemove.Add(betterInfo.Key);
+                    }
+                }
+
+                foreach (var key in keysToRemove)
+                {
+                    PlayerControlDataExtension.playerInfo.Remove(key);
                 }
             }
-
-            foreach (var key in keysToRemove)
-            {
-                PlayerControlDataExtension.playerInfo.Remove(key);
-            }
-
+            catch { }
         }
         [HarmonyPatch(nameof(LobbyBehaviour.Start))]
         [HarmonyPostfix]

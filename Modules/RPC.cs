@@ -226,6 +226,11 @@ internal static class RPC
 
         switch (callId)
         {
+            case (byte)RpcCalls.SetName:
+                reader.ReadUInt32();
+                var name = reader.ReadString();
+                player.BetterData().RealName = name;
+                break;
             case (byte)RpcCalls.SendChat:
                 var text = reader.ReadString();
 
