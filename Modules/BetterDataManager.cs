@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using BetterAmongUs.Patches;
+using System.Text.Json;
 
 namespace BetterAmongUs;
 
@@ -7,6 +8,8 @@ class BetterDataManager
     private static string filePath = GetFilePath("BetterData");
     public static string filePathFolder = Path.Combine(Main.GetGamePathToAmongUs(), $"Better_Data");
     public static string filePathFolderSaveInfo = Path.Combine(filePathFolder, $"SaveInfo");
+    public static string filePathFolderSettings = Path.Combine(filePathFolder, $"Settings");
+    public static string SettingsFile = Path.Combine(filePathFolderSettings, "Preset.json");
     public static string banPlayerListFile = Path.Combine(filePathFolderSaveInfo, "BanPlayerList.txt");
     public static string banNameListFile = Path.Combine(filePathFolderSaveInfo, "BanNameList.txt");
     public static string banWordListFile = Path.Combine(filePathFolderSaveInfo, "BanWordList.txt");
@@ -21,6 +24,11 @@ class BetterDataManager
         if (!Directory.Exists(filePathFolder))
         {
             Directory.CreateDirectory(filePathFolder);
+        }
+
+        if (!Directory.Exists(filePathFolderSettings))
+        {
+            Directory.CreateDirectory(filePathFolderSettings);
         }
 
         if (!Directory.Exists(filePathFolderSaveInfo))
@@ -42,6 +50,15 @@ class BetterDataManager
         {
             File.WriteAllText(banWordListFile, "// Example\nStart");
         }
+
+        if (!File.Exists(SettingsFile))
+        {
+            var initialData = new Dictionary<string, string>();
+            string json = JsonSerializer.Serialize(initialData, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(SettingsFile, json);
+        }
+
+        GameSettingMenuPatch.SetupSettings(true);
 
         if (!File.Exists(filePath))
         {
@@ -127,6 +144,77 @@ class BetterDataManager
         return string.Empty;
     }
 
+    public static void SaveSetting(int id, string input)
+    {
+        string filePath = SettingsFile;
+
+        string json = File.ReadAllText(filePath);
+        var jsonData = JsonSerializer.Deserialize<Dictionary<string, string>>(json) ?? new Dictionary<string, string>();
+        jsonData[id.ToString()] = input;
+
+        json = JsonSerializer.Serialize(jsonData, new JsonSerializerOptions { WriteIndented = true });
+        File.WriteAllText(filePath, json);
+    }
+
+    public static bool CanLoadSetting(int id)
+    {
+        string filePath = SettingsFile;
+        string json = File.ReadAllText(filePath);
+        var jsonData = JsonSerializer.Deserialize<Dictionary<string, string>>(json) ?? new Dictionary<string, string>();
+
+        if (jsonData.ContainsKey(id.ToString()))
+        {
+            if (!string.IsNullOrEmpty(jsonData[id.ToString()]))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static bool LoadBoolSetting(int id)
+    {
+        string filePath = SettingsFile;
+        string json = File.ReadAllText(filePath);
+        var jsonData = JsonSerializer.Deserialize<Dictionary<string, string>>(json) ?? new Dictionary<string, string>();
+
+        if (jsonData.ContainsKey(id.ToString()))
+        {
+            return bool.Parse(jsonData[id.ToString()]);
+        }
+
+        return false;
+    }
+
+    public static float LoadFloatSetting(int id)
+    {
+        string filePath = SettingsFile;
+        string json = File.ReadAllText(filePath);
+        var jsonData = JsonSerializer.Deserialize<Dictionary<string, string>>(json) ?? new Dictionary<string, string>();
+
+        if (jsonData.ContainsKey(id.ToString()))
+        {
+            return float.Parse(jsonData[id.ToString()]);
+        }
+
+        return -1f;
+    }
+
+    public static int LoadIntSetting(int id)
+    {
+        string filePath = SettingsFile;
+        string json = File.ReadAllText(filePath);
+        var jsonData = JsonSerializer.Deserialize<Dictionary<string, string>>(json) ?? new Dictionary<string, string>();
+
+        if (jsonData.ContainsKey(id.ToString()))
+        {
+            return int.Parse(jsonData[id.ToString()]);
+        }
+
+        return -1;
+    }
+
     public static void SaveBanList(string friendCode = "", string hashPUID = "")
     {
         if (!string.IsNullOrEmpty(friendCode) || !string.IsNullOrEmpty(hashPUID))
@@ -156,7 +244,6 @@ class BetterDataManager
             }
         }
     }
-
 
     public static void SaveCheatData(string puid, string friendCode, string name, string category = "cheatData", string reason = "None")
     {
