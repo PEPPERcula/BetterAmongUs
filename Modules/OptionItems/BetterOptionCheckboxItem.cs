@@ -26,6 +26,14 @@ public class BetterOptionCheckboxItem : BetterOptionItem
         optionBehaviour.OnValueChanged = new Action<OptionBehaviour>((option) => ValueChanged(id, option));
         SpacingNum += StaticSpacingNumPlus;
 
+        optionBehaviour.LabelBackground.transform.localScale = new Vector3(1.6f, 1f);
+        optionBehaviour.LabelBackground.transform.SetLocalX(-2.4f);
+        optionBehaviour.TitleText.enableAutoSizing = false;
+        optionBehaviour.TitleText.transform.SetLocalX(-1.5f);
+        optionBehaviour.TitleText.alignment = TMPro.TextAlignmentOptions.Right;
+        optionBehaviour.TitleText.enableWordWrapping = false;
+        optionBehaviour.TitleText.fontSize = 2.5f;
+
         // Set data
         optionBehaviour.CheckMark.GetComponent<SpriteRenderer>().enabled = DefaultValue;
         TitleText = optionBehaviour.TitleText;

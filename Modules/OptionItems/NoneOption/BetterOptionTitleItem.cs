@@ -25,6 +25,14 @@ public class BetterOptionTitleItem : BetterOptionItem
         optionBehaviour.LabelBackground.color = new Color(0.6f, 0.6f, 0.6f, 1f);
         optionBehaviour.LabelBackground.transform.SetLocalZ(1f);
 
+        optionBehaviour.LabelBackground.transform.localScale = new Vector3(1.6f, 1f);
+        optionBehaviour.LabelBackground.transform.SetLocalX(-2.4f);
+        optionBehaviour.TitleText.enableAutoSizing = false;
+        optionBehaviour.TitleText.transform.SetLocalX(-2.4f);
+        optionBehaviour.TitleText.alignment = TMPro.TextAlignmentOptions.Center;
+        optionBehaviour.TitleText.enableWordWrapping = false;
+        optionBehaviour.TitleText.fontSize = 2.5f;
+
         // Set data
         Tab = gameOptionsMenu;
         Name = $"<b><size=150%>{name}</size></b>";

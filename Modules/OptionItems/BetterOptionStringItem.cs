@@ -41,6 +41,14 @@ public class BetterOptionStringItem : BetterOptionItem
         optionBehaviour.PlusBtn.OnClick.AddListener(new Action(() => Increase()));
         optionBehaviour.MinusBtn.OnClick.AddListener(new Action(() => Decrease()));
 
+        optionBehaviour.LabelBackground.transform.localScale = new Vector3(1.6f, 1f);
+        optionBehaviour.LabelBackground.transform.SetLocalX(-2.4f);
+        optionBehaviour.TitleText.enableAutoSizing = false;
+        optionBehaviour.TitleText.transform.SetLocalX(-1.5f);
+        optionBehaviour.TitleText.alignment = TMPro.TextAlignmentOptions.Right;
+        optionBehaviour.TitleText.enableWordWrapping = false;
+        optionBehaviour.TitleText.fontSize = 2.5f;
+
         // Set data
         TitleText = optionBehaviour.TitleText;
         Option = optionBehaviour;
