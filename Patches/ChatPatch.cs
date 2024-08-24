@@ -125,7 +125,9 @@ class ChatPatch
             ChatBubble pooledBubble = __instance.GetPooledBubble();
             try
             {
-                chatText = chatText.Replace("\n", "");
+                if (sourcePlayer.BetterData().IsBetterUser && GameStates.IsBetterHostLobby)
+                    chatText = chatText.Replace("\n", "");
+
                 pooledBubble.transform.SetParent(__instance.scroller.Inner);
                 pooledBubble.transform.localScale = Vector3.one;
                 bool flag = sourcePlayer == PlayerControl.LocalPlayer;
