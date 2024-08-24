@@ -26,12 +26,6 @@ public class BetterOptionCheckboxItem : BetterOptionItem
         optionBehaviour.OnValueChanged = new Action<OptionBehaviour>((option) => ValueChanged(id, option));
         SpacingNum += StaticSpacingNumPlus;
 
-        // Fix Game Crash
-        foreach (RulesCategory rulesCategory in GameManager.Instance.GameSettingsList.AllCategories)
-        {
-            optionBehaviour.data = rulesCategory.AllGameSettings.ToArray().FirstOrDefault(item => item.Type == OptionTypes.Checkbox);
-        }
-
         // Set data
         optionBehaviour.CheckMark.GetComponent<SpriteRenderer>().enabled = DefaultValue;
         TitleText = optionBehaviour.TitleText;
@@ -48,12 +42,11 @@ public class BetterOptionCheckboxItem : BetterOptionItem
     {
         if (BetterDataManager.CanLoadSetting(Id))
         {
-            if (ThisOption != null)
-            {
-                var Bool = BetterDataManager.LoadBoolSetting(Id);
-                ThisOption.CheckMark.GetComponent<SpriteRenderer>().enabled = Bool;
-                IsChecked = Bool;
-            }
+            if (ThisOption == null) return;
+
+            var Bool = BetterDataManager.LoadBoolSetting(Id);
+            ThisOption.CheckMark.GetComponent<SpriteRenderer>().enabled = Bool;
+            IsChecked = Bool;
         }
         else
         {
