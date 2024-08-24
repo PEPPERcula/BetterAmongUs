@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using HarmonyLib;
 using UnityEngine;
+using static Logger;
 
 namespace BetterAmongUs.Patches;
 
@@ -13,6 +14,7 @@ class BetterGameSettings
     public static BetterOptionItem? UseBanNameList;
     public static BetterOptionItem? UseBanWordList;
     public static BetterOptionItem? HideAndSeekImpNum;
+    public static BetterOptionItem? DetectedLevelAbove;
     public static BetterOptionItem? DetectCheatClients;
     public static BetterOptionItem? DetectInvalidRPCs;
 }
@@ -43,8 +45,9 @@ static class GameSettingMenuPatch
             }
 
             new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color=#4f92ff>Detections</color>");
-            BetterGameSettings.DetectCheatClients = new BetterOptionCheckboxItem().Create(600, BetterSettingsTab, "Detect Cheat Clients", true);
-            BetterGameSettings.DetectInvalidRPCs = new BetterOptionCheckboxItem().Create(700, BetterSettingsTab, "Detect Invalid RPCs", true);
+            BetterGameSettings.DetectedLevelAbove = new BetterOptionIntItem().Create(600, BetterSettingsTab, "Detected player level # or >", [100, 1000, 5], 200, "");
+            BetterGameSettings.DetectCheatClients = new BetterOptionCheckboxItem().Create(700, BetterSettingsTab, "Detect Cheat Clients", true);
+            BetterGameSettings.DetectInvalidRPCs = new BetterOptionCheckboxItem().Create(800, BetterSettingsTab, "Detect Invalid RPCs", true);
         }
 
         // Gameplay Settings

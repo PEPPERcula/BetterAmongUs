@@ -88,18 +88,26 @@ public class BetterOptionFloatItem : BetterOptionItem
 
     public void Increase()
     {
-        if (CurrentValue + Increment <= floatRange.max)
+        int times = 1;
+        if (Input.GetKey(KeyCode.LeftShift))
+            times = 5;
+
+        if (CurrentValue + Increment * times <= floatRange.max)
         {
-            CurrentValue += Increment;
+            CurrentValue += Increment * times;
             AdjustButtonsActiveState();
         }
     }
 
     public void Decrease()
     {
-        if (CurrentValue - Increment >= floatRange.min)
+        int times = 1;
+        if (Input.GetKey(KeyCode.LeftShift))
+            times = 5;
+
+        if (CurrentValue - Increment * times >= floatRange.min)
         {
-            CurrentValue -= Increment;
+            CurrentValue -= Increment * times;
             AdjustButtonsActiveState();
         }
     }

@@ -88,18 +88,26 @@ public class BetterOptionIntItem : BetterOptionItem
 
     public void Increase()
     {
-        if (CurrentValue + Increment <= intRange.max)
+        int times = 1;
+        if (Input.GetKey(KeyCode.LeftShift))
+            times = 5;
+
+        if (CurrentValue + Increment * times <= intRange.max)
         {
-            CurrentValue += Increment;
+            CurrentValue += Increment * times;
             AdjustButtonsActiveState();
         }
     }
 
     public void Decrease()
     {
-        if (CurrentValue - Increment >= intRange.min)
+        int times = 1;
+        if (Input.GetKey(KeyCode.LeftShift))
+            times = 5;
+
+        if (CurrentValue - Increment * times >= intRange.min)
         {
-            CurrentValue -= Increment;
+            CurrentValue -= Increment * times;
             AdjustButtonsActiveState();
         }
     }
