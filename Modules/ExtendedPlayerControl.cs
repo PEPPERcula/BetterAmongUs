@@ -108,14 +108,24 @@ static class ExtendedPlayerControl
             return;
         }
 
+        if (AntiCheatBan)
+        {
+            if (BetterGameSettings.WhenCheating.GetValue() == 0)
+            {
+                return;
+            }
+
+            ban = ban && BetterGameSettings.WhenCheating.GetValue() == 2;
+        }
+
         if (setReasonInfo != "")
         {
-            GameDataShowNotificationPatch.BetterShowNotification(player.Data, forceReasonText: setReasonInfo);
+            GameDataShowNotificationPatch.BetterShowNotification(player.Data, forceReasonText: string.Format(setReasonInfo, ban ? "banned" : "kicked"));
         }
 
         AmongUsClient.Instance.KickPlayer(player.GetClientId(), ban);
 
-        player.BetterData().BannedByAntiCheat = AntiCheatBan && ban;
+        player.BetterData().BannedByAntiCheat = AntiCheatBan;
     }
 
     // RPCs

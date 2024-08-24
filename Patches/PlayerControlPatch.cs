@@ -115,6 +115,14 @@ class PlayerControlPatch
             {
                 friendCode = "No Friend Code";
                 friendCodeColor = "#ff0000";
+
+                if (GameStates.IsHost)
+                {
+                    if (BetterGameSettings.InvalidFriendCode.GetBool())
+                    {
+                        player.Kick(true, "{0} by <color=#4f92ff>Anti-Cheat</color>!\n Reason: <color=#fc0000>Invalid Friend Code</color>", true);
+                    }
+                }
             }
             if (DataManager.Settings.Gameplay.StreamerMode == true)
             {

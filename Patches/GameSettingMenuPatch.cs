@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using AmongUs.GameOptions;
+using HarmonyLib;
 using UnityEngine;
 
 namespace BetterAmongUs.Patches;
@@ -7,6 +8,8 @@ namespace BetterAmongUs.Patches;
 class BetterGameSettings
 {
     public static BetterOptionItem? WhenCheating;
+    public static BetterOptionItem? InvalidFriendCode;
+    public static BetterOptionItem? HideAndSeekImpNum;
 }
 
 [HarmonyPatch(typeof(GameSettingMenu))]
@@ -22,10 +25,16 @@ static class GameSettingMenuPatch
         new BetterOptionHeaderItem().Create(BetterSettingsTab, "<color=#4f92ff>Anti-Cheat Settings</color>");
 
         BetterGameSettings.WhenCheating = new BetterOptionStringItem().Create(0, BetterSettingsTab, "When a player is caught cheating", ["Do Nothing", "Kick", "Ban"], 2);
+        BetterGameSettings.InvalidFriendCode = new BetterOptionCheckboxItem().Create(100, BetterSettingsTab, "Allow invalid friendCodes", true);
 
         if (IsPreload || GameStates.IsHideNSeek)
         {
-            new BetterOptionHeaderItem().Create(BetterSettingsTab, "<color=#d7d700>Advanced Hide And Seek Settings</color>");
+            if (IsPreload || Main.BetterRoleAlgorithma.Value)
+            {
+                new BetterOptionHeaderItem().Create(BetterSettingsTab, "<color=#d7d700>Hide & Seek Settings</color>");
+                new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color={Utils.GetRoleColor(RoleTypes.Impostor)}>Imposter</color>");
+                BetterGameSettings.HideAndSeekImpNum = new BetterOptionIntItem().Create(200, BetterSettingsTab, "# Seekers", [1, 5, 1], 1, "");
+            }
         }
 
         /*
