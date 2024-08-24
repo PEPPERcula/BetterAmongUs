@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using Newtonsoft.Json.Utilities;
 using System.Text;
 using TMPro;
 using UnityEngine;
@@ -19,23 +18,6 @@ class GamePlayManager
             {
                 AntiCheat.PauseAntiCheat();
             }
-
-            // Clear unused Better Data
-            var keysToRemove = new List<string>();
-
-            foreach (var betterInfo in PlayerControlDataExtension.playerInfo)
-            {
-                if (!Main.AllPlayerControls.Any(pc => pc.Data.Puid == betterInfo.Key))
-                {
-                    keysToRemove.Add(betterInfo.Key);
-                }
-            }
-
-            foreach (var key in keysToRemove)
-            {
-                PlayerControlDataExtension.playerInfo.Remove(key);
-            }
-
         }
         [HarmonyPatch(nameof(LobbyBehaviour.Start))]
         [HarmonyPostfix]
@@ -58,6 +40,62 @@ class GamePlayManager
         {
             if (Main.DisableLobbyTheme.Value)
                 SoundManager.instance.StopSound(LobbyBehaviour.Instance.MapTheme);
+
+            // Clear unused Better Data
+            try
+            {
+                var keysToRemove = new List<string>();
+
+                foreach (var betterInfo in PlayerControlDataExtension.playerInfo)
+                {
+                    if (Main.AllPlayerControls.Any(pc => pc.Data.Puid == betterInfo.Key))
+                        continue;
+
+                    keysToRemove.Add(betterInfo.Key);
+                }
+
+                foreach (var key in keysToRemove)
+                {
+                    PlayerControlDataExtension.playerInfo.Remove(key);
+                }
+            }
+            catch { }
+        }
+    }
+
+    [HarmonyPatch(typeof(IntroCutscene))]
+    public class IntroCutscenePatch
+    {
+        [HarmonyPatch(nameof(IntroCutscene.ShowRole))]
+        [HarmonyPostfix]
+        private static void ShowRole_Postfix(IntroCutscene __instance)
+        {
+            static Color HexToColor(string hex)
+            {
+                if (hex.StartsWith("#"))
+                {
+                    hex = hex.Substring(1);
+                }
+
+                byte r = byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
+                byte g = byte.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
+                byte b = byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
+
+                return new Color32(r, g, b, 255);
+            }
+
+            _ = new LateTask(() =>
+            {
+                Color RoleColor = HexToColor(Utils.GetRoleColor(PlayerControl.LocalPlayer.Data.RoleType));
+
+                __instance.ImpostorText.gameObject.SetActive(false);
+                __instance.TeamTitle.gameObject.SetActive(false);
+                __instance.FrontMost.gameObject.SetActive(false);
+                __instance.BackgroundBar.material.color = RoleColor;
+                __instance.YouAreText.color = RoleColor;
+                __instance.RoleText.color = RoleColor;
+                __instance.RoleBlurbText.color = RoleColor;
+            }, 0.0025f, shoudLog: false);
         }
     }
 

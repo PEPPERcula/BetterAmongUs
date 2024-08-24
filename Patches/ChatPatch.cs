@@ -53,8 +53,9 @@ class ChatPatch
     class ChatControllerPatch
     {
         [HarmonyPatch(nameof(ChatController.Update))]
-        [HarmonyPostfix]
-        public static void Update_Postfix(ChatController __instance)
+        [HarmonyPrefix]
+        [HarmonyPriority(Priority.First)]
+        public static void Update_Prefix(ChatController __instance)
         {
             for (int i = 0; i < __instance.scroller.Inner.gameObject.transform.childCount; i++)
             {
@@ -107,6 +108,7 @@ class ChatPatch
 
         [HarmonyPatch(nameof(ChatController.AddChat))]
         [HarmonyPrefix]
+        [HarmonyPriority(Priority.First)]
         public static bool AddChat_Prefix(ChatController __instance, [HarmonyArgument(0)] PlayerControl sourcePlayer, [HarmonyArgument(1)] string chatText)
         {
             bool censor = false;

@@ -1,10 +1,8 @@
 ﻿using AmongUs.GameOptions;
+using BetterAmongUs.Patches;
 using HarmonyLib;
 using Hazel;
 using InnerNet;
-using UnityEngine;
-using UnityEngine.Purchasing;
-using UnityEngine.Rendering;
 
 namespace BetterAmongUs;
 
@@ -27,15 +25,15 @@ class AntiCheat
 
                 if (SickoData.ContainsKey(hashPuid))
                 {
-                    player.Kick(true, $"banned by <color=#4f92ff>Anti-Cheat</color>!\n Reason: <color=#00f583>Known Sicko Menu User</color>", true);
+                    player.Kick(true, "{0} by <color=#4f92ff>Anti-Cheat</color>!\n Reason: <color=#00f583>Known Sicko Menu User</color>", true);
                 }
                 else if (AUMData.ContainsKey(hashPuid))
                 {
-                    player.Kick(true, $"banned by <color=#4f92ff>Anti-Cheat</color>!\n Reason: <color=#4f0000>Known AUM User</color>", true);
+                    player.Kick(true, "{0} by <color=#4f92ff>Anti-Cheat</color>!\n Reason: <color=#4f0000>Known AUM User</color>", true);
                 }
                 else if (PlayerData.ContainsKey(hashPuid))
                 {
-                    player.Kick(true, $"banned by <color=#4f92ff>Anti-Cheat</color>!\n Reason: <color=#fc0000>Known Cheater</color>", true);
+                    player.Kick(true, "{0} by <color=#4f92ff>Anti-Cheat</color>!\n Reason: <color=#fc0000>Known Cheater</color>", true);
                 }
             }
         }
@@ -104,7 +102,7 @@ class AntiCheat
 
         if (player == PlayerControl.LocalPlayer || PlayerControl.LocalPlayer == null || player == null || !IsEnabled) return;
 
-        if (callId is unchecked((byte)CustomRPC.Sicko) && Main.AntiCheat.Value)
+        if (callId is unchecked((byte)CustomRPC.Sicko) && Main.AntiCheat.Value && BetterGameSettings.DetectCheatClients.GetBool())
         {
             if (reader.BytesRemaining == 0)
             {
@@ -122,7 +120,7 @@ class AntiCheat
             return;
         }
 
-        if (callId is unchecked((byte)CustomRPC.AUM) && Main.AntiCheat.Value)
+        if (callId is unchecked((byte)CustomRPC.AUM) && Main.AntiCheat.Value && BetterGameSettings.DetectCheatClients.GetBool())
         {
             try
             {
@@ -158,7 +156,7 @@ class AntiCheat
 
                 PlayerControl AUMPlayer = Main.AllPlayerControls.First(pc => pc.Data.PlayerName == nameString && pc.CurrentOutfit.ColorId == colorId);
 
-                if (AUMPlayer == null || !Main.AntiCheat.Value) return;
+                if (AUMPlayer == null || !Main.AntiCheat.Value || !BetterGameSettings.DetectCheatClients.GetBool()) return;
 
                 var flag = string.IsNullOrEmpty(nameString) && string.IsNullOrEmpty(msgString);
                 var flag2 = AUMData.ContainsKey(Utils.GetHashPuid(AUMPlayer));
@@ -185,7 +183,7 @@ class AntiCheat
             MessageReader reader = MessageReader.Get(Oldreader);
 
             if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.BetterData().IsBetterHost || reader == null || !IsEnabled || !Main.AntiCheat.Value
-                || GameStates.IsBetterHostLobby && !GameStates.IsHost) return;
+                || (GameStates.IsBetterHostLobby && !GameStates.IsHost) || !BetterGameSettings.DetectInvalidRPCs.GetBool()) return;
 
             RoleTypes? Role = player?.Data?.RoleType;
             Role ??= RoleTypes.Crewmate;
@@ -230,14 +228,6 @@ class AntiCheat
                 {
                     PlayerControl target = reader.ReadNetObject<PlayerControl>();
 
-                    if (GameStates.IsHost)
-                    {
-                        BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
-                        Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {GameStates.IsHost}");
-
-                        return;
-                    }
-
                     if (target != null)
                     {
                         if (!player.IsImpostorTeam() || !player.IsAlive() || player.IsInVanish() || target.IsImpostorTeam())
@@ -257,7 +247,7 @@ class AntiCheat
                 if (reader.BytesRemaining > 0)
                 {
                     uint level = reader.ReadPackedUInt32();
-                    if (level >= 200)
+                    if (level >= BetterGameSettings.DetectedLevelAbove.GetInt())
                     {
                         BetterNotificationManager.NotifyCheat(player, $"Invalid Level: {level}");
                         Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {level >= 200}");
@@ -332,12 +322,6 @@ class AntiCheat
     // Check game states when sabotaging
     public static bool RpcUpdateSystemCheck(PlayerControl player, SystemTypes systemType, byte amount)
     {
-        if (!GameStates.IsHost || PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.BetterData().IsBetterHost || !IsEnabled || !Main.AntiCheat.Value
-            || GameStates.IsBetterHostLobby && !GameStates.IsHost) return true;
-
-        // Needs fixing!
-        return true;
-
         byte hostNum = 128; // Only host should ever send this number
         byte singleFixNum = 0;
         byte minLightNum = 0;
@@ -368,9 +352,11 @@ class AntiCheat
             }
         }
 
-        if (!GameStates.IsHost || PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer
-            || player.BetterData().IsBetterHost || !IsEnabled || !Main.AntiCheat.Value
-            || GameStates.IsBetterHostLobby && !GameStates.IsHost) return true;
+        if (!GameStates.IsHost || PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.BetterData().IsBetterHost || !IsEnabled || !Main.AntiCheat.Value
+            || (GameStates.IsBetterHostLobby && !GameStates.IsHost) || !BetterGameSettings.DetectInvalidRPCs.GetBool()) return true;
+
+        if (!BetterGameSettings.ExperimentalDetectInvalidSabotage.GetBool())
+            return true;
 
         // Single Fix: 0
         // Lights: 0-1-2-3-4
@@ -507,7 +493,7 @@ class AntiCheat
                 }
             }
 
-            if (!IsEnabled || !Main.AntiCheat.Value || GameStates.IsBetterHostLobby && !GameStates.IsHost) return true;
+            if (!IsEnabled || !Main.AntiCheat.Value || (GameStates.IsBetterHostLobby && !GameStates.IsHost) || !BetterGameSettings.DetectInvalidRPCs.GetBool()) return true;
 
             RoleTypes Role = player.Data.RoleType;
             bool IsImpostor = player.IsImpostorTeam();

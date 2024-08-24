@@ -268,7 +268,7 @@ public class RoleManagerPatch
         foreach (var addplayer in Main.AllPlayerControls.Where(pc => !ImpostorMultiplier.ContainsKey(Utils.GetHashPuid(pc))))
             ImpostorMultiplier[Utils.GetHashPuid(addplayer)] = 0;
 
-        int NumImpostors = 1;
+        int NumImpostors = BetterGameSettings.HideAndSeekImpNum.GetInt();
 
         int NumPlayers = Main.AllPlayerControls.Length;
 

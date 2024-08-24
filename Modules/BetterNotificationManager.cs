@@ -17,7 +17,7 @@ class BetterNotificationManager
 
         if (BAUNotificationManagerObj != null)
         {
-            if (Notifying) 
+            if (Notifying)
             {
                 if (text == BAUNotificationManagerObj.transform.Find("Sizer/ChatText (TMP)").GetComponent<TextMeshPro>().text)
                     return;
@@ -50,7 +50,7 @@ class BetterNotificationManager
 
         if (GameStates.IsHost && kickPlayer)
         {
-            player.Kick(true, $"banned by <color=#4f92ff>Anti-Cheat</color>!\n Reason: <color=#fc0000>{reason}</color>", true);
+            player.Kick(true, "{0} " + $"by <color=#4f92ff>Anti-Cheat</color>!\n Reason: <color=#fc0000>{reason}</color>", true);
         }
     }
 

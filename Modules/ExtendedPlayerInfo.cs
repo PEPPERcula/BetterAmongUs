@@ -9,7 +9,7 @@ public static class PlayerControlDataExtension
     public class ExtendedPlayerInfo
     {
         public NetworkedPlayerInfo? _Data { get; set; }
-        public string RealName { get; set; } = string.Empty;
+        public string? RealName { get; set; }
         public Dictionary<byte, string> LastNameSetFor { get; set; } = [];
         public bool IsBetterUser { get; set; } = false;
         public bool IsBetterHost { get; set; } = false;
@@ -58,6 +58,11 @@ public static class PlayerControlDataExtension
             if (player.IsAlive() || player.Data.RoleType == RoleTypes.GuardianAngel)
                 player.BetterData().RoleInfo.DeadDisplayRole = player.Data.RoleType;
         }
+
+        if (string.IsNullOrEmpty(player.BetterData().RealName))
+        {
+            player.BetterData().RealName = player.Data.PlayerName;
+        }
     }
 
     // Get BetterData from PlayerControl
@@ -104,6 +109,7 @@ public static class PlayerControlDataExtension
                 playerInfo[player.Data.Puid] = new ExtendedPlayerInfo
                 {
                     _Data = player.Data,
+                    RealName = player.Data.PlayerName,
                     RoleInfo = new ExtendedRoleInfo()
                 };
             }

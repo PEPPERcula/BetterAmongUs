@@ -19,12 +19,12 @@ class FileChecker
     // Set up if unauthorized files have been found.
     public static void UpdateUnauthorizedFiles()
     {
-        if (Enabled == false) return;
-
         if (GameStates.IsDev)
         {
             HasTrySpoofFriendCode = false;
         }
+
+        if (Enabled == false) return;
 
         GameObject PlayButton = GameObject.Find("Main Buttons/PlayButton");
 

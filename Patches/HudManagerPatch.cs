@@ -53,8 +53,29 @@ public class HudManagerPatch
             if (gameStart != null)
                 gameStart.transform.SetLocalY(-2.8f);
 
-            if (GameStates.InGame && __instance?.Chat?.gameObject.active != true)
-                __instance.Chat.gameObject.SetActive(true);
+
+            // Set chat
+            if (GameStates.InGame)
+            {
+                if (!Main.ChatInGameplay.Value)
+                {
+                    if (!PlayerControl.LocalPlayer.IsAlive())
+                    {
+                        __instance.Chat.gameObject.SetActive(true);
+                    }
+                    else if (GameStates.IsInGamePlay && !(GameStates.IsMeeting || GameStates.IsExilling))
+                    {
+                        __instance.Chat.gameObject.SetActive(false);
+                    }
+                }
+                else
+                {
+                    if (__instance?.Chat?.gameObject.active == false)
+                    {
+                        __instance.Chat.gameObject.SetActive(true);
+                    }
+                }
+            }
         }
         catch { }
     }

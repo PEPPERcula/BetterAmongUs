@@ -24,11 +24,11 @@ public class Main : BasePlugin
 {
     public const ReleaseTypes ReleaseBuildType = ReleaseTypes.Release;
     public const string CanaryNum = "0";
-    public const string HotfixNum = "2";
-    public const bool IsHotFix = true;
+    public const string HotfixNum = "0";
+    public const bool IsHotFix = false;
     public const string PluginGuid = "com.d1gq.betteramongus";
-    public const string PluginVersion = "1.0.4";
-    public const string ReleaseDate = "08.20.2024"; // mm/dd/yyyy
+    public const string PluginVersion = "1.1.0";
+    public const string ReleaseDate = "08.24.2024"; // mm/dd/yyyy
     public const string Github = "https://github.com/D1GQ/BetterAmongUs-Public";
     public const string Discord = "https://discord.gg/vjYrXpzNAn";
 
@@ -99,7 +99,7 @@ public class Main : BasePlugin
 
     public static PlayerControl[] AllAlivePlayerControls => AllPlayerControls.ToArray().Where(pc => pc.IsAlive()).ToArray();
 
-    public static Dictionary<int, string> GetRoleName = new Dictionary<int, string>
+    public static Dictionary<int, string> GetRoleName => new Dictionary<int, string>
     {
         { 0, "Crewmate" },
         { 1, "Impostor" },
@@ -112,6 +112,21 @@ public class Main : BasePlugin
         { 8, "Noisemaker" },
         { 9, "Phantom" },
         { 10, "Tracker" }
+    };
+
+    public static Dictionary<int, string> GetRoleColor => new Dictionary<int, string>
+    {
+        { 0, "#8cffff" },
+        { 1, "#f00202" },
+        { 2, "#00d9d9" },
+        { 3, "#8f8f8f" },
+        { 4, "#8cffff" },
+        { 5, "#f06102" },
+        { 6, "#8cffff" },
+        { 7, "#f00202" },
+        { 8, "#fc7c7c" },
+        { 9, "#d100b9" },
+        { 10, "#59f002" }
     };
 
     public static ManualLogSource Logger;
@@ -161,7 +176,7 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> BetterHost { get; private set; }
     public static ConfigEntry<bool> BetterRoleAlgorithma { get; private set; }
     public static ConfigEntry<bool> BetterNotifications { get; private set; }
-    public static ConfigEntry<bool> UseBannedList { get; private set; }
+    public static ConfigEntry<bool> ChatInGameplay { get; private set; }
     public static ConfigEntry<bool> LobbyPlayerInfo { get; private set; }
     public static ConfigEntry<bool> DisableLobbyTheme { get; private set; }
     public static ConfigEntry<bool> UnlockFPS { get; private set; }
@@ -173,7 +188,7 @@ public class Main : BasePlugin
         BetterHost = Config.Bind("Better Options", "BetterHost", false);
         BetterRoleAlgorithma = Config.Bind("Better Options", "BetterRoleAlgorithma", true);
         BetterNotifications = Config.Bind("Better Options", "BetterNotifications", true);
-        UseBannedList = Config.Bind("Better Options", "UseBannedList", true);
+        ChatInGameplay = Config.Bind("Better Options", "ChatInGameplay", true);
         LobbyPlayerInfo = Config.Bind("Better Options", "LobbyPlayerInfo", true);
         DisableLobbyTheme = Config.Bind("Better Options", "DisableLobbyTheme", true);
         UnlockFPS = Config.Bind("Better Options", "UnlockFPS", false);

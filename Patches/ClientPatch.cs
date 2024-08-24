@@ -77,7 +77,7 @@ public class ClientPatch
         [HarmonyPrefix]
         public static void KickPlayer_Prefix(ref int clientId, ref bool ban)
         {
-            if (ban && Main.UseBannedList.Value)
+            if (ban && BetterGameSettings.UseBanPlayerList.GetBool())
             {
                 NetworkedPlayerInfo info = Utils.PlayerFromClientId(clientId).Data;
                 BetterDataManager.SaveBanList(info.FriendCode, info.Puid);

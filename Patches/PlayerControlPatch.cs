@@ -1,9 +1,6 @@
 ﻿using AmongUs.Data;
-using AmongUs.GameOptions;
 using HarmonyLib;
-using Hazel;
 using Il2CppSystem.Linq;
-using InnerNet;
 using LibCpp2IL;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -115,6 +112,14 @@ class PlayerControlPatch
             {
                 friendCode = "No Friend Code";
                 friendCodeColor = "#ff0000";
+
+                if (GameStates.IsHost)
+                {
+                    if (BetterGameSettings.InvalidFriendCode.GetBool())
+                    {
+                        player.Kick(true, "{0} by <color=#4f92ff>Anti-Cheat</color>!\n Reason: <color=#fc0000>Invalid Friend Code</color>", true);
+                    }
+                }
             }
             if (DataManager.Settings.Gameplay.StreamerMode == true)
             {
