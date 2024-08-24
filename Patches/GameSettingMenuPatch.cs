@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using HarmonyLib;
 using UnityEngine;
+using static Il2CppSystem.Linq.Expressions.Interpreter.CastInstruction.CastInstructionNoT;
 using static Logger;
 
 namespace BetterAmongUs.Patches;
@@ -247,5 +248,77 @@ static class OptionsConsolePatch
     public static void CanUse_Prefix(OptionsConsole __instance)
     {
         __instance.HostOnly = false;
+    }
+}
+
+// Allow settings bypass
+[HarmonyPatch(typeof(NumberOption))]
+static class NumberOptionPatch
+{
+    [HarmonyPatch(nameof(NumberOption.Increase))]
+    [HarmonyPrefix]
+    public static bool Increase_Prefix(NumberOption __instance)
+    {
+        int times = 1;
+        if (Input.GetKey(KeyCode.LeftShift))
+            times = 5;
+        if (Input.GetKey(KeyCode.LeftControl))
+            times = 10;
+
+        __instance.Value += __instance.Increment * times;
+        __instance.UpdateValue();
+        return false;
+    }
+    [HarmonyPatch(nameof(NumberOption.Decrease))]
+    [HarmonyPrefix]
+    public static bool Decrease_Prefix(NumberOption __instance)
+    {
+        int times = 1;
+        if (Input.GetKey(KeyCode.LeftShift))
+            times = 5;
+        if (Input.GetKey(KeyCode.LeftControl))
+            times = 10;
+
+        __instance.Value -= __instance.Increment * times;
+        __instance.UpdateValue();
+        return false;
+    }
+    [HarmonyPatch(nameof(NumberOption.UpdateValue))]
+    [HarmonyPrefix]
+    public static bool UpdateValue_Prefix(NumberOption __instance)
+    {
+        if (__instance.floatOptionName != FloatOptionNames.Invalid)
+        {
+            GameOptionsManager.Instance.CurrentGameOptions.SetFloat(__instance.floatOptionName, __instance.GetFloat());
+            return false;
+        }
+        if (__instance.intOptionName != Int32OptionNames.Invalid)
+        {
+            GameOptionsManager.Instance.CurrentGameOptions.SetInt(__instance.intOptionName, __instance.GetInt());
+            return false;
+        }
+        return false;
+    }
+    [HarmonyPatch(nameof(NumberOption.FixedUpdate))]
+    [HarmonyPrefix]
+    public static bool FixedUpdate_Prefix(NumberOption __instance)
+    {
+        __instance.MinusBtn.SetInteractable(true);
+        __instance.PlusBtn.SetInteractable(true);
+
+        if (__instance.oldValue != __instance.Value)
+        {
+            __instance.oldValue = __instance.Value;
+
+            if (__instance.Value > __instance.ValidRange.max || __instance.Value < __instance.ValidRange.min)
+            {
+                __instance.ValueText.text = $"<color=#f20>{__instance.data.GetValueString(__instance.Value)}</color>";
+            }
+            else
+            {
+                __instance.ValueText.text = __instance.data.GetValueString(__instance.Value);
+            }
+        }
+        return false;
     }
 }
