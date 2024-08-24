@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using static Il2CppSystem.Net.Http.Headers.Parser;
 
 namespace BetterAmongUs;
 
@@ -11,13 +12,18 @@ public class BetterOptionFloatItem : BetterOptionItem
     private string? PostFix;
     private string? PreFix;
 
-    public BetterOptionItem Create(int id, GameOptionsMenu gameOptionsMenu, string name, float[] values, float Default, string preFix = "", string postFix = "", BetterOptionItem Parent = null)
+    public BetterOptionItem Create(int id, GameOptionsMenu gameOptionsMenu, string name, float[] values, float DefaultValue, string preFix = "", string postFix = "", BetterOptionItem Parent = null)
     {
         Id = id;
+        floatRange = new(values[0], values[1]);
+        Increment = values[2];
+        if (DefaultValue < floatRange.min) DefaultValue = floatRange.min;
+        if (DefaultValue > floatRange.max) DefaultValue = floatRange.max;
+        CurrentValue = DefaultValue;
 
         if (gameOptionsMenu == null)
         {
-            Load(Default);
+            Load(DefaultValue);
             return this;
         }
 
@@ -49,14 +55,7 @@ public class BetterOptionFloatItem : BetterOptionItem
         PreFix = preFix;
         ThisOption = optionBehaviour;
 
-        floatRange = new(values[0], values[1]);
-        Increment = values[2];
-
-        if (Default < floatRange.min) Default = floatRange.min;
-        if (Default > floatRange.max) Default = floatRange.max;
-        CurrentValue = Default;
-
-        Load(Default);
+        Load(DefaultValue);
         AdjustButtonsActiveState();
 
         BetterOptionItems.Add(this);
@@ -124,11 +123,15 @@ public class BetterOptionFloatItem : BetterOptionItem
     {
         if (BetterDataManager.CanLoadSetting(Id))
         {
-            if (ThisOption != null)
+            var Float = BetterDataManager.LoadFloatSetting(Id);
+
+            if (Float > floatRange.max || Float < floatRange.min)
             {
-                var Float = BetterDataManager.LoadFloatSetting(Id);
-                CurrentValue = Float;
+                Float = DefaultValue;
+                BetterDataManager.SaveSetting(Id, DefaultValue.ToString());
             }
+
+            CurrentValue = Float;
         }
         else
         {

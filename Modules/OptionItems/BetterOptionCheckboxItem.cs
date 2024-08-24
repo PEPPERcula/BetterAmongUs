@@ -7,13 +7,16 @@ public class BetterOptionCheckboxItem : BetterOptionItem
     private ToggleOption? ThisOption;
     private bool? IsChecked;
 
-    public BetterOptionItem Create(int id, GameOptionsMenu gameOptionsMenu, string name, bool Default = true, BetterOptionItem Parent = null)
+    public BetterOptionItem Create(int id, GameOptionsMenu gameOptionsMenu, string name, bool DefaultValue = true, BetterOptionItem Parent = null)
     {
         Id = id;
+        Tab = gameOptionsMenu;
+        Name = name;
+        IsChecked = DefaultValue;
 
         if (gameOptionsMenu == null)
         {
-            Load(Default);
+            Load(DefaultValue);
             return this;
         }
 
@@ -30,21 +33,18 @@ public class BetterOptionCheckboxItem : BetterOptionItem
         }
 
         // Set data
-        optionBehaviour.CheckMark.GetComponent<SpriteRenderer>().enabled = Default;
-        IsChecked = Default;
-        Tab = gameOptionsMenu;
-        Name = name;
+        optionBehaviour.CheckMark.GetComponent<SpriteRenderer>().enabled = DefaultValue;
         TitleText = optionBehaviour.TitleText;
         Option = optionBehaviour;
         ThisOption = optionBehaviour;
 
-        Load(Default);
+        Load(DefaultValue);
 
         BetterOptionItems.Add(this);
         return this;
     }
 
-    public void Load(bool Default)
+    public void Load(bool DefaultValue)
     {
         if (BetterDataManager.CanLoadSetting(Id))
         {
@@ -57,7 +57,7 @@ public class BetterOptionCheckboxItem : BetterOptionItem
         }
         else
         {
-            BetterDataManager.SaveSetting(Id, Default.ToString());
+            BetterDataManager.SaveSetting(Id, DefaultValue.ToString());
         }
     }
 

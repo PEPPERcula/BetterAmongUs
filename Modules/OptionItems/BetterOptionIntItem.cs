@@ -14,6 +14,11 @@ public class BetterOptionIntItem : BetterOptionItem
     public BetterOptionItem Create(int id, GameOptionsMenu gameOptionsMenu, string name, int[] values, int DefaultValue, string preFix = "", string postFix = "", BetterOptionItem Parent = null)
     {
         Id = id;
+        intRange = new(values[0], values[1]);
+        Increment = values[2];
+        if (DefaultValue < intRange.min) DefaultValue = intRange.min;
+        if (DefaultValue > intRange.max) DefaultValue = intRange.max;
+        CurrentValue = DefaultValue;
 
         if (gameOptionsMenu == null)
         {
@@ -48,13 +53,6 @@ public class BetterOptionIntItem : BetterOptionItem
         PostFix = postFix;
         PreFix = preFix;
         ThisOption = optionBehaviour;
-
-        intRange = new(values[0], values[1]);
-        Increment = values[2];
-
-        if (DefaultValue < intRange.min) DefaultValue = intRange.min;
-        if (DefaultValue > intRange.max) DefaultValue = intRange.max;
-        CurrentValue = DefaultValue;
 
         Load(DefaultValue);
         AdjustButtonsActiveState();
@@ -124,11 +122,15 @@ public class BetterOptionIntItem : BetterOptionItem
     {
         if (BetterDataManager.CanLoadSetting(Id))
         {
-            if (ThisOption != null)
+            var Int = BetterDataManager.LoadIntSetting(Id);
+
+            if (Int > intRange.max || Int < intRange.min)
             {
-                var Int = BetterDataManager.LoadIntSetting(Id);
-                CurrentValue = Int;
+                Int = DefaultValue;
+                BetterDataManager.SaveSetting(Id, DefaultValue.ToString());
             }
+
+            CurrentValue = Int;
         }
         else
         {

@@ -8,13 +8,19 @@ public class BetterOptionStringItem : BetterOptionItem
     public int CurrentValue;
     private StringOption? ThisOption;
 
-    public BetterOptionItem Create(int id, GameOptionsMenu gameOptionsMenu, string name, string[] strings, int Default = 0, BetterOptionItem Parent = null)
+    public BetterOptionItem Create(int id, GameOptionsMenu gameOptionsMenu, string name, string[] strings, int DefaultValue = 0, BetterOptionItem Parent = null)
     {
         Id = id;
+        Values = strings;
+        Tab = gameOptionsMenu;
+        Name = name;
+        if (DefaultValue < 0) DefaultValue = 0;
+        if (DefaultValue > Values.Length) DefaultValue = Values.Length;
+        CurrentValue = DefaultValue;
 
         if (gameOptionsMenu == null)
         {
-            Load(Default);
+            Load(DefaultValue);
             return this;
         }
 
@@ -36,15 +42,11 @@ public class BetterOptionStringItem : BetterOptionItem
         optionBehaviour.MinusBtn.OnClick.AddListener(new Action(() => Decrease()));
 
         // Set data
-        Tab = gameOptionsMenu;
-        Name = name;
         TitleText = optionBehaviour.TitleText;
         Option = optionBehaviour;
-        Values = strings;
-        CurrentValue = Default;
         ThisOption = optionBehaviour;
 
-        Load(Default);
+        Load(DefaultValue);
         AdjustButtonsActiveState();
 
         BetterOptionItems.Add(this);
@@ -55,7 +57,10 @@ public class BetterOptionStringItem : BetterOptionItem
     {
         if (ThisOption == null) return;
 
-        ThisOption.ValueText.text = Values[CurrentValue];
+        if (CurrentValue <= Values.Length - 1 && CurrentValue >= 0)
+        {
+            ThisOption.ValueText.text = Values[CurrentValue];
+        }
 
         if (CurrentValue >= Values.Length - 1)
         {
@@ -98,11 +103,15 @@ public class BetterOptionStringItem : BetterOptionItem
     {
         if (BetterDataManager.CanLoadSetting(Id))
         {
-            if (ThisOption != null)
+            var Int = BetterDataManager.LoadIntSetting(Id);
+
+            if (Int > Values.Length - 1 || Int < 0)
             {
-                var Int = BetterDataManager.LoadIntSetting(Id);
-                CurrentValue = Int;
+                Int = DefaultValue;
+                BetterDataManager.SaveSetting(Id, DefaultValue.ToString());
             }
+
+            CurrentValue = Int;
         }
         else
         {
