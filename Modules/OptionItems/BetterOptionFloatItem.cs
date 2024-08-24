@@ -26,7 +26,7 @@ public class BetterOptionFloatItem : BetterOptionItem
         optionBehaviour.transform.localPosition = new Vector3(0.952f, 2f - StaticSpacingNum * SpacingNum, -2f);
         SetUp(optionBehaviour);
         optionBehaviour.OnValueChanged = new Action<OptionBehaviour>((option) => ValueChanged(id, option));
-        SpacingNum++;
+        SpacingNum += StaticSpacingNumPlus;
 
         // Fix Game Crash
         foreach (RulesCategory rulesCategory in GameManager.Instance.GameSettingsList.AllCategories)

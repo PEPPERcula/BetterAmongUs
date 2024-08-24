@@ -15,11 +15,15 @@ public class BetterOptionTitleItem : BetterOptionItem
         ToggleOption optionBehaviour = UnityEngine.Object.Instantiate<ToggleOption>(gameOptionsMenu.checkboxOrigin, Vector3.zero, Quaternion.identity, gameOptionsMenu.settingsContainer);
         optionBehaviour.transform.localPosition = new Vector3(0.952f, 2f - StaticSpacingNum * SpacingNum, -2f);
         SetUp(optionBehaviour);
-        SpacingNum++;
+        SpacingNum += StaticSpacingNumPlus;
+
         UnityEngine.Object.Destroy(optionBehaviour.CheckMark.transform.parent.gameObject);
         optionBehaviour.TitleText.alignment = TMPro.TextAlignmentOptions.Center;
         optionBehaviour.TitleText.outlineColor = Color.black;
         optionBehaviour.TitleText.outlineWidth = 0.2f;
+        optionBehaviour.TitleText.transform.localPosition += new Vector3(0f, 0.05f, 0f);
+        optionBehaviour.LabelBackground.color = new Color(0.6f, 0.6f, 0.6f, 1f);
+        optionBehaviour.LabelBackground.transform.SetLocalZ(1f);
 
         // Set data
         Tab = gameOptionsMenu;

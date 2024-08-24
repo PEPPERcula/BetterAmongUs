@@ -21,7 +21,7 @@ public class BetterOptionCheckboxItem : BetterOptionItem
         optionBehaviour.transform.localPosition = new Vector3(0.952f, 2f - StaticSpacingNum * SpacingNum, -2f);
         SetUp(optionBehaviour);
         optionBehaviour.OnValueChanged = new Action<OptionBehaviour>((option) => ValueChanged(id, option));
-        SpacingNum++;
+        SpacingNum += StaticSpacingNumPlus;
 
         // Set data
         optionBehaviour.CheckMark.GetComponent<SpriteRenderer>().enabled = Default;

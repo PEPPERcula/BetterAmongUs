@@ -13,33 +13,60 @@ class BetterGameSettings
     public static BetterOptionItem? UseBanNameList;
     public static BetterOptionItem? UseBanWordList;
     public static BetterOptionItem? HideAndSeekImpNum;
+    public static BetterOptionItem? DetectCheatClients;
+    public static BetterOptionItem? DetectInvalidRPCs;
 }
 
 [HarmonyPatch(typeof(GameSettingMenu))]
 static class GameSettingMenuPatch
 {
     private static PassiveButton BetterSettingsButton;
-    private static GameOptionsMenu BetterSettingsTab;
+    public static GameOptionsMenu BetterSettingsTab;
 
     public static void SetupSettings(bool IsPreload = false)
     {
         BetterOptionItem.SpacingNum = 0;
 
-        new BetterOptionHeaderItem().Create(BetterSettingsTab, "<color=#4f92ff>Anti-Cheat Settings</color>");
-
-        BetterGameSettings.WhenCheating = new BetterOptionStringItem().Create(100, BetterSettingsTab, "When a player is caught cheating", ["Do Nothing", "Kick", "Ban"], 2);
-        BetterGameSettings.InvalidFriendCode = new BetterOptionCheckboxItem().Create(200, BetterSettingsTab, "Allow invalid friendCodes", true);
-        BetterGameSettings.UseBanPlayerList = new BetterOptionCheckboxItem().Create(300, BetterSettingsTab, "Use Ban Player List", true);
-        BetterGameSettings.UseBanNameList = new BetterOptionCheckboxItem().Create(400, BetterSettingsTab, "Use Ban Name List", true);
-        BetterGameSettings.UseBanWordList = new BetterOptionCheckboxItem().Create(500, BetterSettingsTab, "Use Ban Word List", true);
-
-        if (IsPreload || GameStates.IsHideNSeek)
+        // Anti-Cheat Settings
         {
-            if (IsPreload || Main.BetterRoleAlgorithma.Value)
+            new BetterOptionHeaderItem().Create(BetterSettingsTab, "<color=#4f92ff>Anti-Cheat Settings</color>");
+
+            if (IsPreload || GameStates.IsHost)
             {
-                new BetterOptionHeaderItem().Create(BetterSettingsTab, "<color=#d7d700>Hide & Seek Settings</color>");
-                new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color={Utils.GetRoleColor(RoleTypes.Impostor)}>Imposter</color>");
-                BetterGameSettings.HideAndSeekImpNum = new BetterOptionIntItem().Create(1000, BetterSettingsTab, "# Seekers", [1, 5, 1], 1, "");
+                new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color=#4f92ff>Host Only</color>");
+                BetterGameSettings.WhenCheating = new BetterOptionStringItem().Create(100, BetterSettingsTab, "When a player is caught cheating", ["Do Nothing", "Kick", "Ban"], 2);
+                BetterGameSettings.InvalidFriendCode = new BetterOptionCheckboxItem().Create(200, BetterSettingsTab, "Allow invalid friendCodes", true);
+                BetterGameSettings.UseBanPlayerList = new BetterOptionCheckboxItem().Create(300, BetterSettingsTab, "Use Ban Player List", true);
+                BetterGameSettings.UseBanNameList = new BetterOptionCheckboxItem().Create(400, BetterSettingsTab, "Use Ban Name List", true);
+                BetterGameSettings.UseBanWordList = new BetterOptionCheckboxItem().Create(500, BetterSettingsTab, "Use Ban Word List", true);
+                new BetterOptionDividerItem().Create(BetterSettingsTab);
+            }
+
+            new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color=#4f92ff>Detections</color>");
+            BetterGameSettings.DetectCheatClients = new BetterOptionCheckboxItem().Create(600, BetterSettingsTab, "Detect Cheat Clients", true);
+            BetterGameSettings.DetectInvalidRPCs = new BetterOptionCheckboxItem().Create(700, BetterSettingsTab, "Detect Invalid RPCs", true);
+        }
+
+        // Gameplay Settings
+        {
+            if (IsPreload || GameStates.IsHost)
+            {
+                if (IsPreload || !GameStates.IsHideNSeek)
+                {
+                    new BetterOptionHeaderItem().Create(BetterSettingsTab, "<color=#d7d700>Gameplay Settings</color>");
+                }
+                else if (IsPreload || GameStates.IsHideNSeek)
+                {
+                    new BetterOptionHeaderItem().Create(BetterSettingsTab, "<color=#d7d700>Hide & Seek Settings</color>");
+
+                    if (IsPreload || Main.BetterRoleAlgorithma.Value)
+                    {
+                        new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color=#4f92ff>Better Role Algorithma</color>");
+                        BetterOptionItem.SpacingNum += 0.2f;
+                        new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color={Utils.GetRoleColor(RoleTypes.Impostor)}>Imposter</color>");
+                        BetterGameSettings.HideAndSeekImpNum = new BetterOptionIntItem().Create(1000, BetterSettingsTab, "# Seekers", [1, 5, 1], 1, "");
+                    }
+                }
             }
         }
 
@@ -52,7 +79,7 @@ static class GameSettingMenuPatch
         */
 
         if (BetterSettingsTab != null)
-            BetterSettingsTab.scrollBar.SetYBoundsMax(0.62f * BetterOptionItem.SpacingNum / 2);
+            BetterSettingsTab.scrollBar.SetYBoundsMax(1.15f * BetterOptionItem.SpacingNum / 2);
     }
 
     private static void Initialize()
@@ -71,7 +98,7 @@ static class GameSettingMenuPatch
 
     [HarmonyPatch(nameof(GameSettingMenu.Update))]
     [HarmonyPostfix]
-    public static void Update_Postfix(/*GameSettingMenu __instance*/)
+    public static void Update_Postfix(GameSettingMenu __instance)
     {
         if (BetterSettingsButton != null)
         {
@@ -85,6 +112,10 @@ static class GameSettingMenuPatch
             {
                 BetterSettingsButton.buttonText.color = new Color(0.35f, 1f, 0.35f, 1f);
             }
+            if (BetterSettingsButton.selected)
+            {
+                __instance.MenuDescriptionText.text = "Edit better settings for your lobby and gameplay.";
+            }
         }
     }
 
@@ -94,7 +125,7 @@ static class GameSettingMenuPatch
     {
         __instance.gameObject.transform.SetLocalY(-0.1f);
         GameObject PanelSprite = __instance.gameObject.transform.Find("PanelSprite").gameObject;
-        if (PanelSprite != null && !GameStates.IsHideNSeek)
+        if (PanelSprite != null)
         {
             PanelSprite.transform.SetLocalY(-0.32f);
             PanelSprite.transform.localScale = new Vector3(PanelSprite.transform.localScale.x, 0.625f);
@@ -105,15 +136,6 @@ static class GameSettingMenuPatch
         BetterSettingsButton.name = "BetterSettings";
         BetterSettingsButton.OnClick.RemoveAllListeners();
         BetterSettingsButton.OnMouseOver.RemoveAllListeners();
-
-        if (!GameStates.IsHideNSeek)
-        {
-            BetterSettingsButton.transform.position = BetterSettingsButton.transform.position - new Vector3(0f, 1.265f, 0f);
-        }
-        else
-        {
-            BetterSettingsButton.transform.position = BetterSettingsButton.transform.position - new Vector3(0f, 0.64f, 0f);
-        }
 
         BetterSettingsButton.activeSprites.GetComponent<SpriteRenderer>().color = new Color(0f, 1f, 0.35f, 1f);
         BetterSettingsButton.inactiveSprites.GetComponent<SpriteRenderer>().color = new Color(0f, 1f, 0.35f, 1f);
@@ -133,7 +155,29 @@ static class GameSettingMenuPatch
         __instance.GameSettingsButton.OnMouseOver.RemoveAllListeners();
         __instance.RoleSettingsButton.OnMouseOver.RemoveAllListeners();
 
-        __instance.ChangeTab(1, false);
+
+        BetterSettingsButton.transform.position = BetterSettingsButton.transform.position - new Vector3(0f, 1.265f, 0f);
+        if (!GameStates.IsHideNSeek && GameStates.IsHost)
+        {
+            __instance.ChangeTab(1, false);
+        }
+        else if (GameStates.IsHost)
+        {
+            __instance.RoleSettingsButton.gameObject.SetActive(true);
+            __instance.RoleSettingsButton.GetComponent<PassiveButton>().enabled = false;
+            __instance.RoleSettingsButton.inactiveSprites.GetComponent<SpriteRenderer>().color = new(0.5f, 0.5f, 0.5f, 1f);
+            __instance.ChangeTab(1, false);
+        }
+        else
+        {
+            __instance.GamePresetsButton.GetComponent<PassiveButton>().enabled = false;
+            __instance.GameSettingsButton.GetComponent<PassiveButton>().enabled = false;
+            __instance.RoleSettingsButton.GetComponent<PassiveButton>().enabled = false;
+            __instance.GamePresetsButton.inactiveSprites.GetComponent<SpriteRenderer>().color = new(0.5f, 0.5f, 0.5f, 1f);
+            __instance.GameSettingsButton.inactiveSprites.GetComponent<SpriteRenderer>().color = new(0.5f, 0.5f, 0.5f, 1f);
+            __instance.RoleSettingsButton.inactiveSprites.GetComponent<SpriteRenderer>().color = new(0.5f, 0.5f, 0.5f, 1f);
+            __instance.ChangeTab(3, false);
+        }
 
         SetupSettings();
     }
@@ -153,7 +197,6 @@ static class GameSettingMenuPatch
             {
                 case 3:
                     BetterSettingsTab.gameObject.SetActive(true);
-                    __instance.MenuDescriptionText.text = "Edit better settings for your lobby and gameplay.";
                     break;
             }
         }
@@ -174,5 +217,32 @@ static class GameSettingMenuPatch
                 Initialize();
                 break;
         }
+    }
+}
+
+[HarmonyPatch(typeof(GameOptionsMenu))]
+static class GameOptionsMenuPatch
+{
+    [HarmonyPatch(nameof(GameOptionsMenu.CreateSettings))]
+    [HarmonyPrefix]
+    public static bool CreateSettings_Prefix(GameOptionsMenu __instance)
+    {
+        if (__instance == GameSettingMenuPatch.BetterSettingsTab)
+        {
+            return false;
+        }
+
+        return true;
+    }
+}
+
+[HarmonyPatch(typeof(OptionsConsole))]
+static class OptionsConsolePatch
+{
+    [HarmonyPatch(nameof(OptionsConsole.CanUse))]
+    [HarmonyPrefix]
+    public static void CanUse_Prefix(OptionsConsole __instance)
+    {
+        __instance.HostOnly = false;
     }
 }

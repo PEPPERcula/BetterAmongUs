@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using BetterAmongUs.Patches;
 using HarmonyLib;
 using Hazel;
 using InnerNet;
@@ -104,7 +105,7 @@ class AntiCheat
 
         if (player == PlayerControl.LocalPlayer || PlayerControl.LocalPlayer == null || player == null || !IsEnabled) return;
 
-        if (callId is unchecked((byte)CustomRPC.Sicko) && Main.AntiCheat.Value)
+        if (callId is unchecked((byte)CustomRPC.Sicko) && Main.AntiCheat.Value && BetterGameSettings.DetectCheatClients.GetBool())
         {
             if (reader.BytesRemaining == 0)
             {
@@ -122,7 +123,7 @@ class AntiCheat
             return;
         }
 
-        if (callId is unchecked((byte)CustomRPC.AUM) && Main.AntiCheat.Value)
+        if (callId is unchecked((byte)CustomRPC.AUM) && Main.AntiCheat.Value && BetterGameSettings.DetectCheatClients.GetBool())
         {
             try
             {
@@ -158,7 +159,7 @@ class AntiCheat
 
                 PlayerControl AUMPlayer = Main.AllPlayerControls.First(pc => pc.Data.PlayerName == nameString && pc.CurrentOutfit.ColorId == colorId);
 
-                if (AUMPlayer == null || !Main.AntiCheat.Value) return;
+                if (AUMPlayer == null || !Main.AntiCheat.Value || !BetterGameSettings.DetectCheatClients.GetBool()) return;
 
                 var flag = string.IsNullOrEmpty(nameString) && string.IsNullOrEmpty(msgString);
                 var flag2 = AUMData.ContainsKey(Utils.GetHashPuid(AUMPlayer));
@@ -185,7 +186,7 @@ class AntiCheat
             MessageReader reader = MessageReader.Get(Oldreader);
 
             if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.BetterData().IsBetterHost || reader == null || !IsEnabled || !Main.AntiCheat.Value
-                || GameStates.IsBetterHostLobby && !GameStates.IsHost) return;
+                || (GameStates.IsBetterHostLobby && !GameStates.IsHost) || !BetterGameSettings.DetectInvalidRPCs.GetBool()) return;
 
             RoleTypes? Role = player?.Data?.RoleType;
             Role ??= RoleTypes.Crewmate;
@@ -357,7 +358,7 @@ class AntiCheat
         }
 
         if (!GameStates.IsHost || PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.BetterData().IsBetterHost || !IsEnabled || !Main.AntiCheat.Value
-            || GameStates.IsBetterHostLobby && !GameStates.IsHost) return true;
+            || (GameStates.IsBetterHostLobby && !GameStates.IsHost) || !BetterGameSettings.DetectInvalidRPCs.GetBool()) return true;
 
         // Single Fix: 0
         // Lights: 0-1-2-3-4
@@ -494,7 +495,7 @@ class AntiCheat
                 }
             }
 
-            if (!IsEnabled || !Main.AntiCheat.Value || GameStates.IsBetterHostLobby && !GameStates.IsHost) return true;
+            if (!IsEnabled || !Main.AntiCheat.Value || (GameStates.IsBetterHostLobby && !GameStates.IsHost) || !BetterGameSettings.DetectInvalidRPCs.GetBool()) return true;
 
             RoleTypes Role = player.Data.RoleType;
             bool IsImpostor = player.IsImpostorTeam();

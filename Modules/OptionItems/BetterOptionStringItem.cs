@@ -22,7 +22,7 @@ public class BetterOptionStringItem : BetterOptionItem
         optionBehaviour.transform.localPosition = new Vector3(0.952f, 2f - StaticSpacingNum * SpacingNum, -2f);
         SetUp(optionBehaviour);
         optionBehaviour.OnValueChanged = new Action<OptionBehaviour>((option) => ValueChanged(id, option));
-        SpacingNum++;
+        SpacingNum += StaticSpacingNumPlus;
 
         optionBehaviour.PlusBtn.OnClick.RemoveAllListeners();
         optionBehaviour.MinusBtn.OnClick.RemoveAllListeners();
