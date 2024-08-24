@@ -70,32 +70,37 @@ class GamePlayManager
         [HarmonyPostfix]
         private static void ShowRole_Postfix(IntroCutscene __instance)
         {
-            static Color HexToColor(string hex)
+            try
             {
-                if (hex.StartsWith("#"))
+                static Color HexToColor(string hex)
                 {
-                    hex = hex.Substring(1);
+                    if (hex.StartsWith("#"))
+                    {
+                        hex = hex.Substring(1);
+                    }
+
+                    byte r = byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
+                    byte g = byte.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
+                    byte b = byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
+
+                    return new Color32(r, g, b, 255);
                 }
 
-                byte r = byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
-                byte g = byte.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
-                byte b = byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
+                _ = new LateTask(() =>
+                {
+                    Color RoleColor = HexToColor(Utils.GetRoleColor(PlayerControl.LocalPlayer.Data.RoleType));
 
-                return new Color32(r, g, b, 255);
+                    __instance.ImpostorText.gameObject.SetActive(false);
+                    __instance.TeamTitle.gameObject.SetActive(false);
+                    __instance.BackgroundBar.material.color = RoleColor;
+                    __instance.BackgroundBar.transform.SetLocalZ(-15);
+                    __instance.transform.Find("BackgroundLayer").transform.SetLocalZ(-16);
+                    __instance.YouAreText.color = RoleColor;
+                    __instance.RoleText.color = RoleColor;
+                    __instance.RoleBlurbText.color = RoleColor;
+                }, 0.0025f, shoudLog: false);
             }
-
-            _ = new LateTask(() =>
-            {
-                Color RoleColor = HexToColor(Utils.GetRoleColor(PlayerControl.LocalPlayer.Data.RoleType));
-
-                __instance.ImpostorText.gameObject.SetActive(false);
-                __instance.TeamTitle.gameObject.SetActive(false);
-                __instance.FrontMost.gameObject.SetActive(false);
-                __instance.BackgroundBar.material.color = RoleColor;
-                __instance.YouAreText.color = RoleColor;
-                __instance.RoleText.color = RoleColor;
-                __instance.RoleBlurbText.color = RoleColor;
-            }, 0.0025f, shoudLog: false);
+            catch { }
         }
     }
 
