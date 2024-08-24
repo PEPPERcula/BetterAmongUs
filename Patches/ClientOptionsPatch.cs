@@ -13,6 +13,7 @@ public static class OptionsMenuBehaviourPatch
     private static ClientOptionItem BetterHost;
     private static ClientOptionItem BetterRoleAlgorithma;
     private static ClientOptionItem BetterNotifications;
+    private static ClientOptionItem ChatInGameplay;
     private static ClientOptionItem LobbyPlayerInfo;
     private static ClientOptionItem DisableLobbyTheme;
     private static ClientOptionItem UnlockFPS;
@@ -78,6 +79,11 @@ public static class OptionsMenuBehaviourPatch
                 BetterNotificationManager.showTime = 0f;
                 BetterNotificationManager.Notifying = false;
             }
+        }
+        
+        if (ChatInGameplay == null || ChatInGameplay.ToggleButton == null)
+        {
+            ChatInGameplay = ClientOptionItem.Create("Chat In Gameplay", Main.ChatInGameplay, __instance);
         }
 
         if (LobbyPlayerInfo == null || LobbyPlayerInfo.ToggleButton == null)

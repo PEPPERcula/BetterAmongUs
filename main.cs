@@ -176,6 +176,7 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> BetterHost { get; private set; }
     public static ConfigEntry<bool> BetterRoleAlgorithma { get; private set; }
     public static ConfigEntry<bool> BetterNotifications { get; private set; }
+    public static ConfigEntry<bool> ChatInGameplay { get; private set; }
     public static ConfigEntry<bool> LobbyPlayerInfo { get; private set; }
     public static ConfigEntry<bool> DisableLobbyTheme { get; private set; }
     public static ConfigEntry<bool> UnlockFPS { get; private set; }
@@ -187,6 +188,7 @@ public class Main : BasePlugin
         BetterHost = Config.Bind("Better Options", "BetterHost", false);
         BetterRoleAlgorithma = Config.Bind("Better Options", "BetterRoleAlgorithma", true);
         BetterNotifications = Config.Bind("Better Options", "BetterNotifications", true);
+        ChatInGameplay = Config.Bind("Better Options", "ChatInGameplay", true);
         LobbyPlayerInfo = Config.Bind("Better Options", "LobbyPlayerInfo", true);
         DisableLobbyTheme = Config.Bind("Better Options", "DisableLobbyTheme", true);
         UnlockFPS = Config.Bind("Better Options", "UnlockFPS", false);
