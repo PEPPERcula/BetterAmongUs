@@ -168,4 +168,8 @@ public class BetterOptionFloatItem : BetterOptionItem
             Type = OptionTypes.Float,
         };
     }
+
+    public override void ValueChanged(int id, OptionBehaviour optionBehaviour)
+    {
+    }
 }

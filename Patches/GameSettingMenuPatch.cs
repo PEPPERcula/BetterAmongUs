@@ -1,8 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using HarmonyLib;
 using UnityEngine;
-using static Il2CppSystem.Linq.Expressions.Interpreter.CastInstruction.CastInstructionNoT;
-using static Logger;
 
 namespace BetterAmongUs.Patches;
 
@@ -18,6 +16,8 @@ class BetterGameSettings
     public static BetterOptionItem? DetectedLevelAbove;
     public static BetterOptionItem? DetectCheatClients;
     public static BetterOptionItem? DetectInvalidRPCs;
+
+    public static BetterOptionItem? ExperimentalDetectInvalidSabotage;
 }
 
 [HarmonyPatch(typeof(GameSettingMenu))]
@@ -25,30 +25,37 @@ static class GameSettingMenuPatch
 {
     private static PassiveButton BetterSettingsButton;
     public static GameOptionsMenu BetterSettingsTab;
+    private static List<BetterOptionItem> TitleList = [];
 
     public static void SetupSettings(bool IsPreload = false)
     {
         BetterOptionItem.SpacingNum = 0;
+        BetterOptionItem.BetterOptionItems.Clear();
+        TitleList.Clear();
 
         // Anti-Cheat Settings
         {
-            new BetterOptionHeaderItem().Create(BetterSettingsTab, "<color=#4f92ff>Anti-Cheat Settings</color>");
+            TitleList.Add(new BetterOptionHeaderItem().Create(BetterSettingsTab, "<color=#4f92ff>Anti-Cheat Settings</color>"));
 
             if (IsPreload || GameStates.IsHost)
             {
-                new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color=#4f92ff>Host Only</color>");
+                TitleList.Add(new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color=#4f92ff>Host Only</color>"));
                 BetterGameSettings.WhenCheating = new BetterOptionStringItem().Create(100, BetterSettingsTab, "When a player is caught cheating", ["Do Nothing", "Kick", "Ban"], 2);
                 BetterGameSettings.InvalidFriendCode = new BetterOptionCheckboxItem().Create(200, BetterSettingsTab, "Allow invalid friendCodes", true);
                 BetterGameSettings.UseBanPlayerList = new BetterOptionCheckboxItem().Create(300, BetterSettingsTab, "Use Ban Player List", true);
                 BetterGameSettings.UseBanNameList = new BetterOptionCheckboxItem().Create(400, BetterSettingsTab, "Use Ban Name List", true);
                 BetterGameSettings.UseBanWordList = new BetterOptionCheckboxItem().Create(500, BetterSettingsTab, "Use Ban Word List", true);
-                new BetterOptionDividerItem().Create(BetterSettingsTab);
+                TitleList.Add(new BetterOptionDividerItem().Create(BetterSettingsTab));
             }
 
-            new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color=#4f92ff>Detections</color>");
+            TitleList.Add(new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color=#4f92ff>Detections</color>"));
             BetterGameSettings.DetectedLevelAbove = new BetterOptionIntItem().Create(600, BetterSettingsTab, "Detected player level # or >", [100, 1000, 5], 200, "Lv ", "");
             BetterGameSettings.DetectCheatClients = new BetterOptionCheckboxItem().Create(700, BetterSettingsTab, "Detect Cheat Clients", true);
             BetterGameSettings.DetectInvalidRPCs = new BetterOptionCheckboxItem().Create(800, BetterSettingsTab, "Detect Invalid RPCs", true);
+
+            TitleList.Add(new BetterOptionDividerItem().Create(BetterSettingsTab));
+            TitleList.Add(new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color=#f20>Experimental</color>"));
+            BetterGameSettings.ExperimentalDetectInvalidSabotage = new BetterOptionCheckboxItem().Create(100000, BetterSettingsTab, "Detect Invalid Sabotages", false);
         }
 
         // Gameplay Settings
@@ -83,7 +90,7 @@ static class GameSettingMenuPatch
         */
 
         if (BetterSettingsTab != null)
-            BetterSettingsTab.scrollBar.SetYBoundsMax(1.15f * BetterOptionItem.SpacingNum / 2);
+            BetterSettingsTab.scrollBar.SetYBoundsMax(1.25f * BetterOptionItem.SpacingNum / 2);
     }
 
     private static void Initialize()
@@ -92,9 +99,12 @@ static class GameSettingMenuPatch
         {
             foreach (var item in BetterOptionItem.BetterOptionItems)
             {
-                if (item.TitleText != null)
+                if (item != null)
                 {
-                    item.TitleText.text = item.Name;
+                    if (item.TitleText != null)
+                    {
+                        item.TitleText.text = item.Name;
+                    }
                 }
             }
         }, 0.005f, shoudLog: false);
@@ -269,6 +279,7 @@ static class NumberOptionPatch
         __instance.UpdateValue();
         return false;
     }
+
     [HarmonyPatch(nameof(NumberOption.Decrease))]
     [HarmonyPrefix]
     public static bool Decrease_Prefix(NumberOption __instance)
@@ -283,6 +294,7 @@ static class NumberOptionPatch
         __instance.UpdateValue();
         return false;
     }
+
     [HarmonyPatch(nameof(NumberOption.UpdateValue))]
     [HarmonyPrefix]
     public static bool UpdateValue_Prefix(NumberOption __instance)
@@ -299,26 +311,35 @@ static class NumberOptionPatch
         }
         return false;
     }
+
     [HarmonyPatch(nameof(NumberOption.FixedUpdate))]
     [HarmonyPrefix]
     public static bool FixedUpdate_Prefix(NumberOption __instance)
     {
-        __instance.MinusBtn.SetInteractable(true);
-        __instance.PlusBtn.SetInteractable(true);
-
-        if (__instance.oldValue != __instance.Value)
+        try
         {
-            __instance.oldValue = __instance.Value;
-
-            if (__instance.Value > __instance.ValidRange.max || __instance.Value < __instance.ValidRange.min)
+            if (__instance.MinusBtn != null && __instance.PlusBtn != null)
             {
-                __instance.ValueText.text = $"<color=#f20>{__instance.data.GetValueString(__instance.Value)}</color>";
+                __instance.MinusBtn.SetInteractable(true);
+                __instance.PlusBtn.SetInteractable(true);
             }
-            else
+
+            if (__instance.oldValue != __instance.Value)
             {
-                __instance.ValueText.text = __instance.data.GetValueString(__instance.Value);
+                __instance.oldValue = __instance.Value;
+
+                if (__instance.Value > __instance.ValidRange.max || __instance.Value < __instance.ValidRange.min)
+                {
+                    __instance.ValueText.text = $"<color=#f20>{__instance.data.GetValueString(__instance.Value)}</color>";
+                }
+                else
+                {
+                    __instance.ValueText.text = __instance.data.GetValueString(__instance.Value);
+                }
             }
         }
+        catch { }
+
         return false;
     }
 }

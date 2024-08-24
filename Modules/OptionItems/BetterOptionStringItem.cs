@@ -24,6 +24,12 @@ public class BetterOptionStringItem : BetterOptionItem
         optionBehaviour.OnValueChanged = new Action<OptionBehaviour>((option) => ValueChanged(id, option));
         SpacingNum += StaticSpacingNumPlus;
 
+        // Fix Game Crash
+        foreach (RulesCategory rulesCategory in GameManager.Instance.GameSettingsList.AllCategories)
+        {
+            optionBehaviour.data = rulesCategory.AllGameSettings.ToArray().FirstOrDefault(item => item.Type == OptionTypes.String);
+        }
+
         optionBehaviour.PlusBtn.OnClick.RemoveAllListeners();
         optionBehaviour.MinusBtn.OnClick.RemoveAllListeners();
         optionBehaviour.PlusBtn.OnClick.AddListener(new Action(() => Increase()));
@@ -123,5 +129,9 @@ public class BetterOptionStringItem : BetterOptionItem
             Title = StringNames.None,
             Type = OptionTypes.String,
         };
+    }
+
+    public override void ValueChanged(int id, OptionBehaviour optionBehaviour)
+    {
     }
 }

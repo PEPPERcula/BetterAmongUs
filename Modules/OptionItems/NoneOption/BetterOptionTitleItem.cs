@@ -18,6 +18,7 @@ public class BetterOptionTitleItem : BetterOptionItem
         SpacingNum += StaticSpacingNumPlus;
 
         UnityEngine.Object.Destroy(optionBehaviour.CheckMark.transform.parent.gameObject);
+        UnityEngine.Object.Destroy(optionBehaviour.GetComponent<ToggleOption>());
         optionBehaviour.TitleText.alignment = TMPro.TextAlignmentOptions.Center;
         optionBehaviour.TitleText.outlineColor = Color.black;
         optionBehaviour.TitleText.outlineWidth = 0.2f;

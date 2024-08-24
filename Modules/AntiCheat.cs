@@ -325,8 +325,6 @@ class AntiCheat
     // Check game states when sabotaging
     public static bool RpcUpdateSystemCheck(PlayerControl player, SystemTypes systemType, byte amount)
     {
-        return true;
-
         byte hostNum = 128; // Only host should ever send this number
         byte singleFixNum = 0;
         byte minLightNum = 0;
@@ -359,6 +357,9 @@ class AntiCheat
 
         if (!GameStates.IsHost || PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.BetterData().IsBetterHost || !IsEnabled || !Main.AntiCheat.Value
             || (GameStates.IsBetterHostLobby && !GameStates.IsHost) || !BetterGameSettings.DetectInvalidRPCs.GetBool()) return true;
+
+        if (!BetterGameSettings.ExperimentalDetectInvalidSabotage.GetBool())
+            return true;
 
         // Single Fix: 0
         // Lights: 0-1-2-3-4

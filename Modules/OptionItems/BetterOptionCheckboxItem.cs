@@ -23,6 +23,12 @@ public class BetterOptionCheckboxItem : BetterOptionItem
         optionBehaviour.OnValueChanged = new Action<OptionBehaviour>((option) => ValueChanged(id, option));
         SpacingNum += StaticSpacingNumPlus;
 
+        // Fix Game Crash
+        foreach (RulesCategory rulesCategory in GameManager.Instance.GameSettingsList.AllCategories)
+        {
+            optionBehaviour.data = rulesCategory.AllGameSettings.ToArray().FirstOrDefault(item => item.Type == OptionTypes.Checkbox);
+        }
+
         // Set data
         optionBehaviour.CheckMark.GetComponent<SpriteRenderer>().enabled = Default;
         IsChecked = Default;
