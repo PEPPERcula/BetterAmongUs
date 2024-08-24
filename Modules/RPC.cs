@@ -244,7 +244,7 @@ internal static class RPC
                 }
 
                 // Check banned words
-                if (Main.UseBannedList.Value)
+                if (BetterGameSettings.UseBanWordList.GetBool())
                 {
                     try
                     {

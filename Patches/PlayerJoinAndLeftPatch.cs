@@ -56,7 +56,7 @@ public static class OnPlayerJoinedPatch
                     client.Character.RpcSendHostChat(HudManagerPatch.WelcomeMessage, sendToBetterUser: false);
 
                 // Auto ban player on ban list
-                if (Main.UseBannedList.Value)
+                if (BetterGameSettings.UseBanPlayerList.GetBool())
                 {
                     if (player != null)
                     {
@@ -77,33 +77,36 @@ public static class OnPlayerJoinedPatch
                             }
                         }
                         catch { }
-
-                        try
-                        {
-                            // Normalize and remove spaces and special characters from names
-                            Func<string, string> normalizeName = name => new string(name.Where(c => char.IsLetterOrDigit(c)).ToArray()).ToLower();
-
-                            // Read all banned names into a HashSet with normalized names
-                            HashSet<string> bannedNames = new HashSet<string>(
-                                File.ReadLines(BetterDataManager.banNameListFile)
-                                    .Select(normalizeName)
-                                    .Where(name => !string.IsNullOrWhiteSpace(name))
-                            );
-
-                            string normalizedPlayerName = normalizeName(player.Data.PlayerName);
-
-                            // Check if any banned name is a prefix of the player's normalized name
-                            bool isNameBanned = bannedNames.Any(bannedName =>
-                                normalizedPlayerName.StartsWith(bannedName)
-                            );
-
-                            if (!string.IsNullOrEmpty(normalizedPlayerName) && isNameBanned)
-                            {
-                                player.Kick(false, $"has been kicked due to their name being on the ban name list!");
-                            }
-                        }
-                        catch { }
                     }
+                }
+
+                if (BetterGameSettings.UseBanNameList.GetBool())
+                {
+                    try
+                    {
+                        // Normalize and remove spaces and special characters from names
+                        Func<string, string> normalizeName = name => new string(name.Where(c => char.IsLetterOrDigit(c)).ToArray()).ToLower();
+
+                        // Read all banned names into a HashSet with normalized names
+                        HashSet<string> bannedNames = new HashSet<string>(
+                            File.ReadLines(BetterDataManager.banNameListFile)
+                                .Select(normalizeName)
+                                .Where(name => !string.IsNullOrWhiteSpace(name))
+                        );
+
+                        string normalizedPlayerName = normalizeName(player.Data.PlayerName);
+
+                        // Check if any banned name is a prefix of the player's normalized name
+                        bool isNameBanned = bannedNames.Any(bannedName =>
+                            normalizedPlayerName.StartsWith(bannedName)
+                        );
+
+                        if (!string.IsNullOrEmpty(normalizedPlayerName) && isNameBanned)
+                        {
+                            player.Kick(false, $"has been kicked due to their name being on the ban name list!");
+                        }
+                    }
+                    catch { }
                 }
             }
         }, 2.5f, "OnPlayerJoinedPatch", false);
