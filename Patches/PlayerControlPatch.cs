@@ -1,9 +1,6 @@
 ﻿using AmongUs.Data;
-using AmongUs.GameOptions;
 using HarmonyLib;
-using Hazel;
 using Il2CppSystem.Linq;
-using InnerNet;
 using LibCpp2IL;
 using System.Text;
 using System.Text.RegularExpressions;

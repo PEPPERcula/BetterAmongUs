@@ -99,7 +99,7 @@ class MeetingHudUpdatePatch
                     case DisconnectReasons.Hacking:
                         DisconnectText = "Banned By Server";
                         break;
-                        default:
+                    default:
                         DisconnectText = "Disconnected";
                         break;
                 }

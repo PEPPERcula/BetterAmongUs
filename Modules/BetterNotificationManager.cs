@@ -17,7 +17,7 @@ class BetterNotificationManager
 
         if (BAUNotificationManagerObj != null)
         {
-            if (Notifying) 
+            if (Notifying)
             {
                 if (text == BAUNotificationManagerObj.transform.Find("Sizer/ChatText (TMP)").GetComponent<TextMeshPro>().text)
                     return;

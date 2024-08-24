@@ -1,6 +1,5 @@
 using HarmonyLib;
 using UnityEngine;
-using static Rewired.Data.UserDataStore_PlayerPrefs.ControllerAssignmentSaveInfo;
 
 namespace BetterAmongUs.Patches;
 
@@ -80,7 +79,7 @@ public static class OptionsMenuBehaviourPatch
                 BetterNotificationManager.Notifying = false;
             }
         }
-        
+
         if (ChatInGameplay == null || ChatInGameplay.ToggleButton == null)
         {
             ChatInGameplay = ClientOptionItem.Create("Chat In Gameplay", Main.ChatInGameplay, __instance);

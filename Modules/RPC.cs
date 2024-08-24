@@ -1,7 +1,6 @@
 ﻿using BetterAmongUs.Patches;
 using HarmonyLib;
 using Hazel;
-using InnerNet;
 
 namespace BetterAmongUs;
 

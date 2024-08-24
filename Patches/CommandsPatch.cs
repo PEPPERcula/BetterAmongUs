@@ -175,7 +175,7 @@ class CommandsPatch
                     sb.Append("\n\n");
                 }
                 Utils.AddChatPrivate(sb.ToString());
-                break;      
+                break;
             case "whisper" or "w":
                 if (HandlePlayerArgument(command, subArgs) == true)
                 {
@@ -410,7 +410,7 @@ class CommandsPatch
                         RPC.SyncAllNames(force: true);
                         Utils.AddChatPrivate("<color=#0dff00>All player names have been updated and synced!</color>");
                     }
-                    break;   
+                    break;
                 case "suicide":
                     if (HandleIsHost(command) == true)
                     {

@@ -1,5 +1,4 @@
-﻿using Rewired;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace BetterAmongUs;
 

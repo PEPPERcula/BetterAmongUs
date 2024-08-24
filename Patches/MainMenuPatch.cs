@@ -99,7 +99,7 @@ internal class MainMenuPatch
             bool Flag = __instance?.screenTint?.GetComponent<SpriteRenderer>() != null
                 && !__instance.screenTint.GetComponent<SpriteRenderer>().enabled;
 
-            foreach (var item in buttonsObj) 
+            foreach (var item in buttonsObj)
             {
                 item.SetActive(Flag);
             }

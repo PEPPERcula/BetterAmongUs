@@ -3,9 +3,6 @@ using BetterAmongUs.Patches;
 using HarmonyLib;
 using Hazel;
 using InnerNet;
-using UnityEngine;
-using UnityEngine.Purchasing;
-using UnityEngine.Rendering;
 
 namespace BetterAmongUs;
 
