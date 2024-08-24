@@ -35,7 +35,7 @@ static class ExtendedPlayerControl
 
         try
         {
-            return $"<color={Utils.Color32ToHex(Palette.PlayerColors[player.CurrentOutfit.ColorId])}>{player.Data.PlayerName}</color>";
+            return $"<color={Utils.Color32ToHex(Palette.PlayerColors[player.Data.DefaultOutfit.ColorId])}>{player.Data.PlayerName}</color>";
         }
         catch
         {
