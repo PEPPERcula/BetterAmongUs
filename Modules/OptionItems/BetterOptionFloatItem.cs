@@ -8,9 +8,10 @@ public class BetterOptionFloatItem : BetterOptionItem
     public FloatRange floatRange = new(0f, 180f);
     public float Increment = 2.5f;
     private NumberOption? ThisOption;
-    private string PostFix;
+    private string? PostFix;
+    private string? PreFix;
 
-    public BetterOptionItem Create(int id, GameOptionsMenu gameOptionsMenu, string name, float[] values, float Default, string postFix = "", BetterOptionItem Parent = null)
+    public BetterOptionItem Create(int id, GameOptionsMenu gameOptionsMenu, string name, float[] values, float Default, string preFix = "", string postFix = "", BetterOptionItem Parent = null)
     {
         Id = id;
 
@@ -45,6 +46,7 @@ public class BetterOptionFloatItem : BetterOptionItem
         TitleText = optionBehaviour.TitleText;
         Option = optionBehaviour;
         PostFix = postFix;
+        PreFix = preFix;
         ThisOption = optionBehaviour;
 
         floatRange = new(values[0], values[1]);
@@ -65,7 +67,7 @@ public class BetterOptionFloatItem : BetterOptionItem
     {
         if (ThisOption == null) return;
 
-        ThisOption.ValueText.text = CurrentValue.ToString() + PostFix;
+        ThisOption.ValueText.text = PreFix + CurrentValue.ToString() + PostFix;
 
         if (CurrentValue + Increment > floatRange.max)
         {
@@ -91,12 +93,15 @@ public class BetterOptionFloatItem : BetterOptionItem
         int times = 1;
         if (Input.GetKey(KeyCode.LeftShift))
             times = 5;
+        if (Input.GetKey(KeyCode.LeftControl))
+            times = 10;
 
         if (CurrentValue + Increment * times <= floatRange.max)
         {
             CurrentValue += Increment * times;
-            AdjustButtonsActiveState();
         }
+
+        AdjustButtonsActiveState();
     }
 
     public void Decrease()
@@ -104,12 +109,15 @@ public class BetterOptionFloatItem : BetterOptionItem
         int times = 1;
         if (Input.GetKey(KeyCode.LeftShift))
             times = 5;
+        if (Input.GetKey(KeyCode.LeftControl))
+            times = 10;
 
         if (CurrentValue - Increment * times >= floatRange.min)
         {
             CurrentValue -= Increment * times;
-            AdjustButtonsActiveState();
         }
+
+        AdjustButtonsActiveState();
     }
 
     public void Load(float DefaultValue)

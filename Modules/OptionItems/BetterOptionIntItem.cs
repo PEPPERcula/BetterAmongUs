@@ -8,9 +8,10 @@ public class BetterOptionIntItem : BetterOptionItem
     public IntRange intRange = new(0, 180);
     public int Increment = 1;
     private NumberOption? ThisOption;
-    private string PostFix;
+    private string? PostFix;
+    private string? PreFix;
 
-    public BetterOptionItem Create(int id, GameOptionsMenu gameOptionsMenu, string name, int[] values, int DefaultValue, string postFix = "", BetterOptionItem Parent = null)
+    public BetterOptionItem Create(int id, GameOptionsMenu gameOptionsMenu, string name, int[] values, int DefaultValue, string preFix = "", string postFix = "", BetterOptionItem Parent = null)
     {
         Id = id;
 
@@ -45,6 +46,7 @@ public class BetterOptionIntItem : BetterOptionItem
         TitleText = optionBehaviour.TitleText;
         Option = optionBehaviour;
         PostFix = postFix;
+        PreFix = preFix;
         ThisOption = optionBehaviour;
 
         intRange = new(values[0], values[1]);
@@ -65,7 +67,7 @@ public class BetterOptionIntItem : BetterOptionItem
     {
         if (ThisOption == null) return;
 
-        ThisOption.ValueText.text = CurrentValue.ToString() + PostFix;
+        ThisOption.ValueText.text = PreFix + CurrentValue.ToString() + PostFix;
 
         if (CurrentValue + Increment > intRange.max)
         {
@@ -91,12 +93,15 @@ public class BetterOptionIntItem : BetterOptionItem
         int times = 1;
         if (Input.GetKey(KeyCode.LeftShift))
             times = 5;
+        if (Input.GetKey(KeyCode.LeftControl))
+            times = 10;
 
         if (CurrentValue + Increment * times <= intRange.max)
         {
             CurrentValue += Increment * times;
-            AdjustButtonsActiveState();
         }
+
+        AdjustButtonsActiveState();
     }
 
     public void Decrease()
@@ -104,12 +109,15 @@ public class BetterOptionIntItem : BetterOptionItem
         int times = 1;
         if (Input.GetKey(KeyCode.LeftShift))
             times = 5;
+        if (Input.GetKey(KeyCode.LeftControl))
+            times = 10;
 
         if (CurrentValue - Increment * times >= intRange.min)
         {
             CurrentValue -= Increment * times;
-            AdjustButtonsActiveState();
         }
+
+        AdjustButtonsActiveState();
     }
 
     public void Load(int DefaultValue)
