@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using System.Text;
 using UnityEngine;
+using static BetterAmongUs.Patches.GamePlayManager;
 
 namespace BetterAmongUs.Patches;
 
@@ -23,6 +24,12 @@ public class PingTrackerPatch
             StringBuilder sb = new StringBuilder();
 
             sb.AppendFormat("PING: <b>{0}</b>\n", GetPingColor(AmongUsClient.Instance.Ping));
+
+            if (GameStates.IsLobby && GameStates.IsHost && GameStates.IsVanillaServer && !GameStates.IsLocalGame)
+            {
+                sb.AppendFormat("Timer: <b>{0}</b>\n", GetTimeColor(GameStartManagerPatch.lobbyTimer));
+            }
+
             sb.Append($"<color=#00dbdb><size=75%>BetterAmongUs {Main.GetVersionText(true)}</size></color>\n");
             sb.AppendFormat("<color=#b0b0b0><size=50%>{0}</size></color>\n", Main.Github);
 
@@ -75,5 +82,31 @@ public class PingTrackerPatch
         string newPing = $"<color={color}>{ping} ms</color>";
 
         return newPing;
+    }
+    
+    private static string GetTimeColor(float time)
+    {
+        float minutes = (int)time / 60 + 1f;
+
+        string color;
+        switch (minutes)
+        {
+            case float n when n <= 1:
+                color = "#ff0000";
+                break;
+            case float n when n <= 3.5f:
+                color = "#ffa200";
+                break;
+            case float n when n <= 5f:
+                color = "#ffff00";
+                break;
+            default:
+                color = "#00f04c";
+                break;
+        }
+
+        string newTime = $"<color={color}>{GameStartManagerPatch.lobbyTimerDisplay}</color>";
+
+        return newTime;
     }
 }

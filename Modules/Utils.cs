@@ -289,4 +289,64 @@ public static class Utils
 
         return $"{Tag}: {PlatformName}";
     }
+
+    public static string GetPlatformName(Platforms platform, bool useTag = false)
+    {
+        string Tag = string.Empty;
+
+        string PlatformName;
+        switch (platform)
+        {
+            case Platforms.StandaloneSteamPC:
+                PlatformName = "Steam";
+                Tag = "PC";
+                break;
+            case Platforms.StandaloneEpicPC:
+                PlatformName = "Epic Games";
+                Tag = "PC";
+                break;
+            case Platforms.StandaloneWin10:
+                PlatformName = "Microsoft Store";
+                Tag = "PC";
+                break;
+            case Platforms.StandaloneMac:
+                PlatformName = "Mac OS";
+                Tag = "PC";
+                break;
+            case Platforms.StandaloneItch:
+                PlatformName = "Itch.io";
+                Tag = "PC";
+                break;
+            case Platforms.Xbox:
+                PlatformName = "Xbox";
+                Tag = "Console";
+                break;
+            case Platforms.Playstation:
+                PlatformName = "Playstation";
+                Tag = "Console";
+                break;
+            case Platforms.Switch:
+                PlatformName = "Switch";
+                Tag = "Console";
+                break;
+            case Platforms.Android:
+                PlatformName = "Android";
+                Tag = "Mobile";
+                break;
+            case Platforms.IPhone:
+                PlatformName = "IPhone";
+                Tag = "Mobile";
+                break;
+            case Platforms.Unknown:
+                PlatformName = "None";
+                break;
+            default:
+                return string.Empty;
+        }
+
+        if (useTag == false)
+            return PlatformName;
+
+        return $"{Tag}: {PlatformName}";
+    }
 }
