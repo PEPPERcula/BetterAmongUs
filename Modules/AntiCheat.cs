@@ -247,7 +247,7 @@ class AntiCheat
                 if (reader.BytesRemaining > 0)
                 {
                     uint level = reader.ReadPackedUInt32();
-                    if (level >= BetterGameSettings.DetectedLevelAbove.GetInt())
+                    if (level > BetterGameSettings.DetectedLevelAbove.GetInt())
                     {
                         BetterNotificationManager.NotifyCheat(player, $"Invalid Level: {level}");
                         Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {level >= 200}");

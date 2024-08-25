@@ -49,7 +49,7 @@ static class GameSettingMenuPatch
             }
 
             TitleList.Add(new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color=#4f92ff>Detections</color>"));
-            BetterGameSettings.DetectedLevelAbove = new BetterOptionIntItem().Create(600, BetterSettingsTab, "Detected player level = or >", [100, 5000, 5], 200, "Lv ", "");
+            BetterGameSettings.DetectedLevelAbove = new BetterOptionIntItem().Create(600, BetterSettingsTab, "Detected player levels >", [100, 5000, 5], 200, "Lv ", "");
             BetterGameSettings.DetectCheatClients = new BetterOptionCheckboxItem().Create(700, BetterSettingsTab, "Detect Cheat Clients", true);
             BetterGameSettings.DetectInvalidRPCs = new BetterOptionCheckboxItem().Create(800, BetterSettingsTab, "Detect Invalid RPCs", true);
 
