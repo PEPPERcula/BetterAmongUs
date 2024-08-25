@@ -10,7 +10,6 @@ public static class OptionsMenuBehaviourPatch
 {
     private static ClientOptionItem AntiCheat;
     private static ClientOptionItem BetterHost;
-    private static ClientOptionItem BetterRoleAlgorithma;
     private static ClientOptionItem BetterNotifications;
     private static ClientOptionItem ChatInGameplay;
     private static ClientOptionItem LobbyPlayerInfo;
@@ -61,11 +60,6 @@ public static class OptionsMenuBehaviourPatch
 
                 RPC.SyncAllNames(force: true);
             }
-        }
-
-        if (BetterRoleAlgorithma == null || BetterRoleAlgorithma.ToggleButton == null)
-        {
-            BetterRoleAlgorithma = ClientOptionItem.Create("<color=#4f92ff>Better Role Algorithma</color>", Main.BetterRoleAlgorithma, __instance, toggleCheck: () => !toggleCheckInGamePlay("<color=#4f92ff>Better Role Algorithma</color>"));
         }
 
         if (BetterNotifications == null || BetterNotifications.ToggleButton == null)

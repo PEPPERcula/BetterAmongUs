@@ -25,4 +25,10 @@
     <!-- Embed all files in the Resources folder -->
     <EmbeddedResource Include="Resources\**\*" />
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="Resources\ModNews\BAU.v1.1.0.txt" />
+  </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy &quot;$(TargetDir)BetterAmongUs.dll&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Among Us\Among Us - Mods\Among Us - BetterAmongUs\BepInEx\plugins&quot;" />
+  </Target>
 </Project>

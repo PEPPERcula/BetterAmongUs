@@ -303,11 +303,6 @@ class CommandsPatch
                 case "role" or "setrole":
                     if (HandleIsHost(command) == true)
                     {
-                        if (!Main.BetterRoleAlgorithma.Value)
-                        {
-                            Utils.AddChatPrivate($"<color=#730000>{error}\nBetter Role Algorithma in better options must be turned on to use this command");
-                            return;
-                        }
                         if (command[0][1..].ToLower().Trim() == "role")
                         {
                             var player = PlayerControl.LocalPlayer;

@@ -69,14 +69,8 @@ static class GameSettingMenuPatch
                 else if (IsPreload || GameStates.IsHideNSeek)
                 {
                     new BetterOptionHeaderItem().Create(BetterSettingsTab, "<color=#d7d700>Hide & Seek Settings</color>");
-
-                    if (IsPreload || Main.BetterRoleAlgorithma.Value)
-                    {
-                        new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color=#4f92ff>Better Role Algorithma</color>");
-                        BetterOptionItem.SpacingNum += 0.2f;
-                        new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color={Utils.GetRoleColor(RoleTypes.Impostor)}>Imposter</color>");
-                        BetterGameSettings.HideAndSeekImpNum = new BetterOptionIntItem().Create(1000, BetterSettingsTab, "# Seekers", [1, 5, 1], 1, "", "");
-                    }
+                    new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color={Utils.GetRoleColor(RoleTypes.Impostor)}>Imposter</color>");
+                    BetterGameSettings.HideAndSeekImpNum = new BetterOptionIntItem().Create(1000, BetterSettingsTab, "# Seekers", [1, 5, 1], 1, "", "");
                 }
             }
         }

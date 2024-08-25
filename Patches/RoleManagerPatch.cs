@@ -21,8 +21,6 @@ public class RoleManagerPatch
     [HarmonyPrefix]
     public static bool RoleManager_Prefix(/*RoleManager __instance*/)
     {
-        if (!Main.BetterRoleAlgorithma.Value) return true;
-
         if (!GameStates.IsHideNSeek)
         {
             RegularBetterRoleAssignment();
@@ -377,8 +375,6 @@ public class RoleManagerPatch
     [HarmonyPrefix]
     public static bool AssignRoleOnDeath_Prefix(/*RoleManager __instance*/ [HarmonyArgument(0)] PlayerControl player)
     {
-        if (!Main.BetterRoleAlgorithma.Value) return true;
-
         Dictionary<RoleTypes, int> GhostRoles = new() // Role, Amount
         {
             { RoleTypes.GuardianAngel, 0 },
