@@ -211,7 +211,6 @@ class BetterHostManager
             string NewName = player.CurrentOutfit.PlayerName;
 
             StringBuilder sbTopTag = new StringBuilder();
-            StringBuilder sbTopInfo = new StringBuilder();
 
             if (!player.BetterData().IsBetterUser)
             {
@@ -248,23 +247,34 @@ class BetterHostManager
                     sbTopTag.Append($"{Role}+++");
                 }
 
-                for (int i = 0; i < sbTopTag.ToString().Split("+++").Length; i++)
+                // Put +++ at the end of each tag
+                static StringBuilder FormatInfo(StringBuilder source)
                 {
-                    if (!string.IsNullOrEmpty(sbTopTag.ToString().Split("+++")[i]))
+                    var sb = new StringBuilder();
+                    if (source.Length > 0)
                     {
-                        if (i < sbTopTag.ToString().Split("+++").Length)
+                        string text = source.ToString();
+                        string[] parts = text.Split("+++");
+                        for (int i = 0; i < parts.Length; i++)
                         {
-                            sbTopInfo.Append(sbTopTag.ToString().Split("+++")[i]);
-                        }
-                        if (i != sbTopTag.ToString().Split("+++").Length - 2)
-                        {
-                            sbTopInfo.Append(" - ");
+                            if (!string.IsNullOrEmpty(Utils.RemoveHtmlText(parts[i])))
+                            {
+                                sb.Append(parts[i]);
+                                if (i != parts.Length - 2)
+                                {
+                                    sb.Append(" - ");
+                                }
+                            }
                         }
                     }
+
+                    return sb;
                 }
 
-                if (sbTopInfo.Length > 0)
-                    NewName = $"<size=65%>{sbTopInfo}</size>\n{NewName}";
+                sbTopTag = FormatInfo(sbTopTag);
+
+                if (sbTopTag.Length > 0)
+                    NewName = $"<size=65%>{sbTopTag}</size>\n{NewName}";
                 else
                     NewName = $"{NewName}";
 

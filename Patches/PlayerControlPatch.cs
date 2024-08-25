@@ -128,11 +128,8 @@ class PlayerControlPatch
             }
 
             var sbTag = new StringBuilder();
-            var sbInfo = new StringBuilder();
             var sbTagTop = new StringBuilder();
-            var sbInfoTop = new StringBuilder();
             var sbTagBottom = new StringBuilder();
-            var sbInfoBottom = new StringBuilder();
 
             // Put +++ at the end of each tag
             if (!player.isDummy)
@@ -194,8 +191,9 @@ class PlayerControlPatch
             }
 
             // Put +++ at the end of each tag
-            void AppendTagInfo(StringBuilder source, StringBuilder destination)
+            static StringBuilder FormatInfo(StringBuilder source)
             {
+                var sb = new StringBuilder();
                 if (source.Length > 0)
                 {
                     string text = source.ToString();
@@ -204,23 +202,25 @@ class PlayerControlPatch
                     {
                         if (!string.IsNullOrEmpty(Utils.RemoveHtmlText(parts[i])))
                         {
-                            destination.Append(parts[i]);
+                            sb.Append(parts[i]);
                             if (i != parts.Length - 2)
                             {
-                                destination.Append(" - ");
+                                sb.Append(" - ");
                             }
                         }
                     }
                 }
+
+                return sb;
             }
 
-            AppendTagInfo(sbTag, sbInfo);
-            AppendTagInfo(sbTagTop, sbInfoTop);
-            AppendTagInfo(sbTagBottom, sbInfoBottom);
+            sbTag = FormatInfo(sbTag);
+            sbTagTop = FormatInfo(sbTagTop);
+            sbTagBottom = FormatInfo(sbTagBottom);
 
-            player.SetPlayerTextInfo(sbInfoTop.ToString());
-            player.SetPlayerTextInfo(sbInfoBottom.ToString(), isBottom: true);
-            player.SetPlayerTextInfo(sbInfo.ToString(), isInfo: true);
+            player.SetPlayerTextInfo(sbTagTop.ToString());
+            player.SetPlayerTextInfo(sbTagBottom.ToString(), isBottom: true);
+            player.SetPlayerTextInfo(sbTag.ToString(), isInfo: true);
         }
         catch (Exception ex)
         {
