@@ -17,6 +17,10 @@ public class BetterOptionItem
     public string? Name = "None";
     public TextMeshPro? TitleText;
 
+    public bool IsParent => ChildrenList.Count > 0;
+    public List<BetterOptionItem> ChildrenList = [];
+    public virtual bool ShowChildrenCondition() => false;
+
     public void SetUp(OptionBehaviour optionBehaviour)
     {
         SetData(optionBehaviour);

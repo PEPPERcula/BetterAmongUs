@@ -4,12 +4,15 @@ namespace BetterAmongUs;
 
 public class BetterOptionIntItem : BetterOptionItem
 {
+    public BetterOptionItem? ThisParent;
+    private NumberOption? ThisOption;
     public int CurrentValue;
     public IntRange intRange = new(0, 180);
     public int Increment = 1;
-    private NumberOption? ThisOption;
     private string? PostFix;
     private string? PreFix;
+
+    public override bool ShowChildrenCondition() => CurrentValue > intRange.min;
 
     public BetterOptionItem Create(int id, GameOptionsMenu gameOptionsMenu, string name, int[] values, int DefaultValue, string preFix = "", string postFix = "", BetterOptionItem Parent = null)
     {
@@ -32,7 +35,6 @@ public class BetterOptionIntItem : BetterOptionItem
         optionBehaviour.transform.localPosition = new Vector3(0.952f, 2f - StaticSpacingNum * SpacingNum, -2f);
         SetUp(optionBehaviour);
         optionBehaviour.OnValueChanged = new Action<OptionBehaviour>((option) => ValueChanged(id, option));
-        SpacingNum += StaticSpacingNumPlus;
 
         // Fix Game Crash
         foreach (RulesCategory rulesCategory in GameManager.Instance.GameSettingsList.AllCategories)
@@ -66,6 +68,19 @@ public class BetterOptionIntItem : BetterOptionItem
         AdjustButtonsActiveState();
 
         BetterOptionItems.Add(this);
+
+        if (Parent != null)
+        {
+            optionBehaviour.LabelBackground.GetComponent<SpriteRenderer>().color = new Color(0.85f, 0.85f, 0.85f, 1f);
+            optionBehaviour.LabelBackground.transform.SetLocalZ(1f);
+            ThisParent = Parent;
+            Parent.ChildrenList.Add(this);
+        }
+        else
+        {
+            SpacingNum += StaticSpacingNumPlus;
+        }
+
         return this;
     }
 

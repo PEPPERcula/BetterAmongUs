@@ -4,8 +4,11 @@ namespace BetterAmongUs;
 
 public class BetterOptionCheckboxItem : BetterOptionItem
 {
+    public BetterOptionItem? ThisParent;
     private ToggleOption? ThisOption;
     private bool? IsChecked;
+
+    public override bool ShowChildrenCondition() => IsChecked == true;
 
     public BetterOptionItem Create(int id, GameOptionsMenu gameOptionsMenu, string name, bool DefaultValue = true, BetterOptionItem Parent = null)
     {
@@ -24,7 +27,6 @@ public class BetterOptionCheckboxItem : BetterOptionItem
         optionBehaviour.transform.localPosition = new Vector3(0.952f, 2f - StaticSpacingNum * SpacingNum, -2f);
         SetUp(optionBehaviour);
         optionBehaviour.OnValueChanged = new Action<OptionBehaviour>((option) => ValueChanged(id, option));
-        SpacingNum += StaticSpacingNumPlus;
 
         optionBehaviour.LabelBackground.transform.localScale = new Vector3(1.6f, 1f);
         optionBehaviour.LabelBackground.transform.SetLocalX(-2.4f);
@@ -43,6 +45,19 @@ public class BetterOptionCheckboxItem : BetterOptionItem
         Load(DefaultValue);
 
         BetterOptionItems.Add(this);
+
+        if (Parent != null)
+        {
+            optionBehaviour.LabelBackground.GetComponent<SpriteRenderer>().color = new Color(0.85f, 0.85f, 0.85f, 1f);
+            optionBehaviour.LabelBackground.transform.SetLocalZ(1f);
+            ThisParent = Parent;
+            Parent.ChildrenList.Add(this);
+        }
+        else
+        {
+            SpacingNum += StaticSpacingNumPlus;
+        }
+
         return this;
     }
 

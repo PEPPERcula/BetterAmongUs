@@ -4,9 +4,12 @@ namespace BetterAmongUs;
 
 public class BetterOptionStringItem : BetterOptionItem
 {
+    public BetterOptionItem? ThisParent;
+    private StringOption? ThisOption;
     public string[] Values = [];
     public int CurrentValue;
-    private StringOption? ThisOption;
+
+    public override bool ShowChildrenCondition() => CurrentValue > 0;
 
     public BetterOptionItem Create(int id, GameOptionsMenu gameOptionsMenu, string name, string[] strings, int DefaultValue = 0, BetterOptionItem Parent = null)
     {
@@ -28,7 +31,6 @@ public class BetterOptionStringItem : BetterOptionItem
         optionBehaviour.transform.localPosition = new Vector3(0.952f, 2f - StaticSpacingNum * SpacingNum, -2f);
         SetUp(optionBehaviour);
         optionBehaviour.OnValueChanged = new Action<OptionBehaviour>((option) => ValueChanged(id, option));
-        SpacingNum += StaticSpacingNumPlus;
 
         // Fix Game Crash
         foreach (RulesCategory rulesCategory in GameManager.Instance.GameSettingsList.AllCategories)
@@ -58,6 +60,19 @@ public class BetterOptionStringItem : BetterOptionItem
         AdjustButtonsActiveState();
 
         BetterOptionItems.Add(this);
+
+        if (Parent != null)
+        {
+            optionBehaviour.LabelBackground.GetComponent<SpriteRenderer>().color = new Color(0.85f, 0.85f, 0.85f, 1f);
+            optionBehaviour.LabelBackground.transform.SetLocalZ(1f);
+            ThisParent = Parent;
+            Parent.ChildrenList.Add(this);
+        }
+        else
+        {
+            SpacingNum += StaticSpacingNumPlus;
+        }
+
         return this;
     }
 
