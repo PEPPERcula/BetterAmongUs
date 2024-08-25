@@ -246,8 +246,9 @@ class CommandsPatch
                         {
                             foreach (PlayerControl player in Main.AllPlayerControls)
                             {
+                                player.RpcExile();
                                 player.roleAssigned = false;
-                                player.RpcSetRole(RoleTypes.Crewmate, true);
+                                player.RpcSetRole(RoleTypes.CrewmateGhost, true);
                             }
                             GameManager.Instance.RpcEndGame(GameOverReason.ImpostorByKill, false);
                             return;

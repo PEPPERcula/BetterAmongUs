@@ -41,7 +41,7 @@ static class GameSettingMenuPatch
             {
                 TitleList.Add(new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color=#4f92ff>Host Only</color>"));
                 BetterGameSettings.WhenCheating = new BetterOptionStringItem().Create(100, BetterSettingsTab, "When a player is caught cheating", ["Do Nothing", "Kick", "Ban"], 2);
-                BetterGameSettings.InvalidFriendCode = new BetterOptionCheckboxItem().Create(200, BetterSettingsTab, "Allow invalid FriendCodes", true);
+                BetterGameSettings.InvalidFriendCode = new BetterOptionCheckboxItem().Create(200, BetterSettingsTab, "Detected invalid FriendCodes", true);
                 BetterGameSettings.UseBanPlayerList = new BetterOptionCheckboxItem().Create(300, BetterSettingsTab, "Use Ban Player List", true);
                 BetterGameSettings.UseBanNameList = new BetterOptionCheckboxItem().Create(400, BetterSettingsTab, "Use Ban Name List", true);
                 BetterGameSettings.UseBanWordList = new BetterOptionCheckboxItem().Create(500, BetterSettingsTab, "Use Ban Word List", true);
@@ -272,6 +272,8 @@ static class NumberOptionPatch
     [HarmonyPrefix]
     public static bool Increase_Prefix(NumberOption __instance)
     {
+        if (GameStates.IsVanillaServer) return true;
+
         int times = 1;
         if (Input.GetKey(KeyCode.LeftShift))
             times = 5;
@@ -280,6 +282,7 @@ static class NumberOptionPatch
 
         __instance.Value += __instance.Increment * times;
         __instance.UpdateValue();
+        __instance.OnValueChanged.Invoke(__instance);
         return false;
     }
 
@@ -287,6 +290,8 @@ static class NumberOptionPatch
     [HarmonyPrefix]
     public static bool Decrease_Prefix(NumberOption __instance)
     {
+        if (GameStates.IsVanillaServer) return true;
+
         int times = 1;
         if (Input.GetKey(KeyCode.LeftShift))
             times = 5;
@@ -295,6 +300,7 @@ static class NumberOptionPatch
 
         __instance.Value -= __instance.Increment * times;
         __instance.UpdateValue();
+        __instance.OnValueChanged.Invoke(__instance);
         return false;
     }
 
@@ -302,6 +308,8 @@ static class NumberOptionPatch
     [HarmonyPrefix]
     public static bool UpdateValue_Prefix(NumberOption __instance)
     {
+        if (GameStates.IsVanillaServer) return true;
+
         if (__instance.floatOptionName != FloatOptionNames.Invalid)
         {
             GameOptionsManager.Instance.CurrentGameOptions.SetFloat(__instance.floatOptionName, __instance.GetFloat());
@@ -319,6 +327,8 @@ static class NumberOptionPatch
     [HarmonyPrefix]
     public static bool FixedUpdate_Prefix(NumberOption __instance)
     {
+        if (GameStates.IsVanillaServer) return true;
+
         try
         {
             if (__instance.MinusBtn != null && __instance.PlusBtn != null)
