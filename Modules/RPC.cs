@@ -133,51 +133,6 @@ internal static class RPC
         player.Exiled();
     }
 
-    public static void SendHostChatToPlayer(PlayerControl player, string text, string? title = "", bool sendToBetterUser = true)
-    {
-        if (!GameStates.IsHost) return;
-
-        if (player.BetterData().IsBetterUser)
-        {
-            if (sendToBetterUser)
-            {
-                MessageWriter messageWriter2 = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, unchecked((byte)CustomRPC.AddChat), SendOption.None, player.GetClientId());
-                messageWriter2.Write(text);
-                messageWriter2.Write(title);
-                AmongUsClient.Instance.FinishRpcImmediately(messageWriter2);
-            }
-
-            return;
-        }
-
-        /*
-        PlayerControl asPlayer = Main.AllPlayerControls.Where(pc => pc.IsAlive()).OrderBy(pc => pc == PlayerControl.LocalPlayer ? 0 : 1).First();
-
-        var oldName = asPlayer.CurrentOutfit.PlayerName;
-        if (title == "")
-            title = oldName;
-
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(asPlayer.NetId, (byte)RpcCalls.SetName, SendOption.None, player.GetClientId());
-        writer.Write(asPlayer.Data.NetId);
-        writer.Write(title);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(asPlayer.NetId, (byte)RpcCalls.SendChat, SendOption.None, player.GetClientId());
-        messageWriter.Write(text);
-        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
-
-        _ = new LateTask(() =>
-        {
-            MessageWriter writer2 = AmongUsClient.Instance.StartRpcImmediately(asPlayer.NetId, (byte)RpcCalls.SetName, SendOption.None, player.GetClientId());
-            writer2.Write(asPlayer.Data.NetId);
-            writer2.Write(oldName);
-            AmongUsClient.Instance.FinishRpcImmediately(writer2);
-
-            SyncAllNames(force: true);
-        }, 0.08f, shoudLog: false); 
-        */
-    }
-
     public static void HandleCustomRPC(PlayerControl player, byte callId, MessageReader oldReader)
     {
         if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.Data == null) return;
@@ -201,6 +156,8 @@ internal static class RPC
 
                     player.BetterData().IsBetterUser = SetBetterUser;
                     player.BetterData().IsBetterHost = IsBetterHost;
+
+                    SyncAllNames(force: true);
                 }
                 break;
             case (byte)CustomRPC.AddChat:

@@ -129,11 +129,6 @@ static class ExtendedPlayerControl
     }
 
     // RPCs
-    public static void RpcSendHostChat(this PlayerControl player, string text, string title = "<color=#ffffff><b>(<color=#00ff44>System Message</color>)</b>", bool sendToBetterUser = true)
-    {
-        if (player == null) return;
-        RPC.SendHostChatToPlayer(player, text, title, sendToBetterUser);
-    }
     public static void RpcSetNamePrivate(this PlayerControl player, string name, PlayerControl target)
     {
         if (player == null || target == null) return;
