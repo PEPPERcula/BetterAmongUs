@@ -272,17 +272,20 @@ static class NumberOptionPatch
     [HarmonyPrefix]
     public static bool Increase_Prefix(NumberOption __instance)
     {
-        if (GameStates.IsVanillaServer) return true;
-
         int times = 1;
         if (Input.GetKey(KeyCode.LeftShift))
             times = 5;
         if (Input.GetKey(KeyCode.LeftControl))
             times = 10;
 
-        __instance.Value += __instance.Increment * times;
+        if (__instance.Value + __instance.Increment * times > __instance.ValidRange.max)
+        {
+            return false;
+        }
+        __instance.Value = __instance.ValidRange.Clamp(__instance.Value + __instance.Increment * times);
         __instance.UpdateValue();
         __instance.OnValueChanged.Invoke(__instance);
+        __instance.AdjustButtonsActiveState();
         return false;
     }
 
@@ -290,69 +293,20 @@ static class NumberOptionPatch
     [HarmonyPrefix]
     public static bool Decrease_Prefix(NumberOption __instance)
     {
-        if (GameStates.IsVanillaServer) return true;
-
         int times = 1;
         if (Input.GetKey(KeyCode.LeftShift))
             times = 5;
         if (Input.GetKey(KeyCode.LeftControl))
             times = 10;
 
-        __instance.Value -= __instance.Increment * times;
+        if (__instance.Value - __instance.Increment * times < __instance.ValidRange.min)
+        {
+            return false;
+        }
+        __instance.Value = __instance.ValidRange.Clamp(__instance.Value - __instance.Increment * times);
         __instance.UpdateValue();
         __instance.OnValueChanged.Invoke(__instance);
-        return false;
-    }
-
-    [HarmonyPatch(nameof(NumberOption.UpdateValue))]
-    [HarmonyPrefix]
-    public static bool UpdateValue_Prefix(NumberOption __instance)
-    {
-        if (GameStates.IsVanillaServer) return true;
-
-        if (__instance.floatOptionName != FloatOptionNames.Invalid)
-        {
-            GameOptionsManager.Instance.CurrentGameOptions.SetFloat(__instance.floatOptionName, __instance.GetFloat());
-            return false;
-        }
-        if (__instance.intOptionName != Int32OptionNames.Invalid)
-        {
-            GameOptionsManager.Instance.CurrentGameOptions.SetInt(__instance.intOptionName, __instance.GetInt());
-            return false;
-        }
-        return false;
-    }
-
-    [HarmonyPatch(nameof(NumberOption.FixedUpdate))]
-    [HarmonyPrefix]
-    public static bool FixedUpdate_Prefix(NumberOption __instance)
-    {
-        if (GameStates.IsVanillaServer) return true;
-
-        try
-        {
-            if (__instance.MinusBtn != null && __instance.PlusBtn != null)
-            {
-                __instance.MinusBtn.SetInteractable(true);
-                __instance.PlusBtn.SetInteractable(true);
-            }
-
-            if (__instance.oldValue != __instance.Value)
-            {
-                __instance.oldValue = __instance.Value;
-
-                if (__instance.Value > __instance.ValidRange.max || __instance.Value < __instance.ValidRange.min)
-                {
-                    __instance.ValueText.text = $"<color=#f20>{__instance.data.GetValueString(__instance.Value)}</color>";
-                }
-                else
-                {
-                    __instance.ValueText.text = __instance.data.GetValueString(__instance.Value);
-                }
-            }
-        }
-        catch { }
-
+        __instance.AdjustButtonsActiveState();
         return false;
     }
 }
