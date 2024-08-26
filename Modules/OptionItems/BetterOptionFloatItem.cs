@@ -142,7 +142,7 @@ public class BetterOptionFloatItem : BetterOptionItem
     {
         if (BetterDataManager.CanLoadSetting(Id))
         {
-            var Float = BetterDataManager.LoadFloatSetting(Id);
+            var Float = BetterDataManager.LoadFloatSetting(Id, DefaultValue);
 
             if (Float > floatRange.max || Float < floatRange.min)
             {

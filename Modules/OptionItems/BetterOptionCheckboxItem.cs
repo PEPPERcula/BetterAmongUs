@@ -63,7 +63,7 @@ public class BetterOptionCheckboxItem : BetterOptionItem
         {
             if (ThisOption == null) return;
 
-            var Bool = BetterDataManager.LoadBoolSetting(Id);
+            var Bool = BetterDataManager.LoadBoolSetting(Id, DefaultValue);
             ThisOption.CheckMark.GetComponent<SpriteRenderer>().enabled = Bool;
             IsChecked = Bool;
         }

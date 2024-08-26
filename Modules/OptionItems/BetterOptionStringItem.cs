@@ -122,7 +122,7 @@ public class BetterOptionStringItem : BetterOptionItem
     {
         if (BetterDataManager.CanLoadSetting(Id))
         {
-            var Int = BetterDataManager.LoadIntSetting(Id);
+            var Int = BetterDataManager.LoadIntSetting(Id, DefaultValue);
 
             if (Int > Values.Length - 1 || Int < 0)
             {

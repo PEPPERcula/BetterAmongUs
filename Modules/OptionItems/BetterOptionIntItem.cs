@@ -141,7 +141,7 @@ public class BetterOptionIntItem : BetterOptionItem
     {
         if (BetterDataManager.CanLoadSetting(Id))
         {
-            var Int = BetterDataManager.LoadIntSetting(Id);
+            var Int = BetterDataManager.LoadIntSetting(Id, DefaultValue);
 
             if (Int > intRange.max || Int < intRange.min)
             {

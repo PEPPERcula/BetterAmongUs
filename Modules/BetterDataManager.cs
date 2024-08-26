@@ -173,46 +173,67 @@ class BetterDataManager
         return false;
     }
 
-    public static bool LoadBoolSetting(int id)
+    public static bool LoadBoolSetting(int id, bool Default = false)
     {
         string filePath = SettingsFile;
         string json = File.ReadAllText(filePath);
         var jsonData = JsonSerializer.Deserialize<Dictionary<string, string>>(json) ?? new Dictionary<string, string>();
 
-        if (jsonData.ContainsKey(id.ToString()))
+        try
         {
-            return bool.Parse(jsonData[id.ToString()]);
+            if (jsonData.ContainsKey(id.ToString()))
+            {
+                return bool.Parse(jsonData[id.ToString()]);
+            }
+        }
+        catch 
+        {
+            SaveSetting(id, Default.ToString());
         }
 
-        return false;
+        return Default;
     }
 
-    public static float LoadFloatSetting(int id)
+    public static float LoadFloatSetting(int id, float Default = 0f)
     {
         string filePath = SettingsFile;
         string json = File.ReadAllText(filePath);
         var jsonData = JsonSerializer.Deserialize<Dictionary<string, string>>(json) ?? new Dictionary<string, string>();
 
-        if (jsonData.ContainsKey(id.ToString()))
+        try
         {
-            return float.Parse(jsonData[id.ToString()]);
+            if (jsonData.ContainsKey(id.ToString()))
+            {
+                return float.Parse(jsonData[id.ToString()]);
+            }
+        }
+        catch 
+        {
+            SaveSetting(id, Default.ToString());
         }
 
-        return -1f;
+        return Default;
     }
 
-    public static int LoadIntSetting(int id)
+    public static int LoadIntSetting(int id, int Default = 0)
     {
         string filePath = SettingsFile;
         string json = File.ReadAllText(filePath);
         var jsonData = JsonSerializer.Deserialize<Dictionary<string, string>>(json) ?? new Dictionary<string, string>();
 
-        if (jsonData.ContainsKey(id.ToString()))
+        try
         {
-            return int.Parse(jsonData[id.ToString()]);
+            if (jsonData.ContainsKey(id.ToString()))
+            {
+                return int.Parse(jsonData[id.ToString()]);
+            }
+        }
+        catch 
+        {
+            SaveSetting(id, Default.ToString());
         }
 
-        return -1;
+        return Default;
     }
 
     public static void SaveBanList(string friendCode = "", string hashPUID = "")
