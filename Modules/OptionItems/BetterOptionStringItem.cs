@@ -41,6 +41,8 @@ public class BetterOptionStringItem : BetterOptionItem
         optionBehaviour.MinusBtn.OnClick.RemoveAllListeners();
         optionBehaviour.PlusBtn.OnClick.AddListener(new Action(() => Increase()));
         optionBehaviour.MinusBtn.OnClick.AddListener(new Action(() => Decrease()));
+        optionBehaviour.PlusBtn.OnClick.AddListener(new Action(() => ValueChanged(id, optionBehaviour)));
+        optionBehaviour.MinusBtn.OnClick.AddListener(new Action(() => ValueChanged(id, optionBehaviour)));
 
         optionBehaviour.LabelBackground.transform.localScale = new Vector3(1.6f, 1f);
         optionBehaviour.LabelBackground.transform.SetLocalX(-2.4f);
