@@ -59,11 +59,18 @@ public class BetterOptionItem
                     BetterOptionDividerItem => 0.45f,
                     _ => 0.45f,
                 };
+
+                var parent = BetterOptionItems.FirstOrDefault(op => op.IsParent && op.ChildrenList.Contains(item));
+
+                if (parent != null && parent.ChildrenList.Last(op => op.Option.gameObject.active) == item)
+                {
+                    SpacingNum += 0.25f;
+                }
             }
             catch { }
         }
 
-        GameSettingMenuPatch.BetterSettingsTab.scrollBar.SetYBoundsMax(1.25f * SpacingNum / 2);
+        GameSettingMenuPatch.BetterSettingsTab.scrollBar.SetYBoundsMax(1.5f * SpacingNum / 2);
         GameSettingMenuPatch.BetterSettingsTab.scrollBar.ScrollRelative(new(0f, 0f));
     }
 
