@@ -229,7 +229,7 @@ class BetterHostManager
                     else if (player.BetterData().IsBetterUser)
                         sbTopTag.Append("<color=#0dff00>Better User</color>+++");
                 }
-                else if (GameStates.IsInGamePlay)
+                else if (GameStates.IsInGamePlay && !GameStates.IsHideNSeek)
                 {
                     string Role = $"<color={player.GetTeamHexColor()}>{player.GetRoleName()}</color>";
                     if (!player.IsImpostorTeam() && player.myTasks.Count > 0)
@@ -245,6 +245,20 @@ class BetterHostManager
                     }
 
                     sbTopTag.Append($"{Role}+++");
+                }
+                else if (GameStates.IsInGamePlay)
+                {
+                    if (player == target)
+                    {
+                        if (player.IsImpostorTeam())
+                        {
+                            sbTopTag.Append($"<color={Utils.GetTeamHexColor(RoleTeamTypes.Impostor)}>Seeker</color>+++");
+                        }
+                        else
+                        {
+                            sbTopTag.Append($"<color={Utils.GetTeamHexColor(RoleTeamTypes.Crewmate)}>Hider</color>+++");
+                        }
+                    }
                 }
 
                 // Put +++ at the end of each tag

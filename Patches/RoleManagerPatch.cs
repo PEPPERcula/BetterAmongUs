@@ -284,6 +284,7 @@ public class RoleManagerPatch
                 Impostors.Add(player);
                 player.RpcSetRole(RoleTypes.Impostor);
                 player.roleAssigned = true;
+                NumImpostors--;
                 Logger.Log($"Settings Assigned {Utils.GetRoleName(RoleTypes.Impostor)} role to {player.Data.PlayerName}", "RoleManager");
             }
         }
@@ -306,11 +307,12 @@ public class RoleManagerPatch
                 var player = Utils.PlayerFromId(tempSetImpostor);
                 if (player != null)
                 {
-                    if (!Impostors.Contains(player))
+                    if (NumImpostors > 0 && !Impostors.Contains(player))
                     {
                         Impostors.Add(player);
                         player.RpcSetRole(RoleTypes.Impostor);
                         player.roleAssigned = true;
+                        NumImpostors--;
                         Logger.Log($"Settings Assigned {Utils.GetRoleName(RoleTypes.Impostor)} role to {player.Data.PlayerName}", "RoleManager");
                     }
                 }

@@ -167,7 +167,7 @@ class PlayerControlPatch
 
                 sbTagBottom.Append($"<color={friendCodeColor}>{friendCode}</color>+++");
             }
-            else if (GameStates.IsInGame || GameStates.IsFreePlay)
+            else if ((GameStates.IsInGame || GameStates.IsFreePlay) && !GameStates.IsHideNSeek)
             {
                 if (player.IsImpostorTeammate() || player == PlayerControl.LocalPlayer || !PlayerControl.LocalPlayer.IsAlive() || DebugMenu.RevealRoles)
                 {
@@ -177,6 +177,20 @@ class PlayerControlPatch
                         Role += $" <color=#cbcbcb>({player.Data.Tasks.ToArray().Where(task => task.Complete).Count()}/{player.Data.Tasks.Count})</color>";
                     }
                     sbTagTop.Append($"{Role}+++");
+                }
+            }
+            else if (GameStates.IsInGame || GameStates.IsFreePlay)
+            {
+                if (player == PlayerControl.LocalPlayer)
+                {
+                    if (player.IsImpostorTeam())
+                    {
+                        sbTagTop.Append($"<color={Utils.GetTeamHexColor(RoleTeamTypes.Impostor)}>Seeker</color>+++");
+                    }
+                    else
+                    {
+                        sbTagTop.Append($"<color={Utils.GetTeamHexColor(RoleTeamTypes.Crewmate)}>Hider</color>+++");
+                    }
                 }
             }
 
