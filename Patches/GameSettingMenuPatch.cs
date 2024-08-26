@@ -55,10 +55,6 @@ static class GameSettingMenuPatch
             TitleList.Add(new BetterOptionDividerItem().Create(BetterSettingsTab));
             TitleList.Add(new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color=#f20>Experimental</color>"));
             BetterGameSettings.ExperimentalDetectInvalidSabotage = new BetterOptionCheckboxItem().Create(100000, BetterSettingsTab, "Detect Invalid Sabotages", false);
-            new BetterOptionCheckboxItem().Create(10000, BetterSettingsTab, "CheckBox Test", true, BetterGameSettings.ExperimentalDetectInvalidSabotage);
-            new BetterOptionStringItem().Create(10001, BetterSettingsTab, "String Test", ["Test 1", "Test 2", "Test 3"], 0, BetterGameSettings.ExperimentalDetectInvalidSabotage);
-            new BetterOptionFloatItem().Create(10002, BetterSettingsTab, "Float Test 1", [0f, 180f, 2.5f], 0f, "", "", BetterGameSettings.ExperimentalDetectInvalidSabotage);
-            new BetterOptionIntItem().Create(10003, BetterSettingsTab, "Int Test", [0, 5, 1], 0, "", "", BetterGameSettings.ExperimentalDetectInvalidSabotage);
         }
 
         // Gameplay Settings
