@@ -8,6 +8,8 @@ public class BetterOptionItem
 {
     public float StaticSpacingNum => 1f;
     public float StaticSpacingNumPlus => 0.45f;
+    public static Dictionary<int, int> TempPlayerOptionData = [];
+    public static int TempPlayerOptionDataNum = 0;
     public static List<BetterOptionItem> BetterOptionItems = [];
     public static float SpacingNum = 0;
 

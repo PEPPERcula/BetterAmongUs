@@ -30,6 +30,7 @@ static class GameSettingMenuPatch
     public static void SetupSettings(bool IsPreload = false)
     {
         BetterOptionItem.BetterOptionItems.Clear();
+        BetterOptionItem.TempPlayerOptionDataNum = 0;
         TitleList.Clear();
 
         // Anti-Cheat Settings
@@ -99,6 +100,14 @@ static class GameSettingMenuPatch
                     if (item.ThisParent != null)
                     {
                         item.obj.SetActive(item.ThisParent.ShowChildrenCondition() && item.SelfShowCondition());
+                    }
+
+                    if (item is BetterOptionPlayerItem player)
+                    {
+                        _ = new LateTask(() =>
+                        {
+                            player.Load();
+                        }, 0.03f, shoudLog: false);
                     }
                 }
             }
