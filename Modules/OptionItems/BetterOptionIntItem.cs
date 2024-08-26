@@ -191,7 +191,7 @@ public class BetterOptionIntItem : BetterOptionItem
         optionBehaviour.data = new BaseGameSetting
         {
             Title = StringNames.None,
-            Type = OptionTypes.Float,
+            Type = OptionTypes.Int,
         };
     }
 

@@ -5,7 +5,7 @@ namespace BetterAmongUs;
 
 public class BetterOptionPlayerItem : BetterOptionItem
 {
-    private PlayerOption? ThisOption;
+    private NumberOption? ThisOption;
     public int CurrentIndex = -1;
 
     public override bool ShowChildrenCondition() => CurrentIndex > -1;
@@ -24,7 +24,7 @@ public class BetterOptionPlayerItem : BetterOptionItem
             return this;
         }
 
-        PlayerOption optionBehaviour = UnityEngine.Object.Instantiate<PlayerOption>(gameOptionsMenu.playerOptionOrigin, Vector3.zero, Quaternion.identity, gameOptionsMenu.settingsContainer);
+        NumberOption optionBehaviour = UnityEngine.Object.Instantiate<NumberOption>(gameOptionsMenu.numberOptionOrigin, Vector3.zero, Quaternion.identity, gameOptionsMenu.settingsContainer);
         optionBehaviour.transform.localPosition = new Vector3(0.952f, 2f, -2f);
         SetUp(optionBehaviour);
         optionBehaviour.OnValueChanged = new Action<OptionBehaviour>((option) => ValueChanged(0, option));
@@ -55,6 +55,7 @@ public class BetterOptionPlayerItem : BetterOptionItem
         Option = optionBehaviour;
         ThisOption = optionBehaviour;
 
+        Load();
         BetterOptionItems.Add(this);
         obj = optionBehaviour.gameObject;
 
@@ -150,7 +151,7 @@ public class BetterOptionPlayerItem : BetterOptionItem
         optionBehaviour.data = new BaseGameSetting
         {
             Title = StringNames.None,
-            Type = OptionTypes.Player,
+            Type = OptionTypes.Int,
         };
     }
 

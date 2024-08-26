@@ -101,14 +101,6 @@ static class GameSettingMenuPatch
                     {
                         item.obj.SetActive(item.ThisParent.ShowChildrenCondition() && item.SelfShowCondition());
                     }
-
-                    if (item is BetterOptionPlayerItem player)
-                    {
-                        _ = new LateTask(() =>
-                        {
-                            player.Load();
-                        }, 0.03f, shoudLog: false);
-                    }
                 }
             }
 

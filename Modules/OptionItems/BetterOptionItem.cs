@@ -37,6 +37,13 @@ public class BetterOptionItem
             {
                 item.obj.transform.SetLocalY(2f);
 
+                if (item.obj.active == false) continue;
+
+                if (item is BetterOptionPlayerItem player)
+                {
+                    player.Load();
+                }
+
                 SpacingNum += item switch
                 {
                     BetterOptionHeaderItem => 0.1f,
@@ -45,8 +52,6 @@ public class BetterOptionItem
                 };
 
                 item.obj.transform.SetLocalY(2f - 1f * SpacingNum);
-
-                if (item.obj.active == false) continue;
 
                 SpacingNum += item switch
                 {
