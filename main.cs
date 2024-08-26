@@ -84,6 +84,8 @@ public class Main : BasePlugin
     public static string BetterAmongUsVersion => PluginVersion;
     public static string AmongUsVersion => Application.version;
 
+    public static PlatformSpecificData PlatformData => Constants.GetPlatformData();
+
     public static List<string> SupportedAmongUsVersions =
     [
         "2024.8.13",
@@ -143,7 +145,7 @@ public class Main : BasePlugin
             BetterDataManager.LoadData();
             LoadOptions();
 
-            if (File.Exists(Path.Combine($"{Environment.CurrentDirectory}/Among Us_Data/Plugins/x86", "steam_api.dll")))
+            if (PlatformData.Platform == Platforms.StandaloneSteamPC)
                 File.WriteAllText(Path.Combine(Environment.CurrentDirectory, "steam_appid.txt"), "945360");
 
             if (File.Exists(Path.Combine(BetterDataManager.filePathFolder, "better-log.txt")))
@@ -164,7 +166,7 @@ public class Main : BasePlugin
             string SupportedVersions = string.Empty;
             foreach (string text in SupportedAmongUsVersions.ToArray())
                 SupportedVersions += $"{text} ";
-            BetterAmongUs.Logger.Log($"BetterAmongUs {BetterAmongUsVersion}-{ReleaseDate} - [{AmongUsVersion} --> {SupportedVersions.Substring(0, SupportedVersions.Length - 1)}]");
+            BetterAmongUs.Logger.Log($"BetterAmongUs {BetterAmongUsVersion}-{ReleaseDate} - [{AmongUsVersion} --> {SupportedVersions.Substring(0, SupportedVersions.Length - 1)}] {Utils.GetPlatformName(PlatformData.Platform)}");
         }
         catch (Exception ex)
         {
