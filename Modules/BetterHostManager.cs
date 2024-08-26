@@ -229,7 +229,7 @@ class BetterHostManager
                     else if (player.BetterData().IsBetterUser)
                         sbTopTag.Append("<color=#0dff00>Better User</color>+++");
                 }
-                else if (GameStates.IsInGamePlay && !GameStates.IsHideNSeek)
+                else if (GameStates.IsInGamePlay)
                 {
                     string Role = $"<color={player.GetTeamHexColor()}>{player.GetRoleName()}</color>";
                     if (!player.IsImpostorTeam() && player.myTasks.Count > 0)

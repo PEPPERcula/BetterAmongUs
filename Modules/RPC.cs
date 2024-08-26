@@ -92,6 +92,22 @@ public static class MessageReaderUpdateSystemPatch
 
 internal static class RPC
 {
+    public static void RpcSyncSettings()
+    {
+        if (!AmongUsClient.Instance.AmHost)
+        {
+            return;
+        }
+
+        foreach (var player in Main.AllPlayerControls.Where(pc => pc != PlayerControl.LocalPlayer))
+        {
+            var optionsByteArray = GameOptionsManager.Instance.gameOptionsFactory.ToBytes(GameOptionsManager.Instance.CurrentGameOptions, false);
+            MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SyncSettings, SendOption.None, player.GetClientId());
+            messageWriter.WriteBytesAndSize(optionsByteArray);
+            AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+        }
+    } 
+    
     public static void SendBetterCheck()
     {
         var flag = GameStates.IsHost && Main.BetterHost.Value;
