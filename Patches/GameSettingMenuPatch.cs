@@ -29,7 +29,6 @@ static class GameSettingMenuPatch
 
     public static void SetupSettings(bool IsPreload = false)
     {
-        BetterOptionItem.SpacingNum = 0;
         BetterOptionItem.BetterOptionItems.Clear();
         TitleList.Clear();
 
@@ -56,6 +55,10 @@ static class GameSettingMenuPatch
             TitleList.Add(new BetterOptionDividerItem().Create(BetterSettingsTab));
             TitleList.Add(new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color=#f20>Experimental</color>"));
             BetterGameSettings.ExperimentalDetectInvalidSabotage = new BetterOptionCheckboxItem().Create(100000, BetterSettingsTab, "Detect Invalid Sabotages", false);
+            new BetterOptionCheckboxItem().Create(10000, BetterSettingsTab, "CheckBox Test", true, BetterGameSettings.ExperimentalDetectInvalidSabotage);
+            new BetterOptionStringItem().Create(10001, BetterSettingsTab, "String Test", ["Test 1", "Test 2", "Test 3"], 0, BetterGameSettings.ExperimentalDetectInvalidSabotage);
+            new BetterOptionFloatItem().Create(10002, BetterSettingsTab, "Float Test 1", [0f, 180f, 2.5f], 0f, "", "", BetterGameSettings.ExperimentalDetectInvalidSabotage);
+            new BetterOptionIntItem().Create(10003, BetterSettingsTab, "Int Test", [0, 5, 1], 0, "", "", BetterGameSettings.ExperimentalDetectInvalidSabotage);
         }
 
         // Gameplay Settings
@@ -76,18 +79,12 @@ static class GameSettingMenuPatch
         }
 
         /*
-        new BetterOptionCheckboxItem().Create(0, BetterSettingsTab, "CheckBox Test", true);
-        new BetterOptionStringItem().Create(1, BetterSettingsTab, "String Test", ["Test 1", "Test 2", "Test 3"]);
-        new BetterOptionFloatItem().Create(2, BetterSettingsTab, "Float Test 1", [0f, 180f, 2.5f], 0f, "");
-        new BetterOptionIntItem().Create(5, BetterSettingsTab, "Int Test", [0, 5, 1], 0, "");
+        new BetterOptionCheckboxItem().Create(10000, BetterSettingsTab, "CheckBox Test", true);
+        new BetterOptionStringItem().Create(10001, BetterSettingsTab, "String Test", ["Test 1", "Test 2", "Test 3"], 0);
+        new BetterOptionFloatItem().Create(10002, BetterSettingsTab, "Float Test 1", [0f, 180f, 2.5f], 0f, "", "");
+        new BetterOptionIntItem().Create(10003, BetterSettingsTab, "Int Test", [0, 5, 1], 0, "", "");
         new BetterOptionHeaderItem().Create(BetterSettingsTab, "<color=#4f92ff>Test Settings 2</color>");
         */
-
-        if (BetterSettingsTab != null)
-        {
-            BetterSettingsTab.scrollBar.SetYBoundsMax(1.25f * BetterOptionItem.SpacingNum / 2);
-            BetterSettingsTab.InitializeControllerNavigation();
-        }
     }
 
     private static void Initialize()
@@ -102,8 +99,15 @@ static class GameSettingMenuPatch
                     {
                         item.TitleText.text = item.Name;
                     }
+
+                    if (item.ThisParent != null)
+                    {
+                        item.obj.SetActive(item.ThisParent.ShowChildrenCondition());
+                    }
                 }
             }
+
+            BetterOptionItem.UpdatePositions();
         }, 0.005f, shoudLog: false);
     }
 
@@ -156,6 +160,7 @@ static class GameSettingMenuPatch
         BetterSettingsButton.OnClick.AddListener(new Action(() =>
         {
             __instance.ChangeTab(3, false);
+            BetterOptionItem.UpdatePositions();
         }));
 
         BetterSettingsTab = UnityEngine.Object.Instantiate(__instance.GameSettingsTab, __instance.GameSettingsTab.transform.parent);

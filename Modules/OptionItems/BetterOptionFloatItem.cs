@@ -5,7 +5,6 @@ namespace BetterAmongUs;
 
 public class BetterOptionFloatItem : BetterOptionItem
 {
-    public BetterOptionItem? ThisParent;
     private NumberOption? ThisOption;
     public float CurrentValue;
     public FloatRange floatRange = new(0f, 180f);
@@ -33,7 +32,7 @@ public class BetterOptionFloatItem : BetterOptionItem
         if (values.Length is < 3 or > 3) return null;
 
         NumberOption optionBehaviour = UnityEngine.Object.Instantiate<NumberOption>(gameOptionsMenu.numberOptionOrigin, Vector3.zero, Quaternion.identity, gameOptionsMenu.settingsContainer);
-        optionBehaviour.transform.localPosition = new Vector3(0.952f, 2f - StaticSpacingNum * SpacingNum, -2f);
+        optionBehaviour.transform.localPosition = new Vector3(0.952f, 2f, -2f);
         SetUp(optionBehaviour);
         optionBehaviour.OnValueChanged = new Action<OptionBehaviour>((option) => ValueChanged(id, option));
 
@@ -69,6 +68,7 @@ public class BetterOptionFloatItem : BetterOptionItem
         AdjustButtonsActiveState();
 
         BetterOptionItems.Add(this);
+        obj = optionBehaviour.gameObject;
 
         if (Parent != null)
         {
@@ -76,10 +76,6 @@ public class BetterOptionFloatItem : BetterOptionItem
             optionBehaviour.LabelBackground.transform.SetLocalZ(1f);
             ThisParent = Parent;
             Parent.ChildrenList.Add(this);
-        }
-        else
-        {
-            SpacingNum += StaticSpacingNumPlus;
         }
 
         return this;
@@ -197,5 +193,14 @@ public class BetterOptionFloatItem : BetterOptionItem
 
     public override void ValueChanged(int id, OptionBehaviour optionBehaviour)
     {
+        if (IsParent)
+        {
+            bool Bool = ShowChildrenCondition();
+            foreach (var item in ChildrenList)
+            {
+                item.obj.SetActive(Bool);
+            }
+            UpdatePositions();
+        }
     }
 }

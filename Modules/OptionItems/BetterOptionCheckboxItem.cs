@@ -4,7 +4,6 @@ namespace BetterAmongUs;
 
 public class BetterOptionCheckboxItem : BetterOptionItem
 {
-    public BetterOptionItem? ThisParent;
     private ToggleOption? ThisOption;
     private bool? IsChecked;
 
@@ -24,7 +23,7 @@ public class BetterOptionCheckboxItem : BetterOptionItem
         }
 
         ToggleOption optionBehaviour = UnityEngine.Object.Instantiate<ToggleOption>(gameOptionsMenu.checkboxOrigin, Vector3.zero, Quaternion.identity, gameOptionsMenu.settingsContainer);
-        optionBehaviour.transform.localPosition = new Vector3(0.952f, 2f - StaticSpacingNum * SpacingNum, -2f);
+        optionBehaviour.transform.localPosition = new Vector3(0.952f, 2f, -2f);
         SetUp(optionBehaviour);
         optionBehaviour.OnValueChanged = new Action<OptionBehaviour>((option) => ValueChanged(id, option));
 
@@ -45,6 +44,7 @@ public class BetterOptionCheckboxItem : BetterOptionItem
         Load(DefaultValue);
 
         BetterOptionItems.Add(this);
+        obj = optionBehaviour.gameObject;
 
         if (Parent != null)
         {
@@ -52,10 +52,6 @@ public class BetterOptionCheckboxItem : BetterOptionItem
             optionBehaviour.LabelBackground.transform.SetLocalZ(1f);
             ThisParent = Parent;
             Parent.ChildrenList.Add(this);
-        }
-        else
-        {
-            SpacingNum += StaticSpacingNumPlus;
         }
 
         return this;
@@ -102,5 +98,15 @@ public class BetterOptionCheckboxItem : BetterOptionItem
     {
         IsChecked = !IsChecked;
         BetterDataManager.SaveSetting(Id, IsChecked.ToString());
+
+        if (IsParent)
+        {
+            bool Bool = ShowChildrenCondition();
+            foreach (var item in ChildrenList)
+            {
+                item.obj.SetActive(Bool);
+            }
+            UpdatePositions();
+        }
     }
 }

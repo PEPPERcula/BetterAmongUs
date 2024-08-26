@@ -4,7 +4,6 @@ namespace BetterAmongUs;
 
 public class BetterOptionStringItem : BetterOptionItem
 {
-    public BetterOptionItem? ThisParent;
     private StringOption? ThisOption;
     public string[] Values = [];
     public int CurrentValue;
@@ -28,7 +27,7 @@ public class BetterOptionStringItem : BetterOptionItem
         }
 
         StringOption optionBehaviour = UnityEngine.Object.Instantiate<StringOption>(gameOptionsMenu.stringOptionOrigin, Vector3.zero, Quaternion.identity, gameOptionsMenu.settingsContainer);
-        optionBehaviour.transform.localPosition = new Vector3(0.952f, 2f - StaticSpacingNum * SpacingNum, -2f);
+        optionBehaviour.transform.localPosition = new Vector3(0.952f, 2f, -2f);
         SetUp(optionBehaviour);
         optionBehaviour.OnValueChanged = new Action<OptionBehaviour>((option) => ValueChanged(id, option));
 
@@ -60,6 +59,7 @@ public class BetterOptionStringItem : BetterOptionItem
         AdjustButtonsActiveState();
 
         BetterOptionItems.Add(this);
+        obj = optionBehaviour.gameObject;
 
         if (Parent != null)
         {
@@ -67,10 +67,6 @@ public class BetterOptionStringItem : BetterOptionItem
             optionBehaviour.LabelBackground.transform.SetLocalZ(1f);
             ThisParent = Parent;
             Parent.ChildrenList.Add(this);
-        }
-        else
-        {
-            SpacingNum += StaticSpacingNumPlus;
         }
 
         return this;
@@ -165,5 +161,14 @@ public class BetterOptionStringItem : BetterOptionItem
 
     public override void ValueChanged(int id, OptionBehaviour optionBehaviour)
     {
+        if (IsParent)
+        {
+            bool Bool = ShowChildrenCondition();
+            foreach (var item in ChildrenList)
+            {
+                item.obj.SetActive(Bool);
+            }
+            UpdatePositions();
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using BetterAmongUs.Patches;
+using TMPro;
 using UnityEngine;
 
 namespace BetterAmongUs;
@@ -16,10 +17,47 @@ public class BetterOptionItem
     public OptionBehaviour? Option;
     public string? Name = "None";
     public TextMeshPro? TitleText;
+    public GameObject? obj;
 
+    public BetterOptionItem? ThisParent;
     public bool IsParent => ChildrenList.Count > 0;
     public List<BetterOptionItem> ChildrenList = [];
     public virtual bool ShowChildrenCondition() => false;
+
+    public static void UpdatePositions()
+    {
+        SpacingNum = 0f;
+
+        foreach (var item in BetterOptionItems)
+        {
+            try
+            {
+                item.obj.transform.SetLocalY(2f);
+
+                SpacingNum += item switch
+                {
+                    BetterOptionHeaderItem => 0.1f,
+                    BetterOptionDividerItem => 0.15f,
+                    _ => 0f,
+                };
+
+                item.obj.transform.SetLocalY(2f - 1f * SpacingNum);
+
+                if (item.obj.active == false) continue;
+
+                SpacingNum += item switch
+                {
+                    BetterOptionHeaderItem => 0.75f,
+                    BetterOptionDividerItem => 0.45f,
+                    _ => 0.45f,
+                };
+            }
+            catch { }
+        }
+
+        GameSettingMenuPatch.BetterSettingsTab.scrollBar.SetYBoundsMax(1.25f * SpacingNum / 2);
+        GameSettingMenuPatch.BetterSettingsTab.scrollBar.ScrollRelative(new(0f, 0f));
+    }
 
     public void SetUp(OptionBehaviour optionBehaviour)
     {
