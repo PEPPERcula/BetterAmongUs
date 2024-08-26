@@ -23,6 +23,7 @@ public class BetterOptionItem
     public bool IsParent => ChildrenList.Count > 0;
     public List<BetterOptionItem> ChildrenList = [];
     public virtual bool ShowChildrenCondition() => false;
+    public virtual bool SelfShowCondition() => true;
 
     public static void UpdatePositions()
     {

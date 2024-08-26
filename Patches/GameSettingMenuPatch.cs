@@ -98,7 +98,7 @@ static class GameSettingMenuPatch
 
                     if (item.ThisParent != null)
                     {
-                        item.obj.SetActive(item.ThisParent.ShowChildrenCondition());
+                        item.obj.SetActive(item.ThisParent.ShowChildrenCondition() && item.SelfShowCondition());
                     }
                 }
             }

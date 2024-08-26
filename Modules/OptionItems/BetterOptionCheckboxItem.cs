@@ -8,13 +8,16 @@ public class BetterOptionCheckboxItem : BetterOptionItem
     private bool? IsChecked;
 
     public override bool ShowChildrenCondition() => IsChecked == true;
+    public override bool SelfShowCondition() => ShowCondition != null ? ShowCondition() : base.SelfShowCondition();
+    public Func<bool>? ShowCondition = null;
 
-    public BetterOptionItem Create(int id, GameOptionsMenu gameOptionsMenu, string name, bool DefaultValue = true, BetterOptionItem Parent = null)
+    public BetterOptionItem Create(int id, GameOptionsMenu gameOptionsMenu, string name, bool DefaultValue = true, BetterOptionItem? Parent = null, Func<bool>? selfShowCondition = null)
     {
         Id = id;
         Tab = gameOptionsMenu;
         Name = name;
         IsChecked = DefaultValue;
+        ShowCondition = selfShowCondition;
 
         if (gameOptionsMenu == null)
         {
@@ -104,7 +107,7 @@ public class BetterOptionCheckboxItem : BetterOptionItem
             bool Bool = ShowChildrenCondition();
             foreach (var item in ChildrenList)
             {
-                item.obj.SetActive(Bool);
+                item.obj.SetActive(Bool && item.SelfShowCondition());
             }
             UpdatePositions();
         }

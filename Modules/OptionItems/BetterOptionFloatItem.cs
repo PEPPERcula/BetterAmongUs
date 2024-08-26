@@ -13,8 +13,10 @@ public class BetterOptionFloatItem : BetterOptionItem
     private string? PreFix;
 
     public override bool ShowChildrenCondition() => CurrentValue > floatRange.min;
+    public override bool SelfShowCondition() => ShowCondition != null ? ShowCondition() : base.SelfShowCondition();
+    public Func<bool>? ShowCondition = null;
 
-    public BetterOptionItem Create(int id, GameOptionsMenu gameOptionsMenu, string name, float[] values, float DefaultValue, string preFix = "", string postFix = "", BetterOptionItem Parent = null)
+    public BetterOptionItem Create(int id, GameOptionsMenu gameOptionsMenu, string name, float[] values, float DefaultValue, string preFix = "", string postFix = "", BetterOptionItem? Parent = null, Func<bool>? selfShowCondition = null)
     {
         Id = id;
         floatRange = new(values[0], values[1]);
@@ -22,6 +24,7 @@ public class BetterOptionFloatItem : BetterOptionItem
         if (DefaultValue < floatRange.min) DefaultValue = floatRange.min;
         if (DefaultValue > floatRange.max) DefaultValue = floatRange.max;
         CurrentValue = DefaultValue;
+        ShowCondition = selfShowCondition;
 
         if (gameOptionsMenu == null)
         {
@@ -200,7 +203,7 @@ public class BetterOptionFloatItem : BetterOptionItem
             bool Bool = ShowChildrenCondition();
             foreach (var item in ChildrenList)
             {
-                item.obj.SetActive(Bool);
+                item.obj.SetActive(Bool && item.SelfShowCondition());
             }
             UpdatePositions();
         }

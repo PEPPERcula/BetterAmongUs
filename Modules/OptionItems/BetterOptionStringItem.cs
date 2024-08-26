@@ -9,8 +9,10 @@ public class BetterOptionStringItem : BetterOptionItem
     public int CurrentValue;
 
     public override bool ShowChildrenCondition() => CurrentValue > 0;
+    public override bool SelfShowCondition() => ShowCondition != null ? ShowCondition() : base.SelfShowCondition();
+    public Func<bool>? ShowCondition = null;
 
-    public BetterOptionItem Create(int id, GameOptionsMenu gameOptionsMenu, string name, string[] strings, int DefaultValue = 0, BetterOptionItem Parent = null)
+    public BetterOptionItem Create(int id, GameOptionsMenu gameOptionsMenu, string name, string[] strings, int DefaultValue = 0, BetterOptionItem? Parent = null, Func<bool>? selfShowCondition = null)
     {
         Id = id;
         Values = strings;
@@ -19,6 +21,7 @@ public class BetterOptionStringItem : BetterOptionItem
         if (DefaultValue < 0) DefaultValue = 0;
         if (DefaultValue > Values.Length) DefaultValue = Values.Length;
         CurrentValue = DefaultValue;
+        ShowCondition = selfShowCondition;
 
         if (gameOptionsMenu == null)
         {
@@ -168,7 +171,7 @@ public class BetterOptionStringItem : BetterOptionItem
             bool Bool = ShowChildrenCondition();
             foreach (var item in ChildrenList)
             {
-                item.obj.SetActive(Bool);
+                item.obj.SetActive(Bool && item.SelfShowCondition());
             }
             UpdatePositions();
         }
