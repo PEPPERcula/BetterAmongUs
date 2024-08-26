@@ -20,6 +20,14 @@ class BetterGameSettings
     public static BetterOptionItem? ExperimentalDetectInvalidSabotage;
 }
 
+class BetterGameSettingsTemp
+{
+    public static BetterOptionItem? HideAndSeekImp2;
+    public static BetterOptionItem? HideAndSeekImp3;
+    public static BetterOptionItem? HideAndSeekImp4;
+    public static BetterOptionItem? HideAndSeekImp5;
+}
+
 [HarmonyPatch(typeof(GameSettingMenu))]
 static class GameSettingMenuPatch
 {
@@ -71,6 +79,22 @@ static class GameSettingMenuPatch
                     new BetterOptionHeaderItem().Create(BetterSettingsTab, "<color=#d7d700>Hide & Seek Settings</color>");
                     new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color={Utils.GetRoleColor(RoleTypes.Impostor)}>Imposter</color>");
                     BetterGameSettings.HideAndSeekImpNum = new BetterOptionIntItem().Create(1000, BetterSettingsTab, "# Seekers", [1, 5, 1], 1, "", "");
+                    BetterGameSettingsTemp.HideAndSeekImp2 = new BetterOptionPlayerItem().Create(BetterSettingsTab, "Seeker 2", BetterGameSettings.HideAndSeekImpNum, new Func<bool>(() =>
+                    {
+                        return BetterGameSettings.HideAndSeekImpNum is BetterOptionIntItem betterOption && betterOption.CurrentValue > 1;
+                    }));
+                    BetterGameSettingsTemp.HideAndSeekImp3 = new BetterOptionPlayerItem().Create(BetterSettingsTab, "Seeker 3", BetterGameSettings.HideAndSeekImpNum, new Func<bool>(() =>
+                    {
+                        return BetterGameSettings.HideAndSeekImpNum is BetterOptionIntItem betterOption && betterOption.CurrentValue > 2;
+                    }));
+                    BetterGameSettingsTemp.HideAndSeekImp4 = new BetterOptionPlayerItem().Create(BetterSettingsTab, "Seeker 4", BetterGameSettings.HideAndSeekImpNum, new Func<bool>(() =>
+                    {
+                        return BetterGameSettings.HideAndSeekImpNum is BetterOptionIntItem betterOption && betterOption.CurrentValue > 3;
+                    }));
+                    BetterGameSettingsTemp.HideAndSeekImp5 = new BetterOptionPlayerItem().Create(BetterSettingsTab, "Seeker 5", BetterGameSettings.HideAndSeekImpNum, new Func<bool>(() =>
+                    {
+                        return BetterGameSettings.HideAndSeekImpNum is BetterOptionIntItem betterOption && betterOption.CurrentValue > 4;
+                    }));
                 }
             }
         }

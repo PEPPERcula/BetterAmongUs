@@ -288,6 +288,32 @@ public class RoleManagerPatch
             }
         }
 
+        var betterImpostorSettings = new int[]
+        {
+            -1,
+            BetterGameSettingsTemp.HideAndSeekImp2.GetValue(),
+            BetterGameSettingsTemp.HideAndSeekImp3.GetValue(),
+            BetterGameSettingsTemp.HideAndSeekImp4.GetValue(),
+            BetterGameSettingsTemp.HideAndSeekImp5.GetValue()
+        };
+
+        for (int i = 1; i < BetterGameSettings.HideAndSeekImpNum.GetInt(); i++)
+        {
+            int tempSetImpostor = betterImpostorSettings[i];
+
+            if (tempSetImpostor >= 0)
+            {
+                var player = Utils.PlayerFromId(tempSetImpostor);
+                if (player != null)
+                {
+                    Impostors.Add(player);
+                    player.RpcSetRole(RoleTypes.Impostor);
+                    player.roleAssigned = true;
+                    Logger.Log($"Settings Assigned {Utils.GetRoleName(RoleTypes.Impostor)} role to {player.Data.PlayerName}", "RoleManager");
+                }
+            }
+        }
+
         // Override player role assignment
         if (SetPlayerRole.Keys.Any())
         {
