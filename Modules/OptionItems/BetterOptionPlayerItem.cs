@@ -75,6 +75,7 @@ public class BetterOptionPlayerItem : BetterOptionItem
             optionBehaviour.LabelBackground.transform.position += new Vector3(0.04f, 0f, 0f) * Index;
             optionBehaviour.LabelBackground.transform.SetLocalZ(1f);
             ThisParent = Parent;
+            IsChild = true;
             Parent.ChildrenList.Add(this);
         }
 
@@ -155,7 +156,17 @@ public class BetterOptionPlayerItem : BetterOptionItem
         return CurrentIndex;
     }
 
-    public override int GetValue() => Load();
+    public override int GetValue()
+    {
+        if (SelfShowCondition())
+        {
+            return Load();
+        }
+        else
+        {
+            return -1;
+        }
+    }
 
     public override void SetData(OptionBehaviour optionBehaviour)
     {
@@ -168,7 +179,7 @@ public class BetterOptionPlayerItem : BetterOptionItem
 
     public override void ValueChanged(int id, OptionBehaviour optionBehaviour)
     {
-        if (IsParent)
+        if (IsParent || IsChild)
         {
             bool Bool = ShowChildrenCondition();
             foreach (var item in ChildrenList)

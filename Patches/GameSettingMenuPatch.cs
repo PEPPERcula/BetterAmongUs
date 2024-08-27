@@ -79,21 +79,27 @@ static class GameSettingMenuPatch
                     new BetterOptionHeaderItem().Create(BetterSettingsTab, "<color=#d7d700>Hide & Seek Settings</color>");
                     new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color={Utils.GetRoleColor(RoleTypes.Impostor)}>Imposter</color>");
                     BetterGameSettings.HideAndSeekImpNum = new BetterOptionIntItem().Create(1000, BetterSettingsTab, "# Seekers", [1, 5, 1], 1, "", "");
-                    BetterGameSettingsTemp.HideAndSeekImp2 = new BetterOptionPlayerItem().Create(BetterSettingsTab, "Seeker 2", BetterGameSettings.HideAndSeekImpNum, new Func<bool>(() =>
+                    BetterGameSettingsTemp.HideAndSeekImp2 = new BetterOptionPlayerItem().Create(BetterSettingsTab, "Seeker", BetterGameSettings.HideAndSeekImpNum, new Func<bool>(() =>
                     {
                         return BetterGameSettings.HideAndSeekImpNum is BetterOptionIntItem betterOption && betterOption.CurrentValue > 1;
                     }));
-                    BetterGameSettingsTemp.HideAndSeekImp3 = new BetterOptionPlayerItem().Create(BetterSettingsTab, "Seeker 3", BetterGameSettings.HideAndSeekImpNum, new Func<bool>(() =>
+                    BetterGameSettingsTemp.HideAndSeekImp3 = new BetterOptionPlayerItem().Create(BetterSettingsTab, "Seeker", BetterGameSettings.HideAndSeekImpNum, new Func<bool>(() =>
                     {
-                        return BetterGameSettings.HideAndSeekImpNum is BetterOptionIntItem betterOption && betterOption.CurrentValue > 2;
+                        return BetterGameSettings.HideAndSeekImpNum is BetterOptionIntItem betterOption && betterOption.CurrentValue > 2
+                            && BetterGameSettingsTemp.HideAndSeekImp2 is BetterOptionPlayerItem betterOption2 && betterOption2.CurrentIndex > -1;
                     }));
-                    BetterGameSettingsTemp.HideAndSeekImp4 = new BetterOptionPlayerItem().Create(BetterSettingsTab, "Seeker 4", BetterGameSettings.HideAndSeekImpNum, new Func<bool>(() =>
+                    BetterGameSettingsTemp.HideAndSeekImp4 = new BetterOptionPlayerItem().Create(BetterSettingsTab, "Seeker", BetterGameSettings.HideAndSeekImpNum, new Func<bool>(() =>
                     {
-                        return BetterGameSettings.HideAndSeekImpNum is BetterOptionIntItem betterOption && betterOption.CurrentValue > 3;
+                        return BetterGameSettings.HideAndSeekImpNum is BetterOptionIntItem betterOption && betterOption.CurrentValue > 3
+                            && BetterGameSettingsTemp.HideAndSeekImp2 is BetterOptionPlayerItem betterOption2 && betterOption2.CurrentIndex > -1
+                            && BetterGameSettingsTemp.HideAndSeekImp3 is BetterOptionPlayerItem betterOption3 && betterOption3.CurrentIndex > -1;
                     }));
-                    BetterGameSettingsTemp.HideAndSeekImp5 = new BetterOptionPlayerItem().Create(BetterSettingsTab, "Seeker 5", BetterGameSettings.HideAndSeekImpNum, new Func<bool>(() =>
+                    BetterGameSettingsTemp.HideAndSeekImp5 = new BetterOptionPlayerItem().Create(BetterSettingsTab, "Seeker", BetterGameSettings.HideAndSeekImpNum, new Func<bool>(() =>
                     {
-                        return BetterGameSettings.HideAndSeekImpNum is BetterOptionIntItem betterOption && betterOption.CurrentValue > 4;
+                        return BetterGameSettings.HideAndSeekImpNum is BetterOptionIntItem betterOption && betterOption.CurrentValue > 4
+                            && BetterGameSettingsTemp.HideAndSeekImp2 is BetterOptionPlayerItem betterOption2 && betterOption2.CurrentIndex > -1
+                            && BetterGameSettingsTemp.HideAndSeekImp3 is BetterOptionPlayerItem betterOption3 && betterOption3.CurrentIndex > -1
+                            && BetterGameSettingsTemp.HideAndSeekImp4 is BetterOptionPlayerItem betterOption4 && betterOption4.CurrentIndex > -1;
                     }));
                 }
             }

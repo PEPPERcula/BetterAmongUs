@@ -22,6 +22,7 @@ public class BetterOptionItem
     public GameObject? obj;
 
     public BetterOptionItem? ThisParent;
+    public bool IsChild = false;
     public bool IsParent => ChildrenList.Count > 0;
     public List<BetterOptionItem> ChildrenList = [];
     public virtual bool ShowChildrenCondition() => false;
@@ -68,16 +69,6 @@ public class BetterOptionItem
                     BetterOptionTitleItem => 0.50f,
                     _ => 0.45f,
                 };
-
-                var parent = BetterOptionItems.FirstOrDefault(op => op.IsParent && op.ChildrenList.Contains(item));
-
-                if (parent != null && parent.ChildrenList.Last(op => op.Option.gameObject.active) == item)
-                {
-                    if (parent.ThisParent == null && !item.ChildrenList.Any(i => i.SelfShowCondition() == true))
-                    {
-                        SpacingNum += 0.25f;
-                    }
-                }
             }
             catch { }
         }

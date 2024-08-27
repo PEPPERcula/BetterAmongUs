@@ -82,6 +82,7 @@ public class BetterOptionStringItem : BetterOptionItem
             optionBehaviour.LabelBackground.transform.position += new Vector3(0.04f, 0f, 0f) * Index;
             optionBehaviour.LabelBackground.transform.SetLocalZ(1f);
             ThisParent = Parent;
+            IsChild = true;
             Parent.ChildrenList.Add(this);
         }
 
@@ -177,7 +178,7 @@ public class BetterOptionStringItem : BetterOptionItem
 
     public override void ValueChanged(int id, OptionBehaviour optionBehaviour)
     {
-        if (IsParent)
+        if (IsParent || IsChild)
         {
             bool Bool = ShowChildrenCondition();
             foreach (var item in ChildrenList)
