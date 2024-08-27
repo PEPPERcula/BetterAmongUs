@@ -56,7 +56,7 @@ public class BetterOptionItem
                 SpacingNum += item switch
                 {
                     BetterOptionHeaderItem => 0.75f,
-                    BetterOptionDividerItem => 0.45f,
+                    BetterOptionTitleItem => 0.50f,
                     _ => 0.45f,
                 };
 

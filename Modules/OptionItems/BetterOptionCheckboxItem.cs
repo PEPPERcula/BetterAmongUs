@@ -30,7 +30,7 @@ public class BetterOptionCheckboxItem : BetterOptionItem
         SetUp(optionBehaviour);
         optionBehaviour.OnValueChanged = new Action<OptionBehaviour>((option) => ValueChanged(id, option));
 
-        optionBehaviour.LabelBackground.transform.localScale = new Vector3(1.6f, 1f);
+        optionBehaviour.LabelBackground.transform.localScale = new Vector3(1.6f, 0.78f);
         optionBehaviour.LabelBackground.transform.SetLocalX(-2.4f);
         optionBehaviour.TitleText.enableAutoSizing = false;
         optionBehaviour.TitleText.transform.SetLocalX(-1.5f);
@@ -51,7 +51,23 @@ public class BetterOptionCheckboxItem : BetterOptionItem
 
         if (Parent != null)
         {
-            optionBehaviour.LabelBackground.GetComponent<SpriteRenderer>().color = new Color(0.85f, 0.85f, 0.85f, 1f);
+            int Index = 1;
+            var TempParent = Parent;
+
+            while (true)
+            {
+                if (TempParent.ThisParent != null)
+                {
+                    TempParent = TempParent.ThisParent;
+                    Index++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            optionBehaviour.LabelBackground.GetComponent<SpriteRenderer>().color -= new Color(0.1f, 0.1f, 0.1f, 0f) * Index;
             optionBehaviour.LabelBackground.transform.SetLocalZ(1f);
             ThisParent = Parent;
             Parent.ChildrenList.Add(this);
