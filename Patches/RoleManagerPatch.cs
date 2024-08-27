@@ -138,19 +138,22 @@ public class RoleManagerPatch
                     player.RpcSetRole(role);
 
                     // Desync role to other clients to prevent revealing the true role
-                    if (IsImpostorRole(role) && role is not RoleTypes.Phantom)
+                    if (BetterGameSettings.DesyncRoles.GetBool())
                     {
-                        List<MessageWriter> messageWriter = AmongUsClient.Instance.StartRpcDesync(player.NetId, (byte)RpcCalls.SetRole, SendOption.None, player.GetClientId(), clientCheck);
-                        messageWriter.ForEach(mW => mW.Write((ushort)RoleTypes.Impostor));
-                        messageWriter.ForEach(mW => mW.Write(false));
-                        AmongUsClient.Instance.FinishRpcDesync(messageWriter);
-                    }
-                    else if (role is not RoleTypes.Noisemaker)
-                    {
-                        List<MessageWriter> messageWriter = AmongUsClient.Instance.StartRpcDesync(player.NetId, (byte)RpcCalls.SetRole, SendOption.None, player.GetClientId(), clientCheck);
-                        messageWriter.ForEach(mW => mW.Write((ushort)RoleTypes.Crewmate));
-                        messageWriter.ForEach(mW => mW.Write(false));
-                        AmongUsClient.Instance.FinishRpcDesync(messageWriter);
+                        if (IsImpostorRole(role) && role is not RoleTypes.Phantom)
+                        {
+                            List<MessageWriter> messageWriter = AmongUsClient.Instance.StartRpcDesync(player.NetId, (byte)RpcCalls.SetRole, SendOption.None, player.GetClientId(), clientCheck);
+                            messageWriter.ForEach(mW => mW.Write((ushort)RoleTypes.Impostor));
+                            messageWriter.ForEach(mW => mW.Write(false));
+                            AmongUsClient.Instance.FinishRpcDesync(messageWriter);
+                        }
+                        else if (role is not RoleTypes.Noisemaker)
+                        {
+                            List<MessageWriter> messageWriter = AmongUsClient.Instance.StartRpcDesync(player.NetId, (byte)RpcCalls.SetRole, SendOption.None, player.GetClientId(), clientCheck);
+                            messageWriter.ForEach(mW => mW.Write((ushort)RoleTypes.Crewmate));
+                            messageWriter.ForEach(mW => mW.Write(false));
+                            AmongUsClient.Instance.FinishRpcDesync(messageWriter);
+                        }
                     }
 
                     player.roleAssigned = true;
@@ -190,14 +193,19 @@ public class RoleManagerPatch
                         ImpostorRoles[kvp.Key]--;
                         Impostors.Add(pc);
                         pc.RpcSetRole(kvp.Key);
+
                         // Desync role to other clients to prevent revealing the true role
-                        if (kvp.Key is not RoleTypes.Phantom)
+                        if (BetterGameSettings.DesyncRoles.GetBool())
                         {
-                            List<MessageWriter> messageWriter = AmongUsClient.Instance.StartRpcDesync(pc.NetId, (byte)RpcCalls.SetRole, SendOption.None, pc.GetClientId(), clientCheck);
-                            messageWriter.ForEach(mW => mW.Write((ushort)RoleTypes.Impostor));
-                            messageWriter.ForEach(mW => mW.Write(false));
-                            AmongUsClient.Instance.FinishRpcDesync(messageWriter);
+                            if (kvp.Key is not RoleTypes.Phantom)
+                            {
+                                List<MessageWriter> messageWriter = AmongUsClient.Instance.StartRpcDesync(pc.NetId, (byte)RpcCalls.SetRole, SendOption.None, pc.GetClientId(), clientCheck);
+                                messageWriter.ForEach(mW => mW.Write((ushort)RoleTypes.Impostor));
+                                messageWriter.ForEach(mW => mW.Write(false));
+                                AmongUsClient.Instance.FinishRpcDesync(messageWriter);
+                            }
                         }
+
                         pc.roleAssigned = true;
                         Logger.Log($"Assigned {Utils.GetRoleName(kvp.Key)} role to {pc.Data.PlayerName}", "RoleManager");
                         break;
@@ -224,14 +232,19 @@ public class RoleManagerPatch
                         CrewmateRoles[kvp.Key]--;
                         Crewmates.Add(pc);
                         pc.RpcSetRole(kvp.Key);
+
                         // Desync role to other clients to prevent revealing the true role
-                        if (kvp.Key is not RoleTypes.Noisemaker)
+                        if (BetterGameSettings.DesyncRoles.GetBool())
                         {
-                            List<MessageWriter> messageWriter = AmongUsClient.Instance.StartRpcDesync(pc.NetId, (byte)RpcCalls.SetRole, SendOption.None, pc.GetClientId(), clientCheck);
-                            messageWriter.ForEach(mW => mW.Write((ushort)RoleTypes.Crewmate));
-                            messageWriter.ForEach(mW => mW.Write(false));
-                            AmongUsClient.Instance.FinishRpcDesync(messageWriter);
+                            if (kvp.Key is not RoleTypes.Noisemaker)
+                            {
+                                List<MessageWriter> messageWriter = AmongUsClient.Instance.StartRpcDesync(pc.NetId, (byte)RpcCalls.SetRole, SendOption.None, pc.GetClientId(), clientCheck);
+                                messageWriter.ForEach(mW => mW.Write((ushort)RoleTypes.Crewmate));
+                                messageWriter.ForEach(mW => mW.Write(false));
+                                AmongUsClient.Instance.FinishRpcDesync(messageWriter);
+                            }
                         }
+
                         pc.roleAssigned = true;
                         Logger.Log($"Assigned {Utils.GetRoleName(kvp.Key)} role to {pc.Data.PlayerName}", "RoleManager");
                         break;
@@ -438,11 +451,16 @@ public class RoleManagerPatch
             if (kvp.Value > 0 && RNG() <= GameOptionsManager.Instance.CurrentGameOptions.RoleOptions.GetChancePerGame(kvp.Key))
             {
                 player.RpcSetRole(kvp.Key);
+
                 // Desync role to other clients to prevent revealing the true role
-                List<MessageWriter> messageWriter = AmongUsClient.Instance.StartRpcDesync(player.NetId, (byte)RpcCalls.SetRole, SendOption.None, player.GetClientId(), clientCheck);
-                messageWriter.ForEach(mW => mW.Write((ushort)player.Data.Role.DefaultGhostRole));
-                messageWriter.ForEach(mW => mW.Write(false));
-                AmongUsClient.Instance.FinishRpcDesync(messageWriter);
+                if (BetterGameSettings.DesyncRoles.GetBool())
+                {
+                    List<MessageWriter> messageWriter = AmongUsClient.Instance.StartRpcDesync(player.NetId, (byte)RpcCalls.SetRole, SendOption.None, player.GetClientId(), clientCheck);
+                    messageWriter.ForEach(mW => mW.Write((ushort)player.Data.Role.DefaultGhostRole));
+                    messageWriter.ForEach(mW => mW.Write(false));
+                    AmongUsClient.Instance.FinishRpcDesync(messageWriter);
+                }
+
                 return false;
             }
         }
@@ -477,5 +495,16 @@ public class RoleManagerPatch
         return shuffledDictionary;
     }
 
-    private static int RNG() => random.Next(0, 100);
+    public static int RNG()
+    {
+        switch (BetterGameSettings.RoleRandomizer.GetValue())
+        {
+            case 1:
+                return UnityEngine.Random.Range(0, 100);
+
+            default:
+                Random Random = new Random();
+                return Random.Next(0, 100);
+        }
+    }
 }

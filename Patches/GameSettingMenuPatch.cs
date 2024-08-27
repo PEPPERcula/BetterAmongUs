@@ -16,6 +16,8 @@ class BetterGameSettings
     public static BetterOptionItem? DetectedLevelAbove;
     public static BetterOptionItem? DetectCheatClients;
     public static BetterOptionItem? DetectInvalidRPCs;
+    public static BetterOptionItem? RoleRandomizer;
+    public static BetterOptionItem? DesyncRoles;
 
     public static BetterOptionItem? ExperimentalDetectInvalidSabotage;
 }
@@ -64,6 +66,13 @@ static class GameSettingMenuPatch
             TitleList.Add(new BetterOptionDividerItem().Create(BetterSettingsTab));
             TitleList.Add(new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color=#f20>Experimental</color>"));
             BetterGameSettings.ExperimentalDetectInvalidSabotage = new BetterOptionCheckboxItem().Create(100000, BetterSettingsTab, "Detect Invalid Sabotages", false);
+        }
+
+        if (IsPreload || GameStates.IsHost)
+        {
+            TitleList.Add(new BetterOptionHeaderItem().Create(BetterSettingsTab, "<color=#4f92ff>Role Algorithm Settings</color>"));
+            BetterGameSettings.RoleRandomizer = new BetterOptionStringItem().Create(1100, BetterSettingsTab, "Randomizer", ["System.Random", "UnityEngine.Random"], 0);
+            BetterGameSettings.DesyncRoles = new BetterOptionCheckboxItem().Create(1200, BetterSettingsTab, "Desync Roles To Other Clients", true);
         }
 
         // Gameplay Settings
