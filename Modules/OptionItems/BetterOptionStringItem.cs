@@ -68,7 +68,18 @@ public class BetterOptionStringItem : BetterOptionItem
 
         if (Parent != null)
         {
-            optionBehaviour.LabelBackground.GetComponent<SpriteRenderer>().color = new Color(0.85f, 0.85f, 0.85f, 1f);
+            int Index = 1;
+            var tempParent = Parent;
+
+            while (tempParent.ThisParent != null)
+            {
+                tempParent = tempParent.ThisParent;
+                Index++;
+            }
+
+            optionBehaviour.LabelBackground.GetComponent<SpriteRenderer>().color -= new Color(0.25f, 0.25f, 0.25f, 0f) * Index;
+            optionBehaviour.LabelBackground.transform.localScale -= new Vector3(0.04f, 0f, 0f) * Index;
+            optionBehaviour.LabelBackground.transform.position += new Vector3(0.04f, 0f, 0f) * Index;
             optionBehaviour.LabelBackground.transform.SetLocalZ(1f);
             ThisParent = Parent;
             Parent.ChildrenList.Add(this);

@@ -62,19 +62,12 @@ public class BetterOptionPlayerItem : BetterOptionItem
         if (Parent != null)
         {
             int Index = 1;
-            var TempParent = Parent;
+            var tempParent = Parent;
 
-            while (true)
+            while (tempParent.ThisParent != null)
             {
-                if (TempParent.ThisParent != null)
-                {
-                    TempParent = TempParent.ThisParent;
-                    Index++;
-                }
-                else
-                {
-                    break;
-                }
+                tempParent = tempParent.ThisParent;
+                Index++;
             }
 
             optionBehaviour.LabelBackground.GetComponent<SpriteRenderer>().color -= new Color(0.25f, 0.25f, 0.25f, 0f) * Index;

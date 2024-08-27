@@ -116,14 +116,11 @@ static class GameSettingMenuPatch
             {
                 if (item != null)
                 {
+                    item.obj.SetActive(true);
+
                     if (item.TitleText != null)
                     {
                         item.TitleText.text = item.Name;
-                    }
-
-                    if (item.ThisParent != null)
-                    {
-                        item.obj.SetActive(item.ThisParent.ShowChildrenCondition() && item.SelfShowCondition());
                     }
                 }
             }

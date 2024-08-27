@@ -40,10 +40,13 @@ public class BetterOptionItem
                 // Need to fix name not setting
                 if (item.ThisParent != null)
                 {
-                    item.obj.SetActive(item.ThisParent.ShowChildrenCondition() && item.SelfShowCondition() && item.ThisParent.Option.gameObject.active);
+                    _ = new LateTask(() =>
+                    {
+                        item.obj.SetActive(item.ThisParent.ShowChildrenCondition() && item.SelfShowCondition() && item.ThisParent.Option.gameObject.active);
+                    }, 0.005f, shoudLog: false);
+                    if (!(item.ThisParent.ShowChildrenCondition() && item.SelfShowCondition() && item.ThisParent.Option.gameObject.active))
+                        continue;
                 }
-
-                if (item.obj.active == false) continue;
 
                 if (item is BetterOptionPlayerItem player)
                 {
