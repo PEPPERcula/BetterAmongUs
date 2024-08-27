@@ -37,6 +37,12 @@ public class BetterOptionItem
             {
                 item.obj.transform.SetLocalY(2f);
 
+                // Need to fix name not setting
+                if (item.ThisParent != null)
+                {
+                    item.obj.SetActive(item.ThisParent.ShowChildrenCondition() && item.SelfShowCondition() && item.ThisParent.Option.gameObject.active);
+                }
+
                 if (item.obj.active == false) continue;
 
                 if (item is BetterOptionPlayerItem player)
@@ -64,7 +70,10 @@ public class BetterOptionItem
 
                 if (parent != null && parent.ChildrenList.Last(op => op.Option.gameObject.active) == item)
                 {
-                    SpacingNum += 0.25f;
+                    if (parent.ThisParent == null && !item.ChildrenList.Any(i => i.SelfShowCondition() == true))
+                    {
+                        SpacingNum += 0.25f;
+                    }
                 }
             }
             catch { }
