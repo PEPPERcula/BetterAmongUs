@@ -12,9 +12,8 @@ public class BetterOptionTitleItem : BetterOptionItem
         }
 
         ToggleOption optionBehaviour = UnityEngine.Object.Instantiate<ToggleOption>(gameOptionsMenu.checkboxOrigin, Vector3.zero, Quaternion.identity, gameOptionsMenu.settingsContainer);
-        optionBehaviour.transform.localPosition = new Vector3(0.952f, 2f - StaticSpacingNum * SpacingNum, -2f);
+        optionBehaviour.transform.localPosition = new Vector3(0.952f, 2f, -2f);
         SetUp(optionBehaviour);
-        SpacingNum += StaticSpacingNumPlus;
 
         UnityEngine.Object.Destroy(optionBehaviour.CheckMark.transform.parent.gameObject);
         UnityEngine.Object.Destroy(optionBehaviour.GetComponent<ToggleOption>());
@@ -25,6 +24,14 @@ public class BetterOptionTitleItem : BetterOptionItem
         optionBehaviour.LabelBackground.color = new Color(0.6f, 0.6f, 0.6f, 1f);
         optionBehaviour.LabelBackground.transform.SetLocalZ(1f);
 
+        optionBehaviour.LabelBackground.transform.localScale = new Vector3(1.6f, 1f);
+        optionBehaviour.LabelBackground.transform.SetLocalX(-2.4f);
+        optionBehaviour.TitleText.enableAutoSizing = false;
+        optionBehaviour.TitleText.transform.SetLocalX(-2.4f);
+        optionBehaviour.TitleText.alignment = TMPro.TextAlignmentOptions.Center;
+        optionBehaviour.TitleText.enableWordWrapping = false;
+        optionBehaviour.TitleText.fontSize = 2.5f;
+
         // Set data
         Tab = gameOptionsMenu;
         Name = $"<b><size=150%>{name}</size></b>";
@@ -32,6 +39,8 @@ public class BetterOptionTitleItem : BetterOptionItem
         TitleText = optionBehaviour.TitleText;
 
         BetterOptionItems.Add(this);
+        obj = optionBehaviour.gameObject;
+
         return this;
     }
 

@@ -27,8 +27,8 @@ public class Main : BasePlugin
     public const string HotfixNum = "0";
     public const bool IsHotFix = false;
     public const string PluginGuid = "com.d1gq.betteramongus";
-    public const string PluginVersion = "1.1.0";
-    public const string ReleaseDate = "08.24.2024"; // mm/dd/yyyy
+    public const string PluginVersion = "1.1.1";
+    public const string ReleaseDate = "08.25.2024"; // mm/dd/yyyy
     public const string Github = "https://github.com/D1GQ/BetterAmongUs-Public";
     public const string Discord = "https://discord.gg/vjYrXpzNAn";
 
@@ -83,6 +83,8 @@ public class Main : BasePlugin
 
     public static string BetterAmongUsVersion => PluginVersion;
     public static string AmongUsVersion => Application.version;
+
+    public static PlatformSpecificData PlatformData => Constants.GetPlatformData();
 
     public static List<string> SupportedAmongUsVersions =
     [
@@ -143,7 +145,7 @@ public class Main : BasePlugin
             BetterDataManager.LoadData();
             LoadOptions();
 
-            if (File.Exists(Path.Combine($"{Environment.CurrentDirectory}/Among Us_Data/Plugins/x86", "steam_api.dll")))
+            if (PlatformData.Platform == Platforms.StandaloneSteamPC)
                 File.WriteAllText(Path.Combine(Environment.CurrentDirectory, "steam_appid.txt"), "945360");
 
             if (File.Exists(Path.Combine(BetterDataManager.filePathFolder, "better-log.txt")))
@@ -164,7 +166,7 @@ public class Main : BasePlugin
             string SupportedVersions = string.Empty;
             foreach (string text in SupportedAmongUsVersions.ToArray())
                 SupportedVersions += $"{text} ";
-            BetterAmongUs.Logger.Log($"BetterAmongUs {BetterAmongUsVersion}-{ReleaseDate} - [{AmongUsVersion} --> {SupportedVersions.Substring(0, SupportedVersions.Length - 1)}]");
+            BetterAmongUs.Logger.Log($"BetterAmongUs {BetterAmongUsVersion}-{ReleaseDate} - [{AmongUsVersion} --> {SupportedVersions.Substring(0, SupportedVersions.Length - 1)}] {Utils.GetPlatformName(PlatformData.Platform)}");
         }
         catch (Exception ex)
         {
@@ -174,7 +176,6 @@ public class Main : BasePlugin
 
     public static ConfigEntry<bool> AntiCheat { get; private set; }
     public static ConfigEntry<bool> BetterHost { get; private set; }
-    public static ConfigEntry<bool> BetterRoleAlgorithma { get; private set; }
     public static ConfigEntry<bool> BetterNotifications { get; private set; }
     public static ConfigEntry<bool> ChatInGameplay { get; private set; }
     public static ConfigEntry<bool> LobbyPlayerInfo { get; private set; }
@@ -186,7 +187,6 @@ public class Main : BasePlugin
     {
         AntiCheat = Config.Bind("Better Options", "AntiCheat", true);
         BetterHost = Config.Bind("Better Options", "BetterHost", false);
-        BetterRoleAlgorithma = Config.Bind("Better Options", "BetterRoleAlgorithma", true);
         BetterNotifications = Config.Bind("Better Options", "BetterNotifications", true);
         ChatInGameplay = Config.Bind("Better Options", "ChatInGameplay", true);
         LobbyPlayerInfo = Config.Bind("Better Options", "LobbyPlayerInfo", true);

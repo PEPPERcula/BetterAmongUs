@@ -246,8 +246,9 @@ class CommandsPatch
                         {
                             foreach (PlayerControl player in Main.AllPlayerControls)
                             {
+                                player.RpcExile();
                                 player.roleAssigned = false;
-                                player.RpcSetRole(RoleTypes.Crewmate, true);
+                                player.RpcSetRole(RoleTypes.CrewmateGhost, true);
                             }
                             GameManager.Instance.RpcEndGame(GameOverReason.ImpostorByKill, false);
                             return;
@@ -302,11 +303,6 @@ class CommandsPatch
                 case "role" or "setrole":
                     if (HandleIsHost(command) == true)
                     {
-                        if (!Main.BetterRoleAlgorithma.Value)
-                        {
-                            Utils.AddChatPrivate($"<color=#730000>{error}\nBetter Role Algorithma in better options must be turned on to use this command");
-                            return;
-                        }
                         if (command[0][1..].ToLower().Trim() == "role")
                         {
                             var player = PlayerControl.LocalPlayer;

@@ -16,8 +16,18 @@ class BetterGameSettings
     public static BetterOptionItem? DetectedLevelAbove;
     public static BetterOptionItem? DetectCheatClients;
     public static BetterOptionItem? DetectInvalidRPCs;
+    public static BetterOptionItem? RoleRandomizer;
+    public static BetterOptionItem? DesyncRoles;
 
     public static BetterOptionItem? ExperimentalDetectInvalidSabotage;
+}
+
+class BetterGameSettingsTemp
+{
+    public static BetterOptionItem? HideAndSeekImp2;
+    public static BetterOptionItem? HideAndSeekImp3;
+    public static BetterOptionItem? HideAndSeekImp4;
+    public static BetterOptionItem? HideAndSeekImp5;
 }
 
 [HarmonyPatch(typeof(GameSettingMenu))]
@@ -29,8 +39,8 @@ static class GameSettingMenuPatch
 
     public static void SetupSettings(bool IsPreload = false)
     {
-        BetterOptionItem.SpacingNum = 0;
         BetterOptionItem.BetterOptionItems.Clear();
+        BetterOptionItem.TempPlayerOptionDataNum = 0;
         TitleList.Clear();
 
         // Anti-Cheat Settings
@@ -40,8 +50,8 @@ static class GameSettingMenuPatch
             if (IsPreload || GameStates.IsHost)
             {
                 TitleList.Add(new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color=#4f92ff>Host Only</color>"));
-                BetterGameSettings.WhenCheating = new BetterOptionStringItem().Create(100, BetterSettingsTab, "When a player is caught cheating", ["Do Nothing", "Kick", "Ban"], 2);
-                BetterGameSettings.InvalidFriendCode = new BetterOptionCheckboxItem().Create(200, BetterSettingsTab, "Allow invalid friendCodes", true);
+                BetterGameSettings.WhenCheating = new BetterOptionStringItem().Create(100, BetterSettingsTab, "When a player is caught cheating", ["Notify", "Kick", "Ban"], 2);
+                BetterGameSettings.InvalidFriendCode = new BetterOptionCheckboxItem().Create(200, BetterSettingsTab, "Detected invalid FriendCodes", true);
                 BetterGameSettings.UseBanPlayerList = new BetterOptionCheckboxItem().Create(300, BetterSettingsTab, "Use Ban Player List", true);
                 BetterGameSettings.UseBanNameList = new BetterOptionCheckboxItem().Create(400, BetterSettingsTab, "Use Ban Name List", true);
                 BetterGameSettings.UseBanWordList = new BetterOptionCheckboxItem().Create(500, BetterSettingsTab, "Use Ban Word List", true);
@@ -49,13 +59,20 @@ static class GameSettingMenuPatch
             }
 
             TitleList.Add(new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color=#4f92ff>Detections</color>"));
-            BetterGameSettings.DetectedLevelAbove = new BetterOptionIntItem().Create(600, BetterSettingsTab, "Detected player level = or >", [100, 5000, 5], 200, "Lv ", "");
+            BetterGameSettings.DetectedLevelAbove = new BetterOptionIntItem().Create(600, BetterSettingsTab, "Detected player levels >", [100, 5000, 5], 200, "Lv ", "");
             BetterGameSettings.DetectCheatClients = new BetterOptionCheckboxItem().Create(700, BetterSettingsTab, "Detect Cheat Clients", true);
             BetterGameSettings.DetectInvalidRPCs = new BetterOptionCheckboxItem().Create(800, BetterSettingsTab, "Detect Invalid RPCs", true);
 
             TitleList.Add(new BetterOptionDividerItem().Create(BetterSettingsTab));
             TitleList.Add(new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color=#f20>Experimental</color>"));
             BetterGameSettings.ExperimentalDetectInvalidSabotage = new BetterOptionCheckboxItem().Create(100000, BetterSettingsTab, "Detect Invalid Sabotages", false);
+        }
+
+        if (IsPreload || GameStates.IsHost)
+        {
+            TitleList.Add(new BetterOptionHeaderItem().Create(BetterSettingsTab, "<color=#4f92ff>Role Algorithm Settings</color>"));
+            BetterGameSettings.RoleRandomizer = new BetterOptionStringItem().Create(1100, BetterSettingsTab, "Randomizer", ["System.Random", "UnityEngine.Random"], 0);
+            BetterGameSettings.DesyncRoles = new BetterOptionCheckboxItem().Create(1200, BetterSettingsTab, "Desync Roles To Other Clients", true);
         }
 
         // Gameplay Settings
@@ -69,28 +86,41 @@ static class GameSettingMenuPatch
                 else if (IsPreload || GameStates.IsHideNSeek)
                 {
                     new BetterOptionHeaderItem().Create(BetterSettingsTab, "<color=#d7d700>Hide & Seek Settings</color>");
-
-                    if (IsPreload || Main.BetterRoleAlgorithma.Value)
+                    new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color={Utils.GetRoleColor(RoleTypes.Impostor)}>Imposter</color>");
+                    BetterGameSettings.HideAndSeekImpNum = new BetterOptionIntItem().Create(1000, BetterSettingsTab, "# Seekers", [1, 5, 1], 1, "", "");
+                    BetterGameSettingsTemp.HideAndSeekImp2 = new BetterOptionPlayerItem().Create(BetterSettingsTab, "Seeker", BetterGameSettings.HideAndSeekImpNum, new Func<bool>(() =>
                     {
-                        new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color=#4f92ff>Better Role Algorithma</color>");
-                        BetterOptionItem.SpacingNum += 0.2f;
-                        new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color={Utils.GetRoleColor(RoleTypes.Impostor)}>Imposter</color>");
-                        BetterGameSettings.HideAndSeekImpNum = new BetterOptionIntItem().Create(1000, BetterSettingsTab, "# Seekers", [1, 5, 1], 1, "", "");
-                    }
+                        return BetterGameSettings.HideAndSeekImpNum is BetterOptionIntItem betterOption && betterOption.CurrentValue > 1;
+                    }));
+                    BetterGameSettingsTemp.HideAndSeekImp3 = new BetterOptionPlayerItem().Create(BetterSettingsTab, "Seeker", BetterGameSettings.HideAndSeekImpNum, new Func<bool>(() =>
+                    {
+                        return BetterGameSettings.HideAndSeekImpNum is BetterOptionIntItem betterOption && betterOption.CurrentValue > 2
+                            && BetterGameSettingsTemp.HideAndSeekImp2 is BetterOptionPlayerItem betterOption2 && betterOption2.CurrentIndex > -1;
+                    }));
+                    BetterGameSettingsTemp.HideAndSeekImp4 = new BetterOptionPlayerItem().Create(BetterSettingsTab, "Seeker", BetterGameSettings.HideAndSeekImpNum, new Func<bool>(() =>
+                    {
+                        return BetterGameSettings.HideAndSeekImpNum is BetterOptionIntItem betterOption && betterOption.CurrentValue > 3
+                            && BetterGameSettingsTemp.HideAndSeekImp2 is BetterOptionPlayerItem betterOption2 && betterOption2.CurrentIndex > -1
+                            && BetterGameSettingsTemp.HideAndSeekImp3 is BetterOptionPlayerItem betterOption3 && betterOption3.CurrentIndex > -1;
+                    }));
+                    BetterGameSettingsTemp.HideAndSeekImp5 = new BetterOptionPlayerItem().Create(BetterSettingsTab, "Seeker", BetterGameSettings.HideAndSeekImpNum, new Func<bool>(() =>
+                    {
+                        return BetterGameSettings.HideAndSeekImpNum is BetterOptionIntItem betterOption && betterOption.CurrentValue > 4
+                            && BetterGameSettingsTemp.HideAndSeekImp2 is BetterOptionPlayerItem betterOption2 && betterOption2.CurrentIndex > -1
+                            && BetterGameSettingsTemp.HideAndSeekImp3 is BetterOptionPlayerItem betterOption3 && betterOption3.CurrentIndex > -1
+                            && BetterGameSettingsTemp.HideAndSeekImp4 is BetterOptionPlayerItem betterOption4 && betterOption4.CurrentIndex > -1;
+                    }));
                 }
             }
         }
 
         /*
-        new BetterOptionCheckboxItem().Create(0, BetterSettingsTab, "CheckBox Test", true);
-        new BetterOptionStringItem().Create(1, BetterSettingsTab, "String Test", ["Test 1", "Test 2", "Test 3"]);
-        new BetterOptionFloatItem().Create(2, BetterSettingsTab, "Float Test 1", [0f, 180f, 2.5f], 0f, "");
-        new BetterOptionIntItem().Create(5, BetterSettingsTab, "Int Test", [0, 5, 1], 0, "");
+        new BetterOptionCheckboxItem().Create(10000, BetterSettingsTab, "CheckBox Test", true);
+        new BetterOptionStringItem().Create(10001, BetterSettingsTab, "String Test", ["Test 1", "Test 2", "Test 3"], 0);
+        new BetterOptionFloatItem().Create(10002, BetterSettingsTab, "Float Test 1", [0f, 180f, 2.5f], 0f, "", "");
+        new BetterOptionIntItem().Create(10003, BetterSettingsTab, "Int Test", [0, 5, 1], 0, "", "");
         new BetterOptionHeaderItem().Create(BetterSettingsTab, "<color=#4f92ff>Test Settings 2</color>");
         */
-
-        if (BetterSettingsTab != null)
-            BetterSettingsTab.scrollBar.SetYBoundsMax(1.25f * BetterOptionItem.SpacingNum / 2);
     }
 
     private static void Initialize()
@@ -101,12 +131,16 @@ static class GameSettingMenuPatch
             {
                 if (item != null)
                 {
+                    item.obj.SetActive(true);
+
                     if (item.TitleText != null)
                     {
                         item.TitleText.text = item.Name;
                     }
                 }
             }
+
+            BetterOptionItem.UpdatePositions();
         }, 0.005f, shoudLog: false);
     }
 
@@ -159,6 +193,7 @@ static class GameSettingMenuPatch
         BetterSettingsButton.OnClick.AddListener(new Action(() =>
         {
             __instance.ChangeTab(3, false);
+            BetterOptionItem.UpdatePositions();
         }));
 
         BetterSettingsTab = UnityEngine.Object.Instantiate(__instance.GameSettingsTab, __instance.GameSettingsTab.transform.parent);
@@ -275,8 +310,17 @@ static class NumberOptionPatch
         if (Input.GetKey(KeyCode.LeftControl))
             times = 10;
 
-        __instance.Value += __instance.Increment * times;
+        if (__instance.Value + __instance.Increment * times > __instance.ValidRange.max)
+        {
+            __instance.Value = __instance.ValidRange.max;
+        }
+        else
+        {
+            __instance.Value = __instance.ValidRange.Clamp(__instance.Value + __instance.Increment * times);
+        }
         __instance.UpdateValue();
+        __instance.OnValueChanged.Invoke(__instance);
+        __instance.AdjustButtonsActiveState();
         return false;
     }
 
@@ -290,56 +334,17 @@ static class NumberOptionPatch
         if (Input.GetKey(KeyCode.LeftControl))
             times = 10;
 
-        __instance.Value -= __instance.Increment * times;
+        if (__instance.Value - __instance.Increment * times < __instance.ValidRange.min)
+        {
+            __instance.Value = __instance.ValidRange.min;
+        }
+        else
+        {
+            __instance.Value = __instance.ValidRange.Clamp(__instance.Value - __instance.Increment * times);
+        }
         __instance.UpdateValue();
-        return false;
-    }
-
-    [HarmonyPatch(nameof(NumberOption.UpdateValue))]
-    [HarmonyPrefix]
-    public static bool UpdateValue_Prefix(NumberOption __instance)
-    {
-        if (__instance.floatOptionName != FloatOptionNames.Invalid)
-        {
-            GameOptionsManager.Instance.CurrentGameOptions.SetFloat(__instance.floatOptionName, __instance.GetFloat());
-            return false;
-        }
-        if (__instance.intOptionName != Int32OptionNames.Invalid)
-        {
-            GameOptionsManager.Instance.CurrentGameOptions.SetInt(__instance.intOptionName, __instance.GetInt());
-            return false;
-        }
-        return false;
-    }
-
-    [HarmonyPatch(nameof(NumberOption.FixedUpdate))]
-    [HarmonyPrefix]
-    public static bool FixedUpdate_Prefix(NumberOption __instance)
-    {
-        try
-        {
-            if (__instance.MinusBtn != null && __instance.PlusBtn != null)
-            {
-                __instance.MinusBtn.SetInteractable(true);
-                __instance.PlusBtn.SetInteractable(true);
-            }
-
-            if (__instance.oldValue != __instance.Value)
-            {
-                __instance.oldValue = __instance.Value;
-
-                if (__instance.Value > __instance.ValidRange.max || __instance.Value < __instance.ValidRange.min)
-                {
-                    __instance.ValueText.text = $"<color=#f20>{__instance.data.GetValueString(__instance.Value)}</color>";
-                }
-                else
-                {
-                    __instance.ValueText.text = __instance.data.GetValueString(__instance.Value);
-                }
-            }
-        }
-        catch { }
-
+        __instance.OnValueChanged.Invoke(__instance);
+        __instance.AdjustButtonsActiveState();
         return false;
     }
 }

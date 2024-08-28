@@ -5,14 +5,18 @@ namespace BetterAmongUs;
 
 public class BetterOptionFloatItem : BetterOptionItem
 {
+    private NumberOption? ThisOption;
     public float CurrentValue;
     public FloatRange floatRange = new(0f, 180f);
     public float Increment = 2.5f;
-    private NumberOption? ThisOption;
     private string? PostFix;
     private string? PreFix;
 
-    public BetterOptionItem Create(int id, GameOptionsMenu gameOptionsMenu, string name, float[] values, float DefaultValue, string preFix = "", string postFix = "", BetterOptionItem Parent = null)
+    public override bool ShowChildrenCondition() => CurrentValue > floatRange.min;
+    public override bool SelfShowCondition() => ShowCondition != null ? ShowCondition() : base.SelfShowCondition();
+    public Func<bool>? ShowCondition = null;
+
+    public BetterOptionItem Create(int id, GameOptionsMenu gameOptionsMenu, string name, float[] values, float DefaultValue, string preFix = "", string postFix = "", BetterOptionItem? Parent = null, Func<bool>? selfShowCondition = null)
     {
         Id = id;
         floatRange = new(values[0], values[1]);
@@ -20,6 +24,7 @@ public class BetterOptionFloatItem : BetterOptionItem
         if (DefaultValue < floatRange.min) DefaultValue = floatRange.min;
         if (DefaultValue > floatRange.max) DefaultValue = floatRange.max;
         CurrentValue = DefaultValue;
+        ShowCondition = selfShowCondition;
 
         if (gameOptionsMenu == null)
         {
@@ -30,10 +35,9 @@ public class BetterOptionFloatItem : BetterOptionItem
         if (values.Length is < 3 or > 3) return null;
 
         NumberOption optionBehaviour = UnityEngine.Object.Instantiate<NumberOption>(gameOptionsMenu.numberOptionOrigin, Vector3.zero, Quaternion.identity, gameOptionsMenu.settingsContainer);
-        optionBehaviour.transform.localPosition = new Vector3(0.952f, 2f - StaticSpacingNum * SpacingNum, -2f);
+        optionBehaviour.transform.localPosition = new Vector3(0.952f, 2f, -2f);
         SetUp(optionBehaviour);
         optionBehaviour.OnValueChanged = new Action<OptionBehaviour>((option) => ValueChanged(id, option));
-        SpacingNum += StaticSpacingNumPlus;
 
         // Fix Game Crash
         foreach (RulesCategory rulesCategory in GameManager.Instance.GameSettingsList.AllCategories)
@@ -45,6 +49,16 @@ public class BetterOptionFloatItem : BetterOptionItem
         optionBehaviour.MinusBtn.OnClick.RemoveAllListeners();
         optionBehaviour.PlusBtn.OnClick.AddListener(new Action(() => Increase()));
         optionBehaviour.MinusBtn.OnClick.AddListener(new Action(() => Decrease()));
+        optionBehaviour.PlusBtn.OnClick.AddListener(new Action(() => ValueChanged(id, optionBehaviour)));
+        optionBehaviour.MinusBtn.OnClick.AddListener(new Action(() => ValueChanged(id, optionBehaviour)));
+
+        optionBehaviour.LabelBackground.transform.localScale = new Vector3(1.6f, 0.78f);
+        optionBehaviour.LabelBackground.transform.SetLocalX(-2.4f);
+        optionBehaviour.TitleText.enableAutoSizing = false;
+        optionBehaviour.TitleText.transform.SetLocalX(-1.5f);
+        optionBehaviour.TitleText.alignment = TMPro.TextAlignmentOptions.Right;
+        optionBehaviour.TitleText.enableWordWrapping = false;
+        optionBehaviour.TitleText.fontSize = 2.5f;
 
         // Set data
         Tab = gameOptionsMenu;
@@ -59,6 +73,28 @@ public class BetterOptionFloatItem : BetterOptionItem
         AdjustButtonsActiveState();
 
         BetterOptionItems.Add(this);
+        obj = optionBehaviour.gameObject;
+
+        if (Parent != null)
+        {
+            int Index = 1;
+            var tempParent = Parent;
+
+            while (tempParent.ThisParent != null)
+            {
+                tempParent = tempParent.ThisParent;
+                Index++;
+            }
+
+            optionBehaviour.LabelBackground.GetComponent<SpriteRenderer>().color -= new Color(0.25f, 0.25f, 0.25f, 0f) * Index;
+            optionBehaviour.LabelBackground.transform.localScale -= new Vector3(0.04f, 0f, 0f) * Index;
+            optionBehaviour.LabelBackground.transform.position += new Vector3(0.04f, 0f, 0f) * Index;
+            optionBehaviour.LabelBackground.transform.SetLocalZ(1f);
+            ThisParent = Parent;
+            IsChild = true;
+            Parent.ChildrenList.Add(this);
+        }
+
         return this;
     }
 
@@ -99,6 +135,10 @@ public class BetterOptionFloatItem : BetterOptionItem
         {
             CurrentValue += Increment * times;
         }
+        else
+        {
+            CurrentValue = floatRange.max;
+        }
 
         AdjustButtonsActiveState();
     }
@@ -115,6 +155,10 @@ public class BetterOptionFloatItem : BetterOptionItem
         {
             CurrentValue -= Increment * times;
         }
+        else
+        {
+            CurrentValue = floatRange.min;
+        }
 
         AdjustButtonsActiveState();
     }
@@ -123,7 +167,7 @@ public class BetterOptionFloatItem : BetterOptionItem
     {
         if (BetterDataManager.CanLoadSetting(Id))
         {
-            var Float = BetterDataManager.LoadFloatSetting(Id);
+            var Float = BetterDataManager.LoadFloatSetting(Id, DefaultValue);
 
             if (Float > floatRange.max || Float < floatRange.min)
             {
@@ -174,5 +218,14 @@ public class BetterOptionFloatItem : BetterOptionItem
 
     public override void ValueChanged(int id, OptionBehaviour optionBehaviour)
     {
+        if (IsParent || IsChild)
+        {
+            bool Bool = ShowChildrenCondition();
+            foreach (var item in ChildrenList)
+            {
+                item.obj.SetActive(Bool && item.SelfShowCondition());
+            }
+            UpdatePositions();
+        }
     }
 }

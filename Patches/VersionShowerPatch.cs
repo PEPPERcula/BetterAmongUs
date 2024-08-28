@@ -9,6 +9,6 @@ public class VersionShowerPatch
     [HarmonyPostfix]
     public static void Postfix(VersionShower __instance)
     {
-        __instance.text.text = $"<color=#0dff00>♻BetterAmongUs♻ {Main.GetVersionText()}</color> - " + __instance.text.text;
+        __instance.text.text = $"<color=#0dff00>♻BetterAmongUs♻ {Main.GetVersionText()}</color> <color=#ababab>~</color> {Utils.GetPlatformName(Main.PlatformData.Platform)} v{Main.AmongUsVersion}";
     }
 }

@@ -61,6 +61,13 @@ class GamePlayManager
             }
             catch { }
         }
+
+        [HarmonyPatch(nameof(LobbyBehaviour.RpcExtendLobbyTimer))]
+        [HarmonyPostfix]
+        private static void RpcExtendLobbyTimer_Postfix(/*LobbyBehaviour __instance*/)
+        {
+            GameStartManagerPatch.lobbyTimer += 30f;
+        }
     }
 
     [HarmonyPatch(typeof(IntroCutscene))]
@@ -124,10 +131,23 @@ class GamePlayManager
     [HarmonyPatch(typeof(GameStartManager))]
     public class GameStartManagerPatch
     {
+        public static float lobbyTimer = 600f;
+        public static string lobbyTimerDisplay = "";
+        [HarmonyPatch(nameof(GameStartManager.Start))]
+        [HarmonyPostfix]
+        private static void Start_Postfix(/*GameStartManager __instance*/)
+        {
+            lobbyTimer = 600f;
+        }
         [HarmonyPatch(nameof(GameStartManager.Update))]
         [HarmonyPrefix]
         private static void Update_Prefix(GameStartManager __instance)
         {
+            lobbyTimer = Mathf.Max(0f, lobbyTimer -= Time.deltaTime);
+            int minutes = (int)lobbyTimer / 60;
+            int seconds = (int)lobbyTimer % 60;
+            lobbyTimerDisplay = $"{minutes:00}:{seconds:00}";
+
             __instance.MinPlayers = 1;
         }
         [HarmonyPatch(nameof(GameStartManager.Update))]

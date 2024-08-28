@@ -52,9 +52,6 @@ public static class OnPlayerJoinedPatch
 
                 RPC.SyncAllNames(force: true);
 
-                if (Main.BetterHost.Value)
-                    client.Character.RpcSendHostChat(HudManagerPatch.WelcomeMessage, sendToBetterUser: false);
-
                 // Auto ban player on ban list
                 if (BetterGameSettings.UseBanPlayerList.GetBool())
                 {

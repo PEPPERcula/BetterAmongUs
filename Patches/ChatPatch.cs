@@ -125,7 +125,9 @@ class ChatPatch
             ChatBubble pooledBubble = __instance.GetPooledBubble();
             try
             {
-                chatText = chatText.Replace("\n", "");
+                if (sourcePlayer.BetterData().IsBetterUser && GameStates.IsBetterHostLobby)
+                    chatText = chatText.Replace("\n", "");
+
                 pooledBubble.transform.SetParent(__instance.scroller.Inner);
                 pooledBubble.transform.localScale = Vector3.one;
                 bool flag = sourcePlayer == PlayerControl.LocalPlayer;
@@ -173,9 +175,10 @@ class ChatPatch
                     if (sourcePlayer.IsDev())
                         sbTag.Append("<color=#0088ff>Dev</color>+++");
 
-                    if (((sourcePlayer == PlayerControl.LocalPlayer && GameStates.IsHost && Main.BetterHost.Value) || sourcePlayer.BetterData().IsBetterHost) && !GameStates.IsInGamePlay)
+                    if (((sourcePlayer == PlayerControl.LocalPlayer && GameStates.IsHost && Main.BetterHost.Value)
+                        || (sourcePlayer != PlayerControl.LocalPlayer && sourcePlayer.BetterData().IsBetterHost && sourcePlayer.IsHost())))
                         sbTag.Append("<color=#0dff00>Better Host</color>+++");
-                    else if ((sourcePlayer == PlayerControl.LocalPlayer || sourcePlayer.BetterData().IsBetterUser) && !GameStates.IsInGamePlay)
+                    else if ((sourcePlayer == PlayerControl.LocalPlayer || sourcePlayer.BetterData().IsBetterUser))
                         sbTag.Append("<color=#0dff00>Better User</color>+++");
 
                     if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.SickoData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.SickoData.ContainsValue(friendCode))
