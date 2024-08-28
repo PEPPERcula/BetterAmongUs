@@ -135,6 +135,10 @@ public class BetterOptionFloatItem : BetterOptionItem
         {
             CurrentValue += Increment * times;
         }
+        else
+        {
+            CurrentValue = floatRange.max;
+        }
 
         AdjustButtonsActiveState();
     }
@@ -150,6 +154,10 @@ public class BetterOptionFloatItem : BetterOptionItem
         if (CurrentValue - Increment * times >= floatRange.min)
         {
             CurrentValue -= Increment * times;
+        }
+        else
+        {
+            CurrentValue = floatRange.min;
         }
 
         AdjustButtonsActiveState();

@@ -312,9 +312,12 @@ static class NumberOptionPatch
 
         if (__instance.Value + __instance.Increment * times > __instance.ValidRange.max)
         {
-            return false;
+            __instance.Value = __instance.ValidRange.max;
         }
-        __instance.Value = __instance.ValidRange.Clamp(__instance.Value + __instance.Increment * times);
+        else
+        {
+            __instance.Value = __instance.ValidRange.Clamp(__instance.Value + __instance.Increment * times);
+        }
         __instance.UpdateValue();
         __instance.OnValueChanged.Invoke(__instance);
         __instance.AdjustButtonsActiveState();
@@ -333,9 +336,12 @@ static class NumberOptionPatch
 
         if (__instance.Value - __instance.Increment * times < __instance.ValidRange.min)
         {
-            return false;
+            __instance.Value = __instance.ValidRange.min;
         }
-        __instance.Value = __instance.ValidRange.Clamp(__instance.Value - __instance.Increment * times);
+        else
+        {
+            __instance.Value = __instance.ValidRange.Clamp(__instance.Value - __instance.Increment * times);
+        }
         __instance.UpdateValue();
         __instance.OnValueChanged.Invoke(__instance);
         __instance.AdjustButtonsActiveState();

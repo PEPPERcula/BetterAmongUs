@@ -134,6 +134,10 @@ public class BetterOptionIntItem : BetterOptionItem
         {
             CurrentValue += Increment * times;
         }
+        else
+        {
+            CurrentValue = intRange.max;
+        }
 
         AdjustButtonsActiveState();
     }
@@ -149,6 +153,10 @@ public class BetterOptionIntItem : BetterOptionItem
         if (CurrentValue - Increment * times >= intRange.min)
         {
             CurrentValue -= Increment * times;
+        }
+        else
+        {
+            CurrentValue = intRange.min;
         }
 
         AdjustButtonsActiveState();
