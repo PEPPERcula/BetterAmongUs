@@ -60,7 +60,7 @@ class AntiCheat
         [HarmonyPostfix]
         public static void Deserialize_Postfix(PlatformSpecificData __instance)
         {
-            if (!Main.AntiCheat.Value) return;
+            if (!Main.AntiCheat.Value || !GameStates.IsVanillaServer) return;
 
             if (GameStates.IsLobby)
             {
