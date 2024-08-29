@@ -132,14 +132,31 @@ class PlayerControlPatch
             var sbTagBottom = new StringBuilder();
 
             // Put +++ at the end of each tag
-            if (!player.isDummy)
+            if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.SickoData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.SickoData.ContainsValue(friendCode))
             {
-                if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.SickoData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.SickoData.ContainsValue(friendCode))
-                    sbTag.Append("<color=#00f583>Sicko User</color>+++");
-                else if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.AUMData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.AUMData.ContainsValue(friendCode))
-                    sbTag.Append("<color=#4f0000>AUM User</color>+++");
-                else if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.PlayerData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.PlayerData.ContainsValue(friendCode))
-                    sbTag.Append("<color=#fc0000>Known Cheater</color>+++");
+                sbTag.Append("<color=#00f583>Sicko User</color>+++");
+                player.SetOutlineByHex(true, "#00f583");
+            }
+
+            else if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.AUMData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.AUMData.ContainsValue(friendCode))
+            {
+                sbTag.Append("<color=#4f0000>AUM User</color>+++");
+                player.SetOutlineByHex(true, "#4f0000");
+            }
+
+            else if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.PlayerData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.PlayerData.ContainsValue(friendCode))
+            {
+                sbTag.Append("<color=#fc0000>Known Cheater</color>+++");
+                player.SetOutlineByHex(true, "#fc0000");
+            }
+
+            else
+            {
+                var color = player.cosmetics.currentBodySprite.BodySprite.material.GetColor("_OutlineColor");
+                if (color == Utils.HexToColor32("#00f583") || color == Utils.HexToColor32("#4f0000") || color == Utils.HexToColor32("#fc0000"))
+                {
+                    player.SetOutline(false, null);
+                }
             }
 
             if (GameStates.IsInGame && GameStates.IsLobby && !GameStates.IsFreePlay)

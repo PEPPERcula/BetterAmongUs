@@ -22,13 +22,13 @@ public enum ReleaseTypes : int
 [BepInProcess("Among Us.exe")]
 public class Main : BasePlugin
 {
-    public const ReleaseTypes ReleaseBuildType = ReleaseTypes.Dev;
+    public const ReleaseTypes ReleaseBuildType = ReleaseTypes.Release;
     public const string CanaryNum = "0";
     public const string HotfixNum = "0";
     public const bool IsHotFix = false;
     public const string PluginGuid = "com.d1gq.betteramongus";
-    public const string PluginVersion = "1.1.1";
-    public const string ReleaseDate = "08.25.2024"; // mm/dd/yyyy
+    public const string PluginVersion = "1.1.2";
+    public const string ReleaseDate = "08.29.2024"; // mm/dd/yyyy
     public const string Github = "https://github.com/D1GQ/BetterAmongUs-Public";
     public const string Discord = "https://discord.gg/vjYrXpzNAn";
 
