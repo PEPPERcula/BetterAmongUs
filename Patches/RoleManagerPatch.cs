@@ -88,6 +88,7 @@ public class RoleManagerPatch
                 CrewmateRoles[role] = GameOptionsManager.Instance.CurrentGameOptions.RoleOptions.GetNumPerGame(role);
         }
 
+#if DEBUG
         // Override player role assignment
         if (SetPlayerRole.Keys.Any())
         {
@@ -161,6 +162,7 @@ public class RoleManagerPatch
                 }
             }
         }
+#endif
 
         // Get players in random order
         List<PlayerControl> players = Main.AllPlayerControls

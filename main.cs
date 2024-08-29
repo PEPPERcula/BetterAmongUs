@@ -22,7 +22,7 @@ public enum ReleaseTypes : int
 [BepInProcess("Among Us.exe")]
 public class Main : BasePlugin
 {
-    public const ReleaseTypes ReleaseBuildType = ReleaseTypes.Release;
+    public const ReleaseTypes ReleaseBuildType = ReleaseTypes.Dev;
     public const string CanaryNum = "0";
     public const string HotfixNum = "0";
     public const bool IsHotFix = false;
@@ -158,10 +158,12 @@ public class Main : BasePlugin
             for (int i = 0; i < DevUser.Length; i++)
                 DevUser[i] = Encryptor.Decrypt(DevUser[i]);
 
+#if DEBUG
             ClassInjector.RegisterTypeInIl2Cpp<DebugMenu>();
             ClassInjector.RegisterTypeInIl2Cpp<Resources.Coroutines.Component>();
             debugmenu = AddComponent<DebugMenu>();
             AddComponent<Resources.Coroutines.Component>();
+#endif
 
             string SupportedVersions = string.Empty;
             foreach (string text in SupportedAmongUsVersions.ToArray())

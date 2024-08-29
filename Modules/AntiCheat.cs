@@ -65,38 +65,38 @@ class AntiCheat
             if (GameStates.IsLobby)
             {
                 _ = new LateTask(() =>
+                {
+                    var player = Main.AllPlayerControls.FirstOrDefault(pc => pc.GetClient().PlatformData == __instance);
+
+                    if (player != null)
                     {
-                        var player = Main.AllPlayerControls.FirstOrDefault(pc => pc.GetClient().PlatformData == __instance);
-
-                        if (player != null)
+                        if (__instance.Platform is Platforms.StandaloneWin10 or Platforms.Xbox)
                         {
-                            if (__instance.Platform is Platforms.StandaloneWin10 or Platforms.Xbox)
+                            if (__instance.XboxPlatformId.ToString().Length is < 10 or > 16)
                             {
-                                if (__instance.XboxPlatformId.ToString().Length is < 10 or > 16)
-                                {
-                                    player.ReportPlayer(ReportReasons.Cheating_Hacking);
-                                    BetterNotificationManager.NotifyCheat(player, $"Platform Spoofer", newText: "Has been detected with a cheat");
-                                    Logger.LogCheat($"{player.BetterData().RealName} Platform Spoofer: {__instance.XboxPlatformId}");
-                                }
-                            }
-
-                            if (__instance.Platform is Platforms.Playstation)
-                            {
-                                if (__instance.PsnPlatformId.ToString().Length is < 14 or > 20)
-                                {
-                                    player.ReportPlayer(ReportReasons.Cheating_Hacking);
-                                    BetterNotificationManager.NotifyCheat(player, $"Platform Spoofer", newText: "Has been detected with a cheat");
-                                    Logger.LogCheat($"{player.BetterData().RealName} Platform Spoofer: {__instance.PsnPlatformId}");
-                                }
+                                player.ReportPlayer(ReportReasons.Cheating_Hacking);
+                                BetterNotificationManager.NotifyCheat(player, $"Platform Spoofer", newText: "Has been detected with a cheat");
+                                Logger.LogCheat($"{player.BetterData().RealName} Platform Spoofer: {__instance.XboxPlatformId}");
                             }
                         }
-                    }, 3.5f, shoudLog: false);
+
+                        if (__instance.Platform is Platforms.Playstation)
+                        {
+                            if (__instance.PsnPlatformId.ToString().Length is < 14 or > 20)
+                            {
+                                player.ReportPlayer(ReportReasons.Cheating_Hacking);
+                                BetterNotificationManager.NotifyCheat(player, $"Platform Spoofer", newText: "Has been detected with a cheat");
+                                Logger.LogCheat($"{player.BetterData().RealName} Platform Spoofer: {__instance.PsnPlatformId}");
+                            }
+                        }
+                    }
+                }, 3.5f, shoudLog: false);
             }
         }
     }
 
     // Handle RPC before anti cheat detection
-    public static void HandleRPCBeforeCheck(PlayerControl player, byte callId, MessageReader Oldreader)
+    public static void HandleCheatRPCBeforeCheck(PlayerControl player, byte callId, MessageReader Oldreader)
     {
         MessageReader reader = MessageReader.Get(Oldreader);
 

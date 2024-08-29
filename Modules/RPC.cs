@@ -25,7 +25,7 @@ internal class PlayerControlRPCHandlerPatch
 {
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
-        AntiCheat.HandleRPCBeforeCheck(__instance, callId, reader);
+        AntiCheat.HandleCheatRPCBeforeCheck(__instance, callId, reader);
 
         if (AntiCheat.CheckCancelRPC(__instance, callId, reader) != true)
         {

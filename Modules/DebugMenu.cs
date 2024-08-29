@@ -7,7 +7,7 @@ namespace BetterAmongUs;
 public class DebugMenu : MonoBehaviour
 {
     public static bool RevealRoles = false;
-
+#if DEBUG
 
     [HideFromIl2Cpp]
     public DragWindow Window { get; }
@@ -237,4 +237,5 @@ public class DebugMenu : MonoBehaviour
 
         WindowEnabled = !WindowEnabled;
     }
+#endif
 }

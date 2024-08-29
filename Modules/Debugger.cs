@@ -14,6 +14,7 @@ class Logger
     public static void LogHeader(string info, string tag = "LogHeader") => Log($"   >-------------- {info} --------------<", tag);
     public static void LogCheat(string info, string tag = "AntiCheat") => Log(info, tag);
     public static void Error(string info, string tag = "Error") => Log(info, tag);
+    public static void Error(Exception ex, string tag = "Error") => Log(ex.ToString(), tag);
     public static void Test()
     {
         Log("------------------> TEST <------------------", "TEST");
@@ -31,11 +32,13 @@ class Logger
 
     public static void LogPrivate(string info, string tag = "Log")
     {
+#if DEBUG
         if (GameStates.IsDev)
         {
             Log(info, tag);
             return;
         }
+#endif
 
         string mark = $"{DateTime.Now:HH:mm} [BetterLog][PrivateLog][{tag}]";
         string logFilePath = Path.Combine(BetterDataManager.filePathFolder, "better-log.txt");
