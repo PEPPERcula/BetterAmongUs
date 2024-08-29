@@ -1,7 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using InnerNet;
 using UnityEngine;
-using static Il2CppSystem.Globalization.CultureInfo;
 
 namespace BetterAmongUs;
 
@@ -26,13 +25,6 @@ public static class PlayerControlDataExtension
         public int TimesCalledMeeting { get; set; } = 0;
         public DisconnectReasons DisconnectReason { get; set; } = DisconnectReasons.Unknown;
         public ExtendedRoleInfo? RoleInfo { get; set; }
-        public DelayedInfo? DelayedData { get; set; }
-    }
-
-    public class DelayedInfo
-    {
-        public PlayerPhysics? playerPhysics { get; set; }
-        public NetworkedPlayerInfo? data { get; set; }
     }
 
     public class ExtendedRoleInfo
@@ -71,15 +63,6 @@ public static class PlayerControlDataExtension
         {
             player.BetterData().RealName = player.Data.PlayerName;
         }
-
-        _ = new LateTask(() =>
-        {
-            if (player != null)
-            {
-                player.BetterData().DelayedData.playerPhysics = player.MyPhysics;
-                player.BetterData().DelayedData.data = player.Data;
-            }
-        }, 1.5f, shoudLog: false);
     }
 
     // Get BetterData from PlayerControl
@@ -92,12 +75,7 @@ public static class PlayerControlDataExtension
             playerInfo[player.Data.Puid] = new ExtendedPlayerInfo
             {
                 _Data = player.Data,
-                RoleInfo = new ExtendedRoleInfo(),
-                DelayedData = new DelayedInfo
-                {
-                    playerPhysics = player.MyPhysics,
-                    data = player.Data
-                }
+                RoleInfo = new ExtendedRoleInfo()
             };
         }
 
@@ -107,19 +85,12 @@ public static class PlayerControlDataExtension
     // Get BetterData from NetworkedPlayerInfo
     public static ExtendedPlayerInfo? BetterData(this NetworkedPlayerInfo info)
     {
-        var player = Utils.PlayerFromClientId(info.PlayerId);
-
         if (!playerInfo.ContainsKey(info.Puid))
         {
             playerInfo[info.Puid] = new ExtendedPlayerInfo
             {
                 _Data = info,
-                RoleInfo = new ExtendedRoleInfo(),
-                DelayedData = new DelayedInfo
-                {
-                    playerPhysics = player.MyPhysics,
-                    data = player.Data
-                }
+                RoleInfo = new ExtendedRoleInfo()
             };
         }
 
@@ -139,12 +110,7 @@ public static class PlayerControlDataExtension
                 {
                     _Data = player.Data,
                     RealName = player.Data.PlayerName,
-                    RoleInfo = new ExtendedRoleInfo(),
-                    DelayedData = new DelayedInfo
-                    {
-                        playerPhysics = player.MyPhysics,
-                        data = player.Data
-                    }
+                    RoleInfo = new ExtendedRoleInfo()
                 };
             }
 
