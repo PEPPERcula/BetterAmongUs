@@ -267,7 +267,7 @@ static class ExtendedPlayerControl
     // Report player
     public static void ReportPlayer(this PlayerControl player, ReportReasons reason = ReportReasons.None)
     {
-        if (player != null)
+        if (player?.GetClient() != null)
         {
             if (!player.GetClient().HasBeenReported)
             {
