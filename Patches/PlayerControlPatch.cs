@@ -93,9 +93,6 @@ class PlayerControlPatch
                 return;
             }
 
-            if (Main.AllPlayerControls.Any(pc => player.Data.PlayerId == pc.shapeshiftTargetPlayerId))
-                return;
-
             string NewName = player.Data.PlayerName;
             string hashPuid = Utils.GetHashPuid(player);
 
@@ -219,6 +216,14 @@ class PlayerControlPatch
             if (!player.IsInShapeshift())
             {
                 player.RawSetName(NewName);
+            }
+            else
+            {
+                var target = Utils.PlayerFromId(player.shapeshiftTargetPlayerId);
+                if (target != null)
+                {
+                    player.RawSetName(target.Data.PlayerName);
+                }
             }
 
             // Put +++ at the end of each tag
