@@ -31,7 +31,6 @@ public static class PlayerControlDataExtension
         public int TimesCalledMeeting { get; set; } = 0;
         public float TimeSinceLastTask { get; set; } = 5f;
         public uint LastTaskId { get; set; } = 999;
-        public int LightsMultiplier { get; set; } = 0;
     }
 
     public class ExtendedRoleInfo
