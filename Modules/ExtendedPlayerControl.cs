@@ -125,7 +125,7 @@ static class ExtendedPlayerControl
 
         AmongUsClient.Instance.KickPlayer(player.GetClientId(), ban);
 
-        player.BetterData().BannedByAntiCheat = AntiCheatBan;
+        player.BetterData().AntiCheatInfo.BannedByAntiCheat = AntiCheatBan;
     }
 
     public static void SetOutline(this PlayerControl player, bool active, Color? color = null)

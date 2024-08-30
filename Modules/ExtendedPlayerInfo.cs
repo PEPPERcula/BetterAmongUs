@@ -6,6 +6,7 @@ namespace BetterAmongUs;
 
 public static class PlayerControlDataExtension
 {
+    // Base
     public class ExtendedPlayerInfo
     {
         public NetworkedPlayerInfo? _Data { get; set; }
@@ -14,17 +15,23 @@ public static class PlayerControlDataExtension
         public bool IsBetterUser { get; set; } = false;
         public bool IsBetterHost { get; set; } = false;
         public bool IsTOHEHost { get; set; } = false;
-        public bool BannedByAntiCheat { get; set; } = false;
-        public int TimesAttemptedKilled { get; set; } = 0;
 
         // Track Game Info
-        public int OpenSabotageNum { get; set; } = 0;
-        public bool IsFixingPanelSabotage => OpenSabotageNum != 0;
-        public float TimeSinceLastTask { get; set; } = 5f;
-        public uint LastTaskId { get; set; } = 999;
-        public int TimesCalledMeeting { get; set; } = 0;
         public DisconnectReasons DisconnectReason { get; set; } = DisconnectReasons.Unknown;
         public ExtendedRoleInfo? RoleInfo { get; set; }
+        public ExtendedAntiCheatInfo? AntiCheatInfo { get; set; }
+    }
+
+    public class ExtendedAntiCheatInfo
+    {
+        public bool BannedByAntiCheat { get; set; } = false;
+        public int TimesAttemptedKilled { get; set; } = 0;
+        public int OpenSabotageNum { get; set; } = 0;
+        public bool IsFixingPanelSabotage => OpenSabotageNum != 0;
+        public int TimesCalledMeeting { get; set; } = 0;
+        public float TimeSinceLastTask { get; set; } = 5f;
+        public uint LastTaskId { get; set; } = 999;
+        public int LightsMultiplier { get; set; } = 0;
     }
 
     public class ExtendedRoleInfo
@@ -36,24 +43,29 @@ public static class PlayerControlDataExtension
 
     public static readonly Dictionary<string, ExtendedPlayerInfo> playerInfo = [];
 
-    public static void ClearData(this ExtendedPlayerInfo BetterData) => playerInfo[BetterData._Data.Puid] = new ExtendedPlayerInfo();
+    public static void ClearData(this ExtendedPlayerInfo BetterData) => playerInfo[BetterData._Data.Puid] = new ExtendedPlayerInfo
+    {
+        _Data = BetterData._Data,
+        RoleInfo = new ExtendedRoleInfo(),
+        AntiCheatInfo = new ExtendedAntiCheatInfo()
+    };
 
     // Reset info when needed
     public static void ResetPlayerData(PlayerControl player)
     {
         if (GameStates.IsLobby)
         {
-            player.BetterData().TimesCalledMeeting = 0;
+            player.BetterData().AntiCheatInfo.TimesCalledMeeting = 0;
             player.BetterData().RoleInfo.HasNoisemakerNotify = false;
-            player.BetterData().TimeSinceLastTask = 5f;
-            player.BetterData().LastTaskId = 999;
+            player.BetterData().AntiCheatInfo.TimeSinceLastTask = 5f;
+            player.BetterData().AntiCheatInfo.LastTaskId = 999;
             player.BetterData().RoleInfo.Kills = 0;
-            player.BetterData().OpenSabotageNum = 0;
-            player.BetterData().TimesAttemptedKilled = 0;
+            player.BetterData().AntiCheatInfo.OpenSabotageNum = 0;
+            player.BetterData().AntiCheatInfo.TimesAttemptedKilled = 0;
         }
         else
         {
-            player.BetterData().TimeSinceLastTask += Time.deltaTime;
+            player.BetterData().AntiCheatInfo.TimeSinceLastTask += Time.deltaTime;
 
             if (player.IsAlive() || player.Data.RoleType == RoleTypes.GuardianAngel)
                 player.BetterData().RoleInfo.DeadDisplayRole = player.Data.RoleType;
@@ -75,7 +87,8 @@ public static class PlayerControlDataExtension
             playerInfo[player.Data.Puid] = new ExtendedPlayerInfo
             {
                 _Data = player.Data,
-                RoleInfo = new ExtendedRoleInfo()
+                RoleInfo = new ExtendedRoleInfo(),
+                AntiCheatInfo = new ExtendedAntiCheatInfo()
             };
         }
 
@@ -90,7 +103,8 @@ public static class PlayerControlDataExtension
             playerInfo[info.Puid] = new ExtendedPlayerInfo
             {
                 _Data = info,
-                RoleInfo = new ExtendedRoleInfo()
+                RoleInfo = new ExtendedRoleInfo(),
+                AntiCheatInfo = new ExtendedAntiCheatInfo()
             };
         }
 
@@ -110,7 +124,8 @@ public static class PlayerControlDataExtension
                 {
                     _Data = player.Data,
                     RealName = player.Data.PlayerName,
-                    RoleInfo = new ExtendedRoleInfo()
+                    RoleInfo = new ExtendedRoleInfo(),
+                    AntiCheatInfo = new ExtendedAntiCheatInfo()
                 };
             }
 

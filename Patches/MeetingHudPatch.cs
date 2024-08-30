@@ -84,7 +84,7 @@ class MeetingHudUpdatePatch
                         DisconnectText = "Left The Game";
                         break;
                     case DisconnectReasons.Banned:
-                        if (playerData.BetterData().BannedByAntiCheat)
+                        if (playerData.BetterData().AntiCheatInfo.BannedByAntiCheat)
                         {
                             DisconnectText = "Banned By Anti-Cheat>";
                         }

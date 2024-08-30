@@ -276,21 +276,21 @@ class AntiCheat
                 var taskId = reader.ReadPackedUInt32();
 
                 if (player.IsImpostorTeam() || !player.Data.Tasks.ToArray().Any(task => task.Id == taskId)
-                    || player.BetterData().LastTaskId == taskId || player.BetterData().LastTaskId != taskId
-                    && player.BetterData().TimeSinceLastTask < 1.25f)
+                    || player.BetterData().AntiCheatInfo.LastTaskId == taskId || player.BetterData().AntiCheatInfo.LastTaskId != taskId
+                    && player.BetterData().AntiCheatInfo.TimeSinceLastTask < 1.25f)
                 {
                     BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
                     Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {player.IsImpostorTeam()} || {!player.Data.Tasks.ToArray().Any(task => task.Id == taskId)} ||" +
-                        $" {player.BetterData().LastTaskId == taskId} || {player.BetterData().LastTaskId != taskId} && {player.BetterData().TimeSinceLastTask < 1.25f}");
+                        $" {player.BetterData().AntiCheatInfo.LastTaskId == taskId} || {player.BetterData().AntiCheatInfo.LastTaskId != taskId} && {player.BetterData().AntiCheatInfo.TimeSinceLastTask < 1.25f}");
 
-                    player.BetterData().TimeSinceLastTask = 0f;
-                    player.BetterData().LastTaskId = taskId;
+                    player.BetterData().AntiCheatInfo.TimeSinceLastTask = 0f;
+                    player.BetterData().AntiCheatInfo.LastTaskId = taskId;
 
                     return;
                 }
 
-                player.BetterData().TimeSinceLastTask = 0f;
-                player.BetterData().LastTaskId = taskId;
+                player.BetterData().AntiCheatInfo.TimeSinceLastTask = 0f;
+                player.BetterData().AntiCheatInfo.LastTaskId = taskId;
             }
 
             if (callId is (byte)RpcCalls.CloseDoorsOfType)
@@ -333,22 +333,22 @@ class AntiCheat
         // Set fixing status
         if (Utils.SystemTypeIsSabotage(systemType))
         {
-            if (amount == openPanelNum && !player.BetterData().IsFixingPanelSabotage)
+            if (amount == openPanelNum && !player.BetterData().AntiCheatInfo.IsFixingPanelSabotage)
             {
-                player.BetterData().OpenSabotageNum = 1;
+                player.BetterData().AntiCheatInfo.OpenSabotageNum = 1;
             }
-            else if (amount == openPanelNum + 1 && !player.BetterData().IsFixingPanelSabotage)
+            else if (amount == openPanelNum + 1 && !player.BetterData().AntiCheatInfo.IsFixingPanelSabotage)
             {
-                player.BetterData().OpenSabotageNum = 2;
+                player.BetterData().AntiCheatInfo.OpenSabotageNum = 2;
             }
 
-            if (amount == closePanelNum && player.BetterData().OpenSabotageNum == 1)
+            if (amount == closePanelNum && player.BetterData().AntiCheatInfo.OpenSabotageNum == 1)
             {
-                player.BetterData().OpenSabotageNum = 0;
+                player.BetterData().AntiCheatInfo.OpenSabotageNum = 0;
             }
-            else if (amount == closePanelNum + 1 && player.BetterData().OpenSabotageNum == 2)
+            else if (amount == closePanelNum + 1 && player.BetterData().AntiCheatInfo.OpenSabotageNum == 2)
             {
-                player.BetterData().OpenSabotageNum = 0;
+                player.BetterData().AntiCheatInfo.OpenSabotageNum = 0;
             }
         }
 
@@ -401,12 +401,12 @@ class AntiCheat
                 return false;
             }
 
-            if (player.BetterData().IsFixingPanelSabotage)
+            if (player.BetterData().AntiCheatInfo.IsFixingPanelSabotage)
             {
-                if (player.BetterData().OpenSabotageNum == 0)
+                if (player.BetterData().AntiCheatInfo.OpenSabotageNum == 0)
                 {
                     BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName(systemType)}");
-                    Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName(systemType)}: {player.BetterData().OpenSabotageNum == 0}");
+                    Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName(systemType)}: {player.BetterData().AntiCheatInfo.OpenSabotageNum == 0}");
                     return false;
                 }
 
@@ -417,12 +417,12 @@ class AntiCheat
                     return false;
                 }
 
-                if (player.BetterData().OpenSabotageNum == 1 && amount == openPanelNum + 1
-                    || player.BetterData().OpenSabotageNum == 2 && amount == openPanelNum)
+                if (player.BetterData().AntiCheatInfo.OpenSabotageNum == 1 && amount == openPanelNum + 1
+                    || player.BetterData().AntiCheatInfo.OpenSabotageNum == 2 && amount == openPanelNum)
                 {
                     BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName(systemType)}");
-                    Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName(systemType)}: {player.BetterData().OpenSabotageNum == 1} && {amount == openPanelNum + 1} " +
-                        $"|| {player.BetterData().OpenSabotageNum == 2} && {amount == openPanelNum}");
+                    Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName(systemType)}: {player.BetterData().AntiCheatInfo.OpenSabotageNum == 1} && {amount == openPanelNum + 1} " +
+                        $"|| {player.BetterData().AntiCheatInfo.OpenSabotageNum == 2} && {amount == openPanelNum}");
                     return false;
                 }
             }
@@ -474,12 +474,12 @@ class AntiCheat
                     {
                         if (target == PlayerControl.LocalPlayer)
                         {
-                            target.BetterData().TimesAttemptedKilled++;
+                            target.BetterData().AntiCheatInfo.TimesAttemptedKilled++;
 
-                            if (target.BetterData().TimesAttemptedKilled >= 5 && !target.IsAlive())
+                            if (target.BetterData().AntiCheatInfo.TimesAttemptedKilled >= 5 && !target.IsAlive())
                             {
                                 BetterNotificationManager.NotifyCheat(player, $"Invalid Action: Attempted To Ban Exploit");
-                                Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)} 2: {target.BetterData().TimesAttemptedKilled >= 5} && {!target.IsAlive()}");
+                                Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)} 2: {target.BetterData().AntiCheatInfo.TimesAttemptedKilled >= 5} && {!target.IsAlive()}");
                                 return false;
                             }
 
@@ -545,11 +545,11 @@ class AntiCheat
                 }
                 else
                 {
-                    if (player.BetterData().TimesCalledMeeting >= GameOptionsManager.Instance.currentNormalGameOptions.NumEmergencyMeetings)
+                    if (player.BetterData().AntiCheatInfo.TimesCalledMeeting >= GameOptionsManager.Instance.currentNormalGameOptions.NumEmergencyMeetings)
                     {
                         BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
-                        Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {player.BetterData().TimesCalledMeeting} -> {GameOptionsManager.Instance.currentNormalGameOptions.NumEmergencyMeetings}" +
-                            $" - {player.BetterData().TimesCalledMeeting >= GameOptionsManager.Instance.currentNormalGameOptions.NumEmergencyMeetings}");
+                        Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {player.BetterData().AntiCheatInfo.TimesCalledMeeting} -> {GameOptionsManager.Instance.currentNormalGameOptions.NumEmergencyMeetings}" +
+                            $" - {player.BetterData().AntiCheatInfo.TimesCalledMeeting >= GameOptionsManager.Instance.currentNormalGameOptions.NumEmergencyMeetings}");
                         if (GameStates.IsHost)
                         {
                             return false;
