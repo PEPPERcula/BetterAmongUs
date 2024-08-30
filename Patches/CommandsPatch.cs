@@ -246,14 +246,7 @@ class CommandsPatch
                     {
                         if (subArgs == "")
                         {
-                            foreach (PlayerControl player in Main.AllPlayerControls)
-                            {
-                                player.RpcExile();
-                                player.roleAssigned = false;
-                                player.RpcSetRole(RoleTypes.CrewmateGhost, true);
-                            }
-                            GameManager.Instance.RpcEndGame(GameOverReason.ImpostorByKill, false);
-                            return;
+                            GameManager.Instance.RpcEndGame(GameOverReason.ImpostorDisconnect, false);
                         }
                         else if (subArgs is "impostor" or "1")
                         {
