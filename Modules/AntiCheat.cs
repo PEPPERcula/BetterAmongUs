@@ -355,7 +355,7 @@ class AntiCheat
         if (!GameStates.IsHost || PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.BetterData().IsBetterHost || !IsEnabled || !Main.AntiCheat.Value
             || (GameStates.IsBetterHostLobby && !GameStates.IsHost) || !BetterGameSettings.DetectInvalidRPCs.GetBool()) return true;
 
-        if (!BetterGameSettings.ExperimentalDetectInvalidSabotage.GetBool())
+        if (!BetterGameSettings.CancelInvalidSabotage.GetBool())
             return true;
 
         // Single Fix: 0
@@ -373,9 +373,11 @@ class AntiCheat
 
             if (!player.IsImpostorTeam() || GameStates.IsAnySabotageActive() || !Utils.SystemTypeIsSabotage(SaboType))
             {
+                /*
                 BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName(SaboType)}");
                 Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName(SaboType)}: {!player.IsImpostorTeam()} || {GameStates.IsAnySabotageActive()} " +
                     $"|| {!Utils.SystemTypeIsSabotage(SaboType)}");
+                */
                 return false;
             }
         }
@@ -385,8 +387,10 @@ class AntiCheat
         {
             if (amount == hostNum && !player.IsHost())
             {
+                /*
                 BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName(systemType)}");
                 Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName(systemType)}: {amount == hostNum} && {!player.IsHost()}");
+                */
                 return false;
             }
 
@@ -394,8 +398,10 @@ class AntiCheat
             {
                 if (systemType is SystemTypes.Electrical)
                 {
+                    /*
                     BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName(systemType)}");
                     Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName(systemType)}: {systemType is SystemTypes.Electrical}");
+                    */
                 }
 
                 return false;
@@ -405,24 +411,30 @@ class AntiCheat
             {
                 if (player.BetterData().AntiCheatInfo.OpenSabotageNum == 0)
                 {
+                    /*
                     BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName(systemType)}");
                     Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName(systemType)}: {player.BetterData().AntiCheatInfo.OpenSabotageNum == 0}");
+                    */
                     return false;
                 }
 
                 if (amount == openPanelNum && amount == openPanelNum + 1)
                 {
+                    /*
                     BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName(systemType)}");
                     Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName(systemType)}: {amount == openPanelNum} && {amount == openPanelNum + 1}");
+                    */
                     return false;
                 }
 
                 if (player.BetterData().AntiCheatInfo.OpenSabotageNum == 1 && amount == openPanelNum + 1
                     || player.BetterData().AntiCheatInfo.OpenSabotageNum == 2 && amount == openPanelNum)
                 {
+                    /*
                     BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName(systemType)}");
                     Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName(systemType)}: {player.BetterData().AntiCheatInfo.OpenSabotageNum == 1} && {amount == openPanelNum + 1} " +
                         $"|| {player.BetterData().AntiCheatInfo.OpenSabotageNum == 2} && {amount == openPanelNum}");
+                    */
                     return false;
                 }
             }
@@ -432,10 +444,12 @@ class AntiCheat
                     && amount != closePanelNum && amount != closePanelNum + 1
                     && amount > MaxLightNum)
                 {
+                    /*
                     BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName(systemType)}");
                     Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName(systemType)}: {amount != fixNum} && {amount != fixNum + 1}" +
                         $" && {amount != closePanelNum} && {amount != closePanelNum + 1}" +
                         $" && {amount > MaxLightNum}");
+                    */
                     return false;
                 }
 
@@ -443,8 +457,10 @@ class AntiCheat
                 {
                     if (amount > MaxLightNum)
                     {
+                        /*
                         BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName(systemType)}");
                         Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName(systemType)}: {amount > MaxLightNum}");
+                        */
                         return false;
                     }
                 }
