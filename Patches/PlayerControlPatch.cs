@@ -1,4 +1,5 @@
 ﻿using AmongUs.Data;
+using AmongUs.GameOptions;
 using HarmonyLib;
 using Il2CppSystem.Linq;
 using LibCpp2IL;
@@ -177,7 +178,7 @@ class PlayerControlPatch
 
                 sbTagTop.Append($"<color=#9e9e9e>{platform}</color>+++");
 
-                sbTagTop.Append($"<color=#ffd829>Lv: {player.Data.PlayerLevel.ToString()}</color>+++");
+                sbTagTop.Append($"<color=#ffd829>Lv: {player.Data.PlayerLevel + 1}</color>+++");
 
                 sbTagBottom.Append($"<color={friendCodeColor}>{friendCode}</color>+++");
             }
@@ -190,7 +191,11 @@ class PlayerControlPatch
                     {
                         Role += $" <color=#cbcbcb>({player.Data.Tasks.ToArray().Where(task => task.Complete).Count()}/{player.Data.Tasks.Count})</color>";
                     }
-                    sbTagTop.Append($"{Role}+++");
+
+                    if (PlayerControl.LocalPlayer.Is(RoleTypes.GuardianAngel) && !player.IsAlive() || !PlayerControl.LocalPlayer.Is(RoleTypes.GuardianAngel))
+                    {
+                        sbTagTop.Append($"{Role}+++");
+                    }
                 }
             }
             else if (GameStates.IsInGame || GameStates.IsFreePlay)

@@ -371,7 +371,8 @@ class AntiCheat
         {
             SystemTypes SaboType = (SystemTypes)amount;
 
-            if (!player.IsImpostorTeam() || GameStates.IsAnySabotageActive() || !Utils.SystemTypeIsSabotage(SaboType))
+            if (!player.IsImpostorTeam() || GameStates.IsAnySabotageActive() || !Utils.SystemTypeIsSabotage(SaboType)
+                || GameStates.SkeldIsActive && ShipStatus.Instance.AllDoors.Any(door => !door.IsOpen))
             {
                 /*
                 BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName(SaboType)}");
