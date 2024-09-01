@@ -347,6 +347,12 @@ class GamePlayManager
         {
             __instance.FrontMost.gameObject.SetActive(false);
             __instance.Navigation.ShowDefaultNavigation();
+            if (!GameStates.IsLocalGame)
+            {
+                __instance.Navigation.ShowNavigationToProgressionScreen();
+                __instance.Navigation.ContinueButton.transform.Find("ContinueButton").position -= new Vector3(0.5f, 0.2f, 0f);
+            }
+
             return false;
         }
     }
