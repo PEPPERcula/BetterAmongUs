@@ -104,6 +104,11 @@ public class ClientOptionItem
 
                 passiveButton.OnClick.AddListener(new Action(() =>
                 {
+                    if (toggleCheck() == false)
+                    {
+                        return;
+                    }
+
                     additionalOnClickAction?.Invoke();
                 }));
 

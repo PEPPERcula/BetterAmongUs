@@ -8,15 +8,16 @@ namespace BetterAmongUs.Patches;
 [HarmonyPatch(typeof(OptionsMenuBehaviour))]
 public static class OptionsMenuBehaviourPatch
 {
-    private static ClientOptionItem AntiCheat;
-    private static ClientOptionItem BetterHost;
-    private static ClientOptionItem BetterNotifications;
-    private static ClientOptionItem ChatInGameplay;
-    private static ClientOptionItem LobbyPlayerInfo;
-    private static ClientOptionItem DisableLobbyTheme;
-    private static ClientOptionItem UnlockFPS;
-    private static ClientOptionItem ShowFPS;
-    private static ClientOptionItem OpenSaveData;
+    private static ClientOptionItem? AntiCheat;
+    private static ClientOptionItem? BetterHost;
+    private static ClientOptionItem? BetterNotifications;
+    private static ClientOptionItem? ChatInGameplay;
+    private static ClientOptionItem? LobbyPlayerInfo;
+    private static ClientOptionItem? DisableLobbyTheme;
+    private static ClientOptionItem? UnlockFPS;
+    private static ClientOptionItem? ShowFPS;
+    private static ClientOptionItem? OpenSaveData;
+    private static ClientOptionItem? SwitchToVanilla;
 
     [HarmonyPatch(nameof(OptionsMenuBehaviour.Start))]
     [HarmonyPrefix]
@@ -26,7 +27,7 @@ public static class OptionsMenuBehaviourPatch
         {
             bool flag = GameStates.IsInGame && !GameStates.IsLobby || GameStates.IsFreePlay;
             if (flag)
-                BetterNotificationManager.Notify($"Unable to toggle {buttonName} while in gameplay!", 2.5f);
+                BetterNotificationManager.Notify($"Unable to toggle '{buttonName}' while in gameplay!", 2.5f);
 
             return flag;
         }
@@ -34,7 +35,7 @@ public static class OptionsMenuBehaviourPatch
         {
             bool flag = GameStates.IsInGame;
             if (flag)
-                BetterNotificationManager.Notify($"Unable to toggle {buttonName} while in game!", 2.5f);
+                BetterNotificationManager.Notify($"Unable to toggle '{buttonName}' while in game!", 2.5f);
 
             return flag;
         }
@@ -112,7 +113,7 @@ public static class OptionsMenuBehaviourPatch
 
         if (OpenSaveData == null || OpenSaveData.ToggleButton == null)
         {
-            DisableLobbyTheme = ClientOptionItem.Create("Open Save Data", null, __instance, OpenSaveDataButtonToggle, IsToggle: false);
+            OpenSaveData = ClientOptionItem.Create("Open Save Data", null, __instance, OpenSaveDataButtonToggle, IsToggle: false);
             static void OpenSaveDataButtonToggle()
             {
                 if (File.Exists(BetterDataManager.GetFilePath("BetterData")))
@@ -124,6 +125,16 @@ public static class OptionsMenuBehaviourPatch
                         Verb = "open"
                     });
                 }
+            }
+        }
+        
+        if (SwitchToVanilla == null || SwitchToVanilla.ToggleButton == null)
+        {
+            SwitchToVanilla = ClientOptionItem.Create("Switch To Vanilla", null, __instance, SwitchToVanillaButtonToggle, IsToggle: false, toggleCheck: () => !toggleCheckInGame("Switch To Vanilla"));
+            static void SwitchToVanillaButtonToggle()
+            {
+                UnityEngine.Object.Destroy(BetterNotificationManager.BAUNotificationManagerObj);
+                Harmony.UnpatchAll();
             }
         }
     }
