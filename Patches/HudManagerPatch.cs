@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using TMPro;
 using UnityEngine;
 
 
@@ -17,30 +18,38 @@ public class HudManagerPatch
     [HarmonyPostfix]
     public static void Start_Postfix(HudManager __instance)
     {
+        if (BetterNotificationManager.BAUNotificationManagerObj == null)
+        {
+            var ChatNotifications = __instance.Chat.chatNotification;
+            if (ChatNotifications != null)
+            {
+                ChatNotifications.timeOnScreen = 1f;
+                ChatNotifications.gameObject.SetActive(true);
+                GameObject BAUNotification = UnityEngine.Object.Instantiate(ChatNotifications.gameObject);
+                BAUNotification.name = "BAUNotification";
+                UnityEngine.Object.Destroy(BAUNotification.GetComponent<ChatNotification>());
+                UnityEngine.Object.Destroy(GameObject.Find($"{BAUNotification.name}/Sizer/PoolablePlayer"));
+                UnityEngine.Object.Destroy(GameObject.Find($"{BAUNotification.name}/Sizer/ColorText"));
+                BAUNotification.GetComponent<AspectPosition>().DistanceFromEdge = new Vector3(-1.57f, 5.3f, -15f);
+                GameObject.Find($"{BAUNotification.name}/Sizer/NameText").transform.localPosition = new Vector3(-3.3192f, -0.0105f);
+                GameObject.Find($"{BAUNotification.name}/Sizer/NameText").GetComponent<TextMeshPro>().text = "<color=#00ff44>System Notification</color>";
+                UnityEngine.Object.DontDestroyOnLoad(BAUNotification);
+                BetterNotificationManager.BAUNotificationManagerObj = BAUNotification;
+                BAUNotification.SetActive(false);
+                ChatNotifications.timeOnScreen = 0f;
+                ChatNotifications.gameObject.SetActive(false);
+            }
+        }
+
         _ = new LateTask(() =>
         {
-            try
+            if (!HasBeenWelcomed && GameStates.IsInGame && GameStates.IsLobby && !GameStates.IsFreePlay)
             {
-                if (BetterNotificationManager.BAUNotificationManagerObj == null)
-                {
-                    bool ChatState = GameObject.Find("ChatUi");
-                    __instance.Chat.gameObject.SetActive(true);
-                    __instance.Chat.chatNotification.gameObject.SetActive(true);
-                    __instance.Chat.chatNotification.SetUp(PlayerControl.LocalPlayer, "");
-                    __instance.Chat.chatNotification.timeOnScreen = 0f;
-                    __instance.Chat.chatNotification.gameObject.SetActive(false);
-                    __instance.Chat.gameObject.SetActive(ChatState);
-                }
+                BetterNotificationManager.Notify("<b><color=#00751f>Welcome To Better Among Us!</color></b>", 8f);
 
-                if (!HasBeenWelcomed && GameStates.IsInGame && GameStates.IsLobby && !GameStates.IsFreePlay)
-                {
-                    BetterNotificationManager.Notify("<b><color=#00751f>Welcome To Better Among Us!</color></b>", 8f);
-
-                    Utils.AddChatPrivate(WelcomeMessage, overrideName: " ");
-                    HasBeenWelcomed = true;
-                }
+                Utils.AddChatPrivate(WelcomeMessage, overrideName: " ");
+                HasBeenWelcomed = true;
             }
-            catch { }
         }, 1f, "HudManagerPatch Start");
     }
     [HarmonyPatch(nameof(HudManager.Update))]
