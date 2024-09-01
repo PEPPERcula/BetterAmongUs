@@ -130,19 +130,22 @@ class PlayerControlPatch
             var sbTagBottom = new StringBuilder();
 
             // Put +++ at the end of each tag
-            if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.SickoData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.SickoData.ContainsValue(friendCode))
+            if (!string.IsNullOrEmpty(hashPuid) && hashPuid.Length > 0 && AntiCheat.SickoData.ContainsKey(hashPuid)
+                || !string.IsNullOrEmpty(friendCode) && friendCode.Length > 0 && AntiCheat.SickoData.ContainsValue(friendCode))
             {
                 sbTag.Append("<color=#00f583>Sicko User</color>+++");
                 player.SetOutlineByHex(true, "#00f583");
             }
 
-            else if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.AUMData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.AUMData.ContainsValue(friendCode))
+            else if (!string.IsNullOrEmpty(hashPuid) && hashPuid.Length > 0 && AntiCheat.AUMData.ContainsKey(hashPuid)
+                || !string.IsNullOrEmpty(friendCode) && friendCode.Length > 0 && AntiCheat.AUMData.ContainsValue(friendCode))
             {
                 sbTag.Append("<color=#4f0000>AUM User</color>+++");
                 player.SetOutlineByHex(true, "#4f0000");
             }
 
-            else if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.PlayerData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.PlayerData.ContainsValue(friendCode))
+            else if (!string.IsNullOrEmpty(hashPuid) && hashPuid.Length > 0 && AntiCheat.PlayerData.ContainsKey(hashPuid)
+                || !string.IsNullOrEmpty(friendCode) && friendCode.Length > 0 && AntiCheat.PlayerData.ContainsValue(friendCode))
             {
                 sbTag.Append("<color=#fc0000>Known Cheater</color>+++");
                 player.SetOutlineByHex(true, "#fc0000");
