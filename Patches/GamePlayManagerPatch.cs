@@ -79,23 +79,9 @@ class GamePlayManager
         {
             try
             {
-                static Color HexToColor(string hex)
-                {
-                    if (hex.StartsWith("#"))
-                    {
-                        hex = hex.Substring(1);
-                    }
-
-                    byte r = byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
-                    byte g = byte.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
-                    byte b = byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
-
-                    return new Color32(r, g, b, 255);
-                }
-
                 _ = new LateTask(() =>
                 {
-                    Color RoleColor = HexToColor(Utils.GetRoleColor(PlayerControl.LocalPlayer.Data.RoleType));
+                    Color RoleColor = Utils.HexToColor32(Utils.GetRoleColor(PlayerControl.LocalPlayer.Data.RoleType));
 
                     __instance.ImpostorText.gameObject.SetActive(false);
                     __instance.TeamTitle.gameObject.SetActive(false);
@@ -361,6 +347,12 @@ class GamePlayManager
         {
             __instance.FrontMost.gameObject.SetActive(false);
             __instance.Navigation.ShowDefaultNavigation();
+            if (!GameStates.IsLocalGame)
+            {
+                __instance.Navigation.ShowNavigationToProgressionScreen();
+                __instance.Navigation.ContinueButton.transform.Find("ContinueButton").position -= new Vector3(0.5f, 0.2f, 0f);
+            }
+
             return false;
         }
     }

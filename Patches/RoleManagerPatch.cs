@@ -88,6 +88,7 @@ public class RoleManagerPatch
                 CrewmateRoles[role] = GameOptionsManager.Instance.CurrentGameOptions.RoleOptions.GetNumPerGame(role);
         }
 
+#if DEBUG
         // Override player role assignment
         if (SetPlayerRole.Keys.Any())
         {
@@ -102,7 +103,6 @@ public class RoleManagerPatch
                     {
                         Impostors.Add(player);
                         player.RpcSetRole(RoleTypes.Impostor);
-                        player.roleAssigned = true;
                         Logger.Log($"Override Assigned {Utils.GetRoleName(RoleTypes.Impostor)} role to {player.Data.PlayerName}", "RoleManager");
                     }
                     else continue;
@@ -111,7 +111,6 @@ public class RoleManagerPatch
                 {
                     Crewmates.Add(player);
                     player.RpcSetRole(RoleTypes.Crewmate);
-                    player.roleAssigned = true;
                     Logger.Log($"Override Assigned {Utils.GetRoleName(RoleTypes.Crewmate)} role to {player.Data.PlayerName}", "RoleManager");
                 }
                 else
@@ -156,11 +155,11 @@ public class RoleManagerPatch
                         }
                     }
 
-                    player.roleAssigned = true;
                     Logger.Log($"Override Assigned {Utils.GetRoleName(role)} role to {player.Data.PlayerName}", "RoleManager");
                 }
             }
         }
+#endif
 
         // Get players in random order
         List<PlayerControl> players = Main.AllPlayerControls
@@ -206,7 +205,6 @@ public class RoleManagerPatch
                             }
                         }
 
-                        pc.roleAssigned = true;
                         Logger.Log($"Assigned {Utils.GetRoleName(kvp.Key)} role to {pc.Data.PlayerName}", "RoleManager");
                         break;
                     }
@@ -217,7 +215,6 @@ public class RoleManagerPatch
                     ImpostorMultiplier[Utils.GetHashPuid(pc)] += 15;
                     Impostors.Add(pc);
                     pc.RpcSetRole(RoleTypes.Impostor);
-                    pc.roleAssigned = true;
                     Logger.Log($"Assigned {Utils.GetRoleName(RoleTypes.Impostor)} role to {pc.Data.PlayerName}", "RoleManager");
                 }
             }
@@ -245,7 +242,6 @@ public class RoleManagerPatch
                             }
                         }
 
-                        pc.roleAssigned = true;
                         Logger.Log($"Assigned {Utils.GetRoleName(kvp.Key)} role to {pc.Data.PlayerName}", "RoleManager");
                         break;
                     }
@@ -256,7 +252,6 @@ public class RoleManagerPatch
                     ImpostorMultiplier[Utils.GetHashPuid(pc)] = 0;
                     Crewmates.Add(pc);
                     pc.RpcSetRole(RoleTypes.Crewmate);
-                    pc.roleAssigned = true;
                     Logger.Log($"Assigned {Utils.GetRoleName(RoleTypes.Crewmate)} role to {pc.Data.PlayerName}", "RoleManager");
                 }
             }
@@ -276,42 +271,25 @@ public class RoleManagerPatch
     {
         Logger.LogHeader($"Better Role Assignment Has Started", "RoleManager");
 
-        foreach (var addplayer in Main.AllPlayerControls.Where(pc => !ImpostorMultiplier.ContainsKey(Utils.GetHashPuid(pc))))
-            ImpostorMultiplier[Utils.GetHashPuid(addplayer)] = 0;
-
         int NumImpostors = BetterGameSettings.HideAndSeekImpNum.GetInt();
 
-        int NumPlayers = Main.AllPlayerControls.Length;
+        if (NumImpostors > Main.AllPlayerControls.Length)
+            NumImpostors = Main.AllPlayerControls.Length;
 
         List<PlayerControl> Impostors = [];
         List<PlayerControl> Crewmates = [];
 
         // Set imp from settings
-        int SetImpostor = GameOptionsManager.Instance.currentHideNSeekGameOptions.ImpostorPlayerID;
-
-        if (SetImpostor >= 0)
-        {
-            var player = Utils.PlayerFromId(SetImpostor);
-            if (player != null)
-            {
-                Impostors.Add(player);
-                player.RpcSetRole(RoleTypes.Impostor);
-                player.roleAssigned = true;
-                NumImpostors--;
-                Logger.Log($"Settings Assigned {Utils.GetRoleName(RoleTypes.Impostor)} role to {player.Data.PlayerName}", "RoleManager");
-            }
-        }
-
-        var betterImpostorSettings = new int[]
-        {
-            -1,
+        int[] betterImpostorSettings =
+        [
+            GameOptionsManager.Instance.currentHideNSeekGameOptions.ImpostorPlayerID,
             BetterGameSettingsTemp.HideAndSeekImp2.GetValue(),
             BetterGameSettingsTemp.HideAndSeekImp3.GetValue(),
             BetterGameSettingsTemp.HideAndSeekImp4.GetValue(),
             BetterGameSettingsTemp.HideAndSeekImp5.GetValue()
-        };
+        ];
 
-        for (int i = 1; i < BetterGameSettings.HideAndSeekImpNum.GetInt(); i++)
+        for (int i = 0; i < NumImpostors; i++)
         {
             int tempSetImpostor = betterImpostorSettings[i];
 
@@ -320,18 +298,16 @@ public class RoleManagerPatch
                 var player = Utils.PlayerFromId(tempSetImpostor);
                 if (player != null)
                 {
-                    if (NumImpostors > 0 && !Impostors.Contains(player))
+                    if (Impostors.Count < NumImpostors)
                     {
                         Impostors.Add(player);
-                        player.RpcSetRole(RoleTypes.Impostor);
-                        player.roleAssigned = true;
-                        NumImpostors--;
                         Logger.Log($"Settings Assigned {Utils.GetRoleName(RoleTypes.Impostor)} role to {player.Data.PlayerName}", "RoleManager");
                     }
                 }
             }
         }
 
+#if DEBUG
         // Override player role assignment
         if (SetPlayerRole.Keys.Any())
         {
@@ -345,8 +321,6 @@ public class RoleManagerPatch
                     if (Impostors.Count < NumImpostors)
                     {
                         Impostors.Add(player);
-                        player.RpcSetRole(RoleTypes.Impostor);
-                        player.roleAssigned = true;
                         Logger.Log($"Override Assigned {Utils.GetRoleName(RoleTypes.Impostor)} role to {player.Data.PlayerName}", "RoleManager");
                     }
                     else continue;
@@ -354,12 +328,11 @@ public class RoleManagerPatch
                 else if (role is RoleTypes.Engineer)
                 {
                     Crewmates.Add(player);
-                    player.RpcSetRole(RoleTypes.Engineer);
-                    player.roleAssigned = true;
                     Logger.Log($"Override Assigned {Utils.GetRoleName(RoleTypes.Engineer)} role to {player.Data.PlayerName}", "RoleManager");
                 }
             }
         }
+#endif
 
         // Get players in random order
         List<PlayerControl> players = Main.AllPlayerControls
@@ -381,31 +354,33 @@ public class RoleManagerPatch
         {
             if (pc == null || pc.roleAssigned == true) continue;
 
-            if (Impostors.Count < NumImpostors && RNG() > ImpostorMultiplier[Utils.GetHashPuid(pc)])
+            if (Impostors.Count < NumImpostors)
             {
-                if (!Impostors.Contains(pc))
+                if (!Crewmates.Contains(pc))
                 {
-                    ImpostorMultiplier[Utils.GetHashPuid(pc)] += 15;
                     Impostors.Add(pc);
-                    pc.RpcSetRole(RoleTypes.Impostor);
-                    pc.roleAssigned = true;
                     Logger.Log($"Assigned {Utils.GetRoleName(RoleTypes.Impostor)} role to {pc.Data.PlayerName}", "RoleManager");
                 }
             }
             else
             {
-                if (!Crewmates.Contains(pc))
+                if (!Impostors.Contains(pc))
                 {
-                    ImpostorMultiplier[Utils.GetHashPuid(pc)] = 0;
                     Crewmates.Add(pc);
-                    pc.RpcSetRole(RoleTypes.Engineer);
-                    pc.roleAssigned = true;
                     Logger.Log($"Assigned {Utils.GetRoleName(RoleTypes.Engineer)} role to {pc.Data.PlayerName}", "RoleManager");
                 }
             }
         }
 
-        SetPlayerRole.Clear();
+        foreach (var player in Impostors)
+        {
+            player.RpcSetRole(RoleTypes.Impostor);
+        }
+
+        foreach (var player in Crewmates)
+        {
+            player.RpcSetRole(RoleTypes.Engineer);
+        }
 
         _ = new LateTask(() =>
         {

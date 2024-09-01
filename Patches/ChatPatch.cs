@@ -1,4 +1,5 @@
 ﻿using AmongUs.Data;
+using AmongUs.GameOptions;
 using Assets.CoreScripts;
 using HarmonyLib;
 using Hazel;
@@ -197,7 +198,10 @@ class ChatPatch
                     }
                 }
 
-                sbTag.Append(Role);
+                if (PlayerControl.LocalPlayer.Is(RoleTypes.GuardianAngel) && !sourcePlayer.IsAlive() || !PlayerControl.LocalPlayer.Is(RoleTypes.GuardianAngel))
+                {
+                    sbTag.Append(Role);
+                }
 
                 sbInfo.Append("<size=75%>");
                 for (int i = 0; i < sbTag.ToString().Split("+++").Length; i++)

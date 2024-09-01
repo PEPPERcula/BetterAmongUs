@@ -19,10 +19,12 @@ class FileChecker
     // Set up if unauthorized files have been found.
     public static void UpdateUnauthorizedFiles()
     {
+#if DEBUG
         if (GameStates.IsDev)
         {
             HasTrySpoofFriendCode = false;
         }
+#endif
 
         if (Enabled == false) return;
 
@@ -136,11 +138,13 @@ class FileChecker
             }
         }
 
+#if DEBUG
         if (GameStates.IsDev)
         {
             Enabled = false;
             return false;
         }
+#endif
 
         // Check for Banned BepInEx Mods
         foreach (var bannedMod in BannedBepInExMods)

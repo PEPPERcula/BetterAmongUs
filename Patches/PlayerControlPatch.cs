@@ -1,4 +1,5 @@
 ﻿using AmongUs.Data;
+using AmongUs.GameOptions;
 using HarmonyLib;
 using Il2CppSystem.Linq;
 using LibCpp2IL;
@@ -93,9 +94,6 @@ class PlayerControlPatch
                 return;
             }
 
-            if (Main.AllPlayerControls.Any(pc => player.Data.PlayerId == pc.shapeshiftTargetPlayerId))
-                return;
-
             string NewName = player.Data.PlayerName;
             string hashPuid = Utils.GetHashPuid(player);
 
@@ -132,14 +130,31 @@ class PlayerControlPatch
             var sbTagBottom = new StringBuilder();
 
             // Put +++ at the end of each tag
-            if (!player.isDummy)
+            if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.SickoData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.SickoData.ContainsValue(friendCode))
             {
-                if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.SickoData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.SickoData.ContainsValue(friendCode))
-                    sbTag.Append("<color=#00f583>Sicko User</color>+++");
-                else if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.AUMData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.AUMData.ContainsValue(friendCode))
-                    sbTag.Append("<color=#4f0000>AUM User</color>+++");
-                else if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.PlayerData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.PlayerData.ContainsValue(friendCode))
-                    sbTag.Append("<color=#fc0000>Known Cheater</color>+++");
+                sbTag.Append("<color=#00f583>Sicko User</color>+++");
+                player.SetOutlineByHex(true, "#00f583");
+            }
+
+            else if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.AUMData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.AUMData.ContainsValue(friendCode))
+            {
+                sbTag.Append("<color=#4f0000>AUM User</color>+++");
+                player.SetOutlineByHex(true, "#4f0000");
+            }
+
+            else if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.PlayerData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.PlayerData.ContainsValue(friendCode))
+            {
+                sbTag.Append("<color=#fc0000>Known Cheater</color>+++");
+                player.SetOutlineByHex(true, "#fc0000");
+            }
+
+            else
+            {
+                var color = player.cosmetics.currentBodySprite.BodySprite.material.GetColor("_OutlineColor");
+                if (color == Utils.HexToColor32("#00f583") || color == Utils.HexToColor32("#4f0000") || color == Utils.HexToColor32("#fc0000"))
+                {
+                    player.SetOutline(false, null);
+                }
             }
 
             if (GameStates.IsInGame && GameStates.IsLobby && !GameStates.IsFreePlay)
@@ -163,7 +178,7 @@ class PlayerControlPatch
 
                 sbTagTop.Append($"<color=#9e9e9e>{platform}</color>+++");
 
-                sbTagTop.Append($"<color=#ffd829>Lv: {player.Data.PlayerLevel.ToString()}</color>+++");
+                sbTagTop.Append($"<color=#ffd829>Lv: {player.Data.PlayerLevel + 1}</color>+++");
 
                 sbTagBottom.Append($"<color={friendCodeColor}>{friendCode}</color>+++");
             }
@@ -176,7 +191,11 @@ class PlayerControlPatch
                     {
                         Role += $" <color=#cbcbcb>({player.Data.Tasks.ToArray().Where(task => task.Complete).Count()}/{player.Data.Tasks.Count})</color>";
                     }
-                    sbTagTop.Append($"{Role}+++");
+
+                    if (PlayerControl.LocalPlayer.Is(RoleTypes.GuardianAngel) && !player.IsAlive() || !PlayerControl.LocalPlayer.Is(RoleTypes.GuardianAngel))
+                    {
+                        sbTagTop.Append($"{Role}+++");
+                    }
                 }
             }
             else if (GameStates.IsInGame || GameStates.IsFreePlay)
@@ -202,6 +221,14 @@ class PlayerControlPatch
             if (!player.IsInShapeshift())
             {
                 player.RawSetName(NewName);
+            }
+            else
+            {
+                var target = Utils.PlayerFromId(player.shapeshiftTargetPlayerId);
+                if (target != null)
+                {
+                    player.RawSetName(target.Data.PlayerName);
+                }
             }
 
             // Put +++ at the end of each tag

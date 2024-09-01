@@ -36,6 +36,7 @@ class CommandsPatch
         };
     public static string[] DebugCommandListHelper =
         {
+#if DEBUG
         "getposition---Get current player position - <color=#ff00f7>DeBug</color>",
         "role {role}---Set your role for the next game - <color=red>Host Only</color> - <color=#ff00f7>DeBug</color>",
         "setrole {id} {role}---Set another players role for the next game - <color=red>Host Only</color> - <color=#ff00f7>DeBug</color>",
@@ -43,7 +44,8 @@ class CommandsPatch
         "suicide---Kill self <color=#ff00f7>DeBug</color>",
         "exile---Set self as dead <color=#ff00f7>DeBug</color>",
         "revive---Set self as alive<color=#ff00f7>DeBug</color>",
-        };
+#endif
+    };
 
 
     // Run code for specific commands
@@ -244,14 +246,7 @@ class CommandsPatch
                     {
                         if (subArgs == "")
                         {
-                            foreach (PlayerControl player in Main.AllPlayerControls)
-                            {
-                                player.RpcExile();
-                                player.roleAssigned = false;
-                                player.RpcSetRole(RoleTypes.CrewmateGhost, true);
-                            }
-                            GameManager.Instance.RpcEndGame(GameOverReason.ImpostorByKill, false);
-                            return;
+                            GameManager.Instance.RpcEndGame(GameOverReason.ImpostorDisconnect, false);
                         }
                         else if (subArgs is "impostor" or "1")
                         {
@@ -292,6 +287,7 @@ class CommandsPatch
                 break;
         }
 
+#if DEBUG
         // DeBug Commands
         if (checkDebugCommand)
         {
@@ -430,6 +426,7 @@ class CommandsPatch
                     break;
             }
         }
+#endif
 
         cmdTarget = null;
     }

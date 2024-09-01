@@ -125,7 +125,45 @@ static class ExtendedPlayerControl
 
         AmongUsClient.Instance.KickPlayer(player.GetClientId(), ban);
 
-        player.BetterData().BannedByAntiCheat = AntiCheatBan;
+        player.BetterData().AntiCheatInfo.BannedByAntiCheat = AntiCheatBan;
+    }
+
+    public static void SetOutline(this PlayerControl player, bool active, Color? color = null)
+    {
+        player.cosmetics.currentBodySprite.BodySprite.material.SetFloat("_Outline", (float)(active ? 1 : 0));
+        SpriteRenderer[] longModeParts = player.cosmetics.currentBodySprite.LongModeParts;
+        for (int i = 0; i < longModeParts.Length; i++)
+        {
+            longModeParts[i].material.SetFloat("_Outline", (float)(active ? 1 : 0));
+        }
+        if (color != null)
+        {
+            player.cosmetics.currentBodySprite.BodySprite.material.SetColor("_OutlineColor", color.Value);
+            longModeParts = player.cosmetics.currentBodySprite.LongModeParts;
+            for (int i = 0; i < longModeParts.Length; i++)
+            {
+                longModeParts[i].material.SetColor("_OutlineColor", color.Value);
+            }
+        }
+    }
+    public static void SetOutlineByHex(this PlayerControl player, bool active, string hexColor = "")
+    {
+        Color color = Utils.HexToColor32(hexColor);
+        player.cosmetics.currentBodySprite.BodySprite.material.SetFloat("_Outline", (float)(active ? 1 : 0));
+        SpriteRenderer[] longModeParts = player.cosmetics.currentBodySprite.LongModeParts;
+        for (int i = 0; i < longModeParts.Length; i++)
+        {
+            longModeParts[i].material.SetFloat("_Outline", (float)(active ? 1 : 0));
+        }
+        if (color != null)
+        {
+            player.cosmetics.currentBodySprite.BodySprite.material.SetColor("_OutlineColor", color);
+            longModeParts = player.cosmetics.currentBodySprite.LongModeParts;
+            for (int i = 0; i < longModeParts.Length; i++)
+            {
+                longModeParts[i].material.SetColor("_OutlineColor", color);
+            }
+        }
     }
 
     // RPCs
@@ -134,6 +172,7 @@ static class ExtendedPlayerControl
         if (player == null || target == null) return;
         RPC.SetNamePrivate(player, name, target);
     }
+
     public static void RpcExile(this PlayerControl player)
     {
         if (player == null) return;
@@ -228,7 +267,7 @@ static class ExtendedPlayerControl
     // Report player
     public static void ReportPlayer(this PlayerControl player, ReportReasons reason = ReportReasons.None)
     {
-        if (player != null)
+        if (player?.GetClient() != null)
         {
             if (!player.GetClient().HasBeenReported)
             {
