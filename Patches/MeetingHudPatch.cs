@@ -86,7 +86,7 @@ class MeetingHudUpdatePatch
                     case DisconnectReasons.Banned:
                         if (playerData.BetterData().AntiCheatInfo.BannedByAntiCheat)
                         {
-                            DisconnectText = "Banned By Anti-Cheat>";
+                            DisconnectText = "Banned By Anti-Cheat";
                         }
                         else
                         {
