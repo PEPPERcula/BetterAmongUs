@@ -19,7 +19,7 @@ class BetterGameSettings
     public static BetterOptionItem? RoleRandomizer;
     public static BetterOptionItem? DesyncRoles;
     public static BetterOptionItem? CancelInvalidSabotage;
-    public static BetterOptionItem? SensorDetectionReason;
+    public static BetterOptionItem? CensorDetectionReason;
 }
 
 class BetterGameSettingsTemp
@@ -62,7 +62,7 @@ static class GameSettingMenuPatch
             }
 
             TitleList.Add(new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color=#4f92ff>Detections</color>"));
-            BetterGameSettings.SensorDetectionReason = new BetterOptionCheckboxItem().Create(1300, BetterSettingsTab, "Sensor detection reason", false);
+            BetterGameSettings.CensorDetectionReason = new BetterOptionCheckboxItem().Create(1300, BetterSettingsTab, "Censor detection reason", false);
             BetterGameSettings.DetectedLevelAbove = new BetterOptionIntItem().Create(600, BetterSettingsTab, "Detected player levels >", [100, 5000, 5], 200, "Lv ", "");
             BetterGameSettings.DetectCheatClients = new BetterOptionCheckboxItem().Create(700, BetterSettingsTab, "Detect cheat clients", true);
             BetterGameSettings.DetectInvalidRPCs = new BetterOptionCheckboxItem().Create(800, BetterSettingsTab, "Detect invalid RPCs", true);

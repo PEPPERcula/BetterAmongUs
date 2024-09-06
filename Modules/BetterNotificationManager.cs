@@ -41,7 +41,7 @@ class BetterNotificationManager
         if (newText != "")
             text = $"Player: <color=#0097b5>{player?.BetterData().RealName}</color> " + newText + $": <b><color=#fc0000>{reason}</color></b>";
 
-        if (BetterGameSettings.SensorDetectionReason.GetBool())
+        if (BetterGameSettings.CensorDetectionReason.GetBool())
         {
             reason = string.Concat('*').Repeat(reason.Length);
         }
