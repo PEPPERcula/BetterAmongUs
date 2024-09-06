@@ -18,8 +18,8 @@ class BetterGameSettings
     public static BetterOptionItem? DetectInvalidRPCs;
     public static BetterOptionItem? RoleRandomizer;
     public static BetterOptionItem? DesyncRoles;
-
     public static BetterOptionItem? CancelInvalidSabotage;
+    public static BetterOptionItem? SensorDetectionReason;
 }
 
 class BetterGameSettingsTemp
@@ -43,6 +43,8 @@ static class GameSettingMenuPatch
         BetterOptionItem.TempPlayerOptionDataNum = 0;
         TitleList.Clear();
 
+        // Use 1400 next ID
+
         // Anti-Cheat Settings
         {
             TitleList.Add(new BetterOptionHeaderItem().Create(BetterSettingsTab, "<color=#4f92ff>Anti-Cheat Settings</color>"));
@@ -50,9 +52,10 @@ static class GameSettingMenuPatch
             if (IsPreload || GameStates.IsHost)
             {
                 TitleList.Add(new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color=#4f92ff>Host Only</color>"));
+                BetterGameSettings.SensorDetectionReason = new BetterOptionCheckboxItem().Create(1300, BetterSettingsTab, "Sensor detection reason", false);
                 BetterGameSettings.WhenCheating = new BetterOptionStringItem().Create(100, BetterSettingsTab, "When a player is caught cheating", ["Notify", "Kick", "Ban"], 2);
-                BetterGameSettings.InvalidFriendCode = new BetterOptionCheckboxItem().Create(200, BetterSettingsTab, "Detected invalid FriendCodes", true);
-                BetterGameSettings.CancelInvalidSabotage = new BetterOptionCheckboxItem().Create(900, BetterSettingsTab, "Cancel Invalid Sabotages", true);
+                BetterGameSettings.InvalidFriendCode = new BetterOptionCheckboxItem().Create(200, BetterSettingsTab, "Detected invalid friendCodes", true);
+                BetterGameSettings.CancelInvalidSabotage = new BetterOptionCheckboxItem().Create(900, BetterSettingsTab, "Cancel invalid sabotages", true);
                 BetterGameSettings.UseBanPlayerList = new BetterOptionCheckboxItem().Create(300, BetterSettingsTab, "Use Ban Player List", true);
                 BetterGameSettings.UseBanNameList = new BetterOptionCheckboxItem().Create(400, BetterSettingsTab, "Use Ban Name List", true);
                 BetterGameSettings.UseBanWordList = new BetterOptionCheckboxItem().Create(500, BetterSettingsTab, "Use Ban Word List", true);
