@@ -52,7 +52,6 @@ static class GameSettingMenuPatch
             if (IsPreload || GameStates.IsHost)
             {
                 TitleList.Add(new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color=#4f92ff>Host Only</color>"));
-                BetterGameSettings.SensorDetectionReason = new BetterOptionCheckboxItem().Create(1300, BetterSettingsTab, "Sensor detection reason", false);
                 BetterGameSettings.WhenCheating = new BetterOptionStringItem().Create(100, BetterSettingsTab, "When a player is caught cheating", ["Notify", "Kick", "Ban"], 2);
                 BetterGameSettings.InvalidFriendCode = new BetterOptionCheckboxItem().Create(200, BetterSettingsTab, "Detected invalid friendCodes", true);
                 BetterGameSettings.CancelInvalidSabotage = new BetterOptionCheckboxItem().Create(900, BetterSettingsTab, "Cancel invalid sabotages", true);
@@ -63,6 +62,7 @@ static class GameSettingMenuPatch
             }
 
             TitleList.Add(new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color=#4f92ff>Detections</color>"));
+            BetterGameSettings.SensorDetectionReason = new BetterOptionCheckboxItem().Create(1300, BetterSettingsTab, "Sensor detection reason", false);
             BetterGameSettings.DetectedLevelAbove = new BetterOptionIntItem().Create(600, BetterSettingsTab, "Detected player levels >", [100, 5000, 5], 200, "Lv ", "");
             BetterGameSettings.DetectCheatClients = new BetterOptionCheckboxItem().Create(700, BetterSettingsTab, "Detect Cheat Clients", true);
             BetterGameSettings.DetectInvalidRPCs = new BetterOptionCheckboxItem().Create(800, BetterSettingsTab, "Detect Invalid RPCs", true);
