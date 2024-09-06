@@ -31,7 +31,7 @@ public class PingTrackerPatch
             }
 
             sb.Append($"<color=#00dbdb><size=75%>BetterAmongUs {Main.GetVersionText(true)}</size></color>\n");
-            sb.Append("<size=68%><color=#8040bf>By</color> <color=#bc4345>The Enhanced Network</color></size>");
+            sb.Append("<size=68%><color=#8040bf>By</color> <color=#bc4345>The Enhanced Network</color></size>\n");
 
             if (Main.BetterHost.Value && GameStates.IsHost)
             {

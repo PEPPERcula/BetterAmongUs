@@ -88,6 +88,7 @@ public class Main : BasePlugin
 
     public static List<string> SupportedAmongUsVersions =
     [
+        "2024.9.4",
         "2024.8.13",
         "2024.6.18",
     ];
