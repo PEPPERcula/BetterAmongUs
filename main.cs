@@ -53,8 +53,9 @@ public class Main : BasePlugin
                 .Append(ReleaseDate)
                 .Append(Github)
                 .Append(Discord)
-                .Append(string.Join(",", Enum.GetNames(typeof(CustomRPC))))
-                .Append(string.Join(",", GetRoleName.Values))
+                .Append(string.Join(".", Enum.GetNames(typeof(CustomRPC))))
+                .Append(string.Join(".", GetRoleName.Values))
+                .Append(string.Join(".", GetRoleColor.Values))
                 .ToString();
 
             return GetHash(versionData);

@@ -190,7 +190,8 @@ internal static class RPC
                         $"BetterUser: {SetBetterUser} - " +
                         $"BetterHost: {IsBetterHost} - " +
                         $"Version: {Version} - " +
-                        $"Verified: {IsVerified}");
+                        $"Verified: {IsVerified} - " +
+                        $"Signature: {Signature}");
 
                     SyncAllNames(force: true);
                 }
