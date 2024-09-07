@@ -13,6 +13,7 @@ public static class PlayerControlDataExtension
         public string? RealName { get; set; }
         public Dictionary<byte, string> LastNameSetFor { get; set; } = [];
         public bool IsBetterUser { get; set; } = false;
+        public bool IsVerifiedBetterUser { get; set; } = false;
         public bool IsBetterHost { get; set; } = false;
         public bool IsTOHEHost { get; set; } = false;
 

@@ -13,7 +13,7 @@ public class RoleManagerPatch
 
     static readonly Func<InnerNet.ClientData, bool> clientCheck = (clientData) =>
     {
-        return clientData?.BetterData()?.IsBetterUser != true;
+        return clientData?.BetterData()?.IsVerifiedBetterUser != true;
     };
 
     // Better role algorithm
