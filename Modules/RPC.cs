@@ -7,8 +7,8 @@ namespace BetterAmongUs;
 enum CustomRPC : int
 {
     // Cheat RPC's
-    Sicko = 420,
-    AUM = 42069,
+    Sicko = 420, // Results in 164
+    AUM = 42069, // Results in 85
     AUMChat = 101,
 
     // TOHE
@@ -17,7 +17,6 @@ enum CustomRPC : int
 
     //Better Among Us
     BetterCheck = 150,
-    AddChat,
 }
 
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.HandleRpc))]
@@ -175,9 +174,6 @@ internal static class RPC
 
                     SyncAllNames(force: true);
                 }
-                break;
-            case (byte)CustomRPC.AddChat:
-                Utils.AddChatPrivate(reader.ReadString(), reader.ReadString());
                 break;
             case (byte)CustomRPC.VersionCheck or (byte)CustomRPC.RequestRetryVersionCheck:
                 if (player.IsHost())
