@@ -456,7 +456,7 @@ class CommandsPatch
 
         if (flag3 == true)
         {
-            cmdTarget = Utils.PlayerFromId(int.Parse(subArg));
+            cmdTarget = Utils.PlayerFromPlayerId(int.Parse(subArg));
             return true;
         }
         else

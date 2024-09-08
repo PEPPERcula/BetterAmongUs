@@ -227,10 +227,10 @@ class PlayerControlPatch
             }
             else
             {
-                var target = Utils.PlayerFromId(player.shapeshiftTargetPlayerId);
-                if (target != null)
+                var targetData = Utils.PlayerDataFromPlayerId(player.shapeshiftTargetPlayerId);
+                if (targetData != null)
                 {
-                    player.RawSetName(target.Data.PlayerName);
+                    player.RawSetName(targetData.PlayerName);
                 }
             }
 
