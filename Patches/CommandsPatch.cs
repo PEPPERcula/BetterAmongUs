@@ -347,7 +347,7 @@ class CommandsPatch
                         else if (HandlePlayerArgument(command, subArgs) == true)
                         {
                             var player = cmdTarget;
-                            if (player == PlayerControl.LocalPlayer)
+                            if (player.IsLocalPlayer())
                             {
                                 Utils.AddChatPrivate($"<color=#730000>{error}\nUnable to use /SetRole for self, use /Role!");
                                 return;

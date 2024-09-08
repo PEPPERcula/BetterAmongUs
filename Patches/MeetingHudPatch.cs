@@ -86,7 +86,7 @@ class MeetingHudUpdatePatch
                     case DisconnectReasons.Banned:
                         if (playerData.BetterData().AntiCheatInfo.BannedByAntiCheat)
                         {
-                            DisconnectText = "Banned By Anti-Cheat>";
+                            DisconnectText = "Banned By Anti-Cheat";
                         }
                         else
                         {
@@ -153,7 +153,7 @@ class MeetingHudUpdatePatch
                 }
                 if (!target.IsImpostorTeammate())
                 {
-                    if (PlayerControl.LocalPlayer.IsAlive() && target != PlayerControl.LocalPlayer)
+                    if (PlayerControl.LocalPlayer.IsAlive() && !target.IsLocalPlayer())
                     {
                         if (!DebugMenu.RevealRoles)
                         {

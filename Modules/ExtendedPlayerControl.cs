@@ -68,7 +68,6 @@ static class ExtendedPlayerControl
             textObj.text = text;
         }
     }
-
     // Reset players over head text
     public static void ResetAllPlayerTextInfo(this PlayerControl player)
     {
@@ -99,7 +98,6 @@ static class ExtendedPlayerControl
         }
         return true;
     }
-
     // Kick player
     public static void Kick(this PlayerControl player, bool ban = false, string setReasonInfo = "", bool AntiCheatBan = false)
     {
@@ -127,7 +125,7 @@ static class ExtendedPlayerControl
 
         player.BetterData().AntiCheatInfo.BannedByAntiCheat = AntiCheatBan;
     }
-
+    // Set color outline on player
     public static void SetOutline(this PlayerControl player, bool active, Color? color = null)
     {
         player.cosmetics.currentBodySprite.BodySprite.material.SetFloat("_Outline", (float)(active ? 1 : 0));
@@ -146,6 +144,7 @@ static class ExtendedPlayerControl
             }
         }
     }
+    // Set color outline on player
     public static void SetOutlineByHex(this PlayerControl player, bool active, string hexColor = "")
     {
         Color color = Utils.HexToColor32(hexColor);
@@ -165,26 +164,27 @@ static class ExtendedPlayerControl
             }
         }
     }
-
     // RPCs
+    // Set name for Target
     public static void RpcSetNamePrivate(this PlayerControl player, string name, PlayerControl target)
     {
         if (player == null || target == null) return;
         RPC.SetNamePrivate(player, name, target);
     }
-
+    // Exile player
     public static void RpcExile(this PlayerControl player)
     {
         if (player == null) return;
         RPC.ExileAsync(player);
     }
-
+    // Check if player is selecting room to spawn in, for Airship
     public static bool IsInRoomSelect(this PlayerControl player)
     {
         if (player == null) return false;
         return GameStates.AirshipIsActive && Vector2.Distance(player.GetTruePosition(), new(-25, 40)) < 5f;
     }
-
+    // Check if player controller is self client
+    public static bool IsLocalPlayer(this PlayerControl player) => player != null && PlayerControl.LocalPlayer != null && player == PlayerControl.LocalPlayer;
     // Get vent Id that the player is in.
     public static int GetPlayerVentId(this PlayerControl player)
     {
@@ -196,9 +196,8 @@ static class ExtendedPlayerControl
 
         return ventilationSystem.PlayersInsideVents.TryGetValue(player.PlayerId, out var playerIdVentId) ? playerIdVentId : -1;
     }
-
+    // Get true position
     public static Vector2 GetCustomPosition(this PlayerControl player) => new(player.transform.position.x, player.transform.position.y);
-
     // Check if player is a dev
     public static bool IsDev(this PlayerControl player) => player != null && Main.DevUser.Contains($"{Utils.GetHashPuid(player)}+{player.Data.FriendCode}");
     // Check if player is alive
@@ -254,7 +253,7 @@ static class ExtendedPlayerControl
     // Check if player is a imposter teammate
     public static bool IsImpostorTeammate(this PlayerControl player) =>
         player != null && PlayerControl.LocalPlayer != null &&
-        ((player == PlayerControl.LocalPlayer && PlayerControl.LocalPlayer.IsImpostorTeam()) ||
+        ((player.IsLocalPlayer() && PlayerControl.LocalPlayer.IsImpostorTeam()) ||
         (PlayerControl.LocalPlayer.IsImpostorTeam() && player.IsImpostorTeam()));
     // Check if player is in the Anti-Cheat list
     public static bool IsCheater(this PlayerControl player) =>

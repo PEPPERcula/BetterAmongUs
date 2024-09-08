@@ -206,7 +206,7 @@ class BetterHostManager
 
         foreach (PlayerControl target in Main.AllPlayerControls)
         {
-            if (target == null || target == PlayerControl.LocalPlayer) continue;
+            if (target == null || target.IsLocalPlayer()) continue;
 
             string NewName = player.CurrentOutfit.PlayerName;
 
@@ -224,7 +224,7 @@ class BetterHostManager
                     if (player.IsDev())
                         sbTopTag.Append("<color=#6e6e6e>(<color=#0088ff>Dev</color>)</color>+++");
 
-                    if (player == PlayerControl.LocalPlayer)
+                    if (player.IsLocalPlayer())
                         sbTopTag.Append($"<color=#0dff00>Better Host</color>+++");
                     else if (player.BetterData().IsBetterUser)
                         sbTopTag.Append("<color=#0dff00>Better User</color>+++");

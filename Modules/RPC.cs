@@ -7,8 +7,8 @@ namespace BetterAmongUs;
 enum CustomRPC : int
 {
     // Cheat RPC's
-    Sicko = 420,
-    AUM = 42069,
+    Sicko = 420, // Results in 164
+    AUM = 42069, // Results in 85
     AUMChat = 101,
 
     // TOHE
@@ -17,7 +17,6 @@ enum CustomRPC : int
 
     //Better Among Us
     BetterCheck = 150,
-    AddChat,
 }
 
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.HandleRpc))]
@@ -99,7 +98,7 @@ internal static class RPC
             return;
         }
 
-        foreach (var player in Main.AllPlayerControls.Where(pc => pc != PlayerControl.LocalPlayer))
+        foreach (var player in Main.AllPlayerControls.Where(pc => !pc.IsLocalPlayer()))
         {
             var optionsByteArray = GameOptionsManager.Instance.gameOptionsFactory.ToBytes(GameOptionsManager.Instance.CurrentGameOptions, false);
             MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SyncSettings, SendOption.None, player.GetClientId());
@@ -114,6 +113,7 @@ internal static class RPC
         MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.BetterCheck, SendOption.None, -1);
         messageWriter.Write(true);
         messageWriter.Write(flag);
+        messageWriter.Write(Main.modSignature);
         messageWriter.Write(Main.GetVersionText().Replace(" ", ""));
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
     }
@@ -151,7 +151,7 @@ internal static class RPC
 
     public static void HandleCustomRPC(PlayerControl player, byte callId, MessageReader oldReader)
     {
-        if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.Data == null) return;
+        if (player == null || player.IsLocalPlayer() || player.Data == null) return;
 
         if (!Enum.IsDefined(typeof(CustomRPC), (int)unchecked(callId))) return;
 
@@ -163,21 +163,38 @@ internal static class RPC
                 {
                     var SetBetterUser = reader.ReadBoolean();
                     var IsBetterHost = reader.ReadBoolean();
-
+                    var Signature = reader.ReadString();
+                    var Version = reader.ReadString();
+                    var IsVerified = Signature == Main.modSignature;
                     if (!player.IsHost() && IsBetterHost)
                     {
                         BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((CustomRPC)callId)} called as BetterHost");
                         break;
                     }
 
+                    if (string.IsNullOrEmpty(Signature) || string.IsNullOrEmpty(Version))
+                    {
+                        BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((CustomRPC)callId)} called with invalid info");
+                        break;
+                    }
+
                     player.BetterData().IsBetterUser = SetBetterUser;
                     player.BetterData().IsBetterHost = IsBetterHost;
 
+                    if (IsVerified)
+                    {
+                        player.BetterData().IsVerifiedBetterUser = true;
+                    }
+
+                    Logger.Log($"Received better user RPC from: {player.Data.PlayerName}:{player.Data.FriendCode}:{Utils.GetHashPuid(player)} - " +
+                        $"BetterUser: {SetBetterUser} - " +
+                        $"BetterHost: {IsBetterHost} - " +
+                        $"Version: {Version} - " +
+                        $"Verified: {IsVerified} - " +
+                        $"Signature: {Signature}");
+
                     SyncAllNames(force: true);
                 }
-                break;
-            case (byte)CustomRPC.AddChat:
-                Utils.AddChatPrivate(reader.ReadString(), reader.ReadString());
                 break;
             case (byte)CustomRPC.VersionCheck or (byte)CustomRPC.RequestRetryVersionCheck:
                 if (player.IsHost())
@@ -192,7 +209,7 @@ internal static class RPC
 
     public static void HandleRPC(PlayerControl player, byte callId, MessageReader oldReader)
     {
-        if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.Data == null) return;
+        if (player == null || player.IsLocalPlayer() || player.Data == null) return;
 
         MessageReader reader = MessageReader.Get(oldReader);
 
@@ -206,7 +223,7 @@ internal static class RPC
             case (byte)RpcCalls.SendChat:
                 var text = reader.ReadString();
 
-                if (player.IsHost() && player != PlayerControl.LocalPlayer)
+                if (player.IsHost() && !player.IsLocalPlayer())
                 {
                     if (text.ToLower() == "/allow")
                     {

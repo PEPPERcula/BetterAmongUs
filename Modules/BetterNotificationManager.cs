@@ -1,4 +1,6 @@
-﻿using TMPro;
+﻿using BetterAmongUs.Patches;
+using Cpp2IL.Core.Extensions;
+using TMPro;
 using UnityEngine;
 
 namespace BetterAmongUs;
@@ -38,6 +40,11 @@ class BetterNotificationManager
         string text = $"Player: <color=#0097b5>{player?.BetterData().RealName}</color> Has been detected doing an unauthorized action: <b><color=#fc0000>{reason}</color></b>";
         if (newText != "")
             text = $"Player: <color=#0097b5>{player?.BetterData().RealName}</color> " + newText + $": <b><color=#fc0000>{reason}</color></b>";
+
+        if (BetterGameSettings.CensorDetectionReason.GetBool())
+        {
+            reason = string.Concat('*').Repeat(reason.Length);
+        }
 
         if (!AntiCheat.PlayerData.ContainsKey(Utils.GetHashPuid(player)))
         {

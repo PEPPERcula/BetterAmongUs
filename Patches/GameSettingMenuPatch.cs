@@ -18,8 +18,8 @@ class BetterGameSettings
     public static BetterOptionItem? DetectInvalidRPCs;
     public static BetterOptionItem? RoleRandomizer;
     public static BetterOptionItem? DesyncRoles;
-
     public static BetterOptionItem? CancelInvalidSabotage;
+    public static BetterOptionItem? CensorDetectionReason;
 }
 
 class BetterGameSettingsTemp
@@ -43,6 +43,8 @@ static class GameSettingMenuPatch
         BetterOptionItem.TempPlayerOptionDataNum = 0;
         TitleList.Clear();
 
+        // Use 1400 next ID
+
         // Anti-Cheat Settings
         {
             TitleList.Add(new BetterOptionHeaderItem().Create(BetterSettingsTab, "<color=#4f92ff>Anti-Cheat Settings</color>"));
@@ -51,18 +53,19 @@ static class GameSettingMenuPatch
             {
                 TitleList.Add(new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color=#4f92ff>Host Only</color>"));
                 BetterGameSettings.WhenCheating = new BetterOptionStringItem().Create(100, BetterSettingsTab, "When a player is caught cheating", ["Notify", "Kick", "Ban"], 2);
-                BetterGameSettings.InvalidFriendCode = new BetterOptionCheckboxItem().Create(200, BetterSettingsTab, "Detected invalid FriendCodes", true);
-                BetterGameSettings.CancelInvalidSabotage = new BetterOptionCheckboxItem().Create(900, BetterSettingsTab, "Cancel Invalid Sabotages", true);
-                BetterGameSettings.UseBanPlayerList = new BetterOptionCheckboxItem().Create(300, BetterSettingsTab, "Use Ban Player List", true);
-                BetterGameSettings.UseBanNameList = new BetterOptionCheckboxItem().Create(400, BetterSettingsTab, "Use Ban Name List", true);
-                BetterGameSettings.UseBanWordList = new BetterOptionCheckboxItem().Create(500, BetterSettingsTab, "Use Ban Word List", true);
+                BetterGameSettings.InvalidFriendCode = new BetterOptionCheckboxItem().Create(200, BetterSettingsTab, "Detected invalid friendCodes", true);
+                BetterGameSettings.CancelInvalidSabotage = new BetterOptionCheckboxItem().Create(900, BetterSettingsTab, "Cancel invalid sabotages", true);
+                BetterGameSettings.UseBanPlayerList = new BetterOptionCheckboxItem().Create(300, BetterSettingsTab, "Use ban player list", true);
+                BetterGameSettings.UseBanNameList = new BetterOptionCheckboxItem().Create(400, BetterSettingsTab, "Use ban name list", true);
+                BetterGameSettings.UseBanWordList = new BetterOptionCheckboxItem().Create(500, BetterSettingsTab, "Use ban word list", true);
                 TitleList.Add(new BetterOptionDividerItem().Create(BetterSettingsTab));
             }
 
             TitleList.Add(new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color=#4f92ff>Detections</color>"));
+            BetterGameSettings.CensorDetectionReason = new BetterOptionCheckboxItem().Create(1300, BetterSettingsTab, "Censor detection reason", false);
             BetterGameSettings.DetectedLevelAbove = new BetterOptionIntItem().Create(600, BetterSettingsTab, "Detected player levels >", [100, 5000, 5], 200, "Lv ", "");
-            BetterGameSettings.DetectCheatClients = new BetterOptionCheckboxItem().Create(700, BetterSettingsTab, "Detect Cheat Clients", true);
-            BetterGameSettings.DetectInvalidRPCs = new BetterOptionCheckboxItem().Create(800, BetterSettingsTab, "Detect Invalid RPCs", true);
+            BetterGameSettings.DetectCheatClients = new BetterOptionCheckboxItem().Create(700, BetterSettingsTab, "Detect cheat clients", true);
+            BetterGameSettings.DetectInvalidRPCs = new BetterOptionCheckboxItem().Create(800, BetterSettingsTab, "Detect invalid RPCs", true);
 
             /*
             TitleList.Add(new BetterOptionDividerItem().Create(BetterSettingsTab));
@@ -75,7 +78,7 @@ static class GameSettingMenuPatch
         {
             TitleList.Add(new BetterOptionHeaderItem().Create(BetterSettingsTab, "<color=#4f92ff>Role Algorithm Settings</color>"));
             BetterGameSettings.RoleRandomizer = new BetterOptionStringItem().Create(1100, BetterSettingsTab, "Randomizer", ["System.Random", "UnityEngine.Random"], 0);
-            BetterGameSettings.DesyncRoles = new BetterOptionCheckboxItem().Create(1200, BetterSettingsTab, "Desync Roles To Other Clients", true);
+            BetterGameSettings.DesyncRoles = new BetterOptionCheckboxItem().Create(1200, BetterSettingsTab, "Desync roles to other clients", true);
         }
 
         // Gameplay Settings

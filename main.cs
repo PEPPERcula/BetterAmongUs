@@ -24,11 +24,11 @@ public class Main : BasePlugin
 {
     public const ReleaseTypes ReleaseBuildType = ReleaseTypes.Release;
     public const string CanaryNum = "0";
-    public const string HotfixNum = "0";
-    public const bool IsHotFix = false;
+    public const string HotfixNum = "1";
+    public const bool IsHotFix = true;
     public const string PluginGuid = "com.d1gq.betteramongus";
     public const string PluginVersion = "1.1.2";
-    public const string ReleaseDate = "08.31.2024"; // mm/dd/yyyy
+    public const string ReleaseDate = "09.8.2024"; // mm/dd/yyyy
     public const string Github = "https://github.com/D1GQ/BetterAmongUs-Public";
     public const string Discord = "https://discord.gg/vjYrXpzNAn";
 
@@ -53,8 +53,9 @@ public class Main : BasePlugin
                 .Append(ReleaseDate)
                 .Append(Github)
                 .Append(Discord)
-                .Append(string.Join(",", Enum.GetNames(typeof(CustomRPC))))
-                .Append(string.Join(",", GetRoleName.Values))
+                .Append(string.Join(".", Enum.GetNames(typeof(CustomRPC))))
+                .Append(string.Join(".", GetRoleName.Values))
+                .Append(string.Join(".", GetRoleColor.Values))
                 .ToString();
 
             return GetHash(versionData);
@@ -88,6 +89,7 @@ public class Main : BasePlugin
 
     public static List<string> SupportedAmongUsVersions =
     [
+        "2024.9.4",
         "2024.8.13",
         "2024.6.18",
     ];
