@@ -44,8 +44,12 @@ class BetterNotificationManager
         }
 
         string text = $"Player: <color=#0097b5>{player?.BetterData().RealName}</color> Has been detected doing an unauthorized action: <b><color=#fc0000>{Reason}</color></b>";
+        string rawText = $"Player: <color=#0097b5>{player?.BetterData().RealName}</color> Has been detected doing an unauthorized action: <b><color=#fc0000>{reason}</color></b>";
         if (newText != "")
+        {
             text = $"Player: <color=#0097b5>{player?.BetterData().RealName}</color> " + newText + $": <b><color=#fc0000>{Reason}</color></b>";
+            rawText = $"Player: <color=#0097b5>{player?.BetterData().RealName}</color> " + newText + $": <b><color=#fc0000>{reason}</color></b>";
+        }
 
         if (!AntiCheat.PlayerData.ContainsKey(Utils.GetHashPuid(player)))
         {
@@ -54,7 +58,7 @@ class BetterNotificationManager
             Notify(text, Time: 8f);
         }
 
-        Logger.LogCheat(Utils.RemoveHtmlText(text));
+        Logger.LogCheat(Utils.RemoveHtmlText(rawText));
 
         if (GameStates.IsHost && kickPlayer)
         {
