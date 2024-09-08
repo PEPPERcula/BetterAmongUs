@@ -172,11 +172,11 @@ class PlayerControlPatch
 
                 if (player.IsDev() && !GameStates.IsInGamePlay)
                     sbTag.Append("<color=#6e6e6e>(<color=#0088ff>Dev</color>)</color>+++");
-                if (((player == PlayerControl.LocalPlayer && GameStates.IsHost && Main.BetterHost.Value)
-                    || (player != PlayerControl.LocalPlayer && player.BetterData().IsBetterHost && player.IsHost())) && !GameStates.IsInGamePlay)
-                    sbTag.Append("<color=#0dff00>Better Host</color>+++");
-                else if ((player == PlayerControl.LocalPlayer || player.BetterData().IsBetterUser) && !GameStates.IsInGamePlay)
-                    sbTag.Append("<color=#0dff00>Better User</color>+++");
+                if (((player.IsLocalPlayer() && GameStates.IsHost && Main.BetterHost.Value)
+                    || (!player.IsLocalPlayer() && player.BetterData().IsBetterHost && player.IsHost())) && !GameStates.IsInGamePlay)
+                    sbTag.AppendFormat("<color=#0dff00>{0}Better Host</color>+++", player.BetterData().IsVerifiedBetterUser || player.IsLocalPlayer() ? "✓ " : "");
+                else if ((player.IsLocalPlayer() || player.BetterData().IsBetterUser) && !GameStates.IsInGamePlay)
+                    sbTag.AppendFormat("<color=#0dff00>{0}Better User</color>+++", player.BetterData().IsVerifiedBetterUser || player.IsLocalPlayer() ? "✓ " : "");
                 sbTag.Append($"<color=#b554ff>ID: {player.PlayerId}</color>+++");
 
                 sbTagTop.Append($"<color=#9e9e9e>{platform}</color>+++");
@@ -187,7 +187,7 @@ class PlayerControlPatch
             }
             else if ((GameStates.IsInGame || GameStates.IsFreePlay) && !GameStates.IsHideNSeek)
             {
-                if (player.IsImpostorTeammate() || player == PlayerControl.LocalPlayer || !PlayerControl.LocalPlayer.IsAlive() || DebugMenu.RevealRoles)
+                if (player.IsImpostorTeammate() || player.IsLocalPlayer() || !PlayerControl.LocalPlayer.IsAlive() || DebugMenu.RevealRoles)
                 {
                     string Role = $"<color={player.GetTeamHexColor()}>{player.GetRoleName()}</color>";
                     if (!player.IsImpostorTeam() && player.myTasks.Count > 0)
@@ -203,7 +203,7 @@ class PlayerControlPatch
             }
             else if (GameStates.IsInGame || GameStates.IsFreePlay)
             {
-                if (player == PlayerControl.LocalPlayer)
+                if (player.IsLocalPlayer())
                 {
                     if (player.IsImpostorTeam())
                     {
@@ -216,7 +216,7 @@ class PlayerControlPatch
                 }
             }
 
-            if (player.IsImpostorTeammate() && player != PlayerControl.LocalPlayer)
+            if (player.IsImpostorTeammate() && !player.IsLocalPlayer())
             {
                 NewName = $"<color=#ff1919>{player.Data.PlayerName}</color>";
             }

@@ -131,7 +131,7 @@ class ChatPatch
 
                 pooledBubble.transform.SetParent(__instance.scroller.Inner);
                 pooledBubble.transform.localScale = Vector3.one;
-                bool flag = sourcePlayer == PlayerControl.LocalPlayer;
+                bool flag = sourcePlayer.IsLocalPlayer();
                 if (flag)
                 {
                     pooledBubble.SetRight();
@@ -176,10 +176,10 @@ class ChatPatch
                     if (sourcePlayer.IsDev())
                         sbTag.Append("<color=#0088ff>Dev</color>+++");
 
-                    if (((sourcePlayer == PlayerControl.LocalPlayer && GameStates.IsHost && Main.BetterHost.Value)
-                        || (sourcePlayer != PlayerControl.LocalPlayer && sourcePlayer.BetterData().IsBetterHost && sourcePlayer.IsHost())))
+                    if (((sourcePlayer.IsLocalPlayer() && GameStates.IsHost && Main.BetterHost.Value)
+                        || (!sourcePlayer.IsLocalPlayer() && sourcePlayer.BetterData().IsBetterHost && sourcePlayer.IsHost())))
                         sbTag.Append("<color=#0dff00>Better Host</color>+++");
-                    else if ((sourcePlayer == PlayerControl.LocalPlayer || sourcePlayer.BetterData().IsBetterUser))
+                    else if ((sourcePlayer.IsLocalPlayer() || sourcePlayer.BetterData().IsBetterUser))
                         sbTag.Append("<color=#0dff00>Better User</color>+++");
 
                     if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.SickoData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.SickoData.ContainsValue(friendCode))
@@ -192,7 +192,7 @@ class ChatPatch
 
                 if (!sourcePlayer.IsImpostorTeammate())
                 {
-                    if (PlayerControl.LocalPlayer.IsAlive() && sourcePlayer != PlayerControl.LocalPlayer)
+                    if (PlayerControl.LocalPlayer.IsAlive() && !sourcePlayer.IsLocalPlayer())
                     {
                         Role = "";
                     }

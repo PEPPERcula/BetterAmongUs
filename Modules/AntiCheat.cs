@@ -100,7 +100,7 @@ class AntiCheat
     {
         MessageReader reader = MessageReader.Get(Oldreader);
 
-        if (player == PlayerControl.LocalPlayer || PlayerControl.LocalPlayer == null || player == null || !IsEnabled) return;
+        if (player.IsLocalPlayer() || player == null || !IsEnabled) return;
 
         if (callId is unchecked((byte)CustomRPC.Sicko) && Main.AntiCheat.Value && BetterGameSettings.DetectCheatClients.GetBool())
         {
@@ -182,7 +182,7 @@ class AntiCheat
         {
             MessageReader reader = MessageReader.Get(Oldreader);
 
-            if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.BetterData().IsBetterHost || reader == null || !IsEnabled || !Main.AntiCheat.Value
+            if (player == null || player.IsLocalPlayer() || player.BetterData().IsBetterHost || reader == null || !IsEnabled || !Main.AntiCheat.Value
                 || (GameStates.IsBetterHostLobby && !GameStates.IsHost) || !BetterGameSettings.DetectInvalidRPCs.GetBool()) return;
 
             RoleTypes? Role = player?.Data?.RoleType;
@@ -352,7 +352,7 @@ class AntiCheat
             }
         }
 
-        if (!GameStates.IsHost || PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.BetterData().IsBetterHost || !IsEnabled || !Main.AntiCheat.Value
+        if (!GameStates.IsHost || PlayerControl.LocalPlayer == null || player == null || player.IsLocalPlayer() || player.BetterData().IsBetterHost || !IsEnabled || !Main.AntiCheat.Value
             || (GameStates.IsBetterHostLobby && !GameStates.IsHost) || !BetterGameSettings.DetectInvalidRPCs.GetBool()) return true;
 
         if (!BetterGameSettings.CancelInvalidSabotage.GetBool())
@@ -478,7 +478,7 @@ class AntiCheat
         {
             MessageReader reader = MessageReader.Get(Oldreader);
 
-            if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.BetterData().IsBetterHost || reader == null) return true;
+            if (PlayerControl.LocalPlayer == null || player == null || player.IsLocalPlayer() || player.BetterData().IsBetterHost || reader == null) return true;
 
             // Prevent ban exploit
             if (callId is (byte)RpcCalls.MurderPlayer)
@@ -489,7 +489,7 @@ class AntiCheat
 
                     if (target != null)
                     {
-                        if (target == PlayerControl.LocalPlayer)
+                        if (target.IsLocalPlayer())
                         {
                             target.BetterData().AntiCheatInfo.TimesAttemptedKilled++;
 

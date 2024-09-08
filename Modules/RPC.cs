@@ -98,7 +98,7 @@ internal static class RPC
             return;
         }
 
-        foreach (var player in Main.AllPlayerControls.Where(pc => pc != PlayerControl.LocalPlayer))
+        foreach (var player in Main.AllPlayerControls.Where(pc => !pc.IsLocalPlayer()))
         {
             var optionsByteArray = GameOptionsManager.Instance.gameOptionsFactory.ToBytes(GameOptionsManager.Instance.CurrentGameOptions, false);
             MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SyncSettings, SendOption.None, player.GetClientId());
@@ -151,7 +151,7 @@ internal static class RPC
 
     public static void HandleCustomRPC(PlayerControl player, byte callId, MessageReader oldReader)
     {
-        if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.Data == null) return;
+        if (player == null || player.IsLocalPlayer() || player.Data == null) return;
 
         if (!Enum.IsDefined(typeof(CustomRPC), (int)unchecked(callId))) return;
 
@@ -209,7 +209,7 @@ internal static class RPC
 
     public static void HandleRPC(PlayerControl player, byte callId, MessageReader oldReader)
     {
-        if (PlayerControl.LocalPlayer == null || player == null || player == PlayerControl.LocalPlayer || player.Data == null) return;
+        if (player == null || player.IsLocalPlayer() || player.Data == null) return;
 
         MessageReader reader = MessageReader.Get(oldReader);
 
@@ -223,7 +223,7 @@ internal static class RPC
             case (byte)RpcCalls.SendChat:
                 var text = reader.ReadString();
 
-                if (player.IsHost() && player != PlayerControl.LocalPlayer)
+                if (player.IsHost() && !player.IsLocalPlayer())
                 {
                     if (text.ToLower() == "/allow")
                     {

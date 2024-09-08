@@ -92,7 +92,7 @@ public class RoleManagerPatch
         // Override player role assignment
         if (SetPlayerRole.Keys.Any())
         {
-            foreach (var kvp in SetPlayerRole.Where(kvp => kvp.Key != null).OrderBy(kvp => kvp.Key == PlayerControl.LocalPlayer ? 0 : 1))
+            foreach (var kvp in SetPlayerRole.Where(kvp => kvp.Key != null).OrderBy(kvp => kvp.Key.IsLocalPlayer() ? 0 : 1))
             {
                 var player = kvp.Key;
                 var role = kvp.Value;
@@ -311,7 +311,7 @@ public class RoleManagerPatch
         // Override player role assignment
         if (SetPlayerRole.Keys.Any())
         {
-            foreach (var kvp in SetPlayerRole.Where(kvp => kvp.Key != null).OrderBy(kvp => kvp.Key == PlayerControl.LocalPlayer ? 0 : 1))
+            foreach (var kvp in SetPlayerRole.Where(kvp => kvp.Key != null).OrderBy(kvp => kvp.Key.IsLocalPlayer() ? 0 : 1))
             {
                 var player = kvp.Key;
                 var role = kvp.Value;
