@@ -3,6 +3,7 @@ using BetterAmongUs.Patches;
 using HarmonyLib;
 using Hazel;
 using InnerNet;
+using Sentry.Internal.Extensions;
 
 namespace BetterAmongUs;
 
@@ -88,6 +89,11 @@ class AntiCheat
                                 BetterNotificationManager.NotifyCheat(player, $"Platform Spoofer", newText: "Has been detected with a cheat");
                                 Logger.LogCheat($"{player.BetterData().RealName} Platform Spoofer: {__instance.PsnPlatformId}");
                             }
+                        }
+
+                        if (__instance.Platform is Platforms.Unknown || !Enum.IsDefined(__instance.Platform))
+                        {
+                            BetterNotificationManager.NotifyCheat(player, $"Platform Spoofer", newText: "Has been detected with a cheat");
                         }
                     }
                 }, 3.5f, shoudLog: false);

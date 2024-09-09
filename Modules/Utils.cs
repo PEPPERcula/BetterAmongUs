@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using InnerNet;
+using Sentry.Internal.Extensions;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
@@ -298,11 +299,15 @@ public static class Utils
                 PlatformName = "IPhone";
                 Tag = "Mobile";
                 break;
+            case Platforms p when !Enum.IsDefined(p):
             case Platforms.Unknown:
-                PlatformName = "None";
+                PlatformName = "Unknown";
+                useTag = false;
                 break;
             default:
-                return string.Empty;
+                PlatformName = "None";
+                useTag = false;
+                break;
         }
 
         if (useTag == false)
