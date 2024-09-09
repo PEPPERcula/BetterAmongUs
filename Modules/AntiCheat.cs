@@ -117,7 +117,7 @@ class AntiCheat
                 if (reader.BytesRemaining == 0 && !flag)
                 {
                     player.ReportPlayer(ReportReasons.Cheating_Hacking);
-                    SickoData[Utils.GetHashPuid(player)] = player.FriendCode;
+                    SickoData[Utils.GetHashPuid(player)] = player.Data.FriendCode;
                     BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "sickoData", "Sicko Menu RPC");
                     BetterNotificationManager.NotifyCheat(player, $"Sicko Menu", newText: "Has been detected with a cheat client");
                 }
@@ -139,7 +139,7 @@ class AntiCheat
                     if (!flag)
                     {
                         player.ReportPlayer(ReportReasons.Cheating_Hacking);
-                        AUMData[Utils.GetHashPuid(player)] = player.FriendCode;
+                        AUMData[Utils.GetHashPuid(player)] = player.Data.FriendCode;
                         BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "aumData", "AUM RPC");
                         BetterNotificationManager.NotifyCheat(player, $"AUM", newText: "Has been detected with a cheat client");
                     }
@@ -158,21 +158,26 @@ class AntiCheat
                 var msgString = reader.ReadString();
                 var colorId = reader.ReadInt32();
 
-                Utils.AddChatPrivate($"{msgString}", overrideName: $"<b><color=#870000>AUM Chat</color> - <color={Utils.Color32ToHex(Palette.PlayerColors[colorId])}>{nameString}</color></b>");
+                var flag3 = player.BetterData().AntiCheatInfo.AUMChats.Count > 0 && player.BetterData().AntiCheatInfo.AUMChats.Last() == msgString;
+                if (!flag3)
+                {
+                    Utils.AddChatPrivate($"{msgString}", overrideName: $"<b><color=#870000>AUM Chat</color> - {player.GetPlayerNameAndColor()}</b>");
+                    player.BetterData().AntiCheatInfo.AUMChats.Add(msgString);
+                }
 
-                PlayerControl AUMPlayer = Main.AllPlayerControls.First(pc => pc.Data.PlayerName == nameString && pc.CurrentOutfit.ColorId == colorId);
+                Logger.Log($"{player.Data.PlayerName} -> {msgString}", "AUMChatLog");
 
-                if (AUMPlayer == null || !Main.AntiCheat.Value || !BetterGameSettings.DetectCheatClients.GetBool()) return;
+                if (!Main.AntiCheat.Value || !BetterGameSettings.DetectCheatClients.GetBool()) return;
 
                 var flag = string.IsNullOrEmpty(nameString) && string.IsNullOrEmpty(msgString);
-                var flag2 = AUMData.ContainsKey(Utils.GetHashPuid(AUMPlayer));
+                var flag2 = AUMData.ContainsKey(Utils.GetHashPuid(player));
 
                 if (!flag && !flag2)
                 {
                     player.ReportPlayer(ReportReasons.Cheating_Hacking);
-                    AUMData[Utils.GetHashPuid(AUMPlayer)] = AUMPlayer.FriendCode;
+                    AUMData[Utils.GetHashPuid(player)] = player.Data.FriendCode;
                     BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "aumData", "AUM Chat RPC");
-                    BetterNotificationManager.NotifyCheat(AUMPlayer, $"AUM", newText: "Has been detected with a cheat client");
+                    BetterNotificationManager.NotifyCheat(player, $"AUM", newText: "Has been detected with a cheat client");
                 }
             }
             catch { }
@@ -180,7 +185,6 @@ class AntiCheat
             return;
         }
     }
-
     // Check and notify for invalid rpcs
     public static void CheckRPC(PlayerControl player, byte callId, MessageReader Oldreader)
     {
@@ -378,7 +382,7 @@ class AntiCheat
         // Fix 2: 17
         // Panel 1: Open/Hold 64 - Close/Release 32
         // Panel 2: Open/Hold 65 - Close/Release 33
-        // Cheat Sabo: 128 
+        // Host: 128
 
         // Activate sabotage
         if (systemType == SystemTypes.Sabotage)

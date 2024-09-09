@@ -33,14 +33,15 @@ class SplashIntroPatch
 
             if (Input.GetKeyDown(KeyCode.Mouse0) || Input.GetKeyDown(KeyCode.Mouse1))
             {
-                if (ShowTime > 1.5f)
+                if (ShowTime > 2.5f)
                 {
                     __instance.StopAllCoroutines();
-                    UnityEngine.Object.Destroy(__instance.logoAnimFinish.gameObject);
+                    __instance.sceneChanger.BeginLoadingScene();
+                    __instance.doneLoadingRefdata = true;
+                    IsReallyDoneLoading = true;
                     __instance.sceneChanger.AllowFinishLoadingScene();
                     __instance.startedSceneLoad = true;
                     __instance.loadingObject.SetActive(true);
-                    IsReallyDoneLoading = true;
                 }
             }
 
