@@ -247,10 +247,18 @@ class AntiCheat
                 if (reader.BytesRemaining > 0)
                 {
                     uint level = reader.ReadPackedUInt32();
+
                     if (level > BetterGameSettings.DetectedLevelAbove.GetInt())
                     {
                         BetterNotificationManager.NotifyCheat(player, $"Invalid Level: {level}");
-                        Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {level >= 200}");
+                        Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {level > BetterGameSettings.DetectedLevelAbove.GetInt()}");
+                    }
+
+                    if (level <= 0)
+                    {
+                        var betterData = player.BetterData();
+                        player.Kick(false, "{0}" + $" due to {level} being invalid level", bypassDataCheck: true);
+                        betterData.AntiCheatInfo.BannedByAntiCheat = true;
                     }
                 }
                 return;

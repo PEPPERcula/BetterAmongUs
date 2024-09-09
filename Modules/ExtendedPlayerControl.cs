@@ -99,9 +99,11 @@ static class ExtendedPlayerControl
         return true;
     }
     // Kick player
-    public static void Kick(this PlayerControl player, bool ban = false, string setReasonInfo = "", bool AntiCheatBan = false)
+    public static void Kick(this PlayerControl player, bool ban = false, string setReasonInfo = "", bool AntiCheatBan = false, bool bypassDataCheck = false)
     {
-        if (!GameStates.IsHost || PlayerControl.LocalPlayer == player || !player.DataIsCollected() || player.IsHost() || player.isDummy)
+        var Ban = ban;
+
+        if (!GameStates.IsHost || PlayerControl.LocalPlayer == player || !player.DataIsCollected() && !bypassDataCheck || player.IsHost() || player.isDummy)
         {
             return;
         }
@@ -113,7 +115,7 @@ static class ExtendedPlayerControl
                 return;
             }
 
-            ban = ban && BetterGameSettings.WhenCheating.GetValue() == 2;
+            Ban = Ban && BetterGameSettings.WhenCheating.GetValue() == 2;
         }
 
         if (setReasonInfo != "")
@@ -121,7 +123,7 @@ static class ExtendedPlayerControl
             GameDataShowNotificationPatch.BetterShowNotification(player.Data, forceReasonText: string.Format(setReasonInfo, ban ? "banned" : "kicked"));
         }
 
-        AmongUsClient.Instance.KickPlayer(player.GetClientId(), ban);
+        AmongUsClient.Instance.KickPlayer(player.GetClientId(), Ban);
 
         player.BetterData().AntiCheatInfo.BannedByAntiCheat = AntiCheatBan;
     }
