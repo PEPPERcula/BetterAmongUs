@@ -66,7 +66,7 @@ public static class Utils
         catch (Exception ex)
         {
             chat.chatBubblePool.Reclaim(pooledBubble);
-            Logger.Error(ex.ToString());
+            Logger.Error(ex);
             throw;
         }
     }
@@ -215,7 +215,7 @@ public static class Utils
         }
         catch (Exception ex)
         {
-            Logger.Error(ex.ToString());
+            Logger.Error(ex);
             return null;
         }
     }
@@ -241,7 +241,7 @@ public static class Utils
         }
         catch (Exception ex)
         {
-            Logger.Error(ex.ToString());
+            Logger.Error(ex);
             return null;
         }
     }

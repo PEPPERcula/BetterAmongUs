@@ -333,7 +333,7 @@ class AntiCheat
         }
         catch (Exception ex)
         {
-            Logger.Error(ex.ToString());
+            Logger.Error(ex);
         }
     }
 
@@ -534,9 +534,9 @@ class AntiCheat
             bool IsImpostor = player.IsImpostorTeam();
             bool IsCrewmate = !player.IsImpostorTeam();
 
-            if (TrustedRPCs(callId) != true)
+            if (TrustedRPCs(callId) != true && !player.IsHost())
             {
-                BetterNotificationManager.NotifyCheat(player, $"Untrusted RPC received: {callId}");
+                BetterNotificationManager.NotifyCheat(player, $"Unregistered RPC received: {callId}");
                 return false;
             }
 
@@ -720,7 +720,7 @@ class AntiCheat
         }
         catch (Exception ex)
         {
-            Logger.Error(ex.ToString());
+            Logger.Error(ex);
             return true;
         }
     }

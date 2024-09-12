@@ -174,7 +174,7 @@ public class Main : BasePlugin
         }
         catch (Exception ex)
         {
-            BetterAmongUs.Logger.Error(ex.ToString());
+            BetterAmongUs.Logger.Error(ex);
         }
     }
 

@@ -138,7 +138,7 @@ class BetterDataManager
         }
         catch (Exception ex)
         {
-            Logger.Error(ex.ToString());
+            Logger.Error(ex);
         }
 
         return string.Empty;
@@ -461,7 +461,7 @@ class BetterDataManager
         }
         catch (Exception ex)
         {
-            Logger.Error(ex.ToString());
+            Logger.Error(ex);
         }
     }
 }

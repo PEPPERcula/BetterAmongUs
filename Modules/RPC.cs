@@ -153,6 +153,14 @@ internal static class RPC
     {
         if (player == null || player.IsLocalPlayer() || player.Data == null) return;
 
+        var flag = Enum.IsDefined(typeof(CustomRPC), (int)unchecked(callId)) || Enum.IsDefined(typeof(RpcCalls), callId);
+
+        if (!flag && player.IsHost())
+        {
+            var BAU = "<color=#278720>♻</color><color=#0ed400><b>BetterAmongUs</b></color><color=#278720>♻</color>";
+            Utils.DisconnectSelf($"{BAU} does not support\n<b>Modded Lobbies</b>!");
+        }
+
         if (!Enum.IsDefined(typeof(CustomRPC), (int)unchecked(callId))) return;
 
         MessageReader reader = MessageReader.Get(oldReader);
@@ -196,6 +204,7 @@ internal static class RPC
                     SyncAllNames(force: true);
                 }
                 break;
+                /*
             case (byte)CustomRPC.VersionCheck or (byte)CustomRPC.RequestRetryVersionCheck:
                 if (player.IsHost())
                 {
@@ -204,6 +213,7 @@ internal static class RPC
                     Utils.DisconnectSelf($"{BAU} does not support <color=#ff9cdc><b>TOHE</b></color>");
                 }
                 break;
+                */
         }
     }
 

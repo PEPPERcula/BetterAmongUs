@@ -33,14 +33,13 @@ class SplashIntroPatch
 
             if (Input.GetKeyDown(KeyCode.Mouse0) || Input.GetKeyDown(KeyCode.Mouse1))
             {
-                if (ShowTime > 2.5f)
+                if (ShowTime > 2.5f && !IsReallyDoneLoading)
                 {
-                    __instance.StopAllCoroutines();
-                    __instance.sceneChanger.BeginLoadingScene();
-                    __instance.doneLoadingRefdata = true;
                     IsReallyDoneLoading = true;
-                    __instance.sceneChanger.AllowFinishLoadingScene();
                     __instance.startedSceneLoad = true;
+                    __instance.sceneChanger.BeginLoadingScene();
+                    __instance.sceneChanger.AllowFinishLoadingScene();
+                    __instance.logoAnimFinish.gameObject.SetActive(false);
                     __instance.loadingObject.SetActive(true);
                 }
             }
@@ -58,6 +57,7 @@ class SplashIntroPatch
                     BetterLogo.name = "BetterLogo";
                     BetterLogo.GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("BetterAmongUs.Resources.Images.BetterAmongUs-Logo.png", 150f);
                     __instance.logoAnimFinish.transform.Find("BlackOverlay").transform.SetLocalY(0f);
+                    __instance.loadingObject.SetActive(false);
                 }
 
                 __instance.startedSceneLoad = BetterIntro;
