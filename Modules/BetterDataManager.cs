@@ -76,38 +76,45 @@ class BetterDataManager
         }
         else
         {
+            // Load the existing JSON data
+            string json = File.ReadAllText(filePath);
+
             try
             {
-                // Load the existing JSON data
-                string json = File.ReadAllText(filePath);
-                var jsonData = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, Dictionary<string, string>>>>(json) ?? new Dictionary<string, Dictionary<string, Dictionary<string, string>>>();
-
-                // Check and add missing categories
-                if (!jsonData.ContainsKey("Data"))
+                using (JsonDocument.Parse(json))
                 {
-                    jsonData["Data"] = new Dictionary<string, Dictionary<string, string>>();
                 }
-                if (!jsonData.ContainsKey("cheatData"))
-                {
-                    jsonData["cheatData"] = new Dictionary<string, Dictionary<string, string>>();
-                }
-                if (!jsonData.ContainsKey("sickoData"))
-                {
-                    jsonData["sickoData"] = new Dictionary<string, Dictionary<string, string>>();
-                }
-                if (!jsonData.ContainsKey("aumData"))
-                {
-                    jsonData["aumData"] = new Dictionary<string, Dictionary<string, string>>();
-                }
-
-                // Write the updated JSON data back to the file
-                json = JsonSerializer.Serialize(jsonData, new JsonSerializerOptions { WriteIndented = true });
-                File.WriteAllText(filePath, json);
             }
-            catch (Exception ex)
+            catch (JsonException)
             {
-                Logger.Error(ex);
+                // JSON is invalid, reformat by writing an empty JSON object.
+                json = "{}";
+
             }
+
+            var jsonData = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, Dictionary<string, string>>>>(json) ?? new Dictionary<string, Dictionary<string, Dictionary<string, string>>>();
+
+            // Check and add missing categories
+            if (!jsonData.ContainsKey("Data"))
+            {
+                jsonData["Data"] = new Dictionary<string, Dictionary<string, string>>();
+            }
+            if (!jsonData.ContainsKey("cheatData"))
+            {
+                jsonData["cheatData"] = new Dictionary<string, Dictionary<string, string>>();
+            }
+            if (!jsonData.ContainsKey("sickoData"))
+            {
+                jsonData["sickoData"] = new Dictionary<string, Dictionary<string, string>>();
+            }
+            if (!jsonData.ContainsKey("aumData"))
+            {
+                jsonData["aumData"] = new Dictionary<string, Dictionary<string, string>>();
+            }
+
+            // Write the updated JSON data back to the file
+            json = JsonSerializer.Serialize(jsonData, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(filePath, json);
         }
     }
 
