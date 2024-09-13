@@ -212,10 +212,10 @@ class AntiCheat
 
             if (callId is (byte)RpcCalls.EnterVent or (byte)RpcCalls.ExitVent)
             {
-                if ((!player.IsImpostorTeam() && Role != RoleTypes.Engineer) || player.Data.IsDead)
+                if ((!player.IsImpostorTeam() && Role != RoleTypes.Engineer) && player.IsAlive())
                 {
                     BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
-                    Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {player.IsImpostorTeam()} && {Role != RoleTypes.Engineer} || {player.Data.IsDead}");
+                    Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {player.IsImpostorTeam()} && {Role != RoleTypes.Engineer} && {player.IsAlive()}");
                 }
 
                 return;
