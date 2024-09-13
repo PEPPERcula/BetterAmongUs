@@ -84,6 +84,22 @@ public class ClientPatch
             }
         }
     }
+    [HarmonyPatch(typeof(NetworkedPlayerInfo))]
+    public class NetworkedPlayerInfoPatch
+    {
+        [HarmonyPatch(nameof(NetworkedPlayerInfo.Deserialize))]
+        [HarmonyPostfix]
+        public static void Deserialize_Postfix(NetworkedPlayerInfo __instance)
+        {
+            if (!GameStates.IsHost)
+            {
+                if (__instance.PlayerLevel == unchecked((uint)0 - 1))
+                {
+                    __instance.PlayerLevel = 0;
+                }
+            }
+        }
+    }
     // Set text color
     [HarmonyPatch(typeof(CosmeticsLayer))]
     public class CosmeticsLayerPatch
