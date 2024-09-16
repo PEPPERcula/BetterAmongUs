@@ -31,6 +31,7 @@ class SplashIntroPatch
                 UnityEngine.Object.Destroy(__instance.logoAnimFinish.GetComponent<AudioSource>());
             }
 
+            /*
             if (Input.GetKeyDown(KeyCode.Mouse0) || Input.GetKeyDown(KeyCode.Mouse1))
             {
                 if (ShowTime > 2.5f && !IsReallyDoneLoading)
@@ -43,6 +44,7 @@ class SplashIntroPatch
                     __instance.loadingObject.SetActive(true);
                 }
             }
+            */
 
             if (__instance.doneLoadingRefdata && !__instance.startedSceneLoad && Time.time - __instance.startTime > __instance.minimumSecondsBeforeSceneChange)
             {
