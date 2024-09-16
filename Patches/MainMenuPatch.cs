@@ -58,6 +58,7 @@ internal class MainMenuPatch
             string creditsTextTitle = "<size=150%><color=#0dff00><b>-=Mod Credits=-</b></color></size>\n";
             string creditsText = "<size=75%>◆ <color=#0088ff>Head Developer</color>: <b>D1GQ</b></size>";
 
+            /*
             if (creditsButton == null)
             {
                 creditsButton = CreateButton(
@@ -70,6 +71,7 @@ internal class MainMenuPatch
                     },
                     "Mod Credits"); //"Credits"
             }
+            */
 
             if (gitHubButton == null)
             {
