@@ -78,6 +78,20 @@ class BetterDataManager
         {
             // Load the existing JSON data
             string json = File.ReadAllText(filePath);
+
+            try
+            {
+                using (JsonDocument.Parse(json))
+                {
+                }
+            }
+            catch (JsonException)
+            {
+                // JSON is invalid, reformat by writing an empty JSON object.
+                json = "{}";
+
+            }
+
             var jsonData = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, Dictionary<string, string>>>>(json) ?? new Dictionary<string, Dictionary<string, Dictionary<string, string>>>();
 
             // Check and add missing categories
@@ -138,7 +152,7 @@ class BetterDataManager
         }
         catch (Exception ex)
         {
-            Logger.Error(ex.ToString());
+            Logger.Error(ex);
         }
 
         return string.Empty;
@@ -461,7 +475,7 @@ class BetterDataManager
         }
         catch (Exception ex)
         {
-            Logger.Error(ex.ToString());
+            Logger.Error(ex);
         }
     }
 }

@@ -26,6 +26,7 @@ public static class PlayerControlDataExtension
     public class ExtendedAntiCheatInfo
     {
         public bool BannedByAntiCheat { get; set; } = false;
+        public List<string> AUMChats { get; set; } = [];
         public int TimesAttemptedKilled { get; set; } = 0;
         public int OpenSabotageNum { get; set; } = 0;
         public bool IsFixingPanelSabotage => OpenSabotageNum != 0;
@@ -53,6 +54,8 @@ public static class PlayerControlDataExtension
     // Reset info when needed
     public static void ResetPlayerData(PlayerControl player)
     {
+        if (player == null) return;
+
         if (GameStates.IsLobby)
         {
             player.BetterData().AntiCheatInfo.TimesCalledMeeting = 0;

@@ -113,7 +113,7 @@ class MeetingHudUpdatePatch
             }
             else if (TopText != null && InfoText != null)
             {
-                var target = Utils.PlayerFromId(pva.TargetPlayerId);
+                var target = Utils.PlayerFromPlayerId(pva.TargetPlayerId);
                 if (target == null) return;
                 string hashPuid = Utils.GetHashPuid(target);
                 string friendCode = target.Data.FriendCode;

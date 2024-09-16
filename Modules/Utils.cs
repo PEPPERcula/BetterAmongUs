@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using InnerNet;
+using Sentry.Internal.Extensions;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
@@ -11,9 +12,15 @@ namespace BetterAmongUs;
 public static class Utils
 {
     // Get player by client id
-    public static ClientData? ClientFromId(int id) => AmongUsClient.Instance.allClients.ToArray().FirstOrDefault(cd => cd.Id == id) ?? null;
+    public static ClientData? ClientFromClientId(int clientId) => AmongUsClient.Instance.allClients.ToArray().FirstOrDefault(cd => cd.Id == clientId) ?? null;
+    // Get player data from player id
+    public static NetworkedPlayerInfo? PlayerDataFromPlayerId(int playerId) => GameData.Instance.AllPlayers.ToArray().FirstOrDefault(data => data.PlayerId == playerId);
+    // Get player data from client id
+    public static NetworkedPlayerInfo? PlayerDataFromClientId(int clientId) => GameData.Instance.AllPlayers.ToArray().FirstOrDefault(data => data.ClientId == clientId);
+    // Get player data from friend code
+    public static NetworkedPlayerInfo? PlayerDataFromFriendCode(string friendCode) => GameData.Instance.AllPlayers.ToArray().FirstOrDefault(data => data.FriendCode == friendCode);
     // Get player from player id
-    public static PlayerControl? PlayerFromId(int playerId) => Main.AllPlayerControls.FirstOrDefault(player => player.PlayerId == playerId) ?? null;
+    public static PlayerControl? PlayerFromPlayerId(int playerId) => Main.AllPlayerControls.FirstOrDefault(player => player.PlayerId == playerId) ?? null;
     // Get player from client id
     public static PlayerControl? PlayerFromClientId(int clientId) => Main.AllPlayerControls.FirstOrDefault(player => player.GetClientId() == clientId) ?? null;
     // Get player from net id
@@ -59,7 +66,7 @@ public static class Utils
         catch (Exception ex)
         {
             chat.chatBubblePool.Reclaim(pooledBubble);
-            Logger.Error(ex.ToString());
+            Logger.Error(ex);
             throw;
         }
     }
@@ -208,7 +215,7 @@ public static class Utils
         }
         catch (Exception ex)
         {
-            Logger.Error(ex.ToString());
+            Logger.Error(ex);
             return null;
         }
     }
@@ -234,7 +241,7 @@ public static class Utils
         }
         catch (Exception ex)
         {
-            Logger.Error(ex.ToString());
+            Logger.Error(ex);
             return null;
         }
     }
@@ -292,11 +299,15 @@ public static class Utils
                 PlatformName = "IPhone";
                 Tag = "Mobile";
                 break;
+            case Platforms p when !Enum.IsDefined(p):
             case Platforms.Unknown:
-                PlatformName = "None";
+                PlatformName = "Unknown";
+                useTag = false;
                 break;
             default:
-                return string.Empty;
+                PlatformName = "None";
+                useTag = false;
+                break;
         }
 
         if (useTag == false)

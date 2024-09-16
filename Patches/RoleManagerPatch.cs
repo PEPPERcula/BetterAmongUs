@@ -295,7 +295,7 @@ public class RoleManagerPatch
 
             if (tempSetImpostor >= 0)
             {
-                var player = Utils.PlayerFromId(tempSetImpostor);
+                var player = Utils.PlayerFromPlayerId(tempSetImpostor);
                 if (player != null)
                 {
                     if (Impostors.Count < NumImpostors)

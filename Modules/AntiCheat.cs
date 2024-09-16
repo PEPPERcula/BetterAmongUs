@@ -3,6 +3,7 @@ using BetterAmongUs.Patches;
 using HarmonyLib;
 using Hazel;
 using InnerNet;
+using Sentry.Internal.Extensions;
 
 namespace BetterAmongUs;
 
@@ -89,6 +90,11 @@ class AntiCheat
                                 Logger.LogCheat($"{player.BetterData().RealName} Platform Spoofer: {__instance.PsnPlatformId}");
                             }
                         }
+
+                        if (__instance.Platform is Platforms.Unknown || !Enum.IsDefined(__instance.Platform))
+                        {
+                            BetterNotificationManager.NotifyCheat(player, $"Platform Spoofer", newText: "Has been detected with a cheat");
+                        }
                     }
                 }, 3.5f, shoudLog: false);
             }
@@ -111,7 +117,7 @@ class AntiCheat
                 if (reader.BytesRemaining == 0 && !flag)
                 {
                     player.ReportPlayer(ReportReasons.Cheating_Hacking);
-                    SickoData[Utils.GetHashPuid(player)] = player.FriendCode;
+                    SickoData[Utils.GetHashPuid(player)] = player.Data.FriendCode;
                     BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "sickoData", "Sicko Menu RPC");
                     BetterNotificationManager.NotifyCheat(player, $"Sicko Menu", newText: "Has been detected with a cheat client");
                 }
@@ -133,7 +139,7 @@ class AntiCheat
                     if (!flag)
                     {
                         player.ReportPlayer(ReportReasons.Cheating_Hacking);
-                        AUMData[Utils.GetHashPuid(player)] = player.FriendCode;
+                        AUMData[Utils.GetHashPuid(player)] = player.Data.FriendCode;
                         BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "aumData", "AUM RPC");
                         BetterNotificationManager.NotifyCheat(player, $"AUM", newText: "Has been detected with a cheat client");
                     }
@@ -152,21 +158,26 @@ class AntiCheat
                 var msgString = reader.ReadString();
                 var colorId = reader.ReadInt32();
 
-                Utils.AddChatPrivate($"{msgString}", overrideName: $"<b><color=#870000>AUM Chat</color> - <color={Utils.Color32ToHex(Palette.PlayerColors[colorId])}>{nameString}</color></b>");
+                var flag3 = player.BetterData().AntiCheatInfo.AUMChats.Count > 0 && player.BetterData().AntiCheatInfo.AUMChats.Last() == msgString;
+                if (!flag3)
+                {
+                    Utils.AddChatPrivate($"{msgString}", overrideName: $"<b><color=#870000>AUM Chat</color> - {player.GetPlayerNameAndColor()}</b>");
+                    player.BetterData().AntiCheatInfo.AUMChats.Add(msgString);
+                }
 
-                PlayerControl AUMPlayer = Main.AllPlayerControls.First(pc => pc.Data.PlayerName == nameString && pc.CurrentOutfit.ColorId == colorId);
+                Logger.Log($"{player.Data.PlayerName} -> {msgString}", "AUMChatLog");
 
-                if (AUMPlayer == null || !Main.AntiCheat.Value || !BetterGameSettings.DetectCheatClients.GetBool()) return;
+                if (!Main.AntiCheat.Value || !BetterGameSettings.DetectCheatClients.GetBool()) return;
 
                 var flag = string.IsNullOrEmpty(nameString) && string.IsNullOrEmpty(msgString);
-                var flag2 = AUMData.ContainsKey(Utils.GetHashPuid(AUMPlayer));
+                var flag2 = AUMData.ContainsKey(Utils.GetHashPuid(player));
 
                 if (!flag && !flag2)
                 {
                     player.ReportPlayer(ReportReasons.Cheating_Hacking);
-                    AUMData[Utils.GetHashPuid(AUMPlayer)] = AUMPlayer.FriendCode;
+                    AUMData[Utils.GetHashPuid(player)] = player.Data.FriendCode;
                     BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "aumData", "AUM Chat RPC");
-                    BetterNotificationManager.NotifyCheat(AUMPlayer, $"AUM", newText: "Has been detected with a cheat client");
+                    BetterNotificationManager.NotifyCheat(player, $"AUM", newText: "Has been detected with a cheat client");
                 }
             }
             catch { }
@@ -174,7 +185,6 @@ class AntiCheat
             return;
         }
     }
-
     // Check and notify for invalid rpcs
     public static void CheckRPC(PlayerControl player, byte callId, MessageReader Oldreader)
     {
@@ -202,10 +212,10 @@ class AntiCheat
 
             if (callId is (byte)RpcCalls.EnterVent or (byte)RpcCalls.ExitVent)
             {
-                if ((!player.IsImpostorTeam() && Role != RoleTypes.Engineer) || player.Data.IsDead)
+                if ((!player.IsImpostorTeam() && Role != RoleTypes.Engineer) && player.IsAlive())
                 {
                     BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((RpcCalls)callId)}");
-                    Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {player.IsImpostorTeam()} && {Role != RoleTypes.Engineer} || {player.Data.IsDead}");
+                    Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {player.IsImpostorTeam()} && {Role != RoleTypes.Engineer} && {player.IsAlive()}");
                 }
 
                 return;
@@ -247,10 +257,18 @@ class AntiCheat
                 if (reader.BytesRemaining > 0)
                 {
                     uint level = reader.ReadPackedUInt32();
-                    if (level > BetterGameSettings.DetectedLevelAbove.GetInt())
+
+                    if (level + 1 > BetterGameSettings.DetectedLevelAbove.GetInt())
                     {
                         BetterNotificationManager.NotifyCheat(player, $"Invalid Level: {level}");
-                        Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {level >= 200}");
+                        Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {level > BetterGameSettings.DetectedLevelAbove.GetInt()}");
+                    }
+
+                    if (level + 1 <= 0)
+                    {
+                        var betterData = player.BetterData();
+                        player.Kick(false, "{0}" + $" due to {level + 1} being invalid level", bypassDataCheck: true);
+                        betterData.AntiCheatInfo.BannedByAntiCheat = true;
                     }
                 }
                 return;
@@ -315,7 +333,7 @@ class AntiCheat
         }
         catch (Exception ex)
         {
-            Logger.Error(ex.ToString());
+            Logger.Error(ex);
         }
     }
 
@@ -364,7 +382,7 @@ class AntiCheat
         // Fix 2: 17
         // Panel 1: Open/Hold 64 - Close/Release 32
         // Panel 2: Open/Hold 65 - Close/Release 33
-        // Cheat Sabo: 128 
+        // Host: 128
 
         // Activate sabotage
         if (systemType == SystemTypes.Sabotage)
@@ -516,9 +534,9 @@ class AntiCheat
             bool IsImpostor = player.IsImpostorTeam();
             bool IsCrewmate = !player.IsImpostorTeam();
 
-            if (TrustedRPCs(callId) != true)
+            if (TrustedRPCs(callId) != true && !player.IsHost())
             {
-                BetterNotificationManager.NotifyCheat(player, $"Untrusted RPC received: {callId}");
+                BetterNotificationManager.NotifyCheat(player, $"Unregistered RPC received: {callId}");
                 return false;
             }
 
@@ -702,7 +720,7 @@ class AntiCheat
         }
         catch (Exception ex)
         {
-            Logger.Error(ex.ToString());
+            Logger.Error(ex);
             return true;
         }
     }

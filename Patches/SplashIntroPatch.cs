@@ -31,18 +31,20 @@ class SplashIntroPatch
                 UnityEngine.Object.Destroy(__instance.logoAnimFinish.GetComponent<AudioSource>());
             }
 
+            /*
             if (Input.GetKeyDown(KeyCode.Mouse0) || Input.GetKeyDown(KeyCode.Mouse1))
             {
-                if (ShowTime > 1.5f)
+                if (ShowTime > 2.5f && !IsReallyDoneLoading)
                 {
-                    __instance.StopAllCoroutines();
-                    UnityEngine.Object.Destroy(__instance.logoAnimFinish.gameObject);
-                    __instance.sceneChanger.AllowFinishLoadingScene();
-                    __instance.startedSceneLoad = true;
-                    __instance.loadingObject.SetActive(true);
                     IsReallyDoneLoading = true;
+                    __instance.startedSceneLoad = true;
+                    __instance.sceneChanger.BeginLoadingScene();
+                    __instance.sceneChanger.AllowFinishLoadingScene();
+                    __instance.logoAnimFinish.gameObject.SetActive(false);
+                    __instance.loadingObject.SetActive(true);
                 }
             }
+            */
 
             if (__instance.doneLoadingRefdata && !__instance.startedSceneLoad && Time.time - __instance.startTime > __instance.minimumSecondsBeforeSceneChange)
             {
@@ -55,8 +57,9 @@ class SplashIntroPatch
                     BetterLogo = UnityEngine.Object.Instantiate(InnerLogo, InnerLogo.transform.parent);
                     GameObject.Destroy(InnerLogo);
                     BetterLogo.name = "BetterLogo";
-                    BetterLogo.GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("BetterAmongUs.Resources.Images.BetterAmongUs-Logo.png", 150f);
+                    BetterLogo.GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("BetterAmongUs.Resources.Images.BetterAmongUs-By-The-Enhanced-Network-Logo.png", 150f);
                     __instance.logoAnimFinish.transform.Find("BlackOverlay").transform.SetLocalY(0f);
+                    __instance.loadingObject.SetActive(false);
                 }
 
                 __instance.startedSceneLoad = BetterIntro;

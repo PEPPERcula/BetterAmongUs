@@ -14,7 +14,7 @@ namespace BetterAmongUs;
 public enum ReleaseTypes : int
 {
     Release,
-    Canary,
+    Beta,
     Dev,
 }
 
@@ -23,14 +23,14 @@ public enum ReleaseTypes : int
 public class Main : BasePlugin
 {
     public const ReleaseTypes ReleaseBuildType = ReleaseTypes.Release;
-    public const string CanaryNum = "0";
-    public const string HotfixNum = "1";
-    public const bool IsHotFix = true;
-    public const string PluginGuid = "com.d1gq.betteramongus";
-    public const string PluginVersion = "1.1.2";
-    public const string ReleaseDate = "09.8.2024"; // mm/dd/yyyy
-    public const string Github = "https://github.com/D1GQ/BetterAmongUs-Public";
-    public const string Discord = "https://discord.gg/vjYrXpzNAn";
+    public const string BetaNum = "0";
+    public const string HotfixNum = "0";
+    public const bool IsHotFix = false;
+    public const string PluginGuid = "com.ten.betteramongus";
+    public const string PluginVersion = "1.1.3";
+    public const string ReleaseDate = "09.16.2024"; // mm/dd/yyyy
+    public const string Github = "https://github.com/EnhancedNetwork/BetterAmongUs-Public";
+    public const string Discord = "https://discord.gg/ten";
 
     public static string modSignature
     {
@@ -46,7 +46,7 @@ public class Main : BasePlugin
 
             var versionData = new StringBuilder()
                 .Append(Enum.GetName(typeof(ReleaseTypes), ReleaseBuildType))
-                .Append(CanaryNum)
+                .Append(BetaNum)
                 .Append(HotfixNum)
                 .Append(PluginGuid)
                 .Append(GetVersionText().Replace(" ", "."))
@@ -70,8 +70,8 @@ public class Main : BasePlugin
 
         if (ReleaseBuildType == ReleaseTypes.Release)
             text = $"v{BetterAmongUsVersion}";
-        else if (ReleaseBuildType == ReleaseTypes.Canary)
-            text = $"v{BetterAmongUsVersion}{newLineText}Canary {Main.CanaryNum}";
+        else if (ReleaseBuildType == ReleaseTypes.Beta)
+            text = $"v{BetterAmongUsVersion}{newLineText}Beta {Main.BetaNum}";
         else if (Main.ReleaseBuildType == ReleaseTypes.Dev)
             text = $"v{BetterAmongUsVersion}{newLineText}Dev {Main.ReleaseDate}";
 
@@ -174,7 +174,7 @@ public class Main : BasePlugin
         }
         catch (Exception ex)
         {
-            BetterAmongUs.Logger.Error(ex.ToString());
+            BetterAmongUs.Logger.Error(ex);
         }
     }
 

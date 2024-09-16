@@ -90,7 +90,7 @@ public class BetterOptionPlayerItem : BetterOptionItem
 
         if (CurrentIndex >= 0)
         {
-            ThisOption.ValueText.text = Utils.PlayerFromId(CurrentIndex).GetPlayerNameAndColor();
+            ThisOption.ValueText.text = Utils.PlayerFromPlayerId(CurrentIndex).GetPlayerNameAndColor();
         }
         else 
         {
@@ -140,7 +140,7 @@ public class BetterOptionPlayerItem : BetterOptionItem
         {
             var saveindex = TempPlayerOptionData[Id];
 
-            if (saveindex != -1 && Utils.PlayerFromId(saveindex) == null)
+            if (saveindex != -1 && Utils.PlayerFromPlayerId(saveindex) == null)
                 saveindex = Main.AllPlayerControls.Length - 1;
 
             CurrentIndex = saveindex;

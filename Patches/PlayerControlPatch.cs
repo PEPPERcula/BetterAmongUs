@@ -227,10 +227,13 @@ class PlayerControlPatch
             }
             else
             {
-                var target = Utils.PlayerFromId(player.shapeshiftTargetPlayerId);
-                if (target != null)
+                if (!player.shapeshifting)
                 {
-                    player.RawSetName(target.Data.PlayerName);
+                    var targetData = Utils.PlayerDataFromPlayerId(player.shapeshiftTargetPlayerId);
+                    if (targetData != null)
+                    {
+                        player.RawSetName(targetData.PlayerName);
+                    }
                 }
             }
 
@@ -268,7 +271,7 @@ class PlayerControlPatch
         }
         catch (Exception ex)
         {
-            Logger.Error(ex.ToString());
+            Logger.Error(ex);
         }
     }
 

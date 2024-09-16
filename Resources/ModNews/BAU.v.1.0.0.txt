@@ -18,8 +18,8 @@ BetterAmongUs comes packed with a variety of features designed to improve your g
 #
 <size=150%>Issues & Bugs</size>
 #
-- If you encounter any issues or have feedback, please report them on our <nobr><link="https://github.com/D1GQ/BetterAmongUs-Public/issues">Github Issues Page</nobr></link> or Bug Reports channel in the <nobr><link="https://discord.gg/a3eVJHp9p5">BAU Discord Server</nobr></link>.
+- If you encounter any issues or have feedback, please report them on our <nobr><link="https://github.com/EnhancedNetwork/BetterAmongUs-Public/issues">Github Issues Page</nobr></link> or Bug Reports channel in the <nobr><link="https://discord.gg/ten">TEN Discord Server</nobr></link>.
 #
 Thank you for your support, and we hope you enjoy the new features of <b>BetterAmongUs</b>!
 #
-<size=150%><nobr><link="https://discord.gg/vjYrXpzNAn">Discord</nobr></link> </size> <size=150%><nobr><link="https://github.com/D1GQ/BetterAmongUs-Public">Github</nobr></link> </size>
+<size=150%><nobr><link="https://discord.gg/ten">Discord</nobr></link> </size> <size=150%><nobr><link="https://github.com/EnhancedNetwork/BetterAmongUs-Public">Github</nobr></link> </size>

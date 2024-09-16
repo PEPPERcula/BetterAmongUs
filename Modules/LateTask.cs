@@ -45,7 +45,7 @@ class LateTask
             catch (Exception ex)
             {
                 TasksToRemove.Add(task);
-                Logger.Error(ex.ToString());
+                Logger.Error(ex);
             }
         }
         TasksToRemove.ForEach(task => Tasks.Remove(task));
