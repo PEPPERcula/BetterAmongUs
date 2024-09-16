@@ -54,6 +54,8 @@ public static class PlayerControlDataExtension
     // Reset info when needed
     public static void ResetPlayerData(PlayerControl player)
     {
+        if (player == null) return;
+
         if (GameStates.IsLobby)
         {
             player.BetterData().AntiCheatInfo.TimesCalledMeeting = 0;
