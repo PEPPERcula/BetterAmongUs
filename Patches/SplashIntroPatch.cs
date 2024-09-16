@@ -55,7 +55,7 @@ class SplashIntroPatch
                     BetterLogo = UnityEngine.Object.Instantiate(InnerLogo, InnerLogo.transform.parent);
                     GameObject.Destroy(InnerLogo);
                     BetterLogo.name = "BetterLogo";
-                    BetterLogo.GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("BetterAmongUs.Resources.Images.BetterAmongUs-Logo.png", 150f);
+                    BetterLogo.GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("BetterAmongUs.Resources.Images.BetterAmongUs-By-The-Enhanced-Network-Logo.png", 150f);
                     __instance.logoAnimFinish.transform.Find("BlackOverlay").transform.SetLocalY(0f);
                     __instance.loadingObject.SetActive(false);
                 }
