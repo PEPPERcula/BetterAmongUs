@@ -120,7 +120,7 @@ static class ExtendedPlayerControl
 
         if (setReasonInfo != "")
         {
-            GameDataShowNotificationPatch.BetterShowNotification(player.Data, forceReasonText: string.Format(setReasonInfo, ban ? "banned" : "kicked"));
+            GameDataShowNotificationPatch.BetterShowNotification(player.Data, forceReasonText: string.Format(setReasonInfo, Ban ? "banned" : "kicked"));
         }
 
         AmongUsClient.Instance.KickPlayer(player.GetClientId(), Ban);
