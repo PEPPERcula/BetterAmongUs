@@ -1,4 +1,5 @@
-﻿#Number:110002
+﻿#Type:BAU
+#Number:110002
 #Title:Better Among Us v1.1.0
 #SubTitle:<color=#4d4d4d>Settings Galore!</color>
 #ShortTitle:BAU v1.1.0

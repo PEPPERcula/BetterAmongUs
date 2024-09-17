@@ -153,7 +153,7 @@ internal static class RPC
     {
         if (player == null || player.IsLocalPlayer() || player.Data == null) return;
 
-        var flag = Enum.IsDefined(typeof(CustomRPC), (int)unchecked(callId)) || Enum.IsDefined(typeof(RpcCalls), callId);
+        var flag = Enum.IsDefined(typeof(CustomRPC), unchecked(callId)) || Enum.IsDefined(typeof(RpcCalls), callId);
 
         if (!flag && player.IsHost())
         {
