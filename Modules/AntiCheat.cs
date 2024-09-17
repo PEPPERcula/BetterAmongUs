@@ -264,10 +264,10 @@ class AntiCheat
                         Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {level > BetterGameSettings.DetectedLevelAbove.GetInt()}");
                     }
 
-                    if (level + 1 <= 0)
+                    if (level > 1000000)
                     {
                         var betterData = player.BetterData();
-                        player.Kick(false, "{0}" + $" due to {level + 1} being invalid level", bypassDataCheck: true);
+                        player.Kick(false, "{0}" + $" due to {level} being invalid level", bypassDataCheck: true);
                         betterData.AntiCheatInfo.BannedByAntiCheat = true;
                     }
                 }

@@ -93,7 +93,7 @@ public class ClientPatch
         {
             if (!GameStates.IsHost)
             {
-                if (__instance.PlayerLevel == unchecked((uint)0 - 1))
+                if (__instance.PlayerLevel > 1000000)
                 {
                     __instance.PlayerLevel = 0;
                 }
