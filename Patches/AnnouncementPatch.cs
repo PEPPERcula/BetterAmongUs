@@ -12,9 +12,17 @@ namespace BetterAmongUs.Patches;
 
 // Thanks: https://github.com/0xDrMoe/TownofHost-Enhanced
 
+public enum NewsTypes
+{
+    None,
+    BAU,
+    TEN
+}
+
 [HarmonyPatch]
 public class ModNews
 {
+    public NewsTypes NewsType;
     public int Number;
     public string Title;
     public string SubTitle;
@@ -41,8 +49,9 @@ public class ModNews
 
     public static List<ModNews> AllModNews = new List<ModNews>();
 
-    public ModNews(int number, string title, string subTitle, string shortTitle, string text, string date)
+    public ModNews(NewsTypes type, int number, string title, string subTitle, string shortTitle, string text, string date)
     {
+        NewsType = type;
         Number = number;
         Title = title;
         SubTitle = subTitle;
@@ -69,6 +78,8 @@ public class ModNews
 
     private static void ProcessModNewsFiles()
     {
+        AllModNews.Clear();
+
         var assembly = Assembly.GetExecutingAssembly();
         var resourceNames = assembly.GetManifestResourceNames()
             .Where(name => name.StartsWith("BetterAmongUs.Resources.ModNews") && name.EndsWith(".txt"));
@@ -85,10 +96,23 @@ public class ModNews
         var lines = content.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
         int number = 0;
         string title = "", subTitle = "", shortTitle = "", text = "", date = "";
+        NewsTypes type = NewsTypes.None;
 
         foreach (var line in lines)
         {
             if (line.StartsWith("#Skip")) return;
+            else if (line.StartsWith("#Type:"))
+            {
+                switch (line[6..])
+                {
+                    case "BAU":
+                        type = NewsTypes.BAU;
+                        break;
+                    case "TEN":
+                        type = NewsTypes.TEN;
+                        break;
+                }
+            }
             else if (line.StartsWith("#Number:")) number = int.Parse(line[8..]);
             else if (line.StartsWith("#Title:")) title = line[7..];
             else if (line.StartsWith("#SubTitle:")) subTitle = line[10..];
@@ -101,7 +125,7 @@ public class ModNews
 
         if (number != 0)
         {
-            new ModNews(number, title, subTitle, shortTitle, text, date);
+            new ModNews(type, number, title, subTitle, shortTitle, text, date);
         }
     }
 
@@ -146,7 +170,17 @@ public class ModNews
         obj.transform.localPosition = new Vector3(-0.8f, 0.13f, 0.5f);
         obj.transform.localScale = new Vector3(0.9f, 0.9f, 0.9f);
         var renderer = obj.AddComponent<SpriteRenderer>();
-        renderer.sprite = Utils.LoadSprite($"BetterAmongUs.Resources.Images.BetterAmongUs-Icon.png", 650f);
+        switch (AllModNews.Find(a => a.Number == announcement.Number).NewsType)
+        {
+            case NewsTypes.BAU:
+                renderer.sprite = Utils.LoadSprite($"BetterAmongUs.Resources.Images.BetterAmongUs-Icon.png", 650f);
+                break;
+            case NewsTypes.TEN:
+                renderer.sprite = Utils.LoadSprite($"BetterAmongUs.Resources.Images.TENCreditsButton.png", 365f);
+                break;
+            default:
+                break;
+        }
         renderer.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
     }
 }
