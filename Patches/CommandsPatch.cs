@@ -34,6 +34,9 @@ class CommandsPatch
         "removeplayer {identifier}---Remove player from local <color=#4f92ff>Anti-Cheat</color> data---{FriendCode, HashPuid}",
         "removeall---Remove all players from local <color=#4f92ff>Anti-Cheat</color> data",
         };
+    public static string[] SponsorCommandListHelper =
+        {
+        };
     public static string[] DebugCommandListHelper =
         {
 #if DEBUG
@@ -51,6 +54,7 @@ class CommandsPatch
     // Run code for specific commands
     private static void HandleCommand(ChatController __instance, string[] command)
     {
+        bool checkSponsorCommand = false;
         bool checkDebugCommand = false;
         string subArgs = command.Length > 1 ? command[1].ToLower().Trim() : "";
         string subArgs2 = command.Length > 2 ? command[2].ToLower().Trim() : "";
@@ -277,7 +281,12 @@ class CommandsPatch
                 Utils.AddChatPrivate($"All data successfully removed from local <color=#4f92ff>Anti-Cheat</color>!");
                 break;
             default:
-                if (GameStates.IsDev && Main.ReleaseBuildType == ReleaseTypes.Dev)
+                if (false) // use Sponsor check when there is a API
+                {
+                    checkSponsorCommand = true;
+                    break;
+                }
+                else if (GameStates.IsDev && Main.ReleaseBuildType == ReleaseTypes.Dev)
                 {
                     checkDebugCommand = true;
                     break;
@@ -285,6 +294,20 @@ class CommandsPatch
 
                 Utils.AddChatPrivate("<color=#f50000><size=150%><b>Invalid Command!</b></size></color>");
                 break;
+        }
+
+        if (checkDebugCommand)
+        {
+            switch (command[0][1..].ToLower().Trim())
+            {
+                default:
+                    if (GameStates.IsDev && Main.ReleaseBuildType == ReleaseTypes.Dev)
+                    {
+                        checkDebugCommand = true;
+                        break;
+                    }
+                    break;
+            }
         }
 
 #if DEBUG
@@ -658,6 +681,8 @@ class CommandsPatch
     public static string GetClosestCommand(string typedCommand)
     {
         var closestCommand = CommandListHelper.FirstOrDefault(c => c.StartsWith(typedCommand, StringComparison.OrdinalIgnoreCase));
+
+        closestCommand ??= SponsorCommandListHelper.FirstOrDefault(c => c.StartsWith(typedCommand, StringComparison.OrdinalIgnoreCase));
 
         if (closestCommand == null && GameStates.IsDev && Main.ReleaseBuildType == ReleaseTypes.Dev)
             closestCommand = DebugCommandListHelper.FirstOrDefault(c => c.StartsWith(typedCommand, StringComparison.OrdinalIgnoreCase));
