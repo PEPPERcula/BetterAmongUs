@@ -146,6 +146,7 @@ public class Main : BasePlugin
             BetterDataManager.SetUp();
             BetterDataManager.LoadData();
             LoadOptions();
+            Translator.Init();
 
             if (PlatformData.Platform == Platforms.StandaloneSteamPC)
                 File.WriteAllText(Path.Combine(Environment.CurrentDirectory, "steam_appid.txt"), "945360");
