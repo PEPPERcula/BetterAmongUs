@@ -1,5 +1,25 @@
 {
   "LanguageID": "0",
   "BAU": "BetterAmongUs",
-  "BAUMark": "♻"
+  "BAUMark": "♻",
+  "AntiCheat": "Anti-Cheat",
+  "AntiCheat.PlayerDetected": "Player",
+  "AntiCheat.UnauthorizedAction": "Has been detected doing an unauthorized action",
+  "AntiCheat.ByAntiCheat": "by <color=#4f92ff>Anti-Cheat</color>",
+  "AntiCheat.KickMessage": "{0}! Reason: <color=#fc0000>{1}</color>",
+  "AntiCheat.HasBeenDetectedWithCheat": "Has been detected with a cheat",
+  "AntiCheat.HasBeenDetectedWithCheat2": "Has been detected with a cheat client",
+  "AntiCheat.InvalidAction": "Invalid Action RPC: {0}",
+  "AntiCheat.InvalidActionRPC": "Invalid Action RPC: {0}",
+  "AntiCheat.InvalidHostRPC": "Invalid Host RPC: {0}",
+  "AntiCheat.InvalidSetRPC": "Invalid Set RPC: {0}",
+  "AntiCheat.InvalidLobbyRPC": "Invalid Lobby RPC: {0}",
+  "AntiCheat.InvalidLevelRPC": "Invalid Level: {0}",
+  "AntiCheat.TryBanExploit": "Attempted To Ban Exploit",
+  "AntiCheat.Cheat.Sicko": "Sicko Menu",
+  "AntiCheat.Cheat.AUM": "AUM",
+  "AntiCheat.Reason.PlatformSpoofer": "Platform Spoofer",
+  "AntiCheat.Reason.Known": "Known Sicko Menu User",
+  "AntiCheat.Reason.AUMUser": "Known AUM User",
+  "AntiCheat.Reason.KnownCheater": "Known Cheater"
 }

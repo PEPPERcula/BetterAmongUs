@@ -54,7 +54,6 @@ public class Main : BasePlugin
                 .Append(Github)
                 .Append(Discord)
                 .Append(string.Join(".", Enum.GetNames(typeof(CustomRPC))))
-                .Append(string.Join(".", GetRoleName.Values))
                 .Append(string.Join(".", GetRoleColor.Values))
                 .ToString();
 
@@ -103,20 +102,24 @@ public class Main : BasePlugin
 
     public static PlayerControl[] AllAlivePlayerControls => AllPlayerControls.ToArray().Where(pc => pc.IsAlive()).ToArray();
 
-    public static Dictionary<int, string> GetRoleName => new Dictionary<int, string>
+    public static Dictionary<int, string> GetRoleName()
     {
-        { 0, "Crewmate" },
-        { 1, "Impostor" },
-        { 2, "Scientist" },
-        { 3, "Engineer" },
-        { 4, "Guardian Angel" },
-        { 5, "Shapeshifter" },
-        { 6, "Crewmate" },
-        { 7, "Impostor" },
-        { 8, "Noisemaker" },
-        { 9, "Phantom" },
-        { 10, "Tracker" }
-    };
+        return new Dictionary<int, string>
+        {
+            { 0, Translator.GetString(StringNames.Crewmate) },
+            { 1, Translator.GetString(StringNames.Impostor) },
+            { 2, Translator.GetString(StringNames.ScientistRole) },
+            { 3, Translator.GetString(StringNames.EngineerRole) },
+            { 4, Translator.GetString(StringNames.GuardianAngelRole) },
+            { 5, Translator.GetString(StringNames.ShapeshifterRole) },
+            { 6, Translator.GetString(StringNames.Crewmate) },
+            { 7, Translator.GetString(StringNames.Impostor) },
+            { 8, Translator.GetString(StringNames.NoisemakerRole) },
+            { 9, Translator.GetString(StringNames.PhantomRole) },
+            { 10, Translator.GetString(StringNames.TrackerRole) }
+        };
+    }
+
 
     public static Dictionary<int, string> GetRoleColor => new Dictionary<int, string>
     {

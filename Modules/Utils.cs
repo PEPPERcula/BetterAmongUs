@@ -138,7 +138,7 @@ public static class Utils
 
 
     // Get name for role
-    public static string GetRoleName(RoleTypes role) => Main.GetRoleName[(int)role];
+    public static string GetRoleName(RoleTypes role) => Main.GetRoleName()[(int)role];
     // Get color for role
     public static string GetRoleColor(RoleTypes role) => Main.GetRoleColor[(int)role];
     // Get hex color for team

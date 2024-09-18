@@ -43,12 +43,19 @@ class BetterNotificationManager
             Reason = string.Concat('*').Repeat(reason.Length);
         }
 
-        string text = $"Player: <color=#0097b5>{player?.BetterData().RealName}</color> Has been detected doing an unauthorized action: <b><color=#fc0000>{Reason}</color></b>";
-        string rawText = $"Player: <color=#0097b5>{player?.BetterData().RealName}</color> Has been detected doing an unauthorized action: <b><color=#fc0000>{reason}</color></b>";
+        string playerDetected = Translator.GetString("AntiCheat.PlayerDetected");
+        string unauthorizedAction = Translator.GetString("AntiCheat.UnauthorizedAction");
+        string byAntiCheat = Translator.GetString("AntiCheat.ByAntiCheat");
+        string playerDetectedLog = Translator.GetString("AntiCheat.PlayerDetected", console: true);
+        string unauthorizedActionLog = Translator.GetString("AntiCheat.UnauthorizedAction", console: true);
+
+        string text = $"{playerDetected}: <color=#0097b5>{player?.BetterData().RealName}</color> {unauthorizedAction}: <b><color=#fc0000>{Reason}</color></b>";
+        string rawText = $"{playerDetectedLog}: <color=#0097b5>{player?.BetterData().RealName}</color> {unauthorizedActionLog}: <b><color=#fc0000>{reason}</color></b>";
+
         if (newText != "")
         {
-            text = $"Player: <color=#0097b5>{player?.BetterData().RealName}</color> " + newText + $": <b><color=#fc0000>{Reason}</color></b>";
-            rawText = $"Player: <color=#0097b5>{player?.BetterData().RealName}</color> " + newText + $": <b><color=#fc0000>{reason}</color></b>";
+            text = $"{playerDetected}: <color=#0097b5>{player?.BetterData().RealName}</color> " + newText + $": <b><color=#fc0000>{Reason}</color></b>";
+            rawText = $"{playerDetectedLog}: <color=#0097b5>{player?.BetterData().RealName}</color> " + newText + $": <b><color=#fc0000>{reason}</color></b>";
         }
 
         if (!AntiCheat.PlayerData.ContainsKey(Utils.GetHashPuid(player)))
@@ -62,9 +69,11 @@ class BetterNotificationManager
 
         if (GameStates.IsHost && kickPlayer)
         {
-            player.Kick(true, "{0} " + $"by <color=#4f92ff>Anti-Cheat</color>!\n Reason: <color=#fc0000>{Reason}</color>", true);
+            string kickMessage = string.Format(Translator.GetString("KickMessage"), byAntiCheat, Reason);
+            player.Kick(true, kickMessage, true);
         }
     }
+
 
     public static void Update()
     {

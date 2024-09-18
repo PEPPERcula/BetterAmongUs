@@ -364,7 +364,7 @@ class CommandsPatch
                                     return;
                             }
                             string RoleHexColor = role is RoleTypes.Impostor or RoleTypes.ImpostorGhost or RoleTypes.Shapeshifter or RoleTypes.Phantom ? "#a60d0d" : "#63bfbf";
-                            Utils.AddChatPrivate($"Set role to <color={RoleHexColor}>{Main.GetRoleName[(int)role]}</color> for the next game!");
+                            Utils.AddChatPrivate($"Set role to <color={RoleHexColor}>{Main.GetRoleName()[(int)role]}</color> for the next game!");
                             RoleManagerPatch.SetPlayerRole[player] = role;
                         }
                         else if (HandlePlayerArgument(command, subArgs) == true)
@@ -414,7 +414,7 @@ class CommandsPatch
                                     return;
                             }
                             string RoleHexColor = role is RoleTypes.Impostor or RoleTypes.ImpostorGhost or RoleTypes.Shapeshifter or RoleTypes.Phantom ? "#a60d0d" : "#63bfbf";
-                            Utils.AddChatPrivate($"Set <color={hexColor}><b>{player?.Data?.PlayerName}</b></color> role to <color={RoleHexColor}>{Main.GetRoleName[(int)role]}</color> for the next game!");
+                            Utils.AddChatPrivate($"Set <color={hexColor}><b>{player?.Data?.PlayerName}</b></color> role to <color={RoleHexColor}>{Main.GetRoleName()[(int)role]}</color> for the next game!");
                             RoleManagerPatch.SetPlayerRole[player] = role;
                         }
                     }
