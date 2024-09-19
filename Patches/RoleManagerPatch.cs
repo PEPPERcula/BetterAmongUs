@@ -336,7 +336,7 @@ public class RoleManagerPatch
 
         // Get players in random order
         List<PlayerControl> players = Main.AllPlayerControls
-            .Where(player => !Impostors.Contains(player) && !Crewmates.Contains(player) && player.roleAssigned == false)
+            .Where(player => !Impostors.Contains(player) && !Crewmates.Contains(player))
             .ToList();
 
         int n = players.Count;
