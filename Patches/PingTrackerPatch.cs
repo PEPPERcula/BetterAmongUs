@@ -34,6 +34,8 @@ public class PingTrackerPatch
             sb.Append("<size=68%><color=#8040bf>By</color> <color=#bc4345>The Enhanced Network</color></size>\n");
             // sb.Append($"<size=50%><color=#b5b5b5>{Main.Github}</color></size>\n");
 
+            if (GameStates.IsTOHEHostLobby) sb.Append($"<size=75%><color=#e197dc>TOHE Lobby</color></size>\n");
+
             if (Main.BetterHost.Value && GameStates.IsHost)
             {
                 sb.Append($"<size=75%>{Translator.GetString("BetterOption.BetterHost")}: <color=#00f04c>Enabled</color></size>\n");
