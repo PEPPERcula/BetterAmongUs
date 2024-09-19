@@ -11,18 +11,18 @@ namespace BetterAmongUs;
 public class DataBaseConnect
 {
     private static bool initOnce = false;
-    private static string? allUserInfo;
+    public static string? allUserInfo;
     private static Dictionary<string, string> userType = new();
 
     private const string ApiUrl = "https://api.weareten.ca";
 
     public static IEnumerator Init()
     {
-        Logger.Log("Begin dbConnect Login flow", "DbConnect.Init");
+        Logger.Log("Begin DataBaseConnect Login flow", "DataBaseConnect.Init");
 
         if (!initOnce)
         {
-            yield return GetRoleTable();
+            yield return GetUserTable();
 
             if (string.IsNullOrEmpty(GetToken()))
             {
@@ -38,10 +38,10 @@ public class DataBaseConnect
         }
         else
         {
-            yield return GetRoleTable();
+            yield return GetUserTable();
         }
 
-        Logger.Log(initOnce ? "Finished Sync flow." : "Finished first init flow.", "DbConnect.Init");
+        Logger.Log(initOnce ? "Finished Sync flow." : "Finished first init flow.", "DataBaseConnect.Init");
         initOnce = true;
     }
 
@@ -56,7 +56,7 @@ public class DataBaseConnect
             _ => "Reason not specified"
         };
 
-        Logger.Error(errorMessage, "DbConnect.Init");
+        Logger.Error(errorMessage, "DataBaseConnect.Init");
 
         bool shouldDisconnect = Main.ReleaseBuildType switch
         {
@@ -75,11 +75,11 @@ public class DataBaseConnect
     {
         if (GameStates.IsLobby || GameStates.InGame)
         {
-            DestroyableSingleton<HudManager>.Instance.ShowPopUp(Translator.GetString("dbConnect.InitFailurePublic"));
+            DestroyableSingleton<HudManager>.Instance.ShowPopUp(Translator.GetString("DataBaseConnect.InitFailurePublic"));
         }
         else
         {
-            DestroyableSingleton<DisconnectPopup>.Instance.ShowCustom(Translator.GetString("dbConnect.InitFailurePublic"));
+            DestroyableSingleton<DisconnectPopup>.Instance.ShowCustom(Translator.GetString("DataBaseConnect.InitFailurePublic"));
         }
         return false;
     }
@@ -93,7 +93,7 @@ public class DataBaseConnect
 
         DataManager.Player.Account.LoginStatus = EOSManager.AccountLoginStatus.Offline;
         DataManager.Player.Save();
-        DestroyableSingleton<DisconnectPopup>.Instance.ShowCustom(Translator.GetString("dbConnect.InitFailure"));
+        DestroyableSingleton<DisconnectPopup>.Instance.ShowCustom(Translator.GetString("DataBaseConnect.InitFailure"));
     }
 
     private static string GetToken()
@@ -116,7 +116,7 @@ public class DataBaseConnect
         return apiToken;
     }
 
-    private static IEnumerator GetRoleTable()
+    private static IEnumerator GetUserTable()
     {
         string apiToken = GetToken();
         if (string.IsNullOrEmpty(apiToken))

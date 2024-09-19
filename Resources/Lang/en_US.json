@@ -94,5 +94,8 @@
   "Game.Summary.Result.Sabotage": "Sabotage",
   "Game.Summary.Result.CrematesDisconnected": "Cremates Disconnected",
   "Game.Summary.Result.TimeOut": "Time Out",
-  "Game.Summary.Result.NoSurvivors": "No Survivors"
+  "Game.Summary.Result.NoSurvivors": "No Survivors",
+
+  "DataBaseConnect.InitFailure": "Error while connecting to BAU API, please check your network connection and retry login!",
+  "DataBaseConnect.InitFailurePublic": "Error while connecting to BAU API, this could be caused by your internet connection. And so user perks are not available, you may continue to play as usual without these.",
 }

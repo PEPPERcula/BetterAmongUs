@@ -4,14 +4,14 @@ namespace BetterAmongUs;
 
 public class BetterAccountInfo
 {
-    public string? HashPUID;
-    public string? FriendCode;
-    public string? OverHeadTag;
-    public string? OverHeadColor;
-    public bool? IsDev;
-    public string? DevType;
-    public bool? IsSponsor;
-    public int? SponsorTier;
+    public string? HashPUID = "";
+    public string? FriendCode = "";
+    public string? OverHeadTag = "";
+    public string? OverHeadColor = "";
+    public bool? IsDev = false;
+    public string? DevType = "none";
+    public bool? IsSponsor = false;
+    public int? SponsorTier = 0;
 
     public static BetterAccountInfo GenerateInfo(string allUserInfo, NetworkedPlayerInfo data)
     {
