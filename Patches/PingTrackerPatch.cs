@@ -21,13 +21,13 @@ public class PingTrackerPatch
                 __instance.gameObject.SetActive(false);
             }
 
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
 
-            sb.AppendFormat("PING: <b>{0}</b>\n", GetPingColor(AmongUsClient.Instance.Ping));
+            sb.AppendFormat("{0}: <b>{1}</b>\n", Translator.GetString("Ping").ToUpper(), GetPingColor(AmongUsClient.Instance.Ping));
 
             if (GameStates.IsLobby && GameStates.IsHost && GameStates.IsVanillaServer && !GameStates.IsLocalGame)
             {
-                sb.AppendFormat("Timer: <b>{0}</b>\n", GetTimeColor(GameStartManagerPatch.lobbyTimer));
+                sb.AppendFormat("{0}: <b>{1}</b>\n", Translator.GetString("Timer").ToUpper(), GetTimeColor(GameStartManagerPatch.lobbyTimer));
             }
 
             sb.Append($"<color=#00dbdb><size=75%>BetterAmongUs {Main.GetVersionText(true)}</size></color>\n");

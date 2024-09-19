@@ -8,6 +8,8 @@
   "Alive": "Alive",
   "Dead": "Dead",
   "DC": "D/C",
+  "Ping": "Ping",
+  "Timer": "Timer",
 
   "BetterOption": "Better Options",
   "BetterOption.AntiCheat": "<color=#4f92ff>Anti-Cheat</color>",
@@ -48,6 +50,12 @@
   "BetterSetting.Setting.DesyncRoles": "Desync roles to other clients",
   "BetterSetting.Setting.HideAndSeekImpNum": "# Seekers",
   "BetterSetting.TempSetting.HideAndSeekImpNum": "Seeker",
+
+  "FileChecker.UnauthorizedTextDetectedMsg": "Unauthorized {0} Detected",
+  "FileChecker.UnauthorizedFileMsg": "Unauthorized Game Files Detected",
+  "FileChecker.OnlineMsg": "Online access has been temporarily disabled!",
+  "FileChecker.UnsupportedBepInExModMsg": "Unsupported BepInEx Mod Detected",
+  "FileChecker.BannedBepInExModMsg": "Unauthorized BepInEx Mod Detected",
 
   "AntiCheat": "Anti-Cheat",
   "AntiCheat.Ban": "Banned",
