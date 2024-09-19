@@ -11,6 +11,7 @@ public static class OptionsMenuBehaviourPatch
     private static ClientOptionItem? AntiCheat;
     private static ClientOptionItem? BetterHost;
     private static ClientOptionItem? BetterNotifications;
+    private static ClientOptionItem? ForceOwnLanguage;
     private static ClientOptionItem? ChatInGameplay;
     private static ClientOptionItem? LobbyPlayerInfo;
     private static ClientOptionItem? DisableLobbyTheme;
@@ -78,6 +79,12 @@ public static class OptionsMenuBehaviourPatch
             }
         }
 
+        if (ForceOwnLanguage == null || ForceOwnLanguage.ToggleButton == null)
+        {
+            string title = Translator.GetString("BetterOption.ForceOwnLanguage");
+            ForceOwnLanguage = ClientOptionItem.Create(title, Main.ForceOwnLanguage, __instance);
+        }
+        
         if (ChatInGameplay == null || ChatInGameplay.ToggleButton == null)
         {
             string title = Translator.GetString("BetterOption.ChatInGame");

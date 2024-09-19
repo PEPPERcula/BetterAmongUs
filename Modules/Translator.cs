@@ -117,7 +117,7 @@ public static class Translator
         }
         var langId = TranslationController.InstanceExists ? TranslationController.Instance.currentLanguage.languageID : SupportedLangs.English;
         if (console) langId = SupportedLangs.English;
-        // if (Main.ForceOwnLanguage.Value) langId = GetUserTrueLang();
+        if (Main.ForceOwnLanguage.Value) langId = GetUserTrueLang();
         string str = GetString(s, langId, showInvalid);
         if (replacementDic != null)
             foreach (var rd in replacementDic)

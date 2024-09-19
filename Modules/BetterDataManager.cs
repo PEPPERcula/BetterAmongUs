@@ -58,8 +58,6 @@ class BetterDataManager
             File.WriteAllText(SettingsFile, json);
         }
 
-        GameSettingMenuPatch.SetupSettings(true);
-
         if (!File.Exists(filePath))
         {
             // Initialize with predefined categories

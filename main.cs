@@ -2,6 +2,7 @@
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
+using BetterAmongUs.Patches;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using Innersloth.IO;
@@ -145,11 +146,12 @@ public class Main : BasePlugin
         {
             Logger = BepInEx.Logging.Logger.CreateLogSource(PluginGuid);
 
+            LoadOptions();
+            Translator.Init();
             Harmony.PatchAll();
             BetterDataManager.SetUp();
             BetterDataManager.LoadData();
-            LoadOptions();
-            Translator.Init();
+            GameSettingMenuPatch.SetupSettings(true);
 
             if (PlatformData.Platform == Platforms.StandaloneSteamPC)
                 File.WriteAllText(Path.Combine(Environment.CurrentDirectory, "steam_appid.txt"), "945360");
@@ -185,6 +187,7 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> AntiCheat { get; private set; }
     public static ConfigEntry<bool> BetterHost { get; private set; }
     public static ConfigEntry<bool> BetterNotifications { get; private set; }
+    public static ConfigEntry<bool> ForceOwnLanguage { get; private set; }
     public static ConfigEntry<bool> ChatInGameplay { get; private set; }
     public static ConfigEntry<bool> LobbyPlayerInfo { get; private set; }
     public static ConfigEntry<bool> DisableLobbyTheme { get; private set; }
@@ -196,6 +199,7 @@ public class Main : BasePlugin
         AntiCheat = Config.Bind("Better Options", "AntiCheat", true);
         BetterHost = Config.Bind("Better Options", "BetterHost", false);
         BetterNotifications = Config.Bind("Better Options", "BetterNotifications", true);
+        ForceOwnLanguage = Config.Bind("Better Options", "ForceOwnLanguage", false);
         ChatInGameplay = Config.Bind("Better Options", "ChatInGameplay", true);
         LobbyPlayerInfo = Config.Bind("Better Options", "LobbyPlayerInfo", true);
         DisableLobbyTheme = Config.Bind("Better Options", "DisableLobbyTheme", true);
