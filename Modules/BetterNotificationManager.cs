@@ -7,10 +7,12 @@ namespace BetterAmongUs;
 
 class BetterNotificationManager
 {
-    public static GameObject BAUNotificationManagerObj;
+    public static GameObject? BAUNotificationManagerObj;
+    public static TextMeshPro? NameText;
+    public static TextMeshPro? TextArea => BAUNotificationManagerObj.transform.Find("Sizer/ChatText (TMP)").GetComponent<TextMeshPro>();
     public static Dictionary<string, float> NotifyQueue = [];
     public static float showTime = 0f;
-    private static Camera localCamera;
+    private static Camera? localCamera;
     public static bool Notifying = false;
 
     public static void Notify(string text, float Time = 5f)
@@ -29,7 +31,8 @@ class BetterNotificationManager
 
             showTime = Time;
             BAUNotificationManagerObj.SetActive(true);
-            BAUNotificationManagerObj.transform.Find("Sizer/ChatText (TMP)").GetComponent<TextMeshPro>().text = text;
+            NameText.text = $"<color=#00ff44>{Translator.GetString("SystemNotification")}</color>";
+            TextArea.text = text;
             SoundManager.Instance.PlaySound(DestroyableSingleton<HudManager>.Instance.TaskCompleteSound, false, 1f);
             Notifying = true;
         }

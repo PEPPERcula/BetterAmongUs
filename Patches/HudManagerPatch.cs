@@ -32,7 +32,7 @@ public class HudManagerPatch
                 UnityEngine.Object.Destroy(GameObject.Find($"{BAUNotification.name}/Sizer/ColorText"));
                 BAUNotification.GetComponent<AspectPosition>().DistanceFromEdge = new Vector3(-1.57f, 5.3f, -15f);
                 GameObject.Find($"{BAUNotification.name}/Sizer/NameText").transform.localPosition = new Vector3(-3.3192f, -0.0105f);
-                GameObject.Find($"{BAUNotification.name}/Sizer/NameText").GetComponent<TextMeshPro>().text = "<color=#00ff44>System Notification</color>";
+                BetterNotificationManager.NameText = GameObject.Find($"{BAUNotification.name}/Sizer/NameText").GetComponent<TextMeshPro>();
                 UnityEngine.Object.DontDestroyOnLoad(BAUNotification);
                 BetterNotificationManager.BAUNotificationManagerObj = BAUNotification;
                 BAUNotification.SetActive(false);

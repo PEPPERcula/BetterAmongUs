@@ -10,6 +10,8 @@
   "DC": "D/C",
   "Ping": "Ping",
   "Timer": "Timer",
+  "SystemMessage": "System Message",
+  "SystemNotification": "System Notification",
 
   "BetterOption": "Better Options",
   "BetterOption.AntiCheat": "<color=#4f92ff>Anti-Cheat</color>",
@@ -80,7 +82,7 @@
   "AntiCheat.Reason.AUMUser": "Known AUM User",
   "AntiCheat.Reason.KnownCheater": "Known Cheater",
 
-  "Game.Summary": "Game Summary",
+  "GameSummary": "Game Summary",
   "Game.Summary.Hiders": "Hiders",
   "Game.Summary.Seekers": "Seekers",
   "Game.Summary.Won": "Won",

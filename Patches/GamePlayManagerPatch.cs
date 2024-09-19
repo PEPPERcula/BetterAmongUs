@@ -289,7 +289,7 @@ class GamePlayManager
 
                 Logger.Log($"{winTeam}: {winTag}", "GameSummary");
 
-                string SummaryHeader = $"<align=\"center\"><size=150%>   {Translator.GetString("Game.Summary")}</size></align>";
+                string SummaryHeader = $"<align=\"center\"><size=150%>   {Translator.GetString("GameSummary")}</size></align>";
                 SummaryHeader += $"\n\n<size=90%><color={winColor}>{winTeam} {Translator.GetString("Game.Summary.Won")}</color></size>" +
                     $"\n<size=60%>\n{Translator.GetString("Game.Summary.By")} {winTag}</size>";
 

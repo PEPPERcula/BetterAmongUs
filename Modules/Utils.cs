@@ -31,7 +31,7 @@ public static class Utils
         ChatController chat = HudManager.Instance.Chat;
         NetworkedPlayerInfo data = PlayerControl.LocalPlayer.Data;
         ChatBubble pooledBubble = chat.GetPooledBubble();
-        string MsgName = "<color=#ffffff><b>(<color=#00ff44>System Message</color>)</b>";
+        string MsgName = $"<color=#ffffff><b>(<color=#00ff44>{Translator.GetString("SystemMessage")}</color>)</b>";
         if (overrideName != "")
             MsgName = overrideName;
         try
