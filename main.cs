@@ -23,9 +23,9 @@ public enum ReleaseTypes : int
 [BepInProcess("Among Us.exe")]
 public class Main : BasePlugin
 {
-    public const ReleaseTypes ReleaseBuildType = ReleaseTypes.Release;
+    public static readonly ReleaseTypes ReleaseBuildType = ReleaseTypes.Release;
     public const string BetaNum = "0";
-    public const string HotfixNum = "1";
+    public const string HotfixNum = "2";
     public const bool IsHotFix = true;
     public const string PluginGuid = "com.ten.betteramongus";
     public const string PluginVersion = "1.1.3";
@@ -68,12 +68,20 @@ public class Main : BasePlugin
 
         string newLineText = newLine ? "\n" : " ";
 
-        if (ReleaseBuildType == ReleaseTypes.Release)
-            text = $"v{BetterAmongUsVersion}";
-        else if (ReleaseBuildType == ReleaseTypes.Beta)
-            text = $"v{BetterAmongUsVersion}{newLineText}Beta {Main.BetaNum}";
-        else if (Main.ReleaseBuildType == ReleaseTypes.Dev)
-            text = $"v{BetterAmongUsVersion}{newLineText}Dev {Main.ReleaseDate}";
+        switch (ReleaseBuildType)
+        {
+            case ReleaseTypes.Release:
+                text = $"v{BetterAmongUsVersion}";
+                break;
+            case ReleaseTypes.Beta:
+                text = $"v{BetterAmongUsVersion}{newLineText}Beta {Main.BetaNum}";
+                break;
+            case ReleaseTypes.Dev:
+                text = $"v{BetterAmongUsVersion}{newLineText}Dev {Main.ReleaseDate}";
+                break;
+            default:
+                break;
+        }
 
         if (IsHotFix)
             text += $" Hotfix {HotfixNum}";
@@ -117,7 +125,7 @@ public class Main : BasePlugin
             { 7, Translator.GetString(StringNames.Impostor) },
             { 8, Translator.GetString(StringNames.NoisemakerRole) },
             { 9, Translator.GetString(StringNames.PhantomRole) },
-            { 10, Translator.GetString(StringNames.TrackerRole) }
+           { 10, Translator.GetString(StringNames.TrackerRole) }
         };
     }
 
@@ -134,7 +142,7 @@ public class Main : BasePlugin
         { 7, "#f00202" },
         { 8, "#fc7c7c" },
         { 9, "#d100b9" },
-        { 10, "#59f002" }
+       { 10, "#59f002" }
     };
 
     public static ManualLogSource Logger;
@@ -183,6 +191,8 @@ public class Main : BasePlugin
             BetterAmongUs.Logger.Error(ex);
         }
     }
+
+
 
     public static ConfigEntry<bool> AntiCheat { get; private set; }
     public static ConfigEntry<bool> BetterHost { get; private set; }
