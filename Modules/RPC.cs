@@ -153,13 +153,17 @@ internal static class RPC
     {
         if (player == null || player.IsLocalPlayer() || player.Data == null) return;
 
-        var flag = Enum.IsDefined(typeof(CustomRPC), unchecked(callId)) || Enum.IsDefined(typeof(RpcCalls), callId);
-
-        if (!flag && player.IsHost())
+        try
         {
-            var BAU = "<color=#278720>♻</color><color=#0ed400><b>BetterAmongUs</b></color><color=#278720>♻</color>";
-            Utils.DisconnectSelf($"{BAU} does not support\n<b>Modded Lobbies</b>!");
+            var flag = Enum.IsDefined(typeof(CustomRPC), (int)callId) || Enum.IsDefined(typeof(RpcCalls), callId);
+
+            if (!flag && player.IsHost())
+            {
+                var BAU = "<color=#278720>♻</color><color=#0ed400><b>BetterAmongUs</b></color><color=#278720>♻</color>";
+                Utils.DisconnectSelf($"{BAU} does not support\n<b>Modded Lobbies</b>!");
+            }
         }
+        catch { }
 
         if (!Enum.IsDefined(typeof(CustomRPC), (int)unchecked(callId))) return;
 

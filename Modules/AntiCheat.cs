@@ -72,48 +72,52 @@ class AntiCheat
 
             if (GameStates.IsLobby)
             {
-                _ = new LateTask(() =>
+                try
                 {
-                    var player = Main.AllPlayerControls.FirstOrDefault(pc => pc.GetClient().PlatformData == __instance);
-
-                    if (player != null)
+                    _ = new LateTask(() =>
                     {
-                        if (__instance.Platform is Platforms.StandaloneWin10 or Platforms.Xbox)
+                        var player = Main.AllPlayerControls.FirstOrDefault(pc => pc.GetClient().PlatformData == __instance);
+
+                        if (player != null && __instance?.Platform != null)
                         {
-                            if (__instance.XboxPlatformId.ToString().Length is < 10 or > 16)
+                            if (__instance.Platform is Platforms.StandaloneWin10 or Platforms.Xbox)
                             {
-                                player.ReportPlayer(ReportReasons.Cheating_Hacking);
+                                if (__instance.XboxPlatformId.ToString().Length is < 10 or > 16)
+                                {
+                                    player.ReportPlayer(ReportReasons.Cheating_Hacking);
+                                    BetterNotificationManager.NotifyCheat(player,
+                                        Translator.GetString("AntiCheat.Reason.PlatformSpoofer"),
+                                        Translator.GetString("AntiCheat.HasBeenDetectedWithCheat")
+                                    );
+                                    Logger.LogCheat($"{player.BetterData().RealName} {Translator.GetString("AntiCheat.PlatformSpoofer")}: {__instance.XboxPlatformId}");
+                                }
+                            }
+
+                            if (__instance.Platform is Platforms.Playstation)
+                            {
+                                if (__instance.PsnPlatformId.ToString().Length is < 14 or > 20)
+                                {
+                                    player.ReportPlayer(ReportReasons.Cheating_Hacking);
+                                    BetterNotificationManager.NotifyCheat(player,
+                                        Translator.GetString("AntiCheat.Reason.PlatformSpoofer"),
+                                        Translator.GetString("AntiCheat.HasBeenDetectedWithCheat")
+                                    );
+                                    Logger.LogCheat($"{player.BetterData().RealName} {Translator.GetString("AntiCheat.PlatformSpoofer")}: {__instance.PsnPlatformId}");
+                                }
+                            }
+
+                            if (__instance.Platform is Platforms.Unknown || !Enum.IsDefined(__instance.Platform))
+                            {
                                 BetterNotificationManager.NotifyCheat(player,
                                     Translator.GetString("AntiCheat.Reason.PlatformSpoofer"),
                                     Translator.GetString("AntiCheat.HasBeenDetectedWithCheat")
                                 );
-                                Logger.LogCheat($"{player.BetterData().RealName} {Translator.GetString("AntiCheat.PlatformSpoofer")}: {__instance.XboxPlatformId}");
                             }
                         }
 
-                        if (__instance.Platform is Platforms.Playstation)
-                        {
-                            if (__instance.PsnPlatformId.ToString().Length is < 14 or > 20)
-                            {
-                                player.ReportPlayer(ReportReasons.Cheating_Hacking);
-                                BetterNotificationManager.NotifyCheat(player,
-                                    Translator.GetString("AntiCheat.Reason.PlatformSpoofer"),
-                                    Translator.GetString("AntiCheat.HasBeenDetectedWithCheat")
-                                );
-                                Logger.LogCheat($"{player.BetterData().RealName} {Translator.GetString("AntiCheat.PlatformSpoofer")}: {__instance.PsnPlatformId}");
-                            }
-                        }
-
-                        if (__instance.Platform is Platforms.Unknown || !Enum.IsDefined(__instance.Platform))
-                        {
-                            BetterNotificationManager.NotifyCheat(player,
-                                Translator.GetString("AntiCheat.Reason.PlatformSpoofer"),
-                                Translator.GetString("AntiCheat.HasBeenDetectedWithCheat")
-                            );
-                        }
-                    }
-
-                }, 3.5f, shoudLog: false);
+                    }, 3.5f, shoudLog: false);
+                }
+                catch { }
             }
         }
     }
