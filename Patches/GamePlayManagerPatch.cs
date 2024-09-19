@@ -194,7 +194,7 @@ class GamePlayManager
         {
             Logger.LogHeader($"Game Has Ended - {Enum.GetName(typeof(MapNames), GameStates.GetActiveMapId)}/{GameStates.GetActiveMapId}", "GamePlayManager");
 
-            Logger.LogHeader($"Game Summary Start", "GameSummary");
+            Logger.LogHeader("Game Summary Start", "GameSummary");
 
             GameObject SummaryObj = UnityEngine.Object.Instantiate(__instance.WinText.gameObject, __instance.WinText.transform.parent.transform);
             SummaryObj.name = "SummaryObj (TMP)";
@@ -234,54 +234,51 @@ class GamePlayManager
                 switch (EndGameResult.CachedGameOverReason)
                 {
                     case GameOverReason.HumansByTask:
-                        winTeam = "Cremates";
-                        winTag = "Tasks Completion";
+                        winTeam = Translator.GetString(StringNames.Crewmates);
+                        winTag = Translator.GetString("Game.Summary.Result.TasksCompletion");
                         winColor = "#8cffff";
                         break;
                     case GameOverReason.HumansByVote:
-                        winTeam = "Cremates";
-                        winTag = "Imposters Voted Out";
+                        winTeam = Translator.GetString(StringNames.Crewmates);
+                        winTag = Translator.GetString("Game.Summary.Result.ImpostersVotedOut");
                         winColor = "#8cffff";
                         break;
                     case GameOverReason.ImpostorDisconnect:
-                        winTeam = "Cremates";
-                        winTag = "Impostors Disconnected";
+                        winTeam = Translator.GetString(StringNames.Crewmates);
+                        winTag = Translator.GetString("Game.Summary.Result.ImpostorsDisconnected");
                         winColor = "#8cffff";
                         break;
                     case GameOverReason.ImpostorByKill:
-                        winTeam = "Imposters";
-                        winTag = "Crew Outnumbered";
+                        winTeam = Translator.GetString(StringNames.ImpostorsCategory);
+                        winTag = Translator.GetString("Game.Summary.Result.CrewOutnumbered");
                         winColor = "#f00202";
                         break;
                     case GameOverReason.ImpostorBySabotage:
-                        winTeam = "Imposters";
-                        winTag = "Sabotage";
+                        winTeam = Translator.GetString(StringNames.ImpostorsCategory);
+                        winTag = Translator.GetString("Game.Summary.Result.Sabotage");
                         winColor = "#f00202";
                         break;
                     case GameOverReason.ImpostorByVote:
-                        winTeam = "Imposters";
-                        winTag = "Crew Outnumbered";
+                        winTeam = Translator.GetString(StringNames.ImpostorsCategory);
+                        winTag = Translator.GetString("Game.Summary.Result.CrewOutnumbered");
                         winColor = "#f00202";
                         break;
                     case GameOverReason.HumansDisconnect:
-                        winTeam = "Imposters";
-                        winTag = "Cremates Disconnected";
+                        winTeam = Translator.GetString(StringNames.ImpostorsCategory);
+                        winTag = Translator.GetString("Game.Summary.Result.CrematesDisconnected");
                         winColor = "#f00202";
                         break;
 
-                    // H&S
-
                     case GameOverReason.HideAndSeek_ByTimer:
-                        winTeam = "Hiders";
-                        winTag = "Time Out";
+                        winTeam = Translator.GetString("Game.Summary.Hiders");
+                        winTag = Translator.GetString("Game.Summary.Result.TimeOut");
                         winColor = "#8cffff";
                         break;
                     case GameOverReason.HideAndSeek_ByKills:
-                        winTeam = "Seekers";
-                        winTag = "No Survivors";
+                        winTeam = Translator.GetString("Game.Summary.Seekers");
+                        winTag = Translator.GetString("Game.Summary.Result.NoSurvivors");
                         winColor = "#f00202";
                         break;
-
 
                     default:
                         winTeam = "Unknown";
@@ -292,9 +289,9 @@ class GamePlayManager
 
                 Logger.Log($"{winTeam}: {winTag}", "GameSummary");
 
-                string SummaryHeader = "<align=\"center\"><size=150%>   Game Summary</size></align>";
-                SummaryHeader += $"\n\n<size=90%><color={winColor}>{winTeam} Won</color></size>" +
-                    $"\n<size=60%>\nBy {winTag}</size>";
+                string SummaryHeader = $"<align=\"center\"><size=150%>   {Translator.GetString("Game.Summary")}</size></align>";
+                SummaryHeader += $"\n\n<size=90%><color={winColor}>{winTeam} {Translator.GetString("Game.Summary.Won")}</color></size>" +
+                    $"\n<size=60%>\n{Translator.GetString("Game.Summary.By")} {winTag}</size>";
 
                 StringBuilder sb = new StringBuilder();
 
@@ -306,30 +303,29 @@ class GamePlayManager
                     string roleInfo;
                     if (data.Role.IsImpostor)
                     {
-                        roleInfo = $"({playerTheme(Utils.GetRoleName(data.RoleType))}) → {playerTheme($"Kills: {data.BetterData().RoleInfo.Kills}")}";
+                        roleInfo = $"({playerTheme(Utils.GetRoleName(data.RoleType))}) → {playerTheme($"{Translator.GetString("Kills")}: {data.BetterData().RoleInfo.Kills}")}";
                     }
                     else
                     {
-                        roleInfo = $"({playerTheme(Utils.GetRoleName(data.RoleType))}) → {playerTheme($"Tasks: {data.Tasks.ToArray().Where(task => task.Complete).Count()}/{data.Tasks.Count}")}";
+                        roleInfo = $"({playerTheme(Utils.GetRoleName(data.RoleType))}) → {playerTheme($"{Translator.GetString("Tasks")}: {data.Tasks.ToArray().Where(task => task.Complete).Count()}/{data.Tasks.Count}")}";
                     }
 
                     string deathReason;
                     if (data.Disconnected)
                     {
-                        deathReason = "『<color=#838383><b>D/C</b></color>』";
+                        deathReason = $"『<color=#838383><b>{Translator.GetString("DC")}</b></color>』";
                     }
                     else if (!data.IsDead)
                     {
-                        deathReason = "『<color=#80ff00><b>Alive</b></color>』";
-                        ;
+                        deathReason = $"『<color=#80ff00><b>{Translator.GetString("Alive")}</b></color>』";
                     }
                     else if (data.IsDead)
                     {
-                        deathReason = "『<color=#ff0600><b>Dead</b></color>』";
+                        deathReason = $"『<color=#ff0600><b>{Translator.GetString("Dead")}</b></color>』";
                     }
                     else
                     {
-                        deathReason = "『<color=#838383<b>Unknown</b></color>』";
+                        deathReason = $"『<color=#838383<b>Unknown</b></color>』";
                     }
 
                     Logger.Log($"{name} {roleInfo} {deathReason}", "GameSummary");
@@ -338,9 +334,11 @@ class GamePlayManager
                 }
 
                 SummaryText.text = $"{SummaryHeader}\n\n<size=58%>{sb}</size>";
-                Logger.LogHeader($"Game Summary End", "GameSummary");
+                Logger.LogHeader("Game Summary End", "GameSummary");
             }
         }
+
+
         [HarmonyPatch(nameof(EndGameManager.ShowButtons))]
         [HarmonyPrefix]
         private static bool ShowButtons_Prefix(EndGameManager __instance)

@@ -3,6 +3,11 @@
   "BAU": "BetterAmongUs",
   "BAUMark": "♻",
   "Host": "Host",
+  "Kills": "Kills",
+  "Tasks": "Tasks",
+  "Alive": "Alive",
+  "Dead": "Dead",
+  "DC": "D/C",
 
   "BetterOption": "Better Options",
   "BetterOption.AntiCheat": "<color=#4f92ff>Anti-Cheat</color>",
@@ -65,5 +70,19 @@
   "AntiCheat.Reason.PlatformSpoofer": "Platform Spoofer",
   "AntiCheat.Reason.Known": "Known Sicko Menu User",
   "AntiCheat.Reason.AUMUser": "Known AUM User",
-  "AntiCheat.Reason.KnownCheater": "Known Cheater"
+  "AntiCheat.Reason.KnownCheater": "Known Cheater",
+
+  "Game.Summary": "Game Summary",
+  "Game.Summary.Hiders": "Hiders",
+  "Game.Summary.Seekers": "Seekers",
+  "Game.Summary.Won": "Won",
+  "Game.Summary.By": "By",
+  "Game.Summary.Result.TasksCompletion": "Tasks Completion",
+  "Game.Summary.Result.ImpostersVotedOut": "Imposters Voted Out",
+  "Game.Summary.Result.ImpostorsDisconnected": "Impostors Disconnected",
+  "Game.Summary.Result.CrewOutnumbered": "Crew Outnumbered",
+  "Game.Summary.Result.Sabotage": "Sabotage",
+  "Game.Summary.Result.CrematesDisconnected": "Cremates Disconnected",
+  "Game.Summary.Result.TimeOut": "Time Out",
+  "Game.Summary.Result.NoSurvivors": "No Survivors"
 }
