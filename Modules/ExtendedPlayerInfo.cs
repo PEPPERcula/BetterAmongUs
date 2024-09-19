@@ -9,6 +9,7 @@ public static class PlayerControlDataExtension
     // Base
     public class ExtendedPlayerInfo
     {
+        public BetterAccountInfo? AccountInfo { get; set; }
         public NetworkedPlayerInfo? _Data { get; set; }
         public string? RealName { get; set; }
         public Dictionary<byte, string> LastNameSetFor { get; set; } = [];
@@ -80,61 +81,40 @@ public static class PlayerControlDataExtension
         }
     }
 
+    // Helper method to initialize and return BetterData
+    private static ExtendedPlayerInfo GetOrCreateBetterData(string puid, NetworkedPlayerInfo data, string? realName = null)
+    {
+        if (!playerInfo.ContainsKey(puid))
+        {
+            playerInfo[puid] = new ExtendedPlayerInfo
+            {
+                _Data = data,
+                RealName = realName,
+                RoleInfo = new ExtendedRoleInfo(),
+                AntiCheatInfo = new ExtendedAntiCheatInfo(),
+                AccountInfo = new BetterAccountInfo()
+            };
+        }
+        return playerInfo[puid];
+    }
+
     // Get BetterData from PlayerControl
     public static ExtendedPlayerInfo? BetterData(this PlayerControl player)
     {
-        if (player == null) return null;
-
-        if (!playerInfo.ContainsKey(player.Data.Puid))
-        {
-            playerInfo[player.Data.Puid] = new ExtendedPlayerInfo
-            {
-                _Data = player.Data,
-                RoleInfo = new ExtendedRoleInfo(),
-                AntiCheatInfo = new ExtendedAntiCheatInfo()
-            };
-        }
-
-        return playerInfo[player.Data.Puid];
+        return player == null ? null : GetOrCreateBetterData(player.Data.Puid, player.Data);
     }
 
     // Get BetterData from NetworkedPlayerInfo
     public static ExtendedPlayerInfo? BetterData(this NetworkedPlayerInfo info)
     {
-        if (!playerInfo.ContainsKey(info.Puid))
-        {
-            playerInfo[info.Puid] = new ExtendedPlayerInfo
-            {
-                _Data = info,
-                RoleInfo = new ExtendedRoleInfo(),
-                AntiCheatInfo = new ExtendedAntiCheatInfo()
-            };
-        }
-
-        return playerInfo[info.Puid];
+        return GetOrCreateBetterData(info.Puid, info);
     }
 
     // Get BetterData from ClientData
     public static ExtendedPlayerInfo? BetterData(this ClientData data)
     {
         var player = Utils.PlayerFromClientId(data.Id);
-
-        if (player != null)
-        {
-            if (!playerInfo.ContainsKey(player.Data.Puid))
-            {
-                playerInfo[player.Data.Puid] = new ExtendedPlayerInfo
-                {
-                    _Data = player.Data,
-                    RealName = player.Data.PlayerName,
-                    RoleInfo = new ExtendedRoleInfo(),
-                    AntiCheatInfo = new ExtendedAntiCheatInfo()
-                };
-            }
-
-            return playerInfo[player.Data.Puid];
-        }
-
-        return null;
+        return player == null ? null : GetOrCreateBetterData(player.Data.Puid, player.Data, player.Data.PlayerName);
     }
+
 }
