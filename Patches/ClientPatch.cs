@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using BepInEx.Unity.IL2CPP.Utils;
+using HarmonyLib;
 using InnerNet;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
@@ -44,6 +45,13 @@ public class ClientPatch
                     $"<color=#4f92ff>Among Us <b>{Main.AmongUsVersion}</b></color> is below the supported versions!\n" +
                     $"<color=#ae1700>You may encounter minor to game breaking bugs.</color></size>");
             }
+        }
+
+        [HarmonyPatch(nameof(EOSManager.StartInitialLoginFlow))]
+        [HarmonyPostfix]
+        public static void StartInitialLoginFlow_Postfix(EOSManager __instance)
+        {
+            __instance.StartCoroutine(DataBaseConnect.Init());
         }
     }
     // Log game exit

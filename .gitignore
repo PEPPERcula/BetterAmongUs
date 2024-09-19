@@ -5,3 +5,4 @@
 /.editorconfig
 /.vscode
 /BetterAmongUs.csproj
+/token.env
