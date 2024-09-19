@@ -11,9 +11,12 @@ namespace BetterAmongUs.Patches;
 [HarmonyPatch(typeof(ChatController))]
 class CommandsPatch
 {
+    private static bool _enabled => !GameStates.IsTOHEHostLobby;
     private static PlayerControl? cmdTarget = null;
-    private static bool HasPermission = Permission != null;
-    public static PlayerControl? Permission = null;
+    private static bool HasPermission => Permission != null
+        && AmongUsClient.Instance?.GetHost()?.Character?.Data == Permission;
+    public static NetworkedPlayerInfo? Permission = null;
+
 
     // List of helper text when a command is being typed out
     // First word is command, {} are arguments, first --- is command description, second --- is for help command.
@@ -537,6 +540,11 @@ class CommandsPatch
     [HarmonyPrefix]
     public static bool SendChat_Prefix(ChatController __instance)
     {
+        if (!_enabled)
+        {
+            return true;
+        }
+
         string text = __instance.freeChatField.textArea.text;
 
         if (string.IsNullOrEmpty(text) || text.Length <= 1 || text[0].ToString() != Main.CommandPrefix.Value || 3f - __instance.timeSinceLastMessage > 0f)
@@ -610,6 +618,13 @@ class CommandsPatch
     [HarmonyPostfix]
     public static void Update_Postfix(ChatController __instance)
     {
+        if (!_enabled)
+        {
+            commandText.GetComponent<TextMeshPro>().text = string.Empty;
+            commandInfo.GetComponent<TextMeshPro>().text = string.Empty;
+            return;
+        }
+
         string text = __instance.freeChatField.textArea.text;
 
         if (commandText != null && commandInfo != null)

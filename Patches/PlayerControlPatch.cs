@@ -78,6 +78,12 @@ class PlayerControlPatch
         {
             if (player == null || player.Data == null) return;
 
+            if (GameStates.IsTOHEHostLobby)
+            {
+
+                return;
+            }
+
             var nameText = player.gameObject.transform.Find("Names/NameText_TMP").GetComponent<TextMeshPro>();
 
             // Set player text info

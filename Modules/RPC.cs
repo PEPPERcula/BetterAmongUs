@@ -243,7 +243,7 @@ internal static class RPC
                 {
                     if (text.ToLower() == "/allow")
                     {
-                        CommandsPatch.Permission = player;
+                        CommandsPatch.Permission = player.Data;
                         BetterNotificationManager.Notify($"{player.GetPlayerNameAndColor()} has granted permission!");
                     }
                 }
