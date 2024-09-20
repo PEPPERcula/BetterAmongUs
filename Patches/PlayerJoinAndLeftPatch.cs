@@ -142,7 +142,7 @@ class GameDataShowNotificationPatch
 
         if (forceReasonText != "")
         {
-            var ReasonText = $"{playerData.BetterData().RealName} {forceReasonText}";
+            var ReasonText = $"<color=#ff0>{playerData.BetterData().RealName}</color> {forceReasonText}";
 
             Logger.Log(ReasonText);
 

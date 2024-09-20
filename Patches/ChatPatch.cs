@@ -174,20 +174,20 @@ class ChatPatch
                     Role = "";
 
                     if (sourcePlayer.IsDev())
-                        sbTag.Append("<color=#0088ff>Dev</color>+++");
+                        sbTag.Append($"<color=#0088ff>Dev</color>+++");
 
                     if (((sourcePlayer.IsLocalPlayer() && GameStates.IsHost && Main.BetterHost.Value)
                         || (!sourcePlayer.IsLocalPlayer() && sourcePlayer.BetterData().IsBetterHost && sourcePlayer.IsHost())))
-                        sbTag.Append("<color=#0dff00>Better Host</color>+++");
+                        sbTag.AppendFormat("<color=#0dff00>{1}{0}</color>+++", Translator.GetString("Player.BetterHost"), sourcePlayer.BetterData().IsVerifiedBetterUser || sourcePlayer.IsLocalPlayer() ? "✓ " : "");
                     else if ((sourcePlayer.IsLocalPlayer() || sourcePlayer.BetterData().IsBetterUser))
-                        sbTag.Append("<color=#0dff00>Better User</color>+++");
+                        sbTag.AppendFormat("<color=#0dff00>{1}{0}</color>+++", Translator.GetString("Player.BetterUser"), sourcePlayer.BetterData().IsVerifiedBetterUser || sourcePlayer.IsLocalPlayer() ? "✓ " : "");
 
                     if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.SickoData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.SickoData.ContainsValue(friendCode))
-                        sbTag.Append("<color=#00f583>Sicko User</color>+++");
+                        sbTag.Append($"<color=#00f583>{Translator.GetString("Player.SickoUser")}</color>+++");
                     else if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.AUMData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.AUMData.ContainsValue(friendCode))
-                        sbTag.Append("<color=#4f0000>AUM User</color>+++");
+                        sbTag.Append($"<color=#4f0000>{Translator.GetString("Player.AUMUser")}</color>+++");
                     else if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.PlayerData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.PlayerData.ContainsValue(friendCode))
-                        sbTag.Append("<color=#fc0000>Known Cheater</color>+++");
+                        sbTag.Append($"<color=#fc0000>{Translator.GetString("Player.KnownCheater")}</color>+++");
                 }
 
                 if (!sourcePlayer.IsImpostorTeammate())

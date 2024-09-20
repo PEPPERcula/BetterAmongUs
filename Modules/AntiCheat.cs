@@ -27,19 +27,19 @@ class AntiCheat
                 if (SickoData.ContainsKey(hashPuid))
                 {
                     string reason = Translator.GetString("AntiCheat.Reason.SickoMenuUser");
-                    string kickMessage = string.Format(Translator.GetString("AntiCheat.KickMessage"), Translator.GetString("AntiCheat.PlayerDetected"), reason);
+                    string kickMessage = string.Format(Translator.GetString("AntiCheat.KickMessage"), Translator.GetString("AntiCheat.ByAntiCheat"), reason);
                     player.Kick(true, kickMessage, true);
                 }
                 else if (AUMData.ContainsKey(hashPuid))
                 {
                     string reason = Translator.GetString("AntiCheat.Reason.AUMUser");
-                    string kickMessage = string.Format(Translator.GetString("AntiCheat.KickMessage"), Translator.GetString("AntiCheat.PlayerDetected"), reason);
+                    string kickMessage = string.Format(Translator.GetString("AntiCheat.KickMessage"), Translator.GetString("AntiCheat.ByAntiCheat"), reason);
                     player.Kick(true, kickMessage, true);
                 }
                 else if (PlayerData.ContainsKey(hashPuid))
                 {
                     string reason = Translator.GetString("AntiCheat.Reason.KnownCheater");
-                    string kickMessage = string.Format(Translator.GetString("AntiCheat.KickMessage"), Translator.GetString("AntiCheat.PlayerDetected"), reason);
+                    string kickMessage = string.Format(Translator.GetString("AntiCheat.KickMessage"), Translator.GetString("AntiCheat.ByAntiCheat"), reason);
                     player.Kick(true, kickMessage, true);
                 }
             }

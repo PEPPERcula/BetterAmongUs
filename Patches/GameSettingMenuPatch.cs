@@ -96,7 +96,7 @@ static class GameSettingMenuPatch
                 {
                     new BetterOptionHeaderItem().Create(BetterSettingsTab, Translator.GetString("BetterSetting.MainHeader.HideNSeek"));
                     new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color={Utils.GetRoleColor(RoleTypes.Impostor)}>{Translator.GetString(StringNames.ImpostorsCategory)}</color>");
-                    BetterGameSettings.HideAndSeekImpNum = new BetterOptionIntItem().Create(1000, BetterSettingsTab, "# Seekers", [1, 5, 1], 1, "", "");
+                    BetterGameSettings.HideAndSeekImpNum = new BetterOptionIntItem().Create(1000, BetterSettingsTab, Translator.GetString("BetterSetting.Setting.HideAndSeekImpNum"), [1, 5, 1], 1, "", "");
                     BetterGameSettingsTemp.HideAndSeekImp2 = new BetterOptionPlayerItem().Create(BetterSettingsTab, Translator.GetString("BetterSetting.TempSetting.HideAndSeekImpNum"), BetterGameSettings.HideAndSeekImpNum, new Func<bool>(() =>
                     {
                         return BetterGameSettings.HideAndSeekImpNum is BetterOptionIntItem betterOption && betterOption.CurrentValue > 1;

@@ -72,7 +72,7 @@ class BetterNotificationManager
 
         if (GameStates.IsHost && kickPlayer)
         {
-            string kickMessage = string.Format(Translator.GetString("KickMessage"), byAntiCheat, Reason);
+            string kickMessage = string.Format(Translator.GetString("AntiCheat.KickMessage"), byAntiCheat, Reason);
             player.Kick(true, kickMessage, true);
         }
     }

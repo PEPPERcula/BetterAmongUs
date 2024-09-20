@@ -45,7 +45,7 @@ public class HudManagerPatch
         {
             if (!HasBeenWelcomed && GameStates.IsInGame && GameStates.IsLobby && !GameStates.IsFreePlay)
             {
-                BetterNotificationManager.Notify("<b><color=#00751f>Welcome To Better Among Us!</color></b>", 8f);
+                BetterNotificationManager.Notify($"<b><color=#00751f>{string.Format(Translator.GetString("WelcomeMsg.WelcomeToBAU"), Translator.GetString("BetterAmongUs"))}!</color></b>", 8f);
 
                 Utils.AddChatPrivate(WelcomeMessage, overrideName: " ");
                 HasBeenWelcomed = true;
