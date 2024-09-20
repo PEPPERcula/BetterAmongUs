@@ -26,6 +26,14 @@
   "Player.AUMUser": "AUM User",
   "Player.KnownCheater": "Known Cheater",
 
+  "DisconnectReason.Left": "{0} Left the game!",
+  "DisconnectReason.Disconnect": "{0} Disconnected!",
+  "DisconnectReason.Kicked": "{0} Was kicked by {1}!",
+  "DisconnectReason.Banned": "{0} Was banned by {1}!",
+  "DisconnectReason.Cheater": "{0} Was banned by Innersloth Anti-Cheat!",
+  "DisconnectReason.Error": "{0} Was kicked due to an error!",
+  "DisconnectReason.Unknown": "{0} Left the game due to unknown reason?",
+
   "WelcomeMsg.WelcomeToBAU": "Welcome To {0}",
   "WelcomeMsg.ThanksForDownloading": "Thanks for downloading!",
   "WelcomeMsg.BAUDescription1": "<color=#0dff00>{0}</color> Is a mod for improving the vanilla Among Us experience with a built-in {1} and other futures, <color=#0dff00>{0}</color> is a client-sided mod so it can be used with other vanilla Among Us players.",
