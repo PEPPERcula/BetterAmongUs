@@ -2,6 +2,7 @@
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
+using BetterAmongUs.Patches;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using Innersloth.IO;
@@ -22,15 +23,16 @@ public enum ReleaseTypes : int
 [BepInProcess("Among Us.exe")]
 public class Main : BasePlugin
 {
-    public const ReleaseTypes ReleaseBuildType = ReleaseTypes.Release;
+    public static readonly ReleaseTypes ReleaseBuildType = ReleaseTypes.Release;
     public const string BetaNum = "0";
-    public const string HotfixNum = "1";
-    public const bool IsHotFix = true;
+    public const string HotfixNum = "0";
+    public const bool IsHotFix = false;
     public const string PluginGuid = "com.ten.betteramongus";
-    public const string PluginVersion = "1.1.3";
-    public const string ReleaseDate = "09.17.2024"; // mm/dd/yyyy
+    public const string PluginVersion = "1.1.4";
+    public const string ReleaseDate = "09.20.2024"; // mm/dd/yyyy
     public const string Github = "https://github.com/EnhancedNetwork/BetterAmongUs-Public";
     public const string Discord = "https://discord.gg/ten";
+    public static BetterAccountInfo myAccountInfo = new();
 
     public static string modSignature
     {
@@ -54,7 +56,6 @@ public class Main : BasePlugin
                 .Append(Github)
                 .Append(Discord)
                 .Append(string.Join(".", Enum.GetNames(typeof(CustomRPC))))
-                .Append(string.Join(".", GetRoleName.Values))
                 .Append(string.Join(".", GetRoleColor.Values))
                 .ToString();
 
@@ -68,12 +69,20 @@ public class Main : BasePlugin
 
         string newLineText = newLine ? "\n" : " ";
 
-        if (ReleaseBuildType == ReleaseTypes.Release)
-            text = $"v{BetterAmongUsVersion}";
-        else if (ReleaseBuildType == ReleaseTypes.Beta)
-            text = $"v{BetterAmongUsVersion}{newLineText}Beta {Main.BetaNum}";
-        else if (Main.ReleaseBuildType == ReleaseTypes.Dev)
-            text = $"v{BetterAmongUsVersion}{newLineText}Dev {Main.ReleaseDate}";
+        switch (ReleaseBuildType)
+        {
+            case ReleaseTypes.Release:
+                text = $"v{BetterAmongUsVersion}";
+                break;
+            case ReleaseTypes.Beta:
+                text = $"v{BetterAmongUsVersion}{newLineText}Beta {Main.BetaNum}";
+                break;
+            case ReleaseTypes.Dev:
+                text = $"v{BetterAmongUsVersion}{newLineText}Dev {Main.ReleaseDate}";
+                break;
+            default:
+                break;
+        }
 
         if (IsHotFix)
             text += $" Hotfix {HotfixNum}";
@@ -103,20 +112,24 @@ public class Main : BasePlugin
 
     public static PlayerControl[] AllAlivePlayerControls => AllPlayerControls.ToArray().Where(pc => pc.IsAlive()).ToArray();
 
-    public static Dictionary<int, string> GetRoleName => new Dictionary<int, string>
+    public static Dictionary<int, string> GetRoleName()
     {
-        { 0, "Crewmate" },
-        { 1, "Impostor" },
-        { 2, "Scientist" },
-        { 3, "Engineer" },
-        { 4, "Guardian Angel" },
-        { 5, "Shapeshifter" },
-        { 6, "Crewmate" },
-        { 7, "Impostor" },
-        { 8, "Noisemaker" },
-        { 9, "Phantom" },
-        { 10, "Tracker" }
-    };
+        return new Dictionary<int, string>
+        {
+            { 0, Translator.GetString(StringNames.Crewmate) },
+            { 1, Translator.GetString(StringNames.Impostor) },
+            { 2, Translator.GetString(StringNames.ScientistRole) },
+            { 3, Translator.GetString(StringNames.EngineerRole) },
+            { 4, Translator.GetString(StringNames.GuardianAngelRole) },
+            { 5, Translator.GetString(StringNames.ShapeshifterRole) },
+            { 6, Translator.GetString(StringNames.Crewmate) },
+            { 7, Translator.GetString(StringNames.Impostor) },
+            { 8, Translator.GetString(StringNames.NoisemakerRole) },
+            { 9, Translator.GetString(StringNames.PhantomRole) },
+           { 10, Translator.GetString(StringNames.TrackerRole) }
+        };
+    }
+
 
     public static Dictionary<int, string> GetRoleColor => new Dictionary<int, string>
     {
@@ -130,7 +143,7 @@ public class Main : BasePlugin
         { 7, "#f00202" },
         { 8, "#fc7c7c" },
         { 9, "#d100b9" },
-        { 10, "#59f002" }
+       { 10, "#59f002" }
     };
 
     public static ManualLogSource Logger;
@@ -142,10 +155,12 @@ public class Main : BasePlugin
         {
             Logger = BepInEx.Logging.Logger.CreateLogSource(PluginGuid);
 
+            LoadOptions();
+            Translator.Init();
             Harmony.PatchAll();
             BetterDataManager.SetUp();
             BetterDataManager.LoadData();
-            LoadOptions();
+            GameSettingMenuPatch.SetupSettings(true);
 
             if (PlatformData.Platform == Platforms.StandaloneSteamPC)
                 File.WriteAllText(Path.Combine(Environment.CurrentDirectory, "steam_appid.txt"), "945360");
@@ -178,9 +193,12 @@ public class Main : BasePlugin
         }
     }
 
+
+
     public static ConfigEntry<bool> AntiCheat { get; private set; }
     public static ConfigEntry<bool> BetterHost { get; private set; }
     public static ConfigEntry<bool> BetterNotifications { get; private set; }
+    public static ConfigEntry<bool> ForceOwnLanguage { get; private set; }
     public static ConfigEntry<bool> ChatInGameplay { get; private set; }
     public static ConfigEntry<bool> LobbyPlayerInfo { get; private set; }
     public static ConfigEntry<bool> DisableLobbyTheme { get; private set; }
@@ -192,6 +210,7 @@ public class Main : BasePlugin
         AntiCheat = Config.Bind("Better Options", "AntiCheat", true);
         BetterHost = Config.Bind("Better Options", "BetterHost", false);
         BetterNotifications = Config.Bind("Better Options", "BetterNotifications", true);
+        ForceOwnLanguage = Config.Bind("Better Options", "ForceOwnLanguage", false);
         ChatInGameplay = Config.Bind("Better Options", "ChatInGameplay", true);
         LobbyPlayerInfo = Config.Bind("Better Options", "LobbyPlayerInfo", true);
         DisableLobbyTheme = Config.Bind("Better Options", "DisableLobbyTheme", true);

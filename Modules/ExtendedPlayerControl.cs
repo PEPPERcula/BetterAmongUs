@@ -120,7 +120,7 @@ static class ExtendedPlayerControl
 
         if (setReasonInfo != "")
         {
-            GameDataShowNotificationPatch.BetterShowNotification(player.Data, forceReasonText: string.Format(setReasonInfo, Ban ? "banned" : "kicked"));
+            GameDataShowNotificationPatch.BetterShowNotification(player.Data, forceReasonText: string.Format(setReasonInfo, Ban ? Translator.GetString("AntiCheat.Ban").ToLower() : Translator.GetString("AntiCheat.Kick").ToLower()));
         }
 
         AmongUsClient.Instance.KickPlayer(player.GetClientId(), Ban);
@@ -209,12 +209,12 @@ static class ExtendedPlayerControl
     // Check if player role name
     public static string GetRoleName(this PlayerControl player)
     {
-        if (!player.IsAlive() && !player.IsGhostRole() && Main.GetRoleName.TryGetValue((int)player.BetterData().RoleInfo.DeadDisplayRole, out var roleName))
+        if (!player.IsAlive() && !player.IsGhostRole() && Main.GetRoleName().TryGetValue((int)player.BetterData().RoleInfo.DeadDisplayRole, out var roleName))
         {
             return roleName;
         }
 
-        if (player?.Data != null && Main.GetRoleName.TryGetValue((int)player.Data.RoleType, out var roleName2))
+        if (player?.Data != null && Main.GetRoleName().TryGetValue((int)player.Data.RoleType, out var roleName2))
         {
             return roleName2;
         }

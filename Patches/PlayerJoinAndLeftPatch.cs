@@ -142,7 +142,7 @@ class GameDataShowNotificationPatch
 
         if (forceReasonText != "")
         {
-            var ReasonText = $"{playerData.BetterData().RealName} {forceReasonText}";
+            var ReasonText = $"<color=#ff0>{playerData.BetterData().RealName}</color> {forceReasonText}";
 
             Logger.Log(ReasonText);
 
@@ -155,28 +155,28 @@ class GameDataShowNotificationPatch
             switch (reason)
             {
                 case DisconnectReasons.ExitGame:
-                    ReasonText = $"{playerName} Left the game!";
+                    ReasonText = string.Format(Translator.GetString("DisconnectReason.Left"), playerName);
                     break;
                 case DisconnectReasons.ClientTimeout:
-                    ReasonText = $"{playerName} Disconnected!";
+                    ReasonText = string.Format(Translator.GetString("DisconnectReason.Disconnect"), playerName);
                     break;
                 case DisconnectReasons.Kicked:
-                    ReasonText = $"{playerName} Was kicked by {AmongUsClient.Instance.GetHost().Character.Data.PlayerName}!";
+                    ReasonText = string.Format(Translator.GetString("DisconnectReason.Kicked"), playerName, AmongUsClient.Instance.GetHost().Character.Data.PlayerName);
                     break;
                 case DisconnectReasons.Banned:
-                    ReasonText = $"{playerName} Was banned by {AmongUsClient.Instance.GetHost().Character.Data.PlayerName}!";
+                    ReasonText = string.Format(Translator.GetString("DisconnectReason.Banned"), playerName, AmongUsClient.Instance.GetHost().Character.Data.PlayerName);
                     break;
                 case DisconnectReasons.Hacking:
-                    ReasonText = $"{playerName} Was banned by Innersloth Anti-Cheat!";
+                    ReasonText = string.Format(Translator.GetString("DisconnectReason.Disconnect"), playerName);
                     break;
                 case DisconnectReasons.Error:
-                    ReasonText = $"{playerName} Was kicked due to an error!";
+                    ReasonText = string.Format(Translator.GetString("DisconnectReason.Error"), playerName);
                     break;
                 case DisconnectReasons.Unknown:
-                    ReasonText = $"{playerName} Left the game due to unknown reason?";
+                    ReasonText = string.Format(Translator.GetString("DisconnectReason.Unknown"), playerName);
                     break;
                 default:
-                    ReasonText = $"{playerName} Left the game!";
+                    ReasonText = string.Format(Translator.GetString("DisconnectReason.Left"), playerName);
                     break;
             }
 

@@ -47,25 +47,28 @@ static class GameSettingMenuPatch
 
         // Anti-Cheat Settings
         {
-            TitleList.Add(new BetterOptionHeaderItem().Create(BetterSettingsTab, "<color=#4f92ff>Anti-Cheat Settings</color>"));
+            TitleList.Add(new BetterOptionHeaderItem().Create(BetterSettingsTab, Translator.GetString("BetterSetting.MainHeader.AntiCheat")));
 
             if (IsPreload || GameStates.IsHost)
             {
-                TitleList.Add(new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color=#4f92ff>Host Only</color>"));
-                BetterGameSettings.WhenCheating = new BetterOptionStringItem().Create(100, BetterSettingsTab, "When a player is caught cheating", ["Notify", "Kick", "Ban"], 2);
-                BetterGameSettings.InvalidFriendCode = new BetterOptionCheckboxItem().Create(200, BetterSettingsTab, "Detected invalid friendCodes", true);
-                BetterGameSettings.CancelInvalidSabotage = new BetterOptionCheckboxItem().Create(900, BetterSettingsTab, "Cancel invalid sabotages", true);
-                BetterGameSettings.UseBanPlayerList = new BetterOptionCheckboxItem().Create(300, BetterSettingsTab, "Use ban player list", true);
-                BetterGameSettings.UseBanNameList = new BetterOptionCheckboxItem().Create(400, BetterSettingsTab, "Use ban name list", true);
-                BetterGameSettings.UseBanWordList = new BetterOptionCheckboxItem().Create(500, BetterSettingsTab, "Use ban word list", true);
+                TitleList.Add(new BetterOptionTitleItem().Create(BetterSettingsTab, Translator.GetString("BetterSetting.TextHeader.HostOnly")));
+                BetterGameSettings.WhenCheating = new BetterOptionStringItem().Create(100, BetterSettingsTab, Translator.GetString("BetterSetting.Setting.WhenCheating"),
+                    [Translator.GetString("BetterSetting.Setting.WhenCheating.Notify"),
+                        Translator.GetString("BetterSetting.Setting.WhenCheating.Kick"),
+                        Translator.GetString("BetterSetting.Setting.WhenCheating.Ban")], 2);
+                BetterGameSettings.InvalidFriendCode = new BetterOptionCheckboxItem().Create(200, BetterSettingsTab, Translator.GetString("BetterSetting.Setting.InvalidFriendCode"), true);
+                BetterGameSettings.CancelInvalidSabotage = new BetterOptionCheckboxItem().Create(900, BetterSettingsTab, Translator.GetString("BetterSetting.Setting.CancelInvalidSabotage"), true);
+                BetterGameSettings.UseBanPlayerList = new BetterOptionCheckboxItem().Create(300, BetterSettingsTab, Translator.GetString("BetterSetting.Setting.UseBanPlayerList"), true);
+                BetterGameSettings.UseBanNameList = new BetterOptionCheckboxItem().Create(400, BetterSettingsTab, Translator.GetString("BetterSetting.Setting.UseBanNameList"), true);
+                BetterGameSettings.UseBanWordList = new BetterOptionCheckboxItem().Create(500, BetterSettingsTab, Translator.GetString("BetterSetting.Setting.UseBanWordList"), true);
                 TitleList.Add(new BetterOptionDividerItem().Create(BetterSettingsTab));
             }
 
-            TitleList.Add(new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color=#4f92ff>Detections</color>"));
-            BetterGameSettings.CensorDetectionReason = new BetterOptionCheckboxItem().Create(1300, BetterSettingsTab, "Censor detection reason", false);
-            BetterGameSettings.DetectedLevelAbove = new BetterOptionIntItem().Create(600, BetterSettingsTab, "Detected player levels >", [100, 5000, 5], 200, "Lv ", "");
-            BetterGameSettings.DetectCheatClients = new BetterOptionCheckboxItem().Create(700, BetterSettingsTab, "Detect cheat clients", true);
-            BetterGameSettings.DetectInvalidRPCs = new BetterOptionCheckboxItem().Create(800, BetterSettingsTab, "Detect invalid RPCs", true);
+            TitleList.Add(new BetterOptionTitleItem().Create(BetterSettingsTab, Translator.GetString("BetterSetting.TextHeader.Detections")));
+            BetterGameSettings.CensorDetectionReason = new BetterOptionCheckboxItem().Create(1300, BetterSettingsTab, Translator.GetString("BetterSetting.Setting.CensorDetectionReason"), false);
+            BetterGameSettings.DetectedLevelAbove = new BetterOptionIntItem().Create(600, BetterSettingsTab, Translator.GetString("BetterSetting.Setting.DetectedLevelAbove"), [100, 5000, 5], 200, "Lv ", "");
+            BetterGameSettings.DetectCheatClients = new BetterOptionCheckboxItem().Create(700, BetterSettingsTab, Translator.GetString("BetterSetting.Setting.DetectCheatClients"), true);
+            BetterGameSettings.DetectInvalidRPCs = new BetterOptionCheckboxItem().Create(800, BetterSettingsTab, Translator.GetString("BetterSetting.Setting.DetectInvalidRPCs"), true);
 
             /*
             TitleList.Add(new BetterOptionDividerItem().Create(BetterSettingsTab));
@@ -76,9 +79,9 @@ static class GameSettingMenuPatch
 
         if (IsPreload || GameStates.IsHost)
         {
-            TitleList.Add(new BetterOptionHeaderItem().Create(BetterSettingsTab, "<color=#4f92ff>Role Algorithm Settings</color>"));
-            BetterGameSettings.RoleRandomizer = new BetterOptionStringItem().Create(1100, BetterSettingsTab, "Randomizer", ["System.Random", "UnityEngine.Random"], 0);
-            BetterGameSettings.DesyncRoles = new BetterOptionCheckboxItem().Create(1200, BetterSettingsTab, "Desync roles to other clients", true);
+            TitleList.Add(new BetterOptionHeaderItem().Create(BetterSettingsTab, Translator.GetString("BetterSetting.MainHeader.RoleAlgorithm")));
+            BetterGameSettings.RoleRandomizer = new BetterOptionStringItem().Create(1100, BetterSettingsTab, Translator.GetString("BetterSetting.Setting.RoleRandomizer"), ["System.Random", "UnityEngine.Random"], 0);
+            BetterGameSettings.DesyncRoles = new BetterOptionCheckboxItem().Create(1200, BetterSettingsTab, Translator.GetString("BetterSetting.Setting.DesyncRoles"), true);
         }
 
         // Gameplay Settings
@@ -87,29 +90,29 @@ static class GameSettingMenuPatch
             {
                 if (IsPreload || !GameStates.IsHideNSeek)
                 {
-                    new BetterOptionHeaderItem().Create(BetterSettingsTab, "<color=#d7d700>Gameplay Settings</color>");
+                    new BetterOptionHeaderItem().Create(BetterSettingsTab, Translator.GetString("BetterSetting.MainHeader.Gameplay"));
                 }
                 else if (IsPreload || GameStates.IsHideNSeek)
                 {
-                    new BetterOptionHeaderItem().Create(BetterSettingsTab, "<color=#d7d700>Hide & Seek Settings</color>");
-                    new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color={Utils.GetRoleColor(RoleTypes.Impostor)}>Imposter</color>");
-                    BetterGameSettings.HideAndSeekImpNum = new BetterOptionIntItem().Create(1000, BetterSettingsTab, "# Seekers", [1, 5, 1], 1, "", "");
-                    BetterGameSettingsTemp.HideAndSeekImp2 = new BetterOptionPlayerItem().Create(BetterSettingsTab, "Seeker", BetterGameSettings.HideAndSeekImpNum, new Func<bool>(() =>
+                    new BetterOptionHeaderItem().Create(BetterSettingsTab, Translator.GetString("BetterSetting.MainHeader.HideNSeek"));
+                    new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color={Utils.GetRoleColor(RoleTypes.Impostor)}>{Translator.GetString(StringNames.ImpostorsCategory)}</color>");
+                    BetterGameSettings.HideAndSeekImpNum = new BetterOptionIntItem().Create(1000, BetterSettingsTab, Translator.GetString("BetterSetting.Setting.HideAndSeekImpNum"), [1, 5, 1], 1, "", "");
+                    BetterGameSettingsTemp.HideAndSeekImp2 = new BetterOptionPlayerItem().Create(BetterSettingsTab, Translator.GetString("BetterSetting.TempSetting.HideAndSeekImpNum"), BetterGameSettings.HideAndSeekImpNum, new Func<bool>(() =>
                     {
                         return BetterGameSettings.HideAndSeekImpNum is BetterOptionIntItem betterOption && betterOption.CurrentValue > 1;
                     }));
-                    BetterGameSettingsTemp.HideAndSeekImp3 = new BetterOptionPlayerItem().Create(BetterSettingsTab, "Seeker", BetterGameSettings.HideAndSeekImpNum, new Func<bool>(() =>
+                    BetterGameSettingsTemp.HideAndSeekImp3 = new BetterOptionPlayerItem().Create(BetterSettingsTab, Translator.GetString("BetterSetting.TempSetting.HideAndSeekImpNum"), BetterGameSettings.HideAndSeekImpNum, new Func<bool>(() =>
                     {
                         return BetterGameSettings.HideAndSeekImpNum is BetterOptionIntItem betterOption && betterOption.CurrentValue > 2
                             && BetterGameSettingsTemp.HideAndSeekImp2 is BetterOptionPlayerItem betterOption2 && betterOption2.CurrentIndex > -1;
                     }));
-                    BetterGameSettingsTemp.HideAndSeekImp4 = new BetterOptionPlayerItem().Create(BetterSettingsTab, "Seeker", BetterGameSettings.HideAndSeekImpNum, new Func<bool>(() =>
+                    BetterGameSettingsTemp.HideAndSeekImp4 = new BetterOptionPlayerItem().Create(BetterSettingsTab, Translator.GetString("BetterSetting.TempSetting.HideAndSeekImpNum"), BetterGameSettings.HideAndSeekImpNum, new Func<bool>(() =>
                     {
                         return BetterGameSettings.HideAndSeekImpNum is BetterOptionIntItem betterOption && betterOption.CurrentValue > 3
                             && BetterGameSettingsTemp.HideAndSeekImp2 is BetterOptionPlayerItem betterOption2 && betterOption2.CurrentIndex > -1
                             && BetterGameSettingsTemp.HideAndSeekImp3 is BetterOptionPlayerItem betterOption3 && betterOption3.CurrentIndex > -1;
                     }));
-                    BetterGameSettingsTemp.HideAndSeekImp5 = new BetterOptionPlayerItem().Create(BetterSettingsTab, "Seeker", BetterGameSettings.HideAndSeekImpNum, new Func<bool>(() =>
+                    BetterGameSettingsTemp.HideAndSeekImp5 = new BetterOptionPlayerItem().Create(BetterSettingsTab, Translator.GetString("BetterSetting.TempSetting.HideAndSeekImpNum"), BetterGameSettings.HideAndSeekImpNum, new Func<bool>(() =>
                     {
                         return BetterGameSettings.HideAndSeekImpNum is BetterOptionIntItem betterOption && betterOption.CurrentValue > 4
                             && BetterGameSettingsTemp.HideAndSeekImp2 is BetterOptionPlayerItem betterOption2 && betterOption2.CurrentIndex > -1
@@ -156,7 +159,7 @@ static class GameSettingMenuPatch
     {
         if (BetterSettingsButton != null)
         {
-            BetterSettingsButton.buttonText.SetText("Better Settings");
+            BetterSettingsButton.buttonText.SetText(Translator.GetString("BetterSetting"));
 
             if (!BetterSettingsButton.selected && !BetterSettingsButton.activeSprites.active)
             {
@@ -168,7 +171,7 @@ static class GameSettingMenuPatch
             }
             if (BetterSettingsButton.selected)
             {
-                __instance.MenuDescriptionText.text = "Edit better settings for your lobby and gameplay.";
+                __instance.MenuDescriptionText.text = Translator.GetString("BetterSetting.Description");
             }
         }
     }

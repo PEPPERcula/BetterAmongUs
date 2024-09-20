@@ -11,6 +11,7 @@ public static class OptionsMenuBehaviourPatch
     private static ClientOptionItem? AntiCheat;
     private static ClientOptionItem? BetterHost;
     private static ClientOptionItem? BetterNotifications;
+    private static ClientOptionItem? ForceOwnLanguage;
     private static ClientOptionItem? ChatInGameplay;
     private static ClientOptionItem? LobbyPlayerInfo;
     private static ClientOptionItem? DisableLobbyTheme;
@@ -44,12 +45,14 @@ public static class OptionsMenuBehaviourPatch
 
         if (AntiCheat == null || AntiCheat.ToggleButton == null)
         {
-            AntiCheat = ClientOptionItem.Create("<color=#4f92ff>Anti-Cheat</color>", Main.AntiCheat, __instance);
+            string title = Translator.GetString("BetterOption.AntiCheat");
+            AntiCheat = ClientOptionItem.Create(title, Main.AntiCheat, __instance);
         }
 
         if (BetterHost == null || BetterHost.ToggleButton == null)
         {
-            BetterHost = ClientOptionItem.Create("<color=#4f92ff>Better Host</color>", Main.BetterHost, __instance, BetterHostButtonToggle, () => !toggleCheckInGamePlay("<color=#4f92ff>Better Host</color>"));
+            string title = Translator.GetString("BetterOption.BetterHost");
+            BetterHost = ClientOptionItem.Create(title, Main.BetterHost, __instance, BetterHostButtonToggle, () => !toggleCheckInGamePlay(title));
             static void BetterHostButtonToggle()
             {
                 RPC.SendBetterCheck();
@@ -65,7 +68,8 @@ public static class OptionsMenuBehaviourPatch
 
         if (BetterNotifications == null || BetterNotifications.ToggleButton == null)
         {
-            BetterNotifications = ClientOptionItem.Create("<color=#4f92ff>Better Notifications</color>", Main.BetterNotifications, __instance, BetterNotificationsToggle);
+            string title = Translator.GetString("BetterOption.BetterNotifications");
+            BetterNotifications = ClientOptionItem.Create(title, Main.BetterNotifications, __instance, BetterNotificationsToggle);
 
             static void BetterNotificationsToggle()
             {
@@ -75,19 +79,28 @@ public static class OptionsMenuBehaviourPatch
             }
         }
 
+        if (ForceOwnLanguage == null || ForceOwnLanguage.ToggleButton == null)
+        {
+            string title = Translator.GetString("BetterOption.ForceOwnLanguage");
+            ForceOwnLanguage = ClientOptionItem.Create(title, Main.ForceOwnLanguage, __instance);
+        }
+        
         if (ChatInGameplay == null || ChatInGameplay.ToggleButton == null)
         {
-            ChatInGameplay = ClientOptionItem.Create("Chat In Gameplay", Main.ChatInGameplay, __instance);
+            string title = Translator.GetString("BetterOption.ChatInGame");
+            ChatInGameplay = ClientOptionItem.Create(title, Main.ChatInGameplay, __instance);
         }
 
         if (LobbyPlayerInfo == null || LobbyPlayerInfo.ToggleButton == null)
         {
-            LobbyPlayerInfo = ClientOptionItem.Create("Show Lobby Info", Main.LobbyPlayerInfo, __instance);
+            string title = Translator.GetString("BetterOption.LobbyInfo");
+            LobbyPlayerInfo = ClientOptionItem.Create(title, Main.LobbyPlayerInfo, __instance);
         }
 
         if (DisableLobbyTheme == null || DisableLobbyTheme.ToggleButton == null)
         {
-            DisableLobbyTheme = ClientOptionItem.Create("Disable Lobby Theme", Main.DisableLobbyTheme, __instance, DisableLobbyThemeButtonToggle);
+            string title = Translator.GetString("BetterOption.LobbyTheme");
+            DisableLobbyTheme = ClientOptionItem.Create(title, Main.DisableLobbyTheme, __instance, DisableLobbyThemeButtonToggle);
             static void DisableLobbyThemeButtonToggle()
             {
                 if (GameStates.IsLobby && !Main.DisableLobbyTheme.Value)
@@ -99,7 +112,8 @@ public static class OptionsMenuBehaviourPatch
 
         if (UnlockFPS == null || UnlockFPS.ToggleButton == null)
         {
-            UnlockFPS = ClientOptionItem.Create("UnlockFPS", Main.UnlockFPS, __instance, UnlockFPSButtonToggle);
+            string title = Translator.GetString("BetterOption.UnlockFPS");
+            UnlockFPS = ClientOptionItem.Create(title, Main.UnlockFPS, __instance, UnlockFPSButtonToggle);
             static void UnlockFPSButtonToggle()
             {
                 Application.targetFrameRate = Main.UnlockFPS.Value ? 165 : 60;
@@ -108,12 +122,14 @@ public static class OptionsMenuBehaviourPatch
 
         if (ShowFPS == null || ShowFPS.ToggleButton == null)
         {
-            ShowFPS = ClientOptionItem.Create("ShowFPS", Main.ShowFPS, __instance);
+            string title = Translator.GetString("BetterOption.ShowFPS");
+            ShowFPS = ClientOptionItem.Create(title, Main.ShowFPS, __instance);
         }
 
         if (OpenSaveData == null || OpenSaveData.ToggleButton == null)
         {
-            OpenSaveData = ClientOptionItem.Create("Open Save Data", null, __instance, OpenSaveDataButtonToggle, IsToggle: false);
+            string title = Translator.GetString("BetterOption.SaveData");
+            OpenSaveData = ClientOptionItem.Create(title, null, __instance, OpenSaveDataButtonToggle, IsToggle: false);
             static void OpenSaveDataButtonToggle()
             {
                 if (File.Exists(BetterDataManager.GetFilePath("BetterData")))
@@ -130,7 +146,8 @@ public static class OptionsMenuBehaviourPatch
         
         if (SwitchToVanilla == null || SwitchToVanilla.ToggleButton == null)
         {
-            SwitchToVanilla = ClientOptionItem.Create("Switch To Vanilla", null, __instance, SwitchToVanillaButtonToggle, IsToggle: false, toggleCheck: () => !toggleCheckInGame("Switch To Vanilla"));
+            string title = Translator.GetString("BetterOption.ToVanilla");
+            SwitchToVanilla = ClientOptionItem.Create(title, null, __instance, SwitchToVanillaButtonToggle, IsToggle: false, toggleCheck: () => !toggleCheckInGame(title));
             static void SwitchToVanillaButtonToggle()
             {
                 UnityEngine.Object.Destroy(BetterNotificationManager.BAUNotificationManagerObj);

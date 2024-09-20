@@ -8,10 +8,10 @@ namespace BetterAmongUs.Patches;
 [HarmonyPatch(typeof(HudManager))]
 public class HudManagerPatch
 {
-    public static string WelcomeMessage = $"<b><color=#00b530><size=125%><align=\"center\">Welcome To Better Among Us\n{Main.GetVersionText()}</size>\n" +
-        "Thanks for downloading!</align></color></b>\n<size=120%> </size>\n" +
-        "<color=#0dff00>BAU</color> Is a mod for improving the vanilla Among Us experience with a built-in Anti-Cheat and other futures, <color=#0dff00>BAU</color> is a client-sided mod so it can be used with other vanilla Among Us players.\n\n" +
-        "<color=#0dff00>BAU</color> Also has a option in <color=#2b7500>Better Options</color> on the pause menu called <color=#4f92ff>Better Host</color>, Better Host is designed to enhance the vanilla experience for other players without having <color=#0dff00>BAU</color> installed!";
+    public static string WelcomeMessage = $"<b><color=#00b530><size=125%><align=\"center\">{string.Format(Translator.GetString("WelcomeMsg.WelcomeToBAU"), Translator.GetString("BetterAmongUs"))}\n{Main.GetVersionText()}</size>\n" +
+        $"{Translator.GetString("WelcomeMsg.ThanksForDownloading")}</align></color></b>\n<size=120%> </size>\n" +
+        string.Format(Translator.GetString("WelcomeMsg.BAUDescription1"), Translator.GetString("bau"), Translator.GetString("BetterOption.AntiCheat")) + "\n\n" +
+        string.Format(Translator.GetString("WelcomeMsg.BAUDescription2"), Translator.GetString("bau"), Translator.GetString("BetterOption"), Translator.GetString("BetterOption.BetterHost"));
 
     private static bool HasBeenWelcomed = false;
     [HarmonyPatch(nameof(HudManager.Start))]
@@ -32,7 +32,7 @@ public class HudManagerPatch
                 UnityEngine.Object.Destroy(GameObject.Find($"{BAUNotification.name}/Sizer/ColorText"));
                 BAUNotification.GetComponent<AspectPosition>().DistanceFromEdge = new Vector3(-1.57f, 5.3f, -15f);
                 GameObject.Find($"{BAUNotification.name}/Sizer/NameText").transform.localPosition = new Vector3(-3.3192f, -0.0105f);
-                GameObject.Find($"{BAUNotification.name}/Sizer/NameText").GetComponent<TextMeshPro>().text = "<color=#00ff44>System Notification</color>";
+                BetterNotificationManager.NameText = GameObject.Find($"{BAUNotification.name}/Sizer/NameText").GetComponent<TextMeshPro>();
                 UnityEngine.Object.DontDestroyOnLoad(BAUNotification);
                 BetterNotificationManager.BAUNotificationManagerObj = BAUNotification;
                 BAUNotification.SetActive(false);
@@ -45,7 +45,7 @@ public class HudManagerPatch
         {
             if (!HasBeenWelcomed && GameStates.IsInGame && GameStates.IsLobby && !GameStates.IsFreePlay)
             {
-                BetterNotificationManager.Notify("<b><color=#00751f>Welcome To Better Among Us!</color></b>", 8f);
+                BetterNotificationManager.Notify($"<b><color=#00751f>{string.Format(Translator.GetString("WelcomeMsg.WelcomeToBAU"), Translator.GetString("BetterAmongUs"))}!</color></b>", 8f);
 
                 Utils.AddChatPrivate(WelcomeMessage, overrideName: " ");
                 HasBeenWelcomed = true;

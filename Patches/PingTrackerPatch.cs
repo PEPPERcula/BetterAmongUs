@@ -21,22 +21,24 @@ public class PingTrackerPatch
                 __instance.gameObject.SetActive(false);
             }
 
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
 
-            sb.AppendFormat("PING: <b>{0}</b>\n", GetPingColor(AmongUsClient.Instance.Ping));
+            sb.AppendFormat("{0}: <b>{1}</b>\n", Translator.GetString("Ping").ToUpper(), GetPingColor(AmongUsClient.Instance.Ping));
 
             if (GameStates.IsLobby && GameStates.IsHost && GameStates.IsVanillaServer && !GameStates.IsLocalGame)
             {
-                sb.AppendFormat("Timer: <b>{0}</b>\n", GetTimeColor(GameStartManagerPatch.lobbyTimer));
+                sb.AppendFormat("{0}: <b>{1}</b>\n", Translator.GetString("Timer").ToUpper(), GetTimeColor(GameStartManagerPatch.lobbyTimer));
             }
 
             sb.Append($"<color=#00dbdb><size=75%>BetterAmongUs {Main.GetVersionText(true)}</size></color>\n");
             sb.Append("<size=68%><color=#8040bf>By</color> <color=#bc4345>The Enhanced Network</color></size>\n");
             // sb.Append($"<size=50%><color=#b5b5b5>{Main.Github}</color></size>\n");
 
+            if (GameStates.IsTOHEHostLobby) sb.Append($"<size=75%><color=#e197dc>TOHE Lobby</color></size>\n");
+
             if (Main.BetterHost.Value && GameStates.IsHost)
             {
-                sb.Append("<size=75%><color=#4f92ff>Better Host</color>: <color=#00f04c>Enabled</color></size>\n");
+                sb.Append($"<size=75%>{Translator.GetString("BetterOption.BetterHost")}: <color=#00f04c>Enabled</color></size>\n");
             }
 
             if (Main.ShowFPS.Value)
@@ -48,7 +50,7 @@ public class PingTrackerPatch
             // Add Host Info if not in lobby
             if (GameStates.IsInGamePlay && Host != null)
             {
-                sb.AppendFormat("<size=75%>Host: {0}</size>\n", Host.GetPlayerNameAndColor());
+                sb.AppendFormat("<size=75%>{0}: {1}</size>\n", Translator.GetString("Host"), Host.GetPlayerNameAndColor());
             }
 
             __instance.aspectPosition.DistanceFromEdge = new Vector3(4f, 0.1f, -5);

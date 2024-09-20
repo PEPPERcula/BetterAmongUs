@@ -10,8 +10,6 @@ using UnityEngine;
 
 namespace BetterAmongUs.Patches;
 
-// Thanks: https://github.com/0xDrMoe/TownofHost-Enhanced
-
 public enum NewsTypes
 {
     None,

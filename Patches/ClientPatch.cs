@@ -1,6 +1,8 @@
-﻿using HarmonyLib;
+﻿using BepInEx.Unity.IL2CPP.Utils;
+using HarmonyLib;
 using InnerNet;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace BetterAmongUs.Patches;
 
@@ -44,6 +46,13 @@ public class ClientPatch
                     $"<color=#ae1700>You may encounter minor to game breaking bugs.</color></size>");
             }
         }
+
+        [HarmonyPatch(nameof(EOSManager.StartInitialLoginFlow))]
+        [HarmonyPostfix]
+        public static void StartInitialLoginFlow_Postfix(EOSManager __instance)
+        {
+            __instance.StartCoroutine(DataBaseConnect.Init());
+        }
     }
     // Log game exit
     [HarmonyPatch(typeof(AmongUsClient))]
@@ -84,22 +93,6 @@ public class ClientPatch
             }
         }
     }
-    [HarmonyPatch(typeof(NetworkedPlayerInfo))]
-    public class NetworkedPlayerInfoPatch
-    {
-        [HarmonyPatch(nameof(NetworkedPlayerInfo.Deserialize))]
-        [HarmonyPostfix]
-        public static void Deserialize_Postfix(NetworkedPlayerInfo __instance)
-        {
-            if (!GameStates.IsHost)
-            {
-                if (__instance.PlayerLevel > 1000000)
-                {
-                    __instance.PlayerLevel = 0;
-                }
-            }
-        }
-    }
     // Set text color
     [HarmonyPatch(typeof(CosmeticsLayer))]
     public class CosmeticsLayerPatch
@@ -116,7 +109,24 @@ public class ClientPatch
                 }
                 __instance.colorBlindText.text = __instance.GetColorBlindText();
                 __instance.colorBlindText.color = Palette.PlayerColors[color];
-                __instance.colorBlindText.transform.localPosition = new Vector3(0f, -1.5f, 0.4999f);
+                var player = Main.AllPlayerControls.FirstOrDefault(pc => pc.cosmetics == __instance);
+
+                if (player != null)
+                {
+                    // Set new pos
+                    if (!player.onLadder && !player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
+                    {
+                        __instance.colorBlindText.transform.localPosition = new Vector3(0f, -1.5f, 0.4999f);
+                    }
+                    else // Set pos when on a ladder
+                    {
+                        __instance.colorBlindText.transform.localPosition = new Vector3(0f, -1.75f, 0.4999f);
+                    }
+                }
+                else // Set new pos if player is null
+                {
+                    __instance.colorBlindText.transform.localPosition = new Vector3(0f, -1.5f, 0.4999f);
+                }
             }
             catch { }
 

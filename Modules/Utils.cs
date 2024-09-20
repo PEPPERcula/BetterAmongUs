@@ -1,4 +1,5 @@
-﻿using AmongUs.GameOptions;
+﻿using AmongUs.Data;
+using AmongUs.GameOptions;
 using InnerNet;
 using Sentry.Internal.Extensions;
 using System.Reflection;
@@ -31,7 +32,7 @@ public static class Utils
         ChatController chat = HudManager.Instance.Chat;
         NetworkedPlayerInfo data = PlayerControl.LocalPlayer.Data;
         ChatBubble pooledBubble = chat.GetPooledBubble();
-        string MsgName = "<color=#ffffff><b>(<color=#00ff44>System Message</color>)</b>";
+        string MsgName = $"<color=#ffffff><b>(<color=#00ff44>{Translator.GetString("SystemMessage")}</color>)</b>";
         if (overrideName != "")
             MsgName = overrideName;
         try
@@ -138,7 +139,7 @@ public static class Utils
 
 
     // Get name for role
-    public static string GetRoleName(RoleTypes role) => Main.GetRoleName[(int)role];
+    public static string GetRoleName(RoleTypes role) => Main.GetRoleName()[(int)role];
     // Get color for role
     public static string GetRoleColor(RoleTypes role) => Main.GetRoleColor[(int)role];
     // Get hex color for team
@@ -167,6 +168,21 @@ public static class Utils
         byte b = byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
 
         return new Color32(r, g, b, 255);
+    }
+
+    public static void DisconnectAccountFromOnline(bool apiError = false)
+    {
+        if (GameStates.IsInGame)
+        {
+            AmongUsClient.Instance.ExitGame(DisconnectReasons.ExitGame);
+        }
+
+        DataManager.Player.Account.LoginStatus = EOSManager.AccountLoginStatus.Offline;
+        DataManager.Player.Save();
+        if (apiError)
+        {
+            ShowPopUp(Translator.GetString("DataBaseConnect.InitFailure"), true);
+        }
     }
 
     // Disconnect client

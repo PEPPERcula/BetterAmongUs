@@ -69,17 +69,7 @@ class FileChecker
                 }
             }
 
-            GameObject SignInStatus = GameObject.Find("SignInStatus");
-
-            if (SignInStatus != null)
-            {
-                SignInStatusComponent SignInStatusCom = SignInStatus.GetComponent<SignInStatusComponent>();
-                SignInStatusCom?.SetOffline();
-
-                GameObject.Find("Account_CTA")?.SetActive(false);
-                GameObject.Find("AccountTab/GameHeader/LeftSide/FriendCode")?.SetActive(false);
-                if (GameObject.Find("Stats_CTA") != null) GameObject.Find("Stats_CTA").transform.position = new Vector2(1.7741f, -0.2442f);
-            }
+            Utils.DisconnectAccountFromOnline();
 
             SoundManager.instance?.ChangeMusicVolume(0);
             return;
@@ -106,11 +96,11 @@ class FileChecker
         }
     }
 
-    private static readonly string UnauthorizedTextDetectedMsg = "Unauthorized {0} Detected";
-    private static readonly string UnauthorizedFileMsg = "Unauthorized Game Files Detected";
-    private static readonly string OnlineMsg = "Online access has been temporarily disabled!";
-    private static readonly string UnsupportedBepInExModMsg = "Unsupported BepInEx Mod Detected";
-    private static readonly string BannedBepInExModMsg = "Unauthorized BepInEx Mod Detected";
+    private static string UnauthorizedTextDetectedMsg => Translator.GetString("FileChecker.UnauthorizedTextDetectedMsg");
+    private static string UnauthorizedFileMsg => Translator.GetString("FileChecker.UnauthorizedFileMsg");
+    private static string OnlineMsg => Translator.GetString("FileChecker.OnlineMsg");
+    private static string UnsupportedBepInExModMsg => Translator.GetString("FileChecker.UnsupportedBepInExModMsg");
+    private static string BannedBepInExModMsg => Translator.GetString("FileChecker.BannedBepInExModMsg");
 
     // Check if there's any unauthorized files.
     public static bool CheckIfUnauthorizedFiles()

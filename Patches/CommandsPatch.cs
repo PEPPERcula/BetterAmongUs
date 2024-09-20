@@ -3,6 +3,7 @@ using AmongUs.GameOptions;
 using HarmonyLib;
 using Hazel;
 using Il2CppSystem.Text;
+using Steamworks;
 using TMPro;
 using UnityEngine;
 
@@ -11,46 +12,72 @@ namespace BetterAmongUs.Patches;
 [HarmonyPatch(typeof(ChatController))]
 class CommandsPatch
 {
+    private static bool _enabled => !GameStates.IsTOHEHostLobby;
     private static PlayerControl? cmdTarget = null;
-    private static bool HasPermission = Permission != null;
-    public static PlayerControl? Permission = null;
+    private static bool HasPermission => Permission != null
+        && AmongUsClient.Instance?.GetHost()?.Character?.Data == Permission;
+    public static NetworkedPlayerInfo? Permission = null;
+
 
     // List of helper text when a command is being typed out
     // First word is command, {} are arguments, first --- is command description, second --- is for help command.
-    public static string[] CommandListHelper =
+    public static string[] CommandListHelper() => new string[]
+    {
+        FormatCommandTranslation("Command.Helper.help", false),
+        FormatCommandTranslation("Command.Helper.commands", false),
+        FormatCommandTranslation("Command.Helper.dump", false),
+        FormatCommandTranslation("Command.Helper.player", false),
+        FormatCommandTranslation("Command.Helper.players", false),
+        FormatCommandTranslation("Command.Helper.whisper", false),
+        FormatCommandTranslation("Command.Helper.whisper.trim", false),
+        FormatCommandTranslation("Command.Helper.setprefix", false),
+        FormatCommandTranslation("Command.Helper.name", false),
+        FormatCommandTranslation("Command.Helper.kick", false),
+        FormatCommandTranslation("Command.Helper.ban", false),
+        FormatCommandTranslation("Command.Helper.endgame", false),
+        FormatCommandTranslation("Command.Helper.removeplayer", false),
+        FormatCommandTranslation("Command.Helper.removeall", false)
+    };
+
+    public static string[] SponsorCommandListHelper() => new string[]
         {
-        "help---Get help with commands",
-        "commands---Get a list of all available commands",
-        "dump---Dump the entire log to the user's desktop",
-        "player {id}---Get a Players information---{player id}",
-        "players---Get all Player information",
-        "whisper {id} {msg}---Privately send an message to a player---{player id}",
-        "w {id} {msg}---Privately send an message to a player---{player id} {text}",
-        "setprefix {prefix}---Set command prefix",
-        "name {name}---Set player name - <color=red>Host Only/Host Permission</color>---{text}",
-        "kick {id}---Kick a player from the game - <color=red>Host Only</color>---{player id}",
-        "ban {id}---Ban a player from the game - <color=red>Host Only</color>---{player id}",
-        "endgame {reason}---Force end the game - <color=red>Host Only</color>---{player id}",
-        "removeplayer {identifier}---Remove player from local <color=#4f92ff>Anti-Cheat</color> data---{FriendCode, HashPuid}",
-        "removeall---Remove all players from local <color=#4f92ff>Anti-Cheat</color> data",
         };
-    public static string[] DebugCommandListHelper =
-        {
+    public static string[] DebugCommandListHelper() => new string[]
+    {
 #if DEBUG
-        "getposition---Get current player position - <color=#ff00f7>DeBug</color>",
-        "role {role}---Set your role for the next game - <color=red>Host Only</color> - <color=#ff00f7>DeBug</color>",
-        "setrole {id} {role}---Set another players role for the next game - <color=red>Host Only</color> - <color=#ff00f7>DeBug</color>",
-        "syncallnames---Sync all players names for better host - <color=red>Host Only</color> - <color=#ff00f7>DeBug</color>",
-        "suicide---Kill self <color=#ff00f7>DeBug</color>",
-        "exile---Set self as dead <color=#ff00f7>DeBug</color>",
-        "revive---Set self as alive<color=#ff00f7>DeBug</color>",
+        FormatCommandTranslation("Command.DebugHelper.getposition", false),
+        FormatCommandTranslation("Command.DebugHelper.role", false),
+        FormatCommandTranslation("Command.DebugHelper.setrole", false),
+        FormatCommandTranslation("Command.DebugHelper.syncallnames", false),
+        FormatCommandTranslation("Command.DebugHelper.suicide", false),
+        FormatCommandTranslation("Command.DebugHelper.exile", false),
+        FormatCommandTranslation("Command.DebugHelper.revive", false),
 #endif
     };
 
+    private static string FormatCommandTranslation(string str, bool checkCommand = true)
+    {
+        if (checkCommand)
+        {
+            try
+            {
+                return Translator.GetString(str, showInvalid: false).Split(" ")[0].Split("---")[0].ToLower();
+            }
+            catch
+            {
+                return str;
+            }
+        }
+        else
+        {
+            return string.Format(Translator.GetString(str, showInvalid: false), "", Translator.GetString("Command.HostOnly"), Translator.GetString("Command.PermOnly"), Translator.GetString("Command.DevOnly"));
+        }
+    }
 
     // Run code for specific commands
     private static void HandleCommand(ChatController __instance, string[] command)
     {
+        bool checkSponsorCommand = false;
         bool checkDebugCommand = false;
         string subArgs = command.Length > 1 ? command[1].ToLower().Trim() : "";
         string subArgs2 = command.Length > 2 ? command[2].ToLower().Trim() : "";
@@ -62,7 +89,7 @@ class CommandsPatch
         // Commands
         switch (command[0][1..].ToLower().Trim())
         {
-            case "help":
+            case var cmd when cmd == FormatCommandTranslation("Command.Helper.help"):
                 Utils.AddChatPrivate(
                     "Welcome to <color=#0dff00>♻BetterAmongUs♻</color> This mod enhances your gameplay experience with a variety of exciting features.\n" +
                     "Explore the pause menu to access more options and better settings tailored to your needs.\n" +
@@ -76,9 +103,10 @@ class CommandsPatch
                     "Stay tuned for more exciting features and improvements coming your way!"
                 );
                 break;
-            case "commands":
-                string[] allCommands = CommandListHelper;
-                string[] allDebugCommands = DebugCommandListHelper;
+            case var cmd when cmd == FormatCommandTranslation("Command.Helper.commands"):
+                string[] allCommands = CommandListHelper();
+                string[] allSponsorCommands = SponsorCommandListHelper();
+                string[] allDebugCommands = DebugCommandListHelper();
                 string list;
                 var open = "<color=#858585>┌──────── </color>";
                 var mid = "<color=#858585>├ </color>";
@@ -89,6 +117,18 @@ class CommandsPatch
                     if (i < allCommands.Length)
                     {
                         list += $"\n{mid}<color=#e0b700><b>{Main.CommandPrefix.Value}{allCommands[i].Split(' ')[0].Split("---")[0]}</b></color> <size=65%><color=#735e00>{allCommands[i].Split("---")[1]}.</color></size>";
+                    }
+                }
+                if (Main.myAccountInfo.IsSponsor == true)
+                {
+                    list += "\n" + close + "\n";
+                    list += "<color=#00751f><b><size=150%>Debug Command List</size></b></color>\n" + open;
+                    for (int i = 0; i < allSponsorCommands.Length; i++)
+                    {
+                        if (i < allSponsorCommands.Length)
+                        {
+                            list += $"\n{mid}<color=#e0b700><b>{Main.CommandPrefix.Value}{allSponsorCommands[i].Split(' ')[0].Split("---")[0]}</b></color> <size=65%><color=#735e00>{allSponsorCommands[i].Split("---")[1]}.</color></size>";
+                        }
                     }
                 }
                 if (GameStates.IsDev && Main.ReleaseBuildType == ReleaseTypes.Dev)
@@ -106,7 +146,7 @@ class CommandsPatch
                 list += "\n" + close;
                 Utils.AddChatPrivate(list);
                 break;
-            case "dump":
+            case var cmd when cmd == FormatCommandTranslation("Command.Helper.dump"):
                 if (GameStates.IsInGamePlay && !GameStates.IsDev) return;
 
                 string logFilePath = Path.Combine(BetterDataManager.filePathFolder, "better-log.txt");
@@ -149,7 +189,7 @@ class CommandsPatch
 
                 Utils.AddChatPrivate($"Dump logs at <color=#b1b1b1>'{newLogFilePath}'</color>");
                 break;
-            case "player":
+            case var cmd when cmd == FormatCommandTranslation("Command.Helper.player"):
                 if (HandlePlayerArgument(command, subArgs) == true)
                 {
                     var player = cmdTarget;
@@ -165,7 +205,7 @@ class CommandsPatch
                     Utils.AddChatPrivate(sb.ToString());
                 }
                 break;
-            case "players":
+            case var cmd when cmd == FormatCommandTranslation("Command.Helper.players"):
                 foreach (PlayerControl player in Main.AllPlayerControls.Where(player => !player.isDummy))
                 {
                     var hexColor = Utils.Color32ToHex(Palette.PlayerColors[player.CurrentOutfit.ColorId]);
@@ -178,24 +218,32 @@ class CommandsPatch
                 }
                 Utils.AddChatPrivate(sb.ToString());
                 break;
-            case "whisper" or "w":
+            case var cmd when cmd == FormatCommandTranslation("Command.Helper.whisper") || cmd == FormatCommandTranslation("Command.Helper.whisper.trim"):
                 if (HandlePlayerArgument(command, subArgs) == true)
                 {
                     if (UseCommandInGame() == true)
                     {
                         var player = cmdTarget;
+                        var msg = string.Join(" ", command[2..].ToArray());
 
-                        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)RpcCalls.SendChat, SendOption.None, player.GetClientId());
-                        messageWriter.Write(string.Join(" ", command[2..].ToArray()));
-                        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
-                        Utils.AddChatPrivate($"{string.Join(" ", command[2..].ToArray())}", overrideName: $"<color=#696969>Sent Private Message to</color> <b>{player.GetPlayerNameAndColor()}</b>");
+                        if (!string.IsNullOrEmpty(msg))
+                        {
+                            MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)RpcCalls.SendChat, SendOption.None, player.GetClientId());
+                            messageWriter.Write(msg);
+                            AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+                            Utils.AddChatPrivate($"{string.Join(" ", command[2..].ToArray())}", overrideName: $"<color=#696969>Sent Private Message to</color> <b>{player.GetPlayerNameAndColor()}</b>");
+                        }
+                        else
+                        {
+                            Utils.AddChatPrivate($"{error}\nUnable to send empty message");
+                        }
                     }
                 }
                 break;
-            case "setprefix":
+            case var cmd when cmd == FormatCommandTranslation("Command.Helper.setprefix"):
                 Main.CommandPrefix.Value = subArgs;
                 break;
-            case "name":
+            case var cmd when cmd == FormatCommandTranslation("Command.Helper.name"):
                 bool hasSet = false;
 
                 if (GameStates.IsHost)
@@ -228,7 +276,7 @@ class CommandsPatch
                     Utils.AddChatPrivate($"Player name has been sent to: {command[1]}");
                 }
                 break;
-            case "kick" or "ban":
+            case var cmd when cmd == FormatCommandTranslation("Command.Helper.kick") || cmd == FormatCommandTranslation("Command.Helper.ban"):
                 if (HandlePlayerArgument(command, subArgs) == true)
                 {
                     if (HandleIsHost(command) == true)
@@ -239,7 +287,7 @@ class CommandsPatch
                     }
                 }
                 break;
-            case "endgame":
+            case var cmd when cmd == FormatCommandTranslation("Command.Helper.endgame"):
                 if (HandleIsHost(command) == true)
                 {
                     if (!GameStates.IsLobby && !GameStates.IsFreePlay)
@@ -259,7 +307,7 @@ class CommandsPatch
                     }
                 }
                 break;
-            case "removeplayer":
+            case var cmd when cmd == FormatCommandTranslation("Command.Helper.removeplayer"):
                 if (!string.IsNullOrEmpty(subArgs))
                 {
                     if (BetterDataManager.RemovePlayer(subArgs) == true)
@@ -272,12 +320,17 @@ class CommandsPatch
                     }
                 }
                 break;
-            case "removeall":
+            case var cmd when cmd == FormatCommandTranslation("Command.Helper.removeall"):
                 BetterDataManager.ClearCheatData();
                 Utils.AddChatPrivate($"All data successfully removed from local <color=#4f92ff>Anti-Cheat</color>!");
                 break;
             default:
-                if (GameStates.IsDev && Main.ReleaseBuildType == ReleaseTypes.Dev)
+                if (Main.myAccountInfo.IsSponsor == true) // use Sponsor check when there is a API
+                {
+                    checkSponsorCommand = true;
+                    break;
+                }
+                else if (GameStates.IsDev && Main.ReleaseBuildType == ReleaseTypes.Dev)
                 {
                     checkDebugCommand = true;
                     break;
@@ -287,19 +340,33 @@ class CommandsPatch
                 break;
         }
 
+        if (checkSponsorCommand)
+        {
+            switch (command[0][1..].ToLower().Trim())
+            {
+                default:
+                    if (GameStates.IsDev && Main.ReleaseBuildType == ReleaseTypes.Dev)
+                    {
+                        checkDebugCommand = true;
+                        break;
+                    }
+                    break;
+            }
+        }
+
 #if DEBUG
         // DeBug Commands
         if (checkDebugCommand)
         {
             switch (command[0][1..].ToLower().Trim())
             {
-                case "getposition":
+                case var cmd when cmd == FormatCommandTranslation("Command.DebugHelper.getposition"):
                     Utils.AddChatPrivate($"Current position: {PlayerControl.LocalPlayer.GetTruePosition()}");
                     break;
-                case "role" or "setrole":
+                case var cmd when cmd == FormatCommandTranslation("Command.DebugHelper.role") || cmd == FormatCommandTranslation("Command.DebugHelper.setrole"):
                     if (HandleIsHost(command) == true)
                     {
-                        if (command[0][1..].ToLower().Trim() == "role")
+                        if (command[0][1..].ToLower().Trim() == FormatCommandTranslation("Command.DebugHelper.role"))
                         {
                             var player = PlayerControl.LocalPlayer;
                             if (subArgs == "")
@@ -312,28 +379,28 @@ class CommandsPatch
                             RoleTypes role;
                             switch (subArgs)
                             {
-                                case "impostor" or "1":
+                                case var arg when arg == Main.GetRoleName()[(int)RoleTypes.Impostor].ToLower() || arg == "1":
                                     role = RoleTypes.Impostor;
                                     break;
-                                case "shapeshifter" or "2":
+                                case var arg when arg == Main.GetRoleName()[(int)RoleTypes.Shapeshifter].ToLower() || arg == "2":
                                     role = RoleTypes.Shapeshifter;
                                     break;
-                                case "phantom" or "3":
+                                case var arg when arg == Main.GetRoleName()[(int)RoleTypes.Phantom].ToLower() || arg == "3":
                                     role = RoleTypes.Phantom;
                                     break;
-                                case "crewmate" or "4":
+                                case var arg when arg == Main.GetRoleName()[(int)RoleTypes.Crewmate].ToLower() || arg == "4":
                                     role = RoleTypes.Crewmate;
                                     break;
-                                case "engineer" or "5":
+                                case var arg when arg == Main.GetRoleName()[(int)RoleTypes.Engineer].ToLower() || arg == "5":
                                     role = RoleTypes.Engineer;
                                     break;
-                                case "scientist" or "6":
+                                case var arg when arg == Main.GetRoleName()[(int)RoleTypes.Scientist].ToLower() || arg == "6":
                                     role = RoleTypes.Scientist;
                                     break;
-                                case "tracker" or "7":
+                                case var arg when arg == Main.GetRoleName()[(int)RoleTypes.Tracker].ToLower() || arg == "7":
                                     role = RoleTypes.Tracker;
                                     break;
-                                case "noisemaker" or "8":
+                                case var arg when arg == Main.GetRoleName()[(int)RoleTypes.Noisemaker].ToLower() || arg == "8":
                                     role = RoleTypes.Noisemaker;
                                     break;
                                 default:
@@ -341,7 +408,7 @@ class CommandsPatch
                                     return;
                             }
                             string RoleHexColor = role is RoleTypes.Impostor or RoleTypes.ImpostorGhost or RoleTypes.Shapeshifter or RoleTypes.Phantom ? "#a60d0d" : "#63bfbf";
-                            Utils.AddChatPrivate($"Set role to <color={RoleHexColor}>{Main.GetRoleName[(int)role]}</color> for the next game!");
+                            Utils.AddChatPrivate($"Set role to <color={RoleHexColor}>{Main.GetRoleName()[(int)role]}</color> for the next game!");
                             RoleManagerPatch.SetPlayerRole[player] = role;
                         }
                         else if (HandlePlayerArgument(command, subArgs) == true)
@@ -362,28 +429,28 @@ class CommandsPatch
                             RoleTypes role;
                             switch (subArgs2)
                             {
-                                case "impostor" or "1":
+                                case var arg when arg == Main.GetRoleName()[(int)RoleTypes.Impostor].ToLower() || arg == "1":
                                     role = RoleTypes.Impostor;
                                     break;
-                                case "shapeshifter" or "2":
+                                case var arg when arg == Main.GetRoleName()[(int)RoleTypes.Shapeshifter].ToLower() || arg == "2":
                                     role = RoleTypes.Shapeshifter;
                                     break;
-                                case "phantom" or "3":
+                                case var arg when arg == Main.GetRoleName()[(int)RoleTypes.Phantom].ToLower() || arg == "3":
                                     role = RoleTypes.Phantom;
                                     break;
-                                case "crewmate" or "4":
+                                case var arg when arg == Main.GetRoleName()[(int)RoleTypes.Crewmate].ToLower() || arg == "4":
                                     role = RoleTypes.Crewmate;
                                     break;
-                                case "engineer" or "5":
+                                case var arg when arg == Main.GetRoleName()[(int)RoleTypes.Engineer].ToLower() || arg == "5":
                                     role = RoleTypes.Engineer;
                                     break;
-                                case "scientist" or "6":
+                                case var arg when arg == Main.GetRoleName()[(int)RoleTypes.Scientist].ToLower() || arg == "6":
                                     role = RoleTypes.Scientist;
                                     break;
-                                case "tracker" or "7":
+                                case var arg when arg == Main.GetRoleName()[(int)RoleTypes.Tracker].ToLower() || arg == "7":
                                     role = RoleTypes.Tracker;
                                     break;
-                                case "noisemaker" or "8":
+                                case var arg when arg == Main.GetRoleName()[(int)RoleTypes.Noisemaker].ToLower() || arg == "8":
                                     role = RoleTypes.Noisemaker;
                                     break;
                                 default:
@@ -391,31 +458,31 @@ class CommandsPatch
                                     return;
                             }
                             string RoleHexColor = role is RoleTypes.Impostor or RoleTypes.ImpostorGhost or RoleTypes.Shapeshifter or RoleTypes.Phantom ? "#a60d0d" : "#63bfbf";
-                            Utils.AddChatPrivate($"Set <color={hexColor}><b>{player?.Data?.PlayerName}</b></color> role to <color={RoleHexColor}>{Main.GetRoleName[(int)role]}</color> for the next game!");
+                            Utils.AddChatPrivate($"Set <color={hexColor}><b>{player?.Data?.PlayerName}</b></color> role to <color={RoleHexColor}>{Main.GetRoleName()[(int)role]}</color> for the next game!");
                             RoleManagerPatch.SetPlayerRole[player] = role;
                         }
                     }
                     break;
-                case "syncallnames":
+                case var cmd when cmd == FormatCommandTranslation("Command.DebugHelper.syncallnames"):
                     if (HandleIsHost(command) == true)
                     {
                         RPC.SyncAllNames(force: true);
                         Utils.AddChatPrivate("<color=#0dff00>All player names have been updated and synced!</color>");
                     }
                     break;
-                case "suicide":
+                case var cmd when cmd == FormatCommandTranslation("Command.DebugHelper.suicide"):
                     if (HandleIsHost(command) == true)
                     {
                         PlayerControl.LocalPlayer.MurderPlayer(PlayerControl.LocalPlayer, MurderResultFlags.Succeeded);
                     }
                     break;
-                case "exile":
+                case var cmd when cmd == FormatCommandTranslation("Command.DebugHelper.exile"):
                     if (HandleIsHost(command) == true)
                     {
                         PlayerControl.LocalPlayer.Exiled();
                     }
                     break;
-                case "revive":
+                case var cmd when cmd == FormatCommandTranslation("Command.DebugHelper.revive"):
                     if (HandleIsHost(command) == true)
                     {
                         PlayerControl.LocalPlayer.Revive();
@@ -454,9 +521,9 @@ class CommandsPatch
         if (flag)
             flag3 = Main.AllPlayerControls.ToArray().Any(player => !player.isDummy && player.Data.PlayerId == int.Parse(subArg.Where(char.IsDigit).ToArray()));
 
-        if (flag3 == true)
+        if (flag3 == true && int.TryParse(subArg, out var num))
         {
-            cmdTarget = Utils.PlayerFromPlayerId(int.Parse(subArg));
+            cmdTarget = Utils.PlayerFromPlayerId(num);
             return true;
         }
         else
@@ -514,6 +581,11 @@ class CommandsPatch
     [HarmonyPrefix]
     public static bool SendChat_Prefix(ChatController __instance)
     {
+        if (!_enabled)
+        {
+            return true;
+        }
+
         string text = __instance.freeChatField.textArea.text;
 
         if (string.IsNullOrEmpty(text) || text.Length <= 1 || text[0].ToString() != Main.CommandPrefix.Value || 3f - __instance.timeSinceLastMessage > 0f)
@@ -587,6 +659,13 @@ class CommandsPatch
     [HarmonyPostfix]
     public static void Update_Postfix(ChatController __instance)
     {
+        if (!_enabled)
+        {
+            commandText.GetComponent<TextMeshPro>().text = string.Empty;
+            commandInfo.GetComponent<TextMeshPro>().text = string.Empty;
+            return;
+        }
+
         string text = __instance.freeChatField.textArea.text;
 
         if (commandText != null && commandInfo != null)
@@ -657,10 +736,15 @@ class CommandsPatch
 
     public static string GetClosestCommand(string typedCommand)
     {
-        var closestCommand = CommandListHelper.FirstOrDefault(c => c.StartsWith(typedCommand, StringComparison.OrdinalIgnoreCase));
+        var closestCommand = CommandListHelper().FirstOrDefault(c => c.StartsWith(typedCommand, StringComparison.OrdinalIgnoreCase));
 
-        if (closestCommand == null && GameStates.IsDev && Main.ReleaseBuildType == ReleaseTypes.Dev)
-            closestCommand = DebugCommandListHelper.FirstOrDefault(c => c.StartsWith(typedCommand, StringComparison.OrdinalIgnoreCase));
+        if (GameStates.IsDev && Main.ReleaseBuildType == ReleaseTypes.Dev)
+            closestCommand ??= DebugCommandListHelper().FirstOrDefault(c => c.StartsWith(typedCommand, StringComparison.OrdinalIgnoreCase));
+
+        if (Main.myAccountInfo.IsSponsor == true)
+        {
+            closestCommand ??= SponsorCommandListHelper().FirstOrDefault(c => c.StartsWith(typedCommand, StringComparison.OrdinalIgnoreCase));
+        }
 
         return closestCommand ?? string.Empty;
     }

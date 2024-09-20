@@ -153,68 +153,74 @@ internal static class RPC
     {
         if (player == null || player.IsLocalPlayer() || player.Data == null) return;
 
-        var flag = Enum.IsDefined(typeof(CustomRPC), unchecked(callId)) || Enum.IsDefined(typeof(RpcCalls), callId);
-
-        if (!flag && player.IsHost())
+        if (Enum.IsDefined(typeof(CustomRPC), (int)unchecked(callId)))
         {
-            var BAU = "<color=#278720>♻</color><color=#0ed400><b>BetterAmongUs</b></color><color=#278720>♻</color>";
-            Utils.DisconnectSelf($"{BAU} does not support\n<b>Modded Lobbies</b>!");
+            MessageReader reader = MessageReader.Get(oldReader);
+
+            switch (callId)
+            {
+                case (byte)CustomRPC.BetterCheck:
+                    {
+                        var SetBetterUser = reader.ReadBoolean();
+                        var IsBetterHost = reader.ReadBoolean();
+                        var Signature = reader.ReadString();
+                        var Version = reader.ReadString();
+                        var IsVerified = Signature == Main.modSignature;
+                        if (!player.IsHost() && IsBetterHost)
+                        {
+                            BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((CustomRPC)callId)} called as BetterHost");
+                            break;
+                        }
+
+                        if (string.IsNullOrEmpty(Signature) || string.IsNullOrEmpty(Version))
+                        {
+                            BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((CustomRPC)callId)} called with invalid info");
+                            break;
+                        }
+
+                        player.BetterData().IsBetterUser = SetBetterUser;
+                        player.BetterData().IsBetterHost = IsBetterHost;
+
+                        if (IsVerified)
+                        {
+                            player.BetterData().IsVerifiedBetterUser = true;
+                        }
+
+                        Logger.Log($"Received better user RPC from: {player.Data.PlayerName}:{player.Data.FriendCode}:{Utils.GetHashPuid(player)} - " +
+                            $"BetterUser: {SetBetterUser} - " +
+                            $"BetterHost: {IsBetterHost} - " +
+                            $"Version: {Version} - " +
+                            $"Verified: {IsVerified} - " +
+                            $"Signature: {Signature}");
+
+                        SyncAllNames(force: true);
+                    }
+                    break;
+                    /*
+                case (byte)CustomRPC.VersionCheck or (byte)CustomRPC.RequestRetryVersionCheck:
+                    if (player.IsHost())
+                    {
+                        player.BetterData().IsTOHEHost = true;
+                    }
+                    break;
+                    */
+            }
         }
 
-        if (!Enum.IsDefined(typeof(CustomRPC), (int)unchecked(callId))) return;
-
-        MessageReader reader = MessageReader.Get(oldReader);
-
-        switch (callId)
+        try
         {
-            case (byte)CustomRPC.BetterCheck:
+            if (!GameStates.IsTOHEHostLobby)
+            {
+                var flag = Enum.IsDefined(typeof(CustomRPC), (int)callId) || Enum.IsDefined(typeof(RpcCalls), callId);
+
+                if (!flag && player.IsHost())
                 {
-                    var SetBetterUser = reader.ReadBoolean();
-                    var IsBetterHost = reader.ReadBoolean();
-                    var Signature = reader.ReadString();
-                    var Version = reader.ReadString();
-                    var IsVerified = Signature == Main.modSignature;
-                    if (!player.IsHost() && IsBetterHost)
-                    {
-                        BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((CustomRPC)callId)} called as BetterHost");
-                        break;
-                    }
-
-                    if (string.IsNullOrEmpty(Signature) || string.IsNullOrEmpty(Version))
-                    {
-                        BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((CustomRPC)callId)} called with invalid info");
-                        break;
-                    }
-
-                    player.BetterData().IsBetterUser = SetBetterUser;
-                    player.BetterData().IsBetterHost = IsBetterHost;
-
-                    if (IsVerified)
-                    {
-                        player.BetterData().IsVerifiedBetterUser = true;
-                    }
-
-                    Logger.Log($"Received better user RPC from: {player.Data.PlayerName}:{player.Data.FriendCode}:{Utils.GetHashPuid(player)} - " +
-                        $"BetterUser: {SetBetterUser} - " +
-                        $"BetterHost: {IsBetterHost} - " +
-                        $"Version: {Version} - " +
-                        $"Verified: {IsVerified} - " +
-                        $"Signature: {Signature}");
-
-                    SyncAllNames(force: true);
-                }
-                break;
-                /*
-            case (byte)CustomRPC.VersionCheck or (byte)CustomRPC.RequestRetryVersionCheck:
-                if (player.IsHost())
-                {
-                    player.BetterData().IsTOHEHost = true;
                     var BAU = "<color=#278720>♻</color><color=#0ed400><b>BetterAmongUs</b></color><color=#278720>♻</color>";
-                    Utils.DisconnectSelf($"{BAU} does not support <color=#ff9cdc><b>TOHE</b></color>");
+                    Utils.DisconnectSelf($"{BAU} does not support\n<b>Modded Lobbies</b>!");
                 }
-                break;
-                */
+            }
         }
+        catch { }
     }
 
     public static void HandleRPC(PlayerControl player, byte callId, MessageReader oldReader)
@@ -237,7 +243,7 @@ internal static class RPC
                 {
                     if (text.ToLower() == "/allow")
                     {
-                        CommandsPatch.Permission = player;
+                        CommandsPatch.Permission = player.Data;
                         BetterNotificationManager.Notify($"{player.GetPlayerNameAndColor()} has granted permission!");
                     }
                 }

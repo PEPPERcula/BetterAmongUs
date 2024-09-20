@@ -7,10 +7,12 @@ namespace BetterAmongUs;
 
 class BetterNotificationManager
 {
-    public static GameObject BAUNotificationManagerObj;
+    public static GameObject? BAUNotificationManagerObj;
+    public static TextMeshPro? NameText;
+    public static TextMeshPro? TextArea => BAUNotificationManagerObj.transform.Find("Sizer/ChatText (TMP)").GetComponent<TextMeshPro>();
     public static Dictionary<string, float> NotifyQueue = [];
     public static float showTime = 0f;
-    private static Camera localCamera;
+    private static Camera? localCamera;
     public static bool Notifying = false;
 
     public static void Notify(string text, float Time = 5f)
@@ -29,7 +31,8 @@ class BetterNotificationManager
 
             showTime = Time;
             BAUNotificationManagerObj.SetActive(true);
-            BAUNotificationManagerObj.transform.Find("Sizer/ChatText (TMP)").GetComponent<TextMeshPro>().text = text;
+            NameText.text = $"<color=#00ff44>{Translator.GetString("SystemNotification")}</color>";
+            TextArea.text = text;
             SoundManager.Instance.PlaySound(DestroyableSingleton<HudManager>.Instance.TaskCompleteSound, false, 1f);
             Notifying = true;
         }
@@ -43,12 +46,19 @@ class BetterNotificationManager
             Reason = string.Concat('*').Repeat(reason.Length);
         }
 
-        string text = $"Player: <color=#0097b5>{player?.BetterData().RealName}</color> Has been detected doing an unauthorized action: <b><color=#fc0000>{Reason}</color></b>";
-        string rawText = $"Player: <color=#0097b5>{player?.BetterData().RealName}</color> Has been detected doing an unauthorized action: <b><color=#fc0000>{reason}</color></b>";
+        string playerDetected = Translator.GetString("AntiCheat.PlayerDetected");
+        string unauthorizedAction = Translator.GetString("AntiCheat.UnauthorizedAction");
+        string byAntiCheat = Translator.GetString("AntiCheat.ByAntiCheat");
+        string playerDetectedLog = Translator.GetString("AntiCheat.PlayerDetected", console: true);
+        string unauthorizedActionLog = Translator.GetString("AntiCheat.UnauthorizedAction", console: true);
+
+        string text = $"{playerDetected}: <color=#0097b5>{player?.BetterData().RealName}</color> {unauthorizedAction}: <b><color=#fc0000>{Reason}</color></b>";
+        string rawText = $"{playerDetectedLog}: <color=#0097b5>{player?.BetterData().RealName}</color> {unauthorizedActionLog}: <b><color=#fc0000>{reason}</color></b>";
+
         if (newText != "")
         {
-            text = $"Player: <color=#0097b5>{player?.BetterData().RealName}</color> " + newText + $": <b><color=#fc0000>{Reason}</color></b>";
-            rawText = $"Player: <color=#0097b5>{player?.BetterData().RealName}</color> " + newText + $": <b><color=#fc0000>{reason}</color></b>";
+            text = $"{playerDetected}: <color=#0097b5>{player?.BetterData().RealName}</color> " + newText + $": <b><color=#fc0000>{Reason}</color></b>";
+            rawText = $"{playerDetectedLog}: <color=#0097b5>{player?.BetterData().RealName}</color> " + newText + $": <b><color=#fc0000>{reason}</color></b>";
         }
 
         if (!AntiCheat.PlayerData.ContainsKey(Utils.GetHashPuid(player)))
@@ -62,9 +72,11 @@ class BetterNotificationManager
 
         if (GameStates.IsHost && kickPlayer)
         {
-            player.Kick(true, "{0} " + $"by <color=#4f92ff>Anti-Cheat</color>!\n Reason: <color=#fc0000>{Reason}</color>", true);
+            string kickMessage = string.Format(Translator.GetString("AntiCheat.KickMessage"), byAntiCheat, Reason);
+            player.Kick(true, kickMessage, true);
         }
     }
+
 
     public static void Update()
     {
