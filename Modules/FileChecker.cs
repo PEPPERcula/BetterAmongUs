@@ -69,17 +69,7 @@ class FileChecker
                 }
             }
 
-            GameObject SignInStatus = GameObject.Find("SignInStatus");
-
-            if (SignInStatus != null)
-            {
-                SignInStatusComponent SignInStatusCom = SignInStatus.GetComponent<SignInStatusComponent>();
-                SignInStatusCom?.SetOffline();
-
-                GameObject.Find("Account_CTA")?.SetActive(false);
-                GameObject.Find("AccountTab/GameHeader/LeftSide/FriendCode")?.SetActive(false);
-                if (GameObject.Find("Stats_CTA") != null) GameObject.Find("Stats_CTA").transform.position = new Vector2(1.7741f, -0.2442f);
-            }
+            Utils.DisconnectAccountFromOnline();
 
             SoundManager.instance?.ChangeMusicVolume(0);
             return;

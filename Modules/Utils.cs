@@ -1,4 +1,5 @@
-﻿using AmongUs.GameOptions;
+﻿using AmongUs.Data;
+using AmongUs.GameOptions;
 using InnerNet;
 using Sentry.Internal.Extensions;
 using System.Reflection;
@@ -167,6 +168,21 @@ public static class Utils
         byte b = byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
 
         return new Color32(r, g, b, 255);
+    }
+
+    public static void DisconnectAccountFromOnline(bool apiError = false)
+    {
+        if (GameStates.IsInGame)
+        {
+            AmongUsClient.Instance.ExitGame(DisconnectReasons.ExitGame);
+        }
+
+        DataManager.Player.Account.LoginStatus = EOSManager.AccountLoginStatus.Offline;
+        DataManager.Player.Save();
+        if (apiError)
+        {
+            ShowPopUp(Translator.GetString("DataBaseConnect.InitFailure"), true);
+        }
     }
 
     // Disconnect client

@@ -12,7 +12,6 @@ internal class MainMenuPatch
     private static PassiveButton creditsButton;
     private static PassiveButton gitHubButton;
     private static PassiveButton discordButton;
-    private static readonly string OnlineMsg = "Online access has been temporarily disabled!";
 
     // Handle FileChecker
     [HarmonyPatch(typeof(AccountManager))]
@@ -25,10 +24,10 @@ internal class MainMenuPatch
             if (!FileChecker.HasShownPopUp && FileChecker.CheckIfUnauthorizedFiles())
             {
                 var lines = "<color=#ebbd34>----------------------------------------------------------------------------------------------</color>";
-                var icon = "<color=#278720>♻</color>";
-                var warning = "<color=#e60000>⚠</color>";
+                var icon = $"<color=#278720>{Translator.GetString("BAUMark")}</color>";
+                var warning = $"<color=#e60000>{Translator.GetString("WarningIcon")}</color>";
                 FileChecker.HasShownPopUp = true;
-                Utils.ShowPopUp($"{lines}\n<b><size=200%>{icon}<color=#0ed400>Better Among Us</color>{icon}</size></b>\n<color=#757575><u><size=150%>{warning}<color=#8f0000>{FileChecker.UnauthorizedReason}</color>{warning}</size></u>\n\n<color=white>\n{OnlineMsg}\n{lines}");
+                Utils.ShowPopUp($"{lines}\n<b><size=200%>{icon}<color=#0ed400>{Translator.GetString("BetterAmongUs")}</color>{icon}</size></b>\n<color=#757575><u><size=150%>{warning}<color=#8f0000>{FileChecker.UnauthorizedReason}</color>{warning}</size></u>\n\n<color=white>\n{Translator.GetString("FileChecker.OnlineMsg")}\n{lines}");
             }
         }
     }

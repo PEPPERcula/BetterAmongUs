@@ -1,7 +1,9 @@
 {
   "LanguageID": "0",
   "BAU": "BetterAmongUs",
+  "BetterAmongUs": "Better Among Us",
   "BAUMark": "♻",
+  "WarningIcon": "⚠",
   "Host": "Host",
   "Kills": "Kills",
   "Tasks": "Tasks",
@@ -97,5 +99,5 @@
   "Game.Summary.Result.NoSurvivors": "No Survivors",
 
   "DataBaseConnect.InitFailure": "Error while connecting to BAU API, please check your network connection and retry login!",
-  "DataBaseConnect.InitFailurePublic": "Error while connecting to BAU API, this could be caused by your internet connection. And so user perks are not available, you may continue to play as usual without these.",
+  "DataBaseConnect.InitFailurePublic": "Error while connecting to BAU API, this could be caused by your internet connection. And so user perks are not available, you may continue to play as usual without these."
 }

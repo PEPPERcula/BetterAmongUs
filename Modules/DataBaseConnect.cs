@@ -67,7 +67,7 @@ public class DataBaseConnect
 
         if (shouldDisconnect)
         {
-            DisconnectUser();
+            Utils.DisconnectAccountFromOnline(true);
         }
     }
 
@@ -79,21 +79,9 @@ public class DataBaseConnect
         }
         else
         {
-            DestroyableSingleton<DisconnectPopup>.Instance.ShowCustom(Translator.GetString("DataBaseConnect.InitFailurePublic"));
+            Utils.ShowPopUp(Translator.GetString("DataBaseConnect.InitFailurePublic"), true);
         }
         return false;
-    }
-
-    private static void DisconnectUser()
-    {
-        if (AmongUsClient.Instance.mode != InnerNet.MatchMakerModes.None)
-        {
-            AmongUsClient.Instance.ExitGame(DisconnectReasons.ExitGame);
-        }
-
-        DataManager.Player.Account.LoginStatus = EOSManager.AccountLoginStatus.Offline;
-        DataManager.Player.Save();
-        DestroyableSingleton<DisconnectPopup>.Instance.ShowCustom(Translator.GetString("DataBaseConnect.InitFailure"));
     }
 
     private static string GetToken()
