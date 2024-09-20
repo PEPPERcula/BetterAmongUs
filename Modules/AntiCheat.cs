@@ -282,14 +282,17 @@ class AntiCheat
                     if (level + 1 > BetterGameSettings.DetectedLevelAbove.GetInt())
                     {
                         BetterNotificationManager.NotifyCheat(player, string.Format(Translator.GetString("InvalidLevelRPC"), level));
-                        Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {level > BetterGameSettings.DetectedLevelAbove.GetInt()}");
+                        Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {level > BetterGameSettings.DetectedLevelAbove.GetInt()} - {level} > {BetterGameSettings.DetectedLevelAbove.GetInt()}");
                     }
 
                     else if (level > 1000000)
                     {
                         var betterData = player.BetterData();
-                        player.Kick(false, "{0}" + $" due to {level} being invalid level", bypassDataCheck: true);
-                        betterData.AntiCheatInfo.BannedByAntiCheat = true;
+                        if (GameStates.IsHost)
+                        {
+                            player.Kick(false, "{0}" + $" due to {level} being invalid level", bypassDataCheck: true);
+                            betterData.AntiCheatInfo.BannedByAntiCheat = true;
+                        }
                     }
                 }
                 return;
@@ -674,12 +677,16 @@ class AntiCheat
             {
                 if (callId is (byte)RpcCalls.CheckName or (byte)RpcCalls.SetLevel)
                 {
-                    BetterNotificationManager.NotifyCheat(player, string.Format(Translator.GetString("AntiCheat.InvalidSetRPC"), Enum.GetName((RpcCalls)callId)));
-                    Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {player.DataIsCollected() == true}");
+                    if (callId is (byte)RpcCalls.SetLevel)
+                    {
+                        BetterNotificationManager.NotifyCheat(player, string.Format(Translator.GetString("AntiCheat.InvalidSetRPC"), Enum.GetName((RpcCalls)callId)));
+                        Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: Data - {player.DataIsCollected() == true}");
+                    }
 
                     if (callId is (byte)RpcCalls.CheckName)
                     {
                         var name = reader.ReadString();
+                        BetterNotificationManager.NotifyCheat(player, string.Format(Translator.GetString("AntiCheat.InvalidSetRPC"), Enum.GetName((RpcCalls)callId)));
                         Utils.AddChatPrivate($"{player.GetPlayerNameAndColor()} Has tried to change their name to '{name}' but has been undone!");
                         Logger.LogCheat($"{player.BetterData().RealName} Has tried to change their name to '{name}' but has been undone!");
                     }
