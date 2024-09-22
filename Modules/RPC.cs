@@ -209,7 +209,7 @@ internal static class RPC
 
         try
         {
-            if (!GameStates.IsTOHEHostLobby)
+            if (!GameStates.IsTOHEHostLobby && callId is not unchecked((byte)CustomRPC.Sicko) or unchecked((byte)CustomRPC.AUM) or (byte)CustomRPC.AUMChat)
             {
                 var flag = Enum.IsDefined(typeof(CustomRPC), (int)callId) || Enum.IsDefined(typeof(RpcCalls), callId);
 
