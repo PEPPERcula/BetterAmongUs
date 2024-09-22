@@ -623,6 +623,7 @@ class AntiCheat
 
             if (callId is (byte)RpcCalls.SendChatNote)
             {
+                _ = reader.ReadByte();
                 var type = reader.ReadByte();
 
                 if (!GameStates.IsMeeting || (ChatNoteTypes)type == ChatNoteTypes.DidVote && player.BetterData().AntiCheatInfo.ChatDidVote)
