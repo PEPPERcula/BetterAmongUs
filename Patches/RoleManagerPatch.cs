@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using HarmonyLib;
 using Hazel;
+using static Il2CppSystem.Globalization.CultureInfo;
 
 namespace BetterAmongUs.Patches;
 
@@ -276,8 +277,9 @@ public class RoleManagerPatch
         if (NumImpostors > Main.AllPlayerControls.Length)
             NumImpostors = Main.AllPlayerControls.Length;
 
-        List<PlayerControl> Impostors = [];
-        List<PlayerControl> Crewmates = [];
+        List<NetworkedPlayerInfo> Impostors = [];
+        List<NetworkedPlayerInfo> Crewmates = [];
+        List<NetworkedPlayerInfo> CrewAndImps() => [.. Impostors, .. Crewmates];
 
         // Set imp from settings
         int[] betterImpostorSettings =
@@ -300,7 +302,7 @@ public class RoleManagerPatch
                 {
                     if (Impostors.Count < NumImpostors)
                     {
-                        Impostors.Add(player);
+                        Impostors.Add(player.Data);
                         Logger.LogPrivate($"Settings Assigned {Utils.GetRoleName(RoleTypes.Impostor)} role to {player.Data.PlayerName}", "RoleManager");
                     }
                 }
@@ -320,14 +322,14 @@ public class RoleManagerPatch
                 {
                     if (Impostors.Count < NumImpostors)
                     {
-                        Impostors.Add(player);
+                        Impostors.Add(player.Data);
                         Logger.LogPrivate($"Override Assigned {Utils.GetRoleName(RoleTypes.Impostor)} role to {player.Data.PlayerName}", "RoleManager");
                     }
                     else continue;
                 }
                 else if (role is RoleTypes.Engineer)
                 {
-                    Crewmates.Add(player);
+                    Crewmates.Add(player.Data);
                     Logger.LogPrivate($"Override Assigned {Utils.GetRoleName(RoleTypes.Engineer)} role to {player.Data.PlayerName}", "RoleManager");
                 }
             }
@@ -336,7 +338,7 @@ public class RoleManagerPatch
 
         // Get players in random order
         List<PlayerControl> players = Main.AllPlayerControls
-            .Where(player => !Impostors.Contains(player) && !Crewmates.Contains(player))
+            .Where(player => !CrewAndImps().Contains(player.Data))
             .ToList();
 
         int n = players.Count;
@@ -356,29 +358,25 @@ public class RoleManagerPatch
 
             if (Impostors.Count < NumImpostors)
             {
-                if (!Crewmates.Contains(pc))
-                {
-                    Impostors.Add(pc);
-                    Logger.LogPrivate($"Assigned {Utils.GetRoleName(RoleTypes.Impostor)} role to {pc.Data.PlayerName}", "RoleManager");
-                }
+                Impostors.Add(pc.Data);
+                Logger.LogPrivate($"Assigned {Utils.GetRoleName(RoleTypes.Impostor)} role to {pc.Data.PlayerName}", "RoleManager");
             }
             else
             {
-                if (!Impostors.Contains(pc))
-                {
-                    Crewmates.Add(pc);
-                    Logger.LogPrivate($"Assigned {Utils.GetRoleName(RoleTypes.Engineer)} role to {pc.Data.PlayerName}", "RoleManager");
-                }
+                Crewmates.Add(pc.Data);
+                Logger.LogPrivate($"Assigned {Utils.GetRoleName(RoleTypes.Engineer)} role to {pc.Data.PlayerName}", "RoleManager");
             }
         }
 
-        foreach (var player in Impostors)
+        foreach (var data in Impostors)
         {
+            var player = Utils.PlayerFromPlayerId(data.PlayerId);
             player.RpcSetRole(RoleTypes.Impostor);
         }
 
-        foreach (var player in Crewmates)
+        foreach (var data in Crewmates)
         {
+            var player = Utils.PlayerFromPlayerId(data.PlayerId);
             player.RpcSetRole(RoleTypes.Engineer);
         }
 
