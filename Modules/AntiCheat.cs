@@ -281,7 +281,7 @@ class AntiCheat
 
                     if (level + 1 > BetterGameSettings.DetectedLevelAbove.GetInt())
                     {
-                        BetterNotificationManager.NotifyCheat(player, string.Format(Translator.GetString("InvalidLevelRPC"), level));
+                        BetterNotificationManager.NotifyCheat(player, string.Format(Translator.GetString("AntiCheat.InvalidLevelRPC"), level));
                         Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {level > BetterGameSettings.DetectedLevelAbove.GetInt()} - {level} > {BetterGameSettings.DetectedLevelAbove.GetInt()}");
                     }
 
@@ -621,6 +621,22 @@ class AntiCheat
                 }
             }
 
+            if (callId is (byte)RpcCalls.SendChatNote)
+            {
+                var type = reader.ReadByte();
+
+                if (!GameStates.IsMeeting || (ChatNoteTypes)type == ChatNoteTypes.DidVote && player.BetterData().AntiCheatInfo.ChatDidVote)
+                {
+                    BetterNotificationManager.NotifyCheat(player, string.Format(Translator.GetString("AntiCheat.InvalidActionRPC"), Enum.GetName((RpcCalls)callId)));
+                    Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {!GameStates.IsMeeting} || {(ChatNoteTypes)type == ChatNoteTypes.DidVote} && {player.BetterData().AntiCheatInfo.ChatDidVote}");
+                }
+
+                if ((ChatNoteTypes)type == ChatNoteTypes.DidVote)
+                {
+                    player.BetterData().AntiCheatInfo.ChatDidVote = true;
+                }
+            }
+
             if (callId is (byte)RpcCalls.Shapeshift)
             {
                 var target = reader.ReadNetObject<PlayerControl>();
@@ -713,6 +729,7 @@ class AntiCheat
             {
                 if (callId is (byte)RpcCalls.StartMeeting
                     or (byte)RpcCalls.ReportDeadBody
+                    or (byte)RpcCalls.SendChatNote
                     or (byte)RpcCalls.CloseMeeting
                     or (byte)RpcCalls.Exiled
                     or (byte)RpcCalls.CastVote

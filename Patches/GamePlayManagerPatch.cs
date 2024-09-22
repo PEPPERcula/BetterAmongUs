@@ -150,11 +150,11 @@ class GamePlayManager
             __instance.StartButton.gameObject.SetActive(true);
             if (__instance.startState == GameStartManager.StartingStates.Countdown)
             {
-                __instance.StartButton.buttonText.text = string.Format("Cancel: {0}", (int)__instance.countDownTimer + 1);
+                __instance.StartButton.buttonText.text = string.Format("{0}: {1}", Translator.GetString(StringNames.Cancel),(int)__instance.countDownTimer + 1);
             }
             else
             {
-                __instance.StartButton.buttonText.text = "Start Game";
+                __instance.StartButton.buttonText.text = Translator.GetString(StringNames.StartLabel);
             }
         }
         [HarmonyPatch(nameof(GameStartManager.BeginGame))]

@@ -51,7 +51,7 @@ public class ClientPatch
         [HarmonyPostfix]
         public static void StartInitialLoginFlow_Postfix(EOSManager __instance)
         {
-            __instance.StartCoroutine(DataBaseConnect.Init());
+            // __instance.StartCoroutine(DataBaseConnect.Init());
         }
     }
     // Log game exit
