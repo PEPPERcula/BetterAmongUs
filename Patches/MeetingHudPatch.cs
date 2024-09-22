@@ -204,6 +204,19 @@ class MeetingHudUpdatePatch
     }
 }
 
+[HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.ClearVote))]
+class MeetingHud_ClearVotePatch
+{
+    public static void Postfix()
+    {
+        // Clear info for Anti-Cheat
+        foreach (var player in Main.AllPlayerControls)
+        {
+            player.BetterData().AntiCheatInfo.ChatDidVote = false;
+        }
+    }
+}
+
 [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.OnDestroy))]
 class MeetingHud_OnDestroyPatch
 {
