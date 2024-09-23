@@ -17,6 +17,7 @@ public static class PlayerControlDataExtension
         public bool IsVerifiedBetterUser { get; set; } = false;
         public bool IsBetterHost { get; set; } = false;
         public bool IsTOHEHost { get; set; } = false;
+        public bool HasBeenKicked { get; set; } = false;
 
         // Track Game Info
         public DisconnectReasons DisconnectReason { get; set; } = DisconnectReasons.Unknown;

@@ -35,18 +35,19 @@ public static class OnPlayerJoinedPatch
 {
     public static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData client)
     {
-        var player = Utils.PlayerFromClientId(client.Id);
         PlayerControlPatch.infotime = 0f;
-
-        if (player != null)
-        {
-            player.BetterData().ClearData();
-        }
 
         _ = new LateTask(() =>
         {
             if (GameStates.IsInGame)
             {
+                var player = Utils.PlayerFromClientId(client.Id);
+
+                if (player != null)
+                {
+                    player.BetterData().ClearData();
+                }
+
                 // Send Better Among Us Check RPC
                 RPC.SendBetterCheck();
 
@@ -68,7 +69,7 @@ public static class OnPlayerJoinedPatch
                                 if (!string.IsNullOrEmpty(player.Data.FriendCode) && text.Contains(player.Data.FriendCode)
                                     || !string.IsNullOrEmpty(Utils.GetHashPuid(player)) && text.Contains(Utils.GetHashPuid(player)))
                                 {
-                                    player.Kick(true, Translator.GetString("AntiCheat.BanPlayerListMessage"));
+                                    player.Kick(true, Translator.GetString("AntiCheat.BanPlayerListMessage"), bypassDataCheck: true);
                                     break;
                                 }
                             }
@@ -103,7 +104,7 @@ public static class OnPlayerJoinedPatch
 
                         if (!string.IsNullOrEmpty(normalizedPlayerName) && isNameBanned)
                         {
-                            player.Kick(false, Translator.GetString("AntiCheat.BanNameListMessage"));
+                            player.Kick(false, Translator.GetString("AntiCheat.BanNameListMessage"), bypassDataCheck: true);
                         }
                     }
                     catch { }
@@ -139,7 +140,7 @@ class GameDataShowNotificationPatch
 {
     public static void BetterShowNotification(NetworkedPlayerInfo playerData, DisconnectReasons reason = DisconnectReasons.Unknown, string forceReasonText = "")
     {
-        if (playerData.BetterData().AntiCheatInfo.BannedByAntiCheat) return;
+        if (playerData.BetterData().AntiCheatInfo.BannedByAntiCheat || playerData.BetterData().HasBeenKicked) return;
 
         string playerName = playerData.BetterData().RealName;
 

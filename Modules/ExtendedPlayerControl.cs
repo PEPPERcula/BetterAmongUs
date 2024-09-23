@@ -22,12 +22,7 @@ static class ExtendedPlayerControl
         }
     }
     // Get players client id
-    public static int GetClientId(this PlayerControl player)
-    {
-        if (player == null) return -1;
-        var client = player.GetClient();
-        return client == null ? -1 : client.Id;
-    }
+    public static int GetClientId(this PlayerControl player) => player?.GetClient()?.Id != null ? player.GetClient().Id : -1;
     // Get player name with outfit color
     public static string GetPlayerNameAndColor(this PlayerControl player)
     {
@@ -103,7 +98,7 @@ static class ExtendedPlayerControl
     {
         var Ban = ban;
 
-        if (!GameStates.IsHost || PlayerControl.LocalPlayer == player || !player.DataIsCollected() && !bypassDataCheck || player.IsHost() || player.isDummy)
+        if (!GameStates.IsHost || player.IsLocalPlayer() || !player.DataIsCollected() && !bypassDataCheck || player.IsHost() || player.isDummy)
         {
             return;
         }
@@ -125,6 +120,7 @@ static class ExtendedPlayerControl
 
         AmongUsClient.Instance.KickPlayer(player.GetClientId(), Ban);
 
+        player.BetterData().HasBeenKicked = true;
         player.BetterData().AntiCheatInfo.BannedByAntiCheat = AntiCheatBan;
     }
     // Set color outline on player
