@@ -107,137 +107,88 @@ class ChatPatch
             }
         }
 
+        // Add extra information to chat bubble
         [HarmonyPatch(nameof(ChatController.AddChat))]
-        [HarmonyPrefix]
-        [HarmonyPriority(Priority.First)]
-        public static bool AddChat_Prefix(ChatController __instance, [HarmonyArgument(0)] PlayerControl sourcePlayer, [HarmonyArgument(1)] string chatText)
+        [HarmonyPostfix]
+        public static void AddChat_Postfix(ChatController __instance, [HarmonyArgument(0)] PlayerControl sourcePlayer, [HarmonyArgument(1)] string chatText)
         {
-            bool censor = false;
-            if (!sourcePlayer || !PlayerControl.LocalPlayer)
+            ChatBubble Get() => __instance.chatBubblePool.activeChildren.ToArray()
+                .Select(c => c.GetComponent<ChatBubble>())
+                .Last();
+
+            ChatBubble chatBubble = Get();
+            StringBuilder sbTag = new StringBuilder();
+            StringBuilder sbInfo = new StringBuilder();
+
+            string hashPuid = Utils.GetHashPuid(sourcePlayer);
+            string friendCode = sourcePlayer.Data.FriendCode;
+            string playerName = sourcePlayer.Data.PlayerName;
+            string Role = $"<size=75%><color={sourcePlayer.GetTeamHexColor()}>{sourcePlayer.GetRoleName()}</color></size>+++";
+
+            if (GameStates.IsLobby && !GameStates.IsFreePlay)
             {
-                return false;
+                Role = "";
+
+                if (sourcePlayer.IsDev())
+                    sbTag.Append($"<color=#0088ff>Dev</color>+++");
+
+                if (((sourcePlayer.IsLocalPlayer() && GameStates.IsHost && Main.BetterHost.Value)
+                    || (!sourcePlayer.IsLocalPlayer() && sourcePlayer.BetterData().IsBetterHost && sourcePlayer.IsHost())))
+                    sbTag.AppendFormat("<color=#0dff00>{1}{0}</color>+++", Translator.GetString("Player.BetterHost"), sourcePlayer.BetterData().IsVerifiedBetterUser || sourcePlayer.IsLocalPlayer() ? "✓ " : "");
+                else if ((sourcePlayer.IsLocalPlayer() || sourcePlayer.BetterData().IsBetterUser))
+                    sbTag.AppendFormat("<color=#0dff00>{1}{0}</color>+++", Translator.GetString("Player.BetterUser"), sourcePlayer.BetterData().IsVerifiedBetterUser || sourcePlayer.IsLocalPlayer() ? "✓ " : "");
+
+                if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.SickoData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.SickoData.ContainsValue(friendCode))
+                    sbTag.Append($"<color=#00f583>{Translator.GetString("Player.SickoUser")}</color>+++");
+                else if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.AUMData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.AUMData.ContainsValue(friendCode))
+                    sbTag.Append($"<color=#4f0000>{Translator.GetString("Player.AUMUser")}</color>+++");
+                else if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.PlayerData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.PlayerData.ContainsValue(friendCode))
+                    sbTag.Append($"<color=#fc0000>{Translator.GetString("Player.KnownCheater")}</color>+++");
             }
-            NetworkedPlayerInfo data = PlayerControl.LocalPlayer.Data;
-            NetworkedPlayerInfo data2 = sourcePlayer.Data;
-            if (data2 == null || data == null || (data2.IsDead && !data.IsDead))
+
+            if (!sourcePlayer.IsImpostorTeammate())
             {
-                return false;
-            }
-            ChatBubble pooledBubble = __instance.GetPooledBubble();
-            try
-            {
-                if (sourcePlayer.BetterData().IsBetterUser && GameStates.IsBetterHostLobby)
-                    chatText = chatText.Replace("\n", "");
-
-                pooledBubble.transform.SetParent(__instance.scroller.Inner);
-                pooledBubble.transform.localScale = Vector3.one;
-                bool flag = sourcePlayer.IsLocalPlayer();
-                if (flag)
-                {
-                    pooledBubble.SetRight();
-                }
-                else
-                {
-                    pooledBubble.SetLeft();
-                }
-                bool didVote = MeetingHud.Instance && MeetingHud.Instance.DidVote(sourcePlayer.PlayerId);
-                pooledBubble.Background.color = new Color(0.05f, 0.05f, 0.05f, 1f);
-                pooledBubble.SetCosmetics(data2);
-                __instance.SetChatBubbleName(pooledBubble, data2, data2.IsDead, didVote, PlayerNameColor.Get(data2), null);
-                if (censor && DataManager.Settings.Multiplayer.CensorChat)
-                {
-                    chatText = BlockedWords.CensorWords(chatText, false);
-                }
-                pooledBubble.SetText(chatText);
-                pooledBubble.AlignChildren();
-                __instance.AlignAllBubbles();
-                if (!__instance.IsOpenOrOpening && __instance.notificationRoutine == null)
-                {
-                    __instance.notificationRoutine = __instance.StartCoroutine(__instance.BounceDot());
-                }
-                if (!flag)
-                {
-                    SoundManager.Instance.PlaySound(__instance.messageSound, false, 1f, null).pitch = 0.5f + (float)sourcePlayer.PlayerId / 15f;
-                    __instance.chatNotification.SetUp(sourcePlayer, chatText);
-                }
-
-                StringBuilder sbTag = new StringBuilder();
-                StringBuilder sbInfo = new StringBuilder();
-
-                string hashPuid = Utils.GetHashPuid(sourcePlayer);
-                string friendCode = sourcePlayer.Data.FriendCode;
-                string playerName = sourcePlayer.Data.PlayerName;
-                string Role = $"<size=75%><color={sourcePlayer.GetTeamHexColor()}>{sourcePlayer.GetRoleName()}</color></size>+++";
-
-                if (GameStates.IsLobby && !GameStates.IsFreePlay)
+                if (PlayerControl.LocalPlayer.IsAlive() && !sourcePlayer.IsLocalPlayer())
                 {
                     Role = "";
-
-                    if (sourcePlayer.IsDev())
-                        sbTag.Append($"<color=#0088ff>Dev</color>+++");
-
-                    if (((sourcePlayer.IsLocalPlayer() && GameStates.IsHost && Main.BetterHost.Value)
-                        || (!sourcePlayer.IsLocalPlayer() && sourcePlayer.BetterData().IsBetterHost && sourcePlayer.IsHost())))
-                        sbTag.AppendFormat("<color=#0dff00>{1}{0}</color>+++", Translator.GetString("Player.BetterHost"), sourcePlayer.BetterData().IsVerifiedBetterUser || sourcePlayer.IsLocalPlayer() ? "✓ " : "");
-                    else if ((sourcePlayer.IsLocalPlayer() || sourcePlayer.BetterData().IsBetterUser))
-                        sbTag.AppendFormat("<color=#0dff00>{1}{0}</color>+++", Translator.GetString("Player.BetterUser"), sourcePlayer.BetterData().IsVerifiedBetterUser || sourcePlayer.IsLocalPlayer() ? "✓ " : "");
-
-                    if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.SickoData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.SickoData.ContainsValue(friendCode))
-                        sbTag.Append($"<color=#00f583>{Translator.GetString("Player.SickoUser")}</color>+++");
-                    else if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.AUMData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.AUMData.ContainsValue(friendCode))
-                        sbTag.Append($"<color=#4f0000>{Translator.GetString("Player.AUMUser")}</color>+++");
-                    else if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.PlayerData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.PlayerData.ContainsValue(friendCode))
-                        sbTag.Append($"<color=#fc0000>{Translator.GetString("Player.KnownCheater")}</color>+++");
                 }
-
-                if (!sourcePlayer.IsImpostorTeammate())
-                {
-                    if (PlayerControl.LocalPlayer.IsAlive() && !sourcePlayer.IsLocalPlayer())
-                    {
-                        Role = "";
-                    }
-                }
-
-                if (PlayerControl.LocalPlayer.Is(RoleTypes.GuardianAngel) && !sourcePlayer.IsAlive() || !PlayerControl.LocalPlayer.Is(RoleTypes.GuardianAngel))
-                {
-                    sbTag.Append(Role);
-                }
-
-                sbInfo.Append("<size=75%>");
-                for (int i = 0; i < sbTag.ToString().Split("+++").Length; i++)
-                {
-                    if (!string.IsNullOrEmpty(sbTag.ToString().Split("+++")[i]))
-                    {
-                        if (i < sbTag.ToString().Split("+++").Length)
-                        {
-                            sbInfo.Append(sbTag.ToString().Split("+++")[i]);
-                        }
-                        if (i != sbTag.ToString().Split("+++").Length - 2)
-                        {
-                            sbInfo.Append(" - ");
-                        }
-                    }
-                }
-                sbInfo.Append("</size>");
-
-                if (flag)
-                {
-                    playerName = $"{sbInfo} " + playerName;
-                }
-                else
-                {
-                    playerName += $" {sbInfo}";
-                }
-
-                pooledBubble.NameText.SetText(playerName);
-
-                Logger.Log($"{sourcePlayer.Data.PlayerName} -> {chatText}", "ChatLog");
             }
-            catch
+
+            if (PlayerControl.LocalPlayer.Is(RoleTypes.GuardianAngel) && !sourcePlayer.IsAlive() || !PlayerControl.LocalPlayer.Is(RoleTypes.GuardianAngel))
             {
+                sbTag.Append(Role);
             }
 
-            return false;
+            sbInfo.Append("<size=75%>");
+            for (int i = 0; i < sbTag.ToString().Split("+++").Length; i++)
+            {
+                if (!string.IsNullOrEmpty(sbTag.ToString().Split("+++")[i]))
+                {
+                    if (i < sbTag.ToString().Split("+++").Length)
+                    {
+                        sbInfo.Append(sbTag.ToString().Split("+++")[i]);
+                    }
+                    if (i != sbTag.ToString().Split("+++").Length - 2)
+                    {
+                        sbInfo.Append(" - ");
+                    }
+                }
+            }
+            sbInfo.Append("</size>");
+
+            bool flag = sourcePlayer == PlayerControl.LocalPlayer;
+            if (flag)
+            {
+                playerName = $"{sbInfo} " + playerName;
+            }
+            else
+            {
+                playerName += $" {sbInfo}";
+            }
+
+            chatBubble.NameText.text = playerName;
+            chatBubble.ColorBlindName.text = $"<color={Utils.Color32ToHex(Palette.PlayerColors[sourcePlayer.Data.DefaultOutfit.ColorId])}>{chatBubble.ColorBlindName.text}</color>";
+            Logger.Log($"{sourcePlayer.Data.PlayerName} -> {chatText}", "ChatLog");
         }
     }
 
