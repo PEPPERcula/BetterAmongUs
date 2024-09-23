@@ -3,12 +3,14 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
 using BetterAmongUs.Patches;
+using Epic.OnlineServices.Presence;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using Innersloth.IO;
 using System.Security.Cryptography;
 using System.Text;
 using UnityEngine;
+using static UnityEngine.RemoteConfigSettingsHelper;
 
 namespace BetterAmongUs;
 
@@ -153,6 +155,11 @@ public class Main : BasePlugin
     {
         try
         {
+            ConsoleManager.CreateConsole();
+            ConsoleManager.SetConsoleTitle("Among Us - BAU Console");
+            ConsoleManager.ConfigPreventClose.Value = true;
+            ConsoleManager.ConsoleStream.WriteLine($".--------------------------------------------------------------------------------.\r\n|  ____       _   _                 _                                  _   _     |\r\n| | __ )  ___| |_| |_ ___ _ __     / \\   _ __ ___   ___  _ __   __ _  | | | |___ |\r\n| |  _ \\ / _ \\ __| __/ _ \\ '__|   / _ \\ | '_ ` _ \\ / _ \\| '_ \\ / _` | | | | / __||\r\n| | |_) |  __/ |_| ||  __/ |     / ___ \\| | | | | | (_) | | | | (_| | | |_| \\__ \\|\r\n| |____/ \\___|\\__|\\__\\___|_|    /_/   \\_\\_| |_| |_|\\___/|_| |_|\\__, |  \\___/|___/|\r\n|                                                              |___/             |\r\n'--------------------------------------------------------------------------------'");
+
             Logger = BepInEx.Logging.Logger.CreateLogSource(PluginGuid);
 
             BetterDataManager.SetUp();

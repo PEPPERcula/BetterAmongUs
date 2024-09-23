@@ -1,4 +1,6 @@
 ﻿
+using BepInEx;
+
 namespace BetterAmongUs;
 
 class Logger
@@ -10,6 +12,7 @@ class Logger
         string newLine = $"{mark}: {Utils.RemoveHtmlText(info)}";
         File.AppendAllText(logFilePath, newLine + Environment.NewLine);
         Main.Logger.LogInfo($"[{tag}] {info}");
+        ConsoleManager.ConsoleStream.WriteLine($"{DateTime.Now:HH:mm} BetterAmongUs[{tag}]: {info}");
     }
     public static void LogHeader(string info, string tag = "LogHeader") => Log($"   >-------------- {info} --------------<", tag);
     public static void LogCheat(string info, string tag = "AntiCheat") => Log(info, tag);
