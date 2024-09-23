@@ -94,6 +94,8 @@
   "AntiCheat.UnauthorizedAction": "Has been detected doing an unauthorized action",
   "AntiCheat.ByAntiCheat": "{0} by <color=#4f92ff>Anti-Cheat</color>",
   "AntiCheat.KickMessage": "{0}! Reason: <color=#fc0000>{1}</color>",
+  "AntiCheat.BanPlayerListMessage": "has been {0} due to being on the ban player list!",
+  "AntiCheat.BanNameListMessage": "has been {0} due to their name being on the ban name list!",
   "AntiCheat.HasBeenDetectedWithCheat": "Has been detected with a cheat",
   "AntiCheat.HasBeenDetectedWithCheat2": "Has been detected with a cheat client",
   "AntiCheat.InvalidAction": "Invalid Action RPC: {0}",

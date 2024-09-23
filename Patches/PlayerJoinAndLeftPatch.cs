@@ -68,7 +68,7 @@ public static class OnPlayerJoinedPatch
                                 if (!string.IsNullOrEmpty(player.Data.FriendCode) && text.Contains(player.Data.FriendCode)
                                     || !string.IsNullOrEmpty(Utils.GetHashPuid(player)) && text.Contains(Utils.GetHashPuid(player)))
                                 {
-                                    player.Kick(true, $"has been banned due to being on the ban player list!");
+                                    player.Kick(true, Translator.GetString("AntiCheat.BanPlayerListMessage"));
                                     break;
                                 }
                             }
@@ -103,7 +103,7 @@ public static class OnPlayerJoinedPatch
 
                         if (!string.IsNullOrEmpty(normalizedPlayerName) && isNameBanned)
                         {
-                            player.Kick(false, $"has been kicked due to their name being on the ban name list!");
+                            player.Kick(false, Translator.GetString("AntiCheat.BanNameListMessage"));
                         }
                     }
                     catch { }
