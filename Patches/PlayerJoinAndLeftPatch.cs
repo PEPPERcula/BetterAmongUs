@@ -73,7 +73,10 @@ public static class OnPlayerJoinedPatch
                                 }
                             }
                         }
-                        catch { }
+                        catch (Exception ex)
+                        {
+                            Logger.Error(ex);
+                        }
                     }
                 }
 

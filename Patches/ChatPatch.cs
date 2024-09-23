@@ -51,41 +51,54 @@ class ChatPatch
     }
 
     [HarmonyPatch(typeof(ChatController))]
-    class ChatControllerPatch
+    public class ChatControllerPatch
     {
+        [HarmonyPatch(nameof(ChatController.Toggle))]
+        [HarmonyPostfix]
+        public static void Toggle_Postfix(ChatController __instance)
+        {
+            if (Main.ChatDarkMode.Value)
+            {
+                // Free chat color
+                __instance.freeChatField.background.color = new Color32(40, 40, 40, byte.MaxValue);
+                __instance.freeChatField.textArea.compoText.Color(Color.white);
+                __instance.freeChatField.textArea.outputText.color = Color.white;
+
+                // Quick chat color
+                __instance.quickChatField.background.color = new Color32(40, 40, 40, byte.MaxValue);
+                __instance.quickChatField.text.color = Color.white;
+
+                // Icons
+                __instance.quickChatButton.transform.Find("QuickChatIcon").GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.5f, 0.5f, 1f);
+                __instance.openKeyboardButton.transform.Find("OpenKeyboardIcon").GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.5f, 0.5f, 1f);
+            }
+            else 
+            {
+                // Free chat color
+                __instance.freeChatField.background.color = new Color32(255, 255, 255, byte.MaxValue);
+                __instance.freeChatField.textArea.compoText.Color(Color.black);
+                __instance.freeChatField.textArea.outputText.color = Color.black;
+
+                // Quick chat color
+                __instance.quickChatField.background.color = new Color32(255, 255, 255, byte.MaxValue);
+                __instance.quickChatField.text.color = Color.black;
+
+                // Icons
+                __instance.quickChatButton.transform.Find("QuickChatIcon").GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
+                __instance.openKeyboardButton.transform.Find("OpenKeyboardIcon").GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
+            }
+
+            foreach (var item in HudManager.Instance.Chat.chatBubblePool.activeChildren.ToArray().Select(c => c.GetComponent<ChatBubble>()))
+            {
+                SetChatTheme(item);
+            }
+        }
+
         [HarmonyPatch(nameof(ChatController.Update))]
         [HarmonyPrefix]
         [HarmonyPriority(Priority.First)]
         public static void Update_Prefix(ChatController __instance)
         {
-            for (int i = 0; i < __instance.scroller.Inner.gameObject.transform.childCount; i++)
-            {
-                GameObject chatItem = __instance.scroller.Inner.transform.GetChild(i).gameObject;
-
-                chatItem.transform.Find("ChatText (TMP)").GetComponent<TextMeshPro>().color = new Color(1f, 1f, 1f, 1f);
-                chatItem.transform.Find("Background").GetComponent<SpriteRenderer>().color = new Color(0.05f, 0.05f, 0.05f, 1f);
-
-                if (chatItem.transform.Find("PoolablePlayer/xMark") != null)
-                {
-                    if (chatItem.transform.Find("PoolablePlayer/xMark").GetComponent<SpriteRenderer>().enabled == true)
-                    {
-                        chatItem.transform.Find("Background").GetComponent<SpriteRenderer>().color = new Color(0.05f, 0.05f, 0.05f, 0.5f);
-                    }
-                }
-            }
-
-            // Free chat color
-            __instance.freeChatField.background.color = new Color32(40, 40, 40, byte.MaxValue);
-            __instance.freeChatField.textArea.compoText.Color(Color.white);
-            __instance.freeChatField.textArea.outputText.color = Color.white;
-
-            // Quick chat color
-            __instance.quickChatField.background.color = new Color32(40, 40, 40, byte.MaxValue);
-            __instance.quickChatField.text.color = Color.white;
-
-            __instance.quickChatButton.transform.Find("QuickChatIcon").GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.5f, 0.5f, 1f);
-            __instance.openKeyboardButton.transform.Find("OpenKeyboardIcon").GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.5f, 0.5f, 1f);
-
             if ((Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetKeyDown(KeyCode.X))
             {
                 ClipboardHelper.PutClipboardString(__instance.freeChatField.textArea.text);
@@ -112,11 +125,8 @@ class ChatPatch
         [HarmonyPostfix]
         public static void AddChat_Postfix(ChatController __instance, [HarmonyArgument(0)] PlayerControl sourcePlayer, [HarmonyArgument(1)] string chatText)
         {
-            ChatBubble Get() => __instance.chatBubblePool.activeChildren.ToArray()
-                .Select(c => c.GetComponent<ChatBubble>())
-                .Last();
+            ChatBubble chatBubble = SetChatTheme();
 
-            ChatBubble chatBubble = Get();
             StringBuilder sbTag = new StringBuilder();
             StringBuilder sbInfo = new StringBuilder();
 
@@ -187,8 +197,61 @@ class ChatPatch
             }
 
             chatBubble.NameText.text = playerName;
-            chatBubble.ColorBlindName.text = $"<color={Utils.Color32ToHex(Palette.PlayerColors[sourcePlayer.Data.DefaultOutfit.ColorId])}>{chatBubble.ColorBlindName.text}</color>";
+            chatBubble.ColorBlindName.color = Palette.PlayerColors[sourcePlayer.Data.DefaultOutfit.ColorId];
             Logger.Log($"{sourcePlayer.Data.PlayerName} -> {chatText}", "ChatLog");
+        }
+
+        [HarmonyPatch(nameof(ChatController.AddChatNote))]
+        [HarmonyPostfix]
+        public static void AddChatNote_Postfix(ChatController __instance)
+        {
+            SetChatTheme();
+        }
+
+        [HarmonyPatch(nameof(ChatController.AddChatWarning))]
+        [HarmonyPostfix]
+        public static void AddChatWarning_Postfix(ChatController __instance)
+        {
+            SetChatTheme();
+        }
+
+        // Set chat theme
+        public static ChatBubble SetChatTheme(ChatBubble? asChatBubble = null)
+        {
+            ChatBubble Get() => HudManager.Instance.Chat.chatBubblePool.activeChildren.ToArray()
+                .Select(c => c.GetComponent<ChatBubble>())
+                .Last();
+
+            ChatBubble chatBubble = asChatBubble ??= Get();
+
+            if (Main.ChatDarkMode.Value)
+            {
+                chatBubble.transform.Find("ChatText (TMP)").GetComponent<TextMeshPro>().color = new Color(1f, 1f, 1f, 1f);
+                chatBubble.transform.Find("Background").GetComponent<SpriteRenderer>().color = new Color(0.05f, 0.05f, 0.05f, 1f);
+
+                if (chatBubble.transform.Find("PoolablePlayer/xMark") != null)
+                {
+                    if (chatBubble.transform.Find("PoolablePlayer/xMark").GetComponent<SpriteRenderer>().enabled == true)
+                    {
+                        chatBubble.transform.Find("Background").GetComponent<SpriteRenderer>().color = new Color(0.05f, 0.05f, 0.05f, 0.5f);
+                    }
+                }
+            }
+            else 
+            {
+                chatBubble.transform.Find("ChatText (TMP)").GetComponent<TextMeshPro>().color = new Color(0f, 0f, 0f, 1f);
+                chatBubble.transform.Find("Background").GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
+
+                if (chatBubble.transform.Find("PoolablePlayer/xMark") != null)
+                {
+                    if (chatBubble.transform.Find("PoolablePlayer/xMark").GetComponent<SpriteRenderer>().enabled == true)
+                    {
+                        chatBubble.transform.Find("Background").GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0.5f);
+                    }
+                }
+            }
+
+            return chatBubble;
         }
     }
 
