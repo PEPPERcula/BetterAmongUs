@@ -51,7 +51,8 @@ public static class PlayerControlDataExtension
     {
         _Data = BetterData._Data,
         RoleInfo = new ExtendedRoleInfo(),
-        AntiCheatInfo = new ExtendedAntiCheatInfo()
+        AntiCheatInfo = new ExtendedAntiCheatInfo(),
+        AccountInfo = new BetterAccountInfo()
     };
 
     // Reset info when needed
