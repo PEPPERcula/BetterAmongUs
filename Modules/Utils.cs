@@ -63,7 +63,7 @@ public static class Utils
                 chat.notificationRoutine = chat.StartCoroutine(chat.BounceDot());
             }
             SoundManager.Instance.PlaySound(chat.messageSound, false, 1f, null).pitch = 0.5f + (float)data.PlayerId / 15f;
-            ChatPatch.ChatControllerPatch.SetChatTheme(pooledBubble);
+            ChatPatch.ChatControllerPatch.SetChatPoolTheme(pooledBubble);
         }
         catch (Exception ex)
         {

@@ -89,7 +89,12 @@ public static class OptionsMenuBehaviourPatch
         if (ChatDarkMode == null || ChatDarkMode.ToggleButton == null)
         {
             string title = Translator.GetString("BetterOption.ChatDarkMode");
-            ChatDarkMode = ClientOptionItem.Create(title, Main.ChatDarkMode, __instance);
+            ChatDarkMode = ClientOptionItem.Create(title, Main.ChatDarkMode, __instance, ChatDarkModeToggle);
+
+            static void ChatDarkModeToggle()
+            {
+                ChatPatch.ChatControllerPatch.SetChatTheme();
+            }
         }
         
         if (ChatInGameplay == null || ChatInGameplay.ToggleButton == null)

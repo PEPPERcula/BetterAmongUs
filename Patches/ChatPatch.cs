@@ -55,43 +55,9 @@ class ChatPatch
     {
         [HarmonyPatch(nameof(ChatController.Toggle))]
         [HarmonyPostfix]
-        public static void Toggle_Postfix(ChatController __instance)
+        public static void Toggle_Postfix(/*ChatController __instance*/)
         {
-            if (Main.ChatDarkMode.Value)
-            {
-                // Free chat color
-                __instance.freeChatField.background.color = new Color32(40, 40, 40, byte.MaxValue);
-                __instance.freeChatField.textArea.compoText.Color(Color.white);
-                __instance.freeChatField.textArea.outputText.color = Color.white;
-
-                // Quick chat color
-                __instance.quickChatField.background.color = new Color32(40, 40, 40, byte.MaxValue);
-                __instance.quickChatField.text.color = Color.white;
-
-                // Icons
-                __instance.quickChatButton.transform.Find("QuickChatIcon").GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.5f, 0.5f, 1f);
-                __instance.openKeyboardButton.transform.Find("OpenKeyboardIcon").GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.5f, 0.5f, 1f);
-            }
-            else 
-            {
-                // Free chat color
-                __instance.freeChatField.background.color = new Color32(255, 255, 255, byte.MaxValue);
-                __instance.freeChatField.textArea.compoText.Color(Color.black);
-                __instance.freeChatField.textArea.outputText.color = Color.black;
-
-                // Quick chat color
-                __instance.quickChatField.background.color = new Color32(255, 255, 255, byte.MaxValue);
-                __instance.quickChatField.text.color = Color.black;
-
-                // Icons
-                __instance.quickChatButton.transform.Find("QuickChatIcon").GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
-                __instance.openKeyboardButton.transform.Find("OpenKeyboardIcon").GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
-            }
-
-            foreach (var item in HudManager.Instance.Chat.chatBubblePool.activeChildren.ToArray().Select(c => c.GetComponent<ChatBubble>()))
-            {
-                SetChatTheme(item);
-            }
+            SetChatTheme();
         }
 
         [HarmonyPatch(nameof(ChatController.Update))]
@@ -99,6 +65,21 @@ class ChatPatch
         [HarmonyPriority(Priority.First)]
         public static void Update_Prefix(ChatController __instance)
         {
+            if (Main.ChatDarkMode.Value)
+            {
+                // Free chat color
+                __instance.freeChatField.background.color = new Color32(40, 40, 40, byte.MaxValue);
+                __instance.freeChatField.textArea.compoText.Color(Color.white);
+                __instance.freeChatField.textArea.outputText.color = Color.white;
+            }
+            else
+            {
+                // Free chat color
+                __instance.freeChatField.background.color = new Color32(255, 255, 255, byte.MaxValue);
+                __instance.freeChatField.textArea.compoText.Color(Color.black);
+                __instance.freeChatField.textArea.outputText.color = Color.black;
+            }
+
             if ((Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetKeyDown(KeyCode.X))
             {
                 ClipboardHelper.PutClipboardString(__instance.freeChatField.textArea.text);
@@ -125,7 +106,7 @@ class ChatPatch
         [HarmonyPostfix]
         public static void AddChat_Postfix(ChatController __instance, [HarmonyArgument(0)] PlayerControl sourcePlayer, [HarmonyArgument(1)] string chatText)
         {
-            ChatBubble chatBubble = SetChatTheme();
+            ChatBubble chatBubble = SetChatPoolTheme();
 
             StringBuilder sbTag = new StringBuilder();
             StringBuilder sbInfo = new StringBuilder();
@@ -205,18 +186,49 @@ class ChatPatch
         [HarmonyPostfix]
         public static void AddChatNote_Postfix(ChatController __instance)
         {
-            SetChatTheme();
+            SetChatPoolTheme();
         }
 
         [HarmonyPatch(nameof(ChatController.AddChatWarning))]
         [HarmonyPostfix]
         public static void AddChatWarning_Postfix(ChatController __instance)
         {
-            SetChatTheme();
+            SetChatPoolTheme();
+        }
+
+        public static void SetChatTheme()
+        {
+            var chat = HudManager.Instance.Chat;
+
+            if (Main.ChatDarkMode.Value)
+            {
+                // Quick chat color
+                chat.quickChatField.background.color = new Color32(40, 40, 40, byte.MaxValue);
+                chat.quickChatField.text.color = Color.white;
+
+                // Icons
+                chat.quickChatButton.transform.Find("QuickChatIcon").GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.5f, 0.5f, 1f);
+                chat.openKeyboardButton.transform.Find("OpenKeyboardIcon").GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.5f, 0.5f, 1f);
+            }
+            else
+            {
+                // Quick chat color
+                chat.quickChatField.background.color = new Color32(255, 255, 255, byte.MaxValue);
+                chat.quickChatField.text.color = Color.black;
+
+                // Icons
+                chat.quickChatButton.transform.Find("QuickChatIcon").GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
+                chat.openKeyboardButton.transform.Find("OpenKeyboardIcon").GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
+            }
+
+            foreach (var item in HudManager.Instance.Chat.chatBubblePool.activeChildren.ToArray().Select(c => c.GetComponent<ChatBubble>()))
+            {
+                SetChatPoolTheme(item);
+            }
         }
 
         // Set chat theme
-        public static ChatBubble SetChatTheme(ChatBubble? asChatBubble = null)
+        public static ChatBubble SetChatPoolTheme(ChatBubble? asChatBubble = null)
         {
             ChatBubble Get() => HudManager.Instance.Chat.chatBubblePool.activeChildren.ToArray()
                 .Select(c => c.GetComponent<ChatBubble>())

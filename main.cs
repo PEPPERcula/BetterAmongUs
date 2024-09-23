@@ -3,14 +3,12 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
 using BetterAmongUs.Patches;
-using Epic.OnlineServices.Presence;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using Innersloth.IO;
 using System.Security.Cryptography;
 using System.Text;
 using UnityEngine;
-using static UnityEngine.RemoteConfigSettingsHelper;
 
 namespace BetterAmongUs;
 
