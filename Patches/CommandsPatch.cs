@@ -17,7 +17,7 @@ class CommandsPatch
     private static bool HasPermission => Permission != null
         && AmongUsClient.Instance?.GetHost()?.Character?.Data == Permission;
     public static NetworkedPlayerInfo? Permission = null;
-
+    public static string CommandPrefix => !GameStates.IsTOHEHostLobby ? Main.CommandPrefix.Value : Main.CommandPrefix.Value == "/" ? "." : Main.CommandPrefix.Value;
 
     // List of helper text when a command is being typed out
     // First word is command, {} are arguments, first --- is command description, second --- is for help command.
@@ -116,7 +116,7 @@ class CommandsPatch
                 {
                     if (i < allCommands.Length)
                     {
-                        list += $"\n{mid}<color=#e0b700><b>{Main.CommandPrefix.Value}{allCommands[i].Split(' ')[0].Split("---")[0]}</b></color> <size=65%><color=#735e00>{allCommands[i].Split("---")[1]}.</color></size>";
+                        list += $"\n{mid}<color=#e0b700><b>{CommandPrefix}{allCommands[i].Split(' ')[0].Split("---")[0]}</b></color> <size=65%><color=#735e00>{allCommands[i].Split("---")[1]}.</color></size>";
                     }
                 }
                 if (Main.myAccountInfo.IsSponsor == true)
@@ -127,7 +127,7 @@ class CommandsPatch
                     {
                         if (i < allSponsorCommands.Length)
                         {
-                            list += $"\n{mid}<color=#e0b700><b>{Main.CommandPrefix.Value}{allSponsorCommands[i].Split(' ')[0].Split("---")[0]}</b></color> <size=65%><color=#735e00>{allSponsorCommands[i].Split("---")[1]}.</color></size>";
+                            list += $"\n{mid}<color=#e0b700><b>{CommandPrefix}{allSponsorCommands[i].Split(' ')[0].Split("---")[0]}</b></color> <size=65%><color=#735e00>{allSponsorCommands[i].Split("---")[1]}.</color></size>";
                         }
                     }
                 }
@@ -139,7 +139,7 @@ class CommandsPatch
                     {
                         if (i < allDebugCommands.Length)
                         {
-                            list += $"\n{mid}<color=#e0b700><b>{Main.CommandPrefix.Value}{allDebugCommands[i].Split(' ')[0].Split("---")[0]}</b></color> <size=65%><color=#735e00>{allDebugCommands[i].Split("---")[1]}.</color></size>";
+                            list += $"\n{mid}<color=#e0b700><b>{CommandPrefix}{allDebugCommands[i].Split(' ')[0].Split("---")[0]}</b></color> <size=65%><color=#735e00>{allDebugCommands[i].Split("---")[1]}.</color></size>";
                         }
                     }
                 }
@@ -253,7 +253,7 @@ class CommandsPatch
                     {
                         RPC.SyncAllNames();
                         hasSet = true;
-                    }, 1f, $"Command {Main.CommandPrefix.Value}name");
+                    }, 1f, $"Command {CommandPrefix}name");
                 }
                 else if (command.Length > 1 && !string.IsNullOrWhiteSpace(command[1]) && System.Text.RegularExpressions.Regex.IsMatch(command[1], @"^[a-zA-Z0-9]+$"))
                 {
@@ -588,7 +588,7 @@ class CommandsPatch
 
         string text = __instance.freeChatField.textArea.text;
 
-        if (string.IsNullOrEmpty(text) || text.Length <= 1 || text[0].ToString() != Main.CommandPrefix.Value || 3f - __instance.timeSinceLastMessage > 0f)
+        if (string.IsNullOrEmpty(text) || text.Length <= 1 || text[0].ToString() != CommandPrefix || 3f - __instance.timeSinceLastMessage > 0f)
         {
             if (GameStates.InGame && !GameStates.IsLobby && !GameStates.IsFreePlay && !GameStates.IsMeeting && !GameStates.IsExilling && PlayerControl.LocalPlayer.IsAlive())
                 return false;
@@ -671,7 +671,7 @@ class CommandsPatch
         if (commandText != null && commandInfo != null)
         {
             // Check if the first character is the command prefix
-            if (text.Length > 0 && text[0].ToString() == Main.CommandPrefix.Value)
+            if (text.Length > 0 && text[0].ToString() == CommandPrefix)
             {
                 // Get the typed command without the prefix
                 string typedCommand = text.Substring(1);
@@ -712,11 +712,11 @@ class CommandsPatch
 
                     if (Input.GetKeyDown(KeyCode.Tab) && typedParts.Length < 2)
                     {
-                        __instance.freeChatField.textArea.SetText(Main.CommandPrefix.Value + commandParts[0]);
+                        __instance.freeChatField.textArea.SetText(CommandPrefix + commandParts[0]);
                     }
 
                     // Display the command suggestion
-                    commandText.GetComponent<TextMeshPro>().text = Main.CommandPrefix.Value + suggestion;
+                    commandText.GetComponent<TextMeshPro>().text = CommandPrefix + suggestion;
                     commandInfo.GetComponent<TextMeshPro>().text = CommandInfo;
                 }
                 else
