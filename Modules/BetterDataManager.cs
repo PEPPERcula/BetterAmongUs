@@ -1,5 +1,4 @@
-﻿using BetterAmongUs.Patches;
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace BetterAmongUs;
 
@@ -198,7 +197,7 @@ class BetterDataManager
                 return bool.Parse(jsonData[id.ToString()]);
             }
         }
-        catch 
+        catch
         {
             SaveSetting(id, Default.ToString());
         }
@@ -219,7 +218,7 @@ class BetterDataManager
                 return float.Parse(jsonData[id.ToString()]);
             }
         }
-        catch 
+        catch
         {
             SaveSetting(id, Default.ToString());
         }
@@ -240,7 +239,7 @@ class BetterDataManager
                 return int.Parse(jsonData[id.ToString()]);
             }
         }
-        catch 
+        catch
         {
             SaveSetting(id, Default.ToString());
         }

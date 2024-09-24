@@ -3,7 +3,6 @@ using BetterAmongUs.Patches;
 using HarmonyLib;
 using Hazel;
 using InnerNet;
-using Sentry.Internal.Extensions;
 
 namespace BetterAmongUs;
 
@@ -623,17 +622,13 @@ class AntiCheat
 
             if (callId is (byte)RpcCalls.SendChatNote)
             {
+                _ = reader.ReadByte();
                 var type = reader.ReadByte();
 
-                if (!GameStates.IsMeeting || (ChatNoteTypes)type == ChatNoteTypes.DidVote && player.BetterData().AntiCheatInfo.ChatDidVote)
+                if (!GameStates.IsMeeting || !Enum.IsDefined(typeof(ChatNoteTypes), type))
                 {
                     BetterNotificationManager.NotifyCheat(player, string.Format(Translator.GetString("AntiCheat.InvalidActionRPC"), Enum.GetName((RpcCalls)callId)));
-                    Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {!GameStates.IsMeeting} || {(ChatNoteTypes)type == ChatNoteTypes.DidVote} && {player.BetterData().AntiCheatInfo.ChatDidVote}");
-                }
-
-                if ((ChatNoteTypes)type == ChatNoteTypes.DidVote)
-                {
-                    player.BetterData().AntiCheatInfo.ChatDidVote = true;
+                    Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {!GameStates.IsMeeting} || {!Enum.IsDefined(typeof(ChatNoteTypes), type)}");
                 }
             }
 

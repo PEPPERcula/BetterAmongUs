@@ -1,7 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using HarmonyLib;
 using Hazel;
-using static Il2CppSystem.Globalization.CultureInfo;
 
 namespace BetterAmongUs.Patches;
 

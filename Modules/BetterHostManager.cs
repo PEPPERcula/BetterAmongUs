@@ -197,7 +197,7 @@ class BetterHostManager
             if (player.Data.PlayerName != player.CurrentOutfit.PlayerName && !player.IsInShapeshift() || force)
             {
                 player.RpcSetName(player.Data.PlayerName);
-                Logger.Log($"Reset {player.Data.PlayerName} name", "RPC");
+                Logger.LogPrivate($"Reset {player.Data.PlayerName} name", "RPC");
             }
             return;
         }
@@ -305,7 +305,7 @@ class BetterHostManager
             }
 
             player.RpcSetNamePrivate(NewName, target);
-            Logger.Log($"Set {player.Data.PlayerName} name to {NewName.Replace("\n", "-")} for {target.Data.PlayerName}", "RPC");
+            Logger.LogPrivate($"Set {player.Data.PlayerName} name to {NewName.Replace("\n", "-")} for {target.Data.PlayerName}", "RPC");
         }
     }
 }

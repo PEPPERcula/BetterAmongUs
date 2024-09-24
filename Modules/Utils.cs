@@ -1,7 +1,7 @@
 ﻿using AmongUs.Data;
 using AmongUs.GameOptions;
+using BetterAmongUs.Patches;
 using InnerNet;
-using Sentry.Internal.Extensions;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
@@ -39,7 +39,6 @@ public static class Utils
         {
             pooledBubble.transform.SetParent(chat.scroller.Inner);
             pooledBubble.transform.localScale = Vector3.one;
-            pooledBubble.Background.color = new Color(0.05f, 0.05f, 0.05f, 1f);
             pooledBubble.SetCosmetics(data);
             pooledBubble.gameObject.transform.Find("PoolablePlayer").gameObject.SetActive(false);
             pooledBubble.ColorBlindName.gameObject.SetActive(false);
@@ -63,6 +62,7 @@ public static class Utils
                 chat.notificationRoutine = chat.StartCoroutine(chat.BounceDot());
             }
             SoundManager.Instance.PlaySound(chat.messageSound, false, 1f, null).pitch = 0.5f + (float)data.PlayerId / 15f;
+            ChatPatch.ChatControllerPatch.SetChatPoolTheme(pooledBubble);
         }
         catch (Exception ex)
         {

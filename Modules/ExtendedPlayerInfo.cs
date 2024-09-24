@@ -17,6 +17,7 @@ public static class PlayerControlDataExtension
         public bool IsVerifiedBetterUser { get; set; } = false;
         public bool IsBetterHost { get; set; } = false;
         public bool IsTOHEHost { get; set; } = false;
+        public bool HasShowDcMsg { get; set; } = false;
 
         // Track Game Info
         public DisconnectReasons DisconnectReason { get; set; } = DisconnectReasons.Unknown;
@@ -27,7 +28,6 @@ public static class PlayerControlDataExtension
     public class ExtendedAntiCheatInfo
     {
         public bool BannedByAntiCheat { get; set; } = false;
-        public bool ChatDidVote { get; set; } = false;
         public List<string> AUMChats { get; set; } = [];
         public int TimesAttemptedKilled { get; set; } = 0;
         public int OpenSabotageNum { get; set; } = 0;
@@ -50,7 +50,8 @@ public static class PlayerControlDataExtension
     {
         _Data = BetterData._Data,
         RoleInfo = new ExtendedRoleInfo(),
-        AntiCheatInfo = new ExtendedAntiCheatInfo()
+        AntiCheatInfo = new ExtendedAntiCheatInfo(),
+        AccountInfo = new BetterAccountInfo()
     };
 
     // Reset info when needed
@@ -74,11 +75,6 @@ public static class PlayerControlDataExtension
 
             if (player.IsAlive() || player.Data.RoleType == RoleTypes.GuardianAngel)
                 player.BetterData().RoleInfo.DeadDisplayRole = player.Data.RoleType;
-        }
-
-        if (!GameStates.IsMeeting)
-        {
-            player.BetterData().AntiCheatInfo.ChatDidVote = false;
         }
 
         if (string.IsNullOrEmpty(player.BetterData().RealName))

@@ -150,7 +150,7 @@ class GamePlayManager
             __instance.StartButton.gameObject.SetActive(true);
             if (__instance.startState == GameStartManager.StartingStates.Countdown)
             {
-                __instance.StartButton.buttonText.text = string.Format("{0}: {1}", Translator.GetString(StringNames.Cancel),(int)__instance.countDownTimer + 1);
+                __instance.StartButton.buttonText.text = string.Format("{0}: {1}", Translator.GetString(StringNames.Cancel), (int)__instance.countDownTimer + 1);
             }
             else
             {

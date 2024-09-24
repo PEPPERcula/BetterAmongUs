@@ -1,5 +1,5 @@
-﻿using InnerNet;
-using HarmonyLib;
+﻿using HarmonyLib;
+using InnerNet;
 
 namespace BetterAmongUs;
 

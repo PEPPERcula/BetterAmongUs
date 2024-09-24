@@ -25,11 +25,11 @@ public class Main : BasePlugin
 {
     public static readonly ReleaseTypes ReleaseBuildType = ReleaseTypes.Release;
     public const string BetaNum = "0";
-    public const string HotfixNum = "1";
+    public const string HotfixNum = "3";
     public const bool IsHotFix = true;
     public const string PluginGuid = "com.ten.betteramongus";
     public const string PluginVersion = "1.1.4";
-    public const string ReleaseDate = "09.20.2024"; // mm/dd/yyyy
+    public const string ReleaseDate = "09.23.2024"; // mm/dd/yyyy
     public const string Github = "https://github.com/EnhancedNetwork/BetterAmongUs-Public";
     public const string Discord = "https://discord.gg/ten";
     public static BetterAccountInfo myAccountInfo = new();
@@ -153,6 +153,11 @@ public class Main : BasePlugin
     {
         try
         {
+            ConsoleManager.CreateConsole();
+            ConsoleManager.SetConsoleTitle("Among Us - BAU Console");
+            ConsoleManager.ConfigPreventClose.Value = true;
+            ConsoleManager.ConsoleStream.WriteLine($".--------------------------------------------------------------------------------.\r\n|  ____       _   _                 _                                  _   _     |\r\n| | __ )  ___| |_| |_ ___ _ __     / \\   _ __ ___   ___  _ __   __ _  | | | |___ |\r\n| |  _ \\ / _ \\ __| __/ _ \\ '__|   / _ \\ | '_ ` _ \\ / _ \\| '_ \\ / _` | | | | / __||\r\n| | |_) |  __/ |_| ||  __/ |     / ___ \\| | | | | | (_) | | | | (_| | | |_| \\__ \\|\r\n| |____/ \\___|\\__|\\__\\___|_|    /_/   \\_\\_| |_| |_|\\___/|_| |_|\\__, |  \\___/|___/|\r\n|                                                              |___/             |\r\n'--------------------------------------------------------------------------------'");
+
             Logger = BepInEx.Logging.Logger.CreateLogSource(PluginGuid);
 
             BetterDataManager.SetUp();
@@ -199,6 +204,7 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> BetterHost { get; private set; }
     public static ConfigEntry<bool> BetterNotifications { get; private set; }
     public static ConfigEntry<bool> ForceOwnLanguage { get; private set; }
+    public static ConfigEntry<bool> ChatDarkMode { get; private set; }
     public static ConfigEntry<bool> ChatInGameplay { get; private set; }
     public static ConfigEntry<bool> LobbyPlayerInfo { get; private set; }
     public static ConfigEntry<bool> DisableLobbyTheme { get; private set; }
@@ -211,6 +217,7 @@ public class Main : BasePlugin
         BetterHost = Config.Bind("Better Options", "BetterHost", false);
         BetterNotifications = Config.Bind("Better Options", "BetterNotifications", true);
         ForceOwnLanguage = Config.Bind("Better Options", "ForceOwnLanguage", false);
+        ChatDarkMode = Config.Bind("Better Options", "ChatDarkMode", true);
         ChatInGameplay = Config.Bind("Better Options", "ChatInGameplay", true);
         LobbyPlayerInfo = Config.Bind("Better Options", "LobbyPlayerInfo", true);
         DisableLobbyTheme = Config.Bind("Better Options", "DisableLobbyTheme", true);

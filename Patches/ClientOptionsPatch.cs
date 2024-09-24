@@ -12,6 +12,7 @@ public static class OptionsMenuBehaviourPatch
     private static ClientOptionItem? BetterHost;
     private static ClientOptionItem? BetterNotifications;
     private static ClientOptionItem? ForceOwnLanguage;
+    private static ClientOptionItem? ChatDarkMode;
     private static ClientOptionItem? ChatInGameplay;
     private static ClientOptionItem? LobbyPlayerInfo;
     private static ClientOptionItem? DisableLobbyTheme;
@@ -84,7 +85,18 @@ public static class OptionsMenuBehaviourPatch
             string title = Translator.GetString("BetterOption.ForceOwnLanguage");
             ForceOwnLanguage = ClientOptionItem.Create(title, Main.ForceOwnLanguage, __instance);
         }
-        
+
+        if (ChatDarkMode == null || ChatDarkMode.ToggleButton == null)
+        {
+            string title = Translator.GetString("BetterOption.ChatDarkMode");
+            ChatDarkMode = ClientOptionItem.Create(title, Main.ChatDarkMode, __instance, ChatDarkModeToggle);
+
+            static void ChatDarkModeToggle()
+            {
+                ChatPatch.ChatControllerPatch.SetChatTheme();
+            }
+        }
+
         if (ChatInGameplay == null || ChatInGameplay.ToggleButton == null)
         {
             string title = Translator.GetString("BetterOption.ChatInGame");
@@ -143,7 +155,7 @@ public static class OptionsMenuBehaviourPatch
                 }
             }
         }
-        
+
         if (SwitchToVanilla == null || SwitchToVanilla.ToggleButton == null)
         {
             string title = Translator.GetString("BetterOption.ToVanilla");

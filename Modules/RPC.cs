@@ -105,8 +105,8 @@ internal static class RPC
             messageWriter.WriteBytesAndSize(optionsByteArray);
             AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
         }
-    } 
-    
+    }
+
     public static void SendBetterCheck()
     {
         var flag = GameStates.IsHost && Main.BetterHost.Value;
@@ -151,7 +151,7 @@ internal static class RPC
 
     public static void HandleCustomRPC(PlayerControl player, byte callId, MessageReader oldReader)
     {
-        if (player == null || player.IsLocalPlayer() || player.Data == null) return;
+        if (player == null || player.IsLocalPlayer() || player.Data == null || Enum.IsDefined(typeof(RpcCalls), callId)) return;
 
         if (Enum.IsDefined(typeof(CustomRPC), (int)unchecked(callId)))
         {
@@ -206,21 +206,22 @@ internal static class RPC
                     */
             }
         }
-
-        try
+        else if (!Enum.IsDefined(typeof(CustomRPC), (int)unchecked(callId)))
         {
-            if (!GameStates.IsTOHEHostLobby && callId is not unchecked((byte)CustomRPC.Sicko) or unchecked((byte)CustomRPC.AUM) or (byte)CustomRPC.AUMChat)
+            try
             {
-                var flag = Enum.IsDefined(typeof(CustomRPC), (int)callId) || Enum.IsDefined(typeof(RpcCalls), callId);
-
-                if (!flag && player.IsHost())
+                if (!GameStates.IsHost && !GameStates.IsTOHEHostLobby)
                 {
-                    var BAU = "<color=#278720>♻</color><color=#0ed400><b>BetterAmongUs</b></color><color=#278720>♻</color>";
-                    Utils.DisconnectSelf($"{BAU} does not support\n<b>Modded Lobbies</b>!");
+                    if (player.IsHost())
+                    {
+                        var Icon = Translator.GetString("BAUMark");
+                        var BAU = $"<color=#278720>{Icon}</color><color=#0ed400><b>{Translator.GetString("BAU")}</b></color><color=#278720>{Icon}</color>";
+                        Utils.DisconnectSelf(string.Format(Translator.GetString("ModdedLobbyMsg"), BAU));
+                    }
                 }
             }
+            catch { }
         }
-        catch { }
     }
 
     public static void HandleRPC(PlayerControl player, byte callId, MessageReader oldReader)

@@ -81,26 +81,26 @@ class MeetingHudUpdatePatch
                 switch (playerData.BetterData().DisconnectReason)
                 {
                     case DisconnectReasons.ExitGame:
-                        DisconnectText = "Left The Game";
+                        DisconnectText = Translator.GetString("DisconnectReasonMeeting.Left");
                         break;
                     case DisconnectReasons.Banned:
                         if (playerData.BetterData().AntiCheatInfo.BannedByAntiCheat)
                         {
-                            DisconnectText = "Banned By Anti-Cheat";
+                            DisconnectText = Translator.GetString("DisconnectReasonMeeting.AntiCheat");
                         }
                         else
                         {
-                            DisconnectText = "Banned By Host";
+                            DisconnectText = Translator.GetString("DisconnectReasonMeeting.Banned");
                         }
                         break;
                     case DisconnectReasons.Kicked:
-                        DisconnectText = "Kicked By Host";
+                        DisconnectText = Translator.GetString("DisconnectReasonMeeting.Kicked");
                         break;
                     case DisconnectReasons.Hacking:
-                        DisconnectText = "Banned By Server";
+                        DisconnectText = Translator.GetString("DisconnectReasonMeeting.Cheater");
                         break;
                     default:
-                        DisconnectText = "Disconnected";
+                        DisconnectText = Translator.GetString("DisconnectReasonMeeting.Disconnect");
                         break;
                 }
 
@@ -200,19 +200,6 @@ class MeetingHudUpdatePatch
         if (TextObj != null)
         {
             TextObj.GetComponent<TextMeshPro>().text = text;
-        }
-    }
-}
-
-[HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.ClearVote))]
-class MeetingHud_ClearVotePatch
-{
-    public static void Postfix()
-    {
-        // Clear info for Anti-Cheat
-        foreach (var player in Main.AllPlayerControls)
-        {
-            player.BetterData().AntiCheatInfo.ChatDidVote = false;
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using static Il2CppSystem.Net.Http.Headers.Parser;
 
 namespace BetterAmongUs;
 

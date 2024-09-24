@@ -1,5 +1,4 @@
-﻿using AmongUs.Data;
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using Assets.CoreScripts;
 using HarmonyLib;
 using Hazel;
@@ -51,40 +50,34 @@ class ChatPatch
     }
 
     [HarmonyPatch(typeof(ChatController))]
-    class ChatControllerPatch
+    public class ChatControllerPatch
     {
+        [HarmonyPatch(nameof(ChatController.Toggle))]
+        [HarmonyPostfix]
+        public static void Toggle_Postfix(/*ChatController __instance*/)
+        {
+            SetChatTheme();
+        }
+
         [HarmonyPatch(nameof(ChatController.Update))]
         [HarmonyPrefix]
         [HarmonyPriority(Priority.First)]
         public static void Update_Prefix(ChatController __instance)
         {
-            for (int i = 0; i < __instance.scroller.Inner.gameObject.transform.childCount; i++)
+            if (Main.ChatDarkMode.Value)
             {
-                GameObject chatItem = __instance.scroller.Inner.transform.GetChild(i).gameObject;
-
-                chatItem.transform.Find("ChatText (TMP)").GetComponent<TextMeshPro>().color = new Color(1f, 1f, 1f, 1f);
-                chatItem.transform.Find("Background").GetComponent<SpriteRenderer>().color = new Color(0.05f, 0.05f, 0.05f, 1f);
-
-                if (chatItem.transform.Find("PoolablePlayer/xMark") != null)
-                {
-                    if (chatItem.transform.Find("PoolablePlayer/xMark").GetComponent<SpriteRenderer>().enabled == true)
-                    {
-                        chatItem.transform.Find("Background").GetComponent<SpriteRenderer>().color = new Color(0.05f, 0.05f, 0.05f, 0.5f);
-                    }
-                }
+                // Free chat color
+                __instance.freeChatField.background.color = new Color32(40, 40, 40, byte.MaxValue);
+                __instance.freeChatField.textArea.compoText.Color(Color.white);
+                __instance.freeChatField.textArea.outputText.color = Color.white;
             }
-
-            // Free chat color
-            __instance.freeChatField.background.color = new Color32(40, 40, 40, byte.MaxValue);
-            __instance.freeChatField.textArea.compoText.Color(Color.white);
-            __instance.freeChatField.textArea.outputText.color = Color.white;
-
-            // Quick chat color
-            __instance.quickChatField.background.color = new Color32(40, 40, 40, byte.MaxValue);
-            __instance.quickChatField.text.color = Color.white;
-
-            __instance.quickChatButton.transform.Find("QuickChatIcon").GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.5f, 0.5f, 1f);
-            __instance.openKeyboardButton.transform.Find("OpenKeyboardIcon").GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.5f, 0.5f, 1f);
+            else
+            {
+                // Free chat color
+                __instance.freeChatField.background.color = new Color32(255, 255, 255, byte.MaxValue);
+                __instance.freeChatField.textArea.compoText.Color(Color.black);
+                __instance.freeChatField.textArea.outputText.color = Color.black;
+            }
 
             if ((Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetKeyDown(KeyCode.X))
             {
@@ -107,137 +100,169 @@ class ChatPatch
             }
         }
 
+        // Add extra information to chat bubble
         [HarmonyPatch(nameof(ChatController.AddChat))]
-        [HarmonyPrefix]
-        [HarmonyPriority(Priority.First)]
-        public static bool AddChat_Prefix(ChatController __instance, [HarmonyArgument(0)] PlayerControl sourcePlayer, [HarmonyArgument(1)] string chatText)
+        [HarmonyPostfix]
+        public static void AddChat_Postfix(ChatController __instance, [HarmonyArgument(0)] PlayerControl sourcePlayer, [HarmonyArgument(1)] string chatText)
         {
-            bool censor = false;
-            if (!sourcePlayer || !PlayerControl.LocalPlayer)
+            ChatBubble chatBubble = SetChatPoolTheme();
+
+            StringBuilder sbTag = new StringBuilder();
+            StringBuilder sbInfo = new StringBuilder();
+
+            string hashPuid = Utils.GetHashPuid(sourcePlayer);
+            string friendCode = sourcePlayer.Data.FriendCode;
+            string playerName = sourcePlayer.Data.PlayerName;
+            string Role = $"<size=75%><color={sourcePlayer.GetTeamHexColor()}>{sourcePlayer.GetRoleName()}</color></size>+++";
+
+            if (GameStates.IsLobby && !GameStates.IsFreePlay)
             {
-                return false;
+                Role = "";
+
+                if (sourcePlayer.IsDev())
+                    sbTag.Append($"<color=#0088ff>Dev</color>+++");
+
+                if (((sourcePlayer.IsLocalPlayer() && GameStates.IsHost && Main.BetterHost.Value)
+                    || (!sourcePlayer.IsLocalPlayer() && sourcePlayer.BetterData().IsBetterHost && sourcePlayer.IsHost())))
+                    sbTag.AppendFormat("<color=#0dff00>{1}{0}</color>+++", Translator.GetString("Player.BetterHost"), sourcePlayer.BetterData().IsVerifiedBetterUser || sourcePlayer.IsLocalPlayer() ? "✓ " : "");
+                else if ((sourcePlayer.IsLocalPlayer() || sourcePlayer.BetterData().IsBetterUser))
+                    sbTag.AppendFormat("<color=#0dff00>{1}{0}</color>+++", Translator.GetString("Player.BetterUser"), sourcePlayer.BetterData().IsVerifiedBetterUser || sourcePlayer.IsLocalPlayer() ? "✓ " : "");
+
+                if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.SickoData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.SickoData.ContainsValue(friendCode))
+                    sbTag.Append($"<color=#00f583>{Translator.GetString("Player.SickoUser")}</color>+++");
+                else if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.AUMData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.AUMData.ContainsValue(friendCode))
+                    sbTag.Append($"<color=#4f0000>{Translator.GetString("Player.AUMUser")}</color>+++");
+                else if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.PlayerData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.PlayerData.ContainsValue(friendCode))
+                    sbTag.Append($"<color=#fc0000>{Translator.GetString("Player.KnownCheater")}</color>+++");
             }
-            NetworkedPlayerInfo data = PlayerControl.LocalPlayer.Data;
-            NetworkedPlayerInfo data2 = sourcePlayer.Data;
-            if (data2 == null || data == null || (data2.IsDead && !data.IsDead))
+
+            if (!sourcePlayer.IsImpostorTeammate())
             {
-                return false;
-            }
-            ChatBubble pooledBubble = __instance.GetPooledBubble();
-            try
-            {
-                if (sourcePlayer.BetterData().IsBetterUser && GameStates.IsBetterHostLobby)
-                    chatText = chatText.Replace("\n", "");
-
-                pooledBubble.transform.SetParent(__instance.scroller.Inner);
-                pooledBubble.transform.localScale = Vector3.one;
-                bool flag = sourcePlayer.IsLocalPlayer();
-                if (flag)
-                {
-                    pooledBubble.SetRight();
-                }
-                else
-                {
-                    pooledBubble.SetLeft();
-                }
-                bool didVote = MeetingHud.Instance && MeetingHud.Instance.DidVote(sourcePlayer.PlayerId);
-                pooledBubble.Background.color = new Color(0.05f, 0.05f, 0.05f, 1f);
-                pooledBubble.SetCosmetics(data2);
-                __instance.SetChatBubbleName(pooledBubble, data2, data2.IsDead, didVote, PlayerNameColor.Get(data2), null);
-                if (censor && DataManager.Settings.Multiplayer.CensorChat)
-                {
-                    chatText = BlockedWords.CensorWords(chatText, false);
-                }
-                pooledBubble.SetText(chatText);
-                pooledBubble.AlignChildren();
-                __instance.AlignAllBubbles();
-                if (!__instance.IsOpenOrOpening && __instance.notificationRoutine == null)
-                {
-                    __instance.notificationRoutine = __instance.StartCoroutine(__instance.BounceDot());
-                }
-                if (!flag)
-                {
-                    SoundManager.Instance.PlaySound(__instance.messageSound, false, 1f, null).pitch = 0.5f + (float)sourcePlayer.PlayerId / 15f;
-                    __instance.chatNotification.SetUp(sourcePlayer, chatText);
-                }
-
-                StringBuilder sbTag = new StringBuilder();
-                StringBuilder sbInfo = new StringBuilder();
-
-                string hashPuid = Utils.GetHashPuid(sourcePlayer);
-                string friendCode = sourcePlayer.Data.FriendCode;
-                string playerName = sourcePlayer.Data.PlayerName;
-                string Role = $"<size=75%><color={sourcePlayer.GetTeamHexColor()}>{sourcePlayer.GetRoleName()}</color></size>+++";
-
-                if (GameStates.IsLobby && !GameStates.IsFreePlay)
+                if (PlayerControl.LocalPlayer.IsAlive() && !sourcePlayer.IsLocalPlayer())
                 {
                     Role = "";
-
-                    if (sourcePlayer.IsDev())
-                        sbTag.Append($"<color=#0088ff>Dev</color>+++");
-
-                    if (((sourcePlayer.IsLocalPlayer() && GameStates.IsHost && Main.BetterHost.Value)
-                        || (!sourcePlayer.IsLocalPlayer() && sourcePlayer.BetterData().IsBetterHost && sourcePlayer.IsHost())))
-                        sbTag.AppendFormat("<color=#0dff00>{1}{0}</color>+++", Translator.GetString("Player.BetterHost"), sourcePlayer.BetterData().IsVerifiedBetterUser || sourcePlayer.IsLocalPlayer() ? "✓ " : "");
-                    else if ((sourcePlayer.IsLocalPlayer() || sourcePlayer.BetterData().IsBetterUser))
-                        sbTag.AppendFormat("<color=#0dff00>{1}{0}</color>+++", Translator.GetString("Player.BetterUser"), sourcePlayer.BetterData().IsVerifiedBetterUser || sourcePlayer.IsLocalPlayer() ? "✓ " : "");
-
-                    if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.SickoData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.SickoData.ContainsValue(friendCode))
-                        sbTag.Append($"<color=#00f583>{Translator.GetString("Player.SickoUser")}</color>+++");
-                    else if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.AUMData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.AUMData.ContainsValue(friendCode))
-                        sbTag.Append($"<color=#4f0000>{Translator.GetString("Player.AUMUser")}</color>+++");
-                    else if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.PlayerData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.PlayerData.ContainsValue(friendCode))
-                        sbTag.Append($"<color=#fc0000>{Translator.GetString("Player.KnownCheater")}</color>+++");
                 }
-
-                if (!sourcePlayer.IsImpostorTeammate())
-                {
-                    if (PlayerControl.LocalPlayer.IsAlive() && !sourcePlayer.IsLocalPlayer())
-                    {
-                        Role = "";
-                    }
-                }
-
-                if (PlayerControl.LocalPlayer.Is(RoleTypes.GuardianAngel) && !sourcePlayer.IsAlive() || !PlayerControl.LocalPlayer.Is(RoleTypes.GuardianAngel))
-                {
-                    sbTag.Append(Role);
-                }
-
-                sbInfo.Append("<size=75%>");
-                for (int i = 0; i < sbTag.ToString().Split("+++").Length; i++)
-                {
-                    if (!string.IsNullOrEmpty(sbTag.ToString().Split("+++")[i]))
-                    {
-                        if (i < sbTag.ToString().Split("+++").Length)
-                        {
-                            sbInfo.Append(sbTag.ToString().Split("+++")[i]);
-                        }
-                        if (i != sbTag.ToString().Split("+++").Length - 2)
-                        {
-                            sbInfo.Append(" - ");
-                        }
-                    }
-                }
-                sbInfo.Append("</size>");
-
-                if (flag)
-                {
-                    playerName = $"{sbInfo} " + playerName;
-                }
-                else
-                {
-                    playerName += $" {sbInfo}";
-                }
-
-                pooledBubble.NameText.SetText(playerName);
-
-                Logger.Log($"{sourcePlayer.Data.PlayerName} -> {chatText}", "ChatLog");
             }
-            catch
+
+            if (PlayerControl.LocalPlayer.Is(RoleTypes.GuardianAngel) && !sourcePlayer.IsAlive() || !PlayerControl.LocalPlayer.Is(RoleTypes.GuardianAngel))
             {
+                sbTag.Append(Role);
             }
 
-            return false;
+            sbInfo.Append("<size=75%>");
+            for (int i = 0; i < sbTag.ToString().Split("+++").Length; i++)
+            {
+                if (!string.IsNullOrEmpty(sbTag.ToString().Split("+++")[i]))
+                {
+                    if (i < sbTag.ToString().Split("+++").Length)
+                    {
+                        sbInfo.Append(sbTag.ToString().Split("+++")[i]);
+                    }
+                    if (i != sbTag.ToString().Split("+++").Length - 2)
+                    {
+                        sbInfo.Append(" - ");
+                    }
+                }
+            }
+            sbInfo.Append("</size>");
+
+            bool flag = sourcePlayer == PlayerControl.LocalPlayer;
+            if (flag)
+            {
+                playerName = $"{sbInfo} " + playerName;
+            }
+            else
+            {
+                playerName += $" {sbInfo}";
+            }
+
+            chatBubble.NameText.text = playerName;
+            chatBubble.ColorBlindName.color = Palette.PlayerColors[sourcePlayer.Data.DefaultOutfit.ColorId];
+            Logger.Log($"{sourcePlayer.Data.PlayerName} -> {chatText}", "ChatLog");
+        }
+
+        [HarmonyPatch(nameof(ChatController.AddChatNote))]
+        [HarmonyPostfix]
+        public static void AddChatNote_Postfix(ChatController __instance)
+        {
+            SetChatPoolTheme();
+        }
+
+        [HarmonyPatch(nameof(ChatController.AddChatWarning))]
+        [HarmonyPostfix]
+        public static void AddChatWarning_Postfix(ChatController __instance)
+        {
+            SetChatPoolTheme();
+        }
+
+        public static void SetChatTheme()
+        {
+            var chat = HudManager.Instance.Chat;
+
+            if (Main.ChatDarkMode.Value)
+            {
+                // Quick chat color
+                chat.quickChatField.background.color = new Color32(40, 40, 40, byte.MaxValue);
+                chat.quickChatField.text.color = Color.white;
+
+                // Icons
+                chat.quickChatButton.transform.Find("QuickChatIcon").GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.5f, 0.5f, 1f);
+                chat.openKeyboardButton.transform.Find("OpenKeyboardIcon").GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.5f, 0.5f, 1f);
+            }
+            else
+            {
+                // Quick chat color
+                chat.quickChatField.background.color = new Color32(255, 255, 255, byte.MaxValue);
+                chat.quickChatField.text.color = Color.black;
+
+                // Icons
+                chat.quickChatButton.transform.Find("QuickChatIcon").GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
+                chat.openKeyboardButton.transform.Find("OpenKeyboardIcon").GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
+            }
+
+            foreach (var item in HudManager.Instance.Chat.chatBubblePool.activeChildren.ToArray().Select(c => c.GetComponent<ChatBubble>()))
+            {
+                SetChatPoolTheme(item);
+            }
+        }
+
+        // Set chat theme
+        public static ChatBubble SetChatPoolTheme(ChatBubble? asChatBubble = null)
+        {
+            ChatBubble Get() => HudManager.Instance.Chat.chatBubblePool.activeChildren.ToArray()
+                .Select(c => c.GetComponent<ChatBubble>())
+                .Last();
+
+            ChatBubble chatBubble = asChatBubble ??= Get();
+
+            if (Main.ChatDarkMode.Value)
+            {
+                chatBubble.transform.Find("ChatText (TMP)").GetComponent<TextMeshPro>().color = new Color(1f, 1f, 1f, 1f);
+                chatBubble.transform.Find("Background").GetComponent<SpriteRenderer>().color = new Color(0.05f, 0.05f, 0.05f, 1f);
+
+                if (chatBubble.transform.Find("PoolablePlayer/xMark") != null)
+                {
+                    if (chatBubble.transform.Find("PoolablePlayer/xMark").GetComponent<SpriteRenderer>().enabled == true)
+                    {
+                        chatBubble.transform.Find("Background").GetComponent<SpriteRenderer>().color = new Color(0.05f, 0.05f, 0.05f, 0.5f);
+                    }
+                }
+            }
+            else
+            {
+                chatBubble.transform.Find("ChatText (TMP)").GetComponent<TextMeshPro>().color = new Color(0f, 0f, 0f, 1f);
+                chatBubble.transform.Find("Background").GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
+
+                if (chatBubble.transform.Find("PoolablePlayer/xMark") != null)
+                {
+                    if (chatBubble.transform.Find("PoolablePlayer/xMark").GetComponent<SpriteRenderer>().enabled == true)
+                    {
+                        chatBubble.transform.Find("Background").GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0.5f);
+                    }
+                }
+            }
+
+            return chatBubble;
         }
     }
 

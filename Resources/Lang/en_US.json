@@ -15,6 +15,7 @@
   "Timer": "Timer",
   "SystemMessage": "System Message",
   "SystemNotification": "System Notification",
+  "ModdedLobbyMsg": "{0} does not support\n<b>Modded Lobbies</b>",
 
   "Player.Loading": "Loading",
   "Player.NoFriendCode": "No Friend Code",
@@ -34,6 +35,13 @@
   "DisconnectReason.Error": "{0} Was kicked due to an error!",
   "DisconnectReason.Unknown": "{0} Left the game due to unknown reason?",
 
+  "DisconnectReasonMeeting.Left": "Left The Game",
+  "DisconnectReasonMeeting.Disconnect": "Disconnected",
+  "DisconnectReasonMeeting.Kicked": "Kicked By Host",
+  "DisconnectReasonMeeting.Banned": "Banned By Host",
+  "DisconnectReasonMeeting.AntiCheat": "Banned By Anti-Cheat",
+  "DisconnectReasonMeeting.Cheater": "Banned By Server",
+
   "WelcomeMsg.WelcomeToBAU": "Welcome To {0}",
   "WelcomeMsg.ThanksForDownloading": "Thanks for downloading!",
   "WelcomeMsg.BAUDescription1": "<color=#0dff00>{0}</color> Is a mod for improving the vanilla Among Us experience with a built-in {1} and other futures, <color=#0dff00>{0}</color> is a client-sided mod so it can be used with other vanilla Among Us players.",
@@ -44,6 +52,7 @@
   "BetterOption.BetterHost": "<color=#4f92ff>Better Host</color>",
   "BetterOption.BetterNotifications": "<color=#4f92ff>Better Notifications</color>",
   "BetterOption.ForceOwnLanguage": "Force System language",
+  "BetterOption.ChatDarkMode": "Chat Dark Mode",
   "BetterOption.ChatInGame": "Chat In Gameplay",
   "BetterOption.LobbyInfo": "Show Lobby Info",
   "BetterOption.LobbyTheme": "Disable Lobby Theme",
@@ -92,6 +101,8 @@
   "AntiCheat.UnauthorizedAction": "Has been detected doing an unauthorized action",
   "AntiCheat.ByAntiCheat": "{0} by <color=#4f92ff>Anti-Cheat</color>",
   "AntiCheat.KickMessage": "{0}! Reason: <color=#fc0000>{1}</color>",
+  "AntiCheat.BanPlayerListMessage": "has been {0} due to being on the ban player list!",
+  "AntiCheat.BanNameListMessage": "has been {0} due to their name being on the ban name list!",
   "AntiCheat.HasBeenDetectedWithCheat": "Has been detected with a cheat",
   "AntiCheat.HasBeenDetectedWithCheat2": "Has been detected with a cheat client",
   "AntiCheat.InvalidAction": "Invalid Action RPC: {0}",

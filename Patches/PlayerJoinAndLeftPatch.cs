@@ -35,18 +35,19 @@ public static class OnPlayerJoinedPatch
 {
     public static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData client)
     {
-        var player = Utils.PlayerFromClientId(client.Id);
         PlayerControlPatch.infotime = 0f;
-
-        if (player != null)
-        {
-            player.BetterData().ClearData();
-        }
 
         _ = new LateTask(() =>
         {
             if (GameStates.IsInGame)
             {
+                var player = Utils.PlayerFromClientId(client.Id);
+
+                if (player != null)
+                {
+                    player.BetterData().ClearData();
+                }
+
                 // Send Better Among Us Check RPC
                 RPC.SendBetterCheck();
 
@@ -68,12 +69,15 @@ public static class OnPlayerJoinedPatch
                                 if (!string.IsNullOrEmpty(player.Data.FriendCode) && text.Contains(player.Data.FriendCode)
                                     || !string.IsNullOrEmpty(Utils.GetHashPuid(player)) && text.Contains(Utils.GetHashPuid(player)))
                                 {
-                                    player.Kick(true, $"has been banned due to being on the ban player list!");
+                                    player.Kick(true, Translator.GetString("AntiCheat.BanPlayerListMessage"), bypassDataCheck: true);
                                     break;
                                 }
                             }
                         }
-                        catch { }
+                        catch (Exception ex)
+                        {
+                            Logger.Error(ex);
+                        }
                     }
                 }
 
@@ -100,7 +104,7 @@ public static class OnPlayerJoinedPatch
 
                         if (!string.IsNullOrEmpty(normalizedPlayerName) && isNameBanned)
                         {
-                            player.Kick(false, $"has been kicked due to their name being on the ban name list!");
+                            player.Kick(false, Translator.GetString("AntiCheat.BanNameListMessage"), bypassDataCheck: true);
                         }
                     }
                     catch { }
@@ -136,9 +140,10 @@ class GameDataShowNotificationPatch
 {
     public static void BetterShowNotification(NetworkedPlayerInfo playerData, DisconnectReasons reason = DisconnectReasons.Unknown, string forceReasonText = "")
     {
-        if (playerData.BetterData().AntiCheatInfo.BannedByAntiCheat) return;
+        if (playerData.BetterData().AntiCheatInfo.BannedByAntiCheat || playerData.BetterData().HasShowDcMsg) return;
+        playerData.BetterData().HasShowDcMsg = true;
 
-        string playerName = playerData.BetterData().RealName;
+        string? playerName = playerData.BetterData().RealName;
 
         if (forceReasonText != "")
         {
@@ -167,7 +172,7 @@ class GameDataShowNotificationPatch
                     ReasonText = string.Format(Translator.GetString("DisconnectReason.Banned"), playerName, AmongUsClient.Instance.GetHost().Character.Data.PlayerName);
                     break;
                 case DisconnectReasons.Hacking:
-                    ReasonText = string.Format(Translator.GetString("DisconnectReason.Disconnect"), playerName);
+                    ReasonText = string.Format(Translator.GetString("DisconnectReason.Cheater"), playerName);
                     break;
                 case DisconnectReasons.Error:
                     ReasonText = string.Format(Translator.GetString("DisconnectReason.Error"), playerName);

@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using TMPro;
 using UnityEngine;
 
 namespace BetterAmongUs.Patches;

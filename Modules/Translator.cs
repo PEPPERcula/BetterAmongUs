@@ -1,6 +1,5 @@
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using System.Globalization;
-using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
@@ -38,11 +37,11 @@ public static class Translator
             {
                 // Read the JSON file content
                 using Stream resourceStream = assembly.GetManifestResourceStream(jsonFileName);
-                
+
                 if (resourceStream != null)
                 {
                     using StreamReader reader = new(resourceStream);
-                    
+
                     string jsonContent = reader.ReadToEnd();
                     // Deserialize the JSON into a dictionary
                     Dictionary<string, string> jsonDictionary = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonContent);
