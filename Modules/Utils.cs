@@ -2,7 +2,6 @@
 using AmongUs.GameOptions;
 using BetterAmongUs.Patches;
 using InnerNet;
-using Sentry.Internal.Extensions;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;

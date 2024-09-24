@@ -105,8 +105,8 @@ internal static class RPC
             messageWriter.WriteBytesAndSize(optionsByteArray);
             AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
         }
-    } 
-    
+    }
+
     public static void SendBetterCheck()
     {
         var flag = GameStates.IsHost && Main.BetterHost.Value;

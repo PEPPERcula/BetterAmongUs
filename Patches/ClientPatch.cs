@@ -1,8 +1,6 @@
-﻿using BepInEx.Unity.IL2CPP.Utils;
-using HarmonyLib;
+﻿using HarmonyLib;
 using InnerNet;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace BetterAmongUs.Patches;
 

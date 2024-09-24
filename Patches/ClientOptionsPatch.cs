@@ -85,7 +85,7 @@ public static class OptionsMenuBehaviourPatch
             string title = Translator.GetString("BetterOption.ForceOwnLanguage");
             ForceOwnLanguage = ClientOptionItem.Create(title, Main.ForceOwnLanguage, __instance);
         }
-        
+
         if (ChatDarkMode == null || ChatDarkMode.ToggleButton == null)
         {
             string title = Translator.GetString("BetterOption.ChatDarkMode");
@@ -96,7 +96,7 @@ public static class OptionsMenuBehaviourPatch
                 ChatPatch.ChatControllerPatch.SetChatTheme();
             }
         }
-        
+
         if (ChatInGameplay == null || ChatInGameplay.ToggleButton == null)
         {
             string title = Translator.GetString("BetterOption.ChatInGame");
@@ -155,7 +155,7 @@ public static class OptionsMenuBehaviourPatch
                 }
             }
         }
-        
+
         if (SwitchToVanilla == null || SwitchToVanilla.ToggleButton == null)
         {
             string title = Translator.GetString("BetterOption.ToVanilla");

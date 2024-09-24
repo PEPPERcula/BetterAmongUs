@@ -86,7 +86,7 @@ public class PingTrackerPatch
 
         return newPing;
     }
-    
+
     private static string GetTimeColor(float time)
     {
         float minutes = (int)time / 60 + 1f;

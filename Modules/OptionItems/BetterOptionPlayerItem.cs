@@ -1,5 +1,4 @@
-﻿using System.Dynamic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace BetterAmongUs;
 
@@ -92,7 +91,7 @@ public class BetterOptionPlayerItem : BetterOptionItem
         {
             ThisOption.ValueText.text = Utils.PlayerFromPlayerId(CurrentIndex).GetPlayerNameAndColor();
         }
-        else 
+        else
         {
             ThisOption.ValueText.text = "<color=#ababab>Random</color>";
         }
