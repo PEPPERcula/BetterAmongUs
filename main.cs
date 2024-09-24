@@ -25,7 +25,7 @@ public class Main : BasePlugin
 {
     public static readonly ReleaseTypes ReleaseBuildType = ReleaseTypes.Release;
     public const string BetaNum = "0";
-    public const string HotfixNum = "2";
+    public const string HotfixNum = "3";
     public const bool IsHotFix = true;
     public const string PluginGuid = "com.ten.betteramongus";
     public const string PluginVersion = "1.1.4";
