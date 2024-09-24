@@ -5,14 +5,14 @@ namespace BetterAmongUs;
 
 class Logger
 {
-    public static void Log(string info, string tag = "Log")
+    public static void Log(string info, string tag = "Log", bool logConsole = true)
     {
         string mark = $"{DateTime.Now:HH:mm} [BetterLog][{tag}]";
         string logFilePath = Path.Combine(BetterDataManager.filePathFolder, "better-log.txt");
         string newLine = $"{mark}: {Utils.RemoveHtmlText(info)}";
         File.AppendAllText(logFilePath, newLine + Environment.NewLine);
         Main.Logger.LogInfo($"[{tag}] {info}");
-        ConsoleManager.ConsoleStream.WriteLine($"{DateTime.Now:HH:mm} BetterAmongUs[{tag}]: {info}");
+        if (logConsole) ConsoleManager.ConsoleStream.WriteLine($"{DateTime.Now:HH:mm} BetterAmongUs[{tag}]: {Utils.RemoveHtmlText(info)}");
     }
     public static void LogHeader(string info, string tag = "LogHeader") => Log($"   >-------------- {info} --------------<", tag);
     public static void LogCheat(string info, string tag = "AntiCheat") => Log(info, tag);
