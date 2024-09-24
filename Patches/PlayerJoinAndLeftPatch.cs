@@ -171,7 +171,7 @@ class GameDataShowNotificationPatch
                     ReasonText = string.Format(Translator.GetString("DisconnectReason.Banned"), playerName, AmongUsClient.Instance.GetHost().Character.Data.PlayerName);
                     break;
                 case DisconnectReasons.Hacking:
-                    ReasonText = string.Format(Translator.GetString("DisconnectReason.Disconnect"), playerName);
+                    ReasonText = string.Format(Translator.GetString("DisconnectReason.Cheater"), playerName);
                     break;
                 case DisconnectReasons.Error:
                     ReasonText = string.Format(Translator.GetString("DisconnectReason.Error"), playerName);
