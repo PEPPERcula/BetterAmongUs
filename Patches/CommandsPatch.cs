@@ -281,7 +281,7 @@ class CommandsPatch
                     if (HandleIsHost(command) == true)
                     {
                         var player = cmdTarget;
-                        var cmdFlag = command[0][1..].ToLower().Trim() != "kick";
+                        var cmdFlag = command[0][1..].ToLower().Trim() != FormatCommandTranslation("Command.Helper.kick");
                         player.Kick(cmdFlag);
                     }
                 }

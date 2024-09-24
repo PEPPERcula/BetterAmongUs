@@ -140,9 +140,10 @@ class GameDataShowNotificationPatch
 {
     public static void BetterShowNotification(NetworkedPlayerInfo playerData, DisconnectReasons reason = DisconnectReasons.Unknown, string forceReasonText = "")
     {
-        if (playerData.BetterData().AntiCheatInfo.BannedByAntiCheat || playerData.BetterData().HasBeenKicked) return;
+        if (playerData.BetterData().AntiCheatInfo.BannedByAntiCheat || playerData.BetterData().HasShowDcMsg) return;
+        playerData.BetterData().HasShowDcMsg = true;
 
-        string playerName = playerData.BetterData().RealName;
+        string? playerName = playerData.BetterData().RealName;
 
         if (forceReasonText != "")
         {
