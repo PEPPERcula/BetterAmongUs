@@ -582,11 +582,11 @@ class AntiCheat
 
             if (callId is (byte)RpcCalls.StartMeeting or (byte)RpcCalls.ReportDeadBody)
             {
-                if (GameStates.IsMeeting && MeetingHudUpdatePatch.timeOpen > 0.5f || GameStates.IsHideNSeek || !player.IsAlive() || player.IsInVent() || player.shapeshifting
+                if (GameStates.IsMeeting && MeetingHudUpdatePatch.timeOpen > 0.5f || GameStates.IsHideNSeek || !player.IsAlive() && callId is (byte)RpcCalls.ReportDeadBody || player.IsInVent() || player.shapeshifting
                     || player.inMovingPlat || player.onLadder || player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
                 {
                     BetterNotificationManager.NotifyCheat(player, string.Format(Translator.GetString("AntiCheat.InvalidActionRPC"), Enum.GetName((RpcCalls)callId)));
-                    Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {GameStates.IsMeeting} && {GameStates.IsHideNSeek} || {!player.IsAlive()} || {player.IsInVent()} || {player.shapeshifting}" +
+                    Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {GameStates.IsMeeting} && {MeetingHudUpdatePatch.timeOpen > 0.5f} || {!player.IsAlive() && callId is (byte)RpcCalls.ReportDeadBody} || {player.IsInVent()} || {player.shapeshifting}" +
                         $" || {player.inMovingPlat} || {player.onLadder} || {player.MyPhysics.Animations.IsPlayingAnyLadderAnimation()}");
 
                     if (GameStates.IsHost)
@@ -642,10 +642,10 @@ class AntiCheat
                 _ = reader.ReadByte();
                 var type = reader.ReadByte();
 
-                if (!GameStates.IsMeeting || !Enum.IsDefined(typeof(ChatNoteTypes), type))
+                if (!GameStates.IsMeeting || type != (byte)ChatNoteTypes.DidVote)
                 {
-                    BetterNotificationManager.NotifyCheat(player, string.Format(Translator.GetString("AntiCheat.InvalidActionRPC"), Enum.GetName((RpcCalls)callId)));
-                    Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {!GameStates.IsMeeting} || {!Enum.IsDefined(typeof(ChatNoteTypes), type)}");
+                    BetterNotificationManager.NotifyCheat(player, string.Format(Translator.GetString("AntiCheat.InvalidActionRPC"), Enum.GetName(typeof(RpcCalls), (int)callId)));
+                    Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName(typeof(RpcCalls), (int)callId)}: {!GameStates.IsMeeting} || {type != (byte)ChatNoteTypes.DidVote}");
                 }
             }
 
