@@ -25,11 +25,11 @@ public class Main : BasePlugin
 {
     public static readonly ReleaseTypes ReleaseBuildType = ReleaseTypes.Release;
     public const string BetaNum = "0";
-    public const string HotfixNum = "3";
-    public const bool IsHotFix = true;
+    public const string HotfixNum = "0";
+    public const bool IsHotFix = false;
     public const string PluginGuid = "com.ten.betteramongus";
-    public const string PluginVersion = "1.1.4";
-    public const string ReleaseDate = "09.23.2024"; // mm/dd/yyyy
+    public const string PluginVersion = "1.1.5";
+    public const string ReleaseDate = "10.7.2024"; // mm/dd/yyyy
     public const string Github = "https://github.com/EnhancedNetwork/BetterAmongUs-Public";
     public const string Discord = "https://discord.gg/ten";
     public static BetterAccountInfo myAccountInfo = new();
@@ -98,6 +98,7 @@ public class Main : BasePlugin
 
     public static List<string> SupportedAmongUsVersions =
     [
+        "2024.10.29",
         "2024.9.4",
         "2024.8.13",
         "2024.6.18",

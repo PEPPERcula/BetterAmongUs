@@ -258,6 +258,7 @@ internal static class RPC
 
                         HashSet<string> bannedWords = new HashSet<string>(
                             File.ReadLines(BetterDataManager.banWordListFile)
+                                .Where(line => !line.TrimStart().StartsWith("//"))
                                 .Select(normalizeText)
                                 .Where(text => !string.IsNullOrWhiteSpace(text))
                         );

@@ -91,6 +91,7 @@ public static class OnPlayerJoinedPatch
                         // Read all banned names into a HashSet with normalized names
                         HashSet<string> bannedNames = new HashSet<string>(
                             File.ReadLines(BetterDataManager.banNameListFile)
+                                .Where(line => !line.TrimStart().StartsWith("//"))
                                 .Select(normalizeName)
                                 .Where(name => !string.IsNullOrWhiteSpace(name))
                         );

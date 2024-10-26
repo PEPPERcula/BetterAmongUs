@@ -1,3 +1,4 @@
+using BepInEx;
 using HarmonyLib;
 using UnityEngine;
 
@@ -162,6 +163,7 @@ public static class OptionsMenuBehaviourPatch
             SwitchToVanilla = ClientOptionItem.Create(title, null, __instance, SwitchToVanillaButtonToggle, IsToggle: false, toggleCheck: () => !toggleCheckInGame(title));
             static void SwitchToVanillaButtonToggle()
             {
+                ConsoleManager.DetachConsole();
                 UnityEngine.Object.Destroy(BetterNotificationManager.BAUNotificationManagerObj);
                 Harmony.UnpatchAll();
             }

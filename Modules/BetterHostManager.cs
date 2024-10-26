@@ -208,7 +208,7 @@ class BetterHostManager
         {
             if (target == null || target.IsLocalPlayer()) continue;
 
-            string NewName = player.CurrentOutfit.PlayerName;
+            string NewName = !player.IsInShapeshift() ? player.Data.PlayerName : GameData.Instance.AllPlayers.ToArray().First(data => data.PlayerId == player.shapeshiftTargetPlayerId).PlayerName;
 
             StringBuilder sbTopTag = new StringBuilder();
 

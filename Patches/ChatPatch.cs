@@ -112,7 +112,7 @@ class ChatPatch
 
             string hashPuid = Utils.GetHashPuid(sourcePlayer);
             string friendCode = sourcePlayer.Data.FriendCode;
-            string playerName = sourcePlayer.Data.PlayerName;
+            string playerName = sourcePlayer.BetterData().RealName ?? "";
             string Role = $"<size=75%><color={sourcePlayer.GetTeamHexColor()}>{sourcePlayer.GetRoleName()}</color></size>+++";
 
             if (GameStates.IsLobby && !GameStates.IsFreePlay)
@@ -166,7 +166,7 @@ class ChatPatch
             }
             sbInfo.Append("</size>");
 
-            bool flag = sourcePlayer == PlayerControl.LocalPlayer;
+            bool flag = sourcePlayer.IsLocalPlayer();
             if (flag)
             {
                 playerName = $"{sbInfo} " + playerName;
@@ -178,7 +178,14 @@ class ChatPatch
 
             chatBubble.NameText.text = playerName;
             chatBubble.ColorBlindName.color = Palette.PlayerColors[sourcePlayer.Data.DefaultOutfit.ColorId];
-            Logger.Log($"{sourcePlayer.Data.PlayerName} -> {chatText}", "ChatLog");
+            if (sourcePlayer.IsAlive())
+            {
+                Logger.Log($"{sourcePlayer.Data.PlayerName} -> {chatText}", "ChatLog");
+            }
+            else
+            {
+                Logger.LogPrivate($"{sourcePlayer.Data.PlayerName} -> {chatText}", "ChatLog");
+            }
         }
 
         [HarmonyPatch(nameof(ChatController.AddChatNote))]
