@@ -124,11 +124,13 @@ class MeetingHudUpdatePatch
                 // Put +++ at the end of each tag
 
                 if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.SickoData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.SickoData.ContainsValue(friendCode))
-                    sbTag.Append("<color=#00f583>Sicko User</color>+++");
+                    sbTag.Append($"<color=#00f583>{Translator.GetString("Player.SickoUser")}</color>+++");
                 else if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.AUMData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.AUMData.ContainsValue(friendCode))
-                    sbTag.Append("<color=#4f0000>AUM User</color>+++");
+                    sbTag.Append($"<color=#4f0000>{Translator.GetString("Player.AUMUser")}</color>+++");
+                else if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.KNData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.KNData.ContainsValue(friendCode))
+                    sbTag.Append($"<color=#4f0000>{Translator.GetString("Player.KNUser")}</color>+++");
                 else if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.PlayerData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.PlayerData.ContainsValue(friendCode))
-                    sbTag.Append("<color=#fc0000>Known Cheater</color>+++");
+                    sbTag.Append($"<color=#fc0000>{Translator.GetString("Player.KnownCheater")}</color>+++");
 
                 for (int i = 0; i < sbTag.ToString().Split("+++").Length; i++)
                 {

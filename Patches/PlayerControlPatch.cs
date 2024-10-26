@@ -151,6 +151,13 @@ class PlayerControlPatch
                 player.SetOutlineByHex(true, "#4f0000");
             }
 
+            else if (!string.IsNullOrEmpty(hashPuid) && hashPuid.Length > 0 && AntiCheat.KNData.ContainsKey(hashPuid)
+                || !string.IsNullOrEmpty(friendCode) && friendCode.Length > 0 && AntiCheat.KNData.ContainsValue(friendCode))
+            {
+                sbTag.Append($"<color=#8731e7>{Translator.GetString("Player.KNUser")}</color>+++");
+                player.SetOutlineByHex(true, "#8731e7");
+            }
+
             else if (!string.IsNullOrEmpty(hashPuid) && hashPuid.Length > 0 && AntiCheat.PlayerData.ContainsKey(hashPuid)
                 || !string.IsNullOrEmpty(friendCode) && friendCode.Length > 0 && AntiCheat.PlayerData.ContainsValue(friendCode))
             {
@@ -161,7 +168,8 @@ class PlayerControlPatch
             else
             {
                 var color = player.cosmetics.currentBodySprite.BodySprite.material.GetColor("_OutlineColor");
-                if (color == Utils.HexToColor32("#00f583") || color == Utils.HexToColor32("#4f0000") || color == Utils.HexToColor32("#fc0000"))
+                if (color == Utils.HexToColor32("#00f583") || color == Utils.HexToColor32("#4f0000")
+                    || color == Utils.HexToColor32("#8731e7") || color == Utils.HexToColor32("#fc0000"))
                 {
                     player.SetOutline(false, null);
                 }

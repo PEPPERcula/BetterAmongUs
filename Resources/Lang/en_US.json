@@ -25,6 +25,7 @@
   "Player.BetterHost": "Better Host",
   "Player.SickoUser": "Sicko User",
   "Player.AUMUser": "AUM User",
+  "Player.KNUser": "KN User",
   "Player.KnownCheater": "Known Cheater",
 
   "DisconnectReason.Left": "{0} Left the game!",
@@ -114,10 +115,12 @@
   "AntiCheat.TryBanExploit": "Attempted To Ban Exploit",
   "AntiCheat.Cheat.Sicko": "Sicko Menu",
   "AntiCheat.Cheat.AUM": "AUM",
+  "AntiCheat.Cheat.KN": "Kill Network",
   "AntiCheat.Reason.InvalidFriendCode": "Invalid Friend Code",
   "AntiCheat.Reason.PlatformSpoofer": "Platform Spoofer",
   "AntiCheat.Reason.SickoMenuUser": "Known Sicko User",
   "AntiCheat.Reason.AUMUser": "Known AUM User",
+  "AntiCheat.Reason.KNUser": "Known KN User",
   "AntiCheat.Reason.KnownCheater": "Known Cheater",
 
   "GameSummary": "Game Summary",
