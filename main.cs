@@ -30,7 +30,7 @@ public class Main : BasePlugin
     public const bool IsHotFix = false;
     public const string PluginGuid = "com.ten.betteramongus";
     public const string PluginVersion = "1.1.5";
-    public const string ReleaseDate = "10.7.2024"; // mm/dd/yyyy
+    public const string ReleaseDate = "10.26.2024"; // mm/dd/yyyy
     public const string Github = "https://github.com/EnhancedNetwork/BetterAmongUs-Public";
     public const string Discord = "https://discord.gg/ten";
     public static BetterAccountInfo myAccountInfo = new();
