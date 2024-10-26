@@ -9,6 +9,7 @@ using Innersloth.IO;
 using System.Security.Cryptography;
 using System.Text;
 using UnityEngine;
+using static BetterAmongUs.PlayerControlDataExtension;
 
 namespace BetterAmongUs;
 
@@ -152,6 +153,8 @@ public class Main : BasePlugin
 
     public override void Load()
     {
+        AddComponent<ExtendedPlayerInfo>();
+
         try
         {
             ConsoleManager.CreateConsole();

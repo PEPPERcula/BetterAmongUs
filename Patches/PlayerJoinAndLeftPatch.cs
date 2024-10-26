@@ -11,8 +11,6 @@ class OnGameJoinedPatch
     {
         try
         {
-            PlayerControlDataExtension.playerInfo.Clear();
-
             PlayerControlPatch.time.Clear();
 
             AntiCheat.PauseAntiCheat();
@@ -40,11 +38,6 @@ public static class OnPlayerJoinedPatch
             if (GameStates.IsInGame)
             {
                 var player = Utils.PlayerFromClientId(client.Id);
-
-                if (player != null)
-                {
-                    player.BetterData().ClearData();
-                }
 
                 // Send Better Among Us Check RPC
                 RPC.SendBetterCheck();

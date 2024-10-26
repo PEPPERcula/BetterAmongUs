@@ -59,9 +59,9 @@ public static class OptionsMenuBehaviourPatch
             {
                 RPC.SendBetterCheck();
 
-                foreach (var kvp in PlayerControlDataExtension.playerInfo)
+                foreach (var player in Main.AllPlayerControls)
                 {
-                    PlayerControlDataExtension.playerInfo[kvp.Key].LastNameSetFor.Clear();
+                    player.BetterData().LastNameSetFor.Clear();
                 }
 
                 RPC.SyncAllNames(force: true);

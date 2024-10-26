@@ -69,11 +69,8 @@ class PlayerControlPatch
         if (time[__instance.PlayerId] <= 0)
         {
             SetPlayerInfo(__instance);
-            time[__instance.PlayerId] = 0.4f;
+            time[__instance.PlayerId] = 0.6f;
         }
-
-        // Reset player data in lobby
-        PlayerControlDataExtension.ResetPlayerData(__instance);
     }
 
     public static void SetPlayerInfo(PlayerControl player)
