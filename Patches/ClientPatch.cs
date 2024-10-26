@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using InnerNet;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace BetterAmongUs.Patches;
 
@@ -61,6 +62,24 @@ public class ClientPatch
         public static void ExitGame_Postfix([HarmonyArgument(0)] DisconnectReasons reason)
         {
             Logger.Log($"Client has left game for: {Enum.GetName(reason)}", "AmongUsClientPatch");
+        }
+
+        [HarmonyPatch(nameof(AmongUsClient.OnGameEnd))]
+        [HarmonyPrefix]
+        public static void OnGameEnd_Prefix()
+        {
+            foreach (var data in GameData.Instance.AllPlayers)
+            {
+                UnityEngine.Object.DontDestroyOnLoad(data.gameObject);
+            }
+
+            _ = new LateTask(() =>
+            {
+                foreach (var data in GameData.Instance.AllPlayers)
+                {
+                    SceneManager.MoveGameObjectToScene(data.gameObject, SceneManager.GetActiveScene());
+                }
+            }, 0.6f, shoudLog: false);
         }
     }
     [HarmonyPatch(typeof(InnerNetClient))]
