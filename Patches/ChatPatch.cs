@@ -105,7 +105,8 @@ class ChatPatch
         [HarmonyPostfix]
         public static void AddChat_Postfix(ChatController __instance, [HarmonyArgument(0)] PlayerControl sourcePlayer, [HarmonyArgument(1)] string chatText)
         {
-            ChatBubble chatBubble = SetChatPoolTheme();
+            ChatBubble? chatBubble = SetChatPoolTheme();
+            if (chatBubble == null) return;
 
             StringBuilder sbTag = new StringBuilder();
             StringBuilder sbInfo = new StringBuilder();
@@ -178,7 +179,7 @@ class ChatPatch
 
             chatBubble.NameText.text = playerName;
             chatBubble.ColorBlindName.color = Palette.PlayerColors[sourcePlayer.Data.DefaultOutfit.ColorId];
-            if (sourcePlayer.IsAlive())
+            if (sourcePlayer.IsAlive() || !PlayerControl.LocalPlayer.IsAlive())
             {
                 Logger.Log($"{sourcePlayer.Data.PlayerName} -> {chatText}", "ChatLog");
             }
@@ -234,13 +235,15 @@ class ChatPatch
         }
 
         // Set chat theme
-        public static ChatBubble SetChatPoolTheme(ChatBubble? asChatBubble = null)
+        public static ChatBubble? SetChatPoolTheme(ChatBubble? asChatBubble = null)
         {
             ChatBubble Get() => HudManager.Instance.Chat.chatBubblePool.activeChildren.ToArray()
                 .Select(c => c.GetComponent<ChatBubble>())
                 .Last();
 
             ChatBubble chatBubble = asChatBubble ??= Get();
+
+            if (chatBubble == null) return chatBubble;
 
             if (Main.ChatDarkMode.Value)
             {
