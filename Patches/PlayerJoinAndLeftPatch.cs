@@ -13,7 +13,7 @@ class OnGameJoinedPatch
         {
             PlayerControlDataExtension.playerInfo.Clear();
 
-            PlayerControlPatch.infotime = 0f;
+            PlayerControlPatch.time.Clear();
 
             AntiCheat.PauseAntiCheat();
 
@@ -35,8 +35,6 @@ public static class OnPlayerJoinedPatch
 {
     public static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData client)
     {
-        PlayerControlPatch.infotime = 0f;
-
         _ = new LateTask(() =>
         {
             if (GameStates.IsInGame)

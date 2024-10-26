@@ -13,7 +13,7 @@ public class BetterAccountInfo
     public bool? IsSponsor = false;
     public int? SponsorTier = 0;
 
-    public static BetterAccountInfo GenerateInfo(string allUserInfo, NetworkedPlayerInfo data)
+    public static BetterAccountInfo SerializeInfo(string allUserInfo, NetworkedPlayerInfo data)
     {
         BetterAccountInfo accInfo = new();
 

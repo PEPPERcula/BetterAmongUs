@@ -13,7 +13,7 @@ namespace BetterAmongUs.Patches;
 [HarmonyPatch(typeof(PlayerControl))]
 class PlayerControlPatch
 {
-    public static float infotime = 0f;
+    public static Dictionary<byte, float> time = [];
     [HarmonyPatch(nameof(PlayerControl.FixedUpdate))]
     [HarmonyPrefix]
     public static void FixedUpdate_Prefix(PlayerControl __instance)
@@ -60,12 +60,16 @@ class PlayerControlPatch
         }
 
         // Set text info
-        infotime -= Time.deltaTime;
+        if (!time.ContainsKey(__instance.PlayerId))
+        {
+            time[__instance.PlayerId] = 0f;
+        }
+        time[__instance.PlayerId] -= Time.deltaTime;
 
-        if (infotime <= 0)
+        if (time[__instance.PlayerId] <= 0)
         {
             SetPlayerInfo(__instance);
-            infotime = 0.4f;
+            time[__instance.PlayerId] = 0.4f;
         }
 
         // Reset player data in lobby

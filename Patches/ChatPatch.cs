@@ -245,13 +245,13 @@ class ChatPatch
             if (Main.ChatDarkMode.Value)
             {
                 chatBubble.transform.Find("ChatText (TMP)").GetComponent<TextMeshPro>().color = new Color(1f, 1f, 1f, 1f);
-                chatBubble.transform.Find("Background").GetComponent<SpriteRenderer>().color = new Color(0.05f, 0.05f, 0.05f, 1f);
+                chatBubble.transform.Find("Background").GetComponent<SpriteRenderer>().color = new Color(0.15f, 0.15f, 0.15f, 1f);
 
                 if (chatBubble.transform.Find("PoolablePlayer/xMark") != null)
                 {
                     if (chatBubble.transform.Find("PoolablePlayer/xMark").GetComponent<SpriteRenderer>().enabled == true)
                     {
-                        chatBubble.transform.Find("Background").GetComponent<SpriteRenderer>().color = new Color(0.05f, 0.05f, 0.05f, 0.5f);
+                        chatBubble.transform.Find("Background").GetComponent<SpriteRenderer>().color = new Color(0.15f, 0.15f, 0.15f, 0.5f);
                     }
                 }
             }
