@@ -77,17 +77,13 @@ class PlayerControlPatch
     {
         try
         {
-            if (player == null || player.Data == null) return;
+            if (player?.Data == null) return;
 
-            if (GameStates.IsTOHEHostLobby)
-            {
-
-                return;
-            }
+            var betterData = player.BetterData();
+            if (GameStates.IsTOHEHostLobby) return;
 
             var nameText = player.gameObject.transform.Find("Names/NameText_TMP").GetComponent<TextMeshPro>();
 
-            // Set player text info
             if (!player.DataIsCollected())
             {
                 nameText.text = Translator.GetString("Player.Loading");
@@ -101,195 +97,175 @@ class PlayerControlPatch
                 return;
             }
 
-            string NewName = player.Data.PlayerName;
+            string newName = player.Data.PlayerName;
             string hashPuid = Utils.GetHashPuid(player);
-
             string platform = Utils.GetPlatformName(player, useTag: true);
 
-            string pattern = @"^[a-zA-Z0-9#]+$";
-            string hashtagPattern = @"^#[0-9]{4}$";
-            string friendCode = player.Data.FriendCode;
-            string friendCodeColor = (Regex.Replace(friendCode, hashtagPattern, string.Empty).Length is > 10 or < 5
-                || !Regex.IsMatch(friendCode, pattern)
-                || !Regex.IsMatch(friendCode, hashtagPattern)
-                || friendCode.Contains(' ')) ? "#00f7ff" : "#ff0000";
-            if (string.IsNullOrEmpty(friendCode) || friendCode == "")
-            {
-                friendCode = Translator.GetString("Player.NoFriendCode");
-                friendCodeColor = "#ff0000";
+            string friendCode = ValidateFriendCode(player, out string friendCodeColor);
 
-                if (GameStates.IsHost)
-                {
-                    if (BetterGameSettings.InvalidFriendCode.GetBool())
-                    {
-                        string kickMessage = string.Format(Translator.GetString("AntiCheat.KickMessage"), Translator.GetString("AntiCheat.ByAntiCheat"), Translator.GetString("AntiCheat.Reason.InvalidFriendCode"));
-                        player.Kick(true, kickMessage, true);
-                    }
-                }
-            }
-            if (DataManager.Settings.Gameplay.StreamerMode == true)
+            if (DataManager.Settings.Gameplay.StreamerMode)
             {
-                friendCode = string.Concat('*').Repeat(friendCode.Length);
                 platform = Translator.GetString("Player.PlatformHidden");
             }
 
+            // Set Tags
             var sbTag = new StringBuilder();
             var sbTagTop = new StringBuilder();
             var sbTagBottom = new StringBuilder();
 
-            // Put +++ at the end of each tag
-            if (!string.IsNullOrEmpty(hashPuid) && hashPuid.Length > 0 && AntiCheat.SickoData.ContainsKey(hashPuid)
-                || !string.IsNullOrEmpty(friendCode) && friendCode.Length > 0 && AntiCheat.SickoData.ContainsValue(friendCode))
-            {
-                sbTag.Append($"<color=#00f583>{Translator.GetString("Player.SickoUser")}</color>+++");
-                player.SetOutlineByHex(true, "#00f583");
-            }
-
-            else if (!string.IsNullOrEmpty(hashPuid) && hashPuid.Length > 0 && AntiCheat.AUMData.ContainsKey(hashPuid)
-                || !string.IsNullOrEmpty(friendCode) && friendCode.Length > 0 && AntiCheat.AUMData.ContainsValue(friendCode))
-            {
-                sbTag.Append($"<color=#4f0000>{Translator.GetString("Player.AUMUser")}</color>+++");
-                player.SetOutlineByHex(true, "#4f0000");
-            }
-
-            else if (!string.IsNullOrEmpty(hashPuid) && hashPuid.Length > 0 && AntiCheat.KNData.ContainsKey(hashPuid)
-                || !string.IsNullOrEmpty(friendCode) && friendCode.Length > 0 && AntiCheat.KNData.ContainsValue(friendCode))
-            {
-                sbTag.Append($"<color=#8731e7>{Translator.GetString("Player.KNUser")}</color>+++");
-                player.SetOutlineByHex(true, "#8731e7");
-            }
-
-            else if (!string.IsNullOrEmpty(hashPuid) && hashPuid.Length > 0 && AntiCheat.PlayerData.ContainsKey(hashPuid)
-                || !string.IsNullOrEmpty(friendCode) && friendCode.Length > 0 && AntiCheat.PlayerData.ContainsValue(friendCode))
-            {
-                sbTag.Append($"<color=#fc0000>{Translator.GetString("Player.KnownCheater")}</color>+++");
-                player.SetOutlineByHex(true, "#fc0000");
-            }
-
-            else
-            {
-                var color = player.cosmetics.currentBodySprite.BodySprite.material.GetColor("_OutlineColor");
-                if (color == Utils.HexToColor32("#00f583") || color == Utils.HexToColor32("#4f0000")
-                    || color == Utils.HexToColor32("#8731e7") || color == Utils.HexToColor32("#fc0000"))
-                {
-                    player.SetOutline(false, null);
-                }
-            }
+            SetPlayerOutline(player, hashPuid, friendCode, sbTag);
 
             if (GameStates.IsInGame && GameStates.IsLobby && !GameStates.IsFreePlay)
             {
-                if (player.IsHost())
-                {
-                    if (Main.LobbyPlayerInfo.Value == true)
-                    {
-                        NewName = player.GetPlayerNameAndColor();
-                    }
-                }
-
-                if (player.IsDev() && !GameStates.IsInGamePlay)
-                    sbTag.Append($"<color=#6e6e6e>(<color=#0088ff>{Translator.GetString("Player.Dev")}</color>)</color>+++");
-                if (((player.IsLocalPlayer() && GameStates.IsHost && Main.BetterHost.Value)
-                    || (!player.IsLocalPlayer() && player.BetterData().IsBetterHost && player.IsHost())) && !GameStates.IsInGamePlay)
-                    sbTag.AppendFormat("<color=#0dff00>{1}{0}</color>+++", Translator.GetString("Player.BetterHost"), player.BetterData().IsVerifiedBetterUser || player.IsLocalPlayer() ? "✓ " : "");
-                else if ((player.IsLocalPlayer() || player.BetterData().IsBetterUser) && !GameStates.IsInGamePlay)
-                    sbTag.AppendFormat("<color=#0dff00>{1}{0}</color>+++", Translator.GetString("Player.BetterUser"), player.BetterData().IsVerifiedBetterUser || player.IsLocalPlayer() ? "✓ " : "");
-                sbTag.Append($"<color=#b554ff>ID: {player.PlayerId}</color>+++");
-
-                sbTagTop.Append($"<color=#9e9e9e>{platform}</color>+++");
-
-                sbTagTop.Append($"<color=#ffd829>Lv: {player.Data.PlayerLevel + 1}</color>+++");
+                SetLobbyInfo(player, ref newName, betterData, sbTag);
+                sbTagTop.Append($"<color=#9e9e9e>{platform}</color>+++")
+                        .Append($"<color=#ffd829>Lv: {player.Data.PlayerLevel + 1}</color>+++");
 
                 sbTagBottom.Append($"<color={friendCodeColor}>{friendCode}</color>+++");
             }
             else if ((GameStates.IsInGame || GameStates.IsFreePlay) && !GameStates.IsHideNSeek)
             {
-                if (player.IsImpostorTeammate() || player.IsLocalPlayer() || !PlayerControl.LocalPlayer.IsAlive() || DebugMenu.RevealRoles)
-                {
-                    string Role = $"<color={player.GetTeamHexColor()}>{player.GetRoleName()}</color>";
-                    if (!player.IsImpostorTeam() && player.myTasks.Count > 0)
-                    {
-                        Role += $" <color=#cbcbcb>({player.Data.Tasks.ToArray().Where(task => task.Complete).Count()}/{player.Data.Tasks.Count})</color>";
-                    }
-
-                    if (PlayerControl.LocalPlayer.Is(RoleTypes.GuardianAngel) && !player.IsAlive() || !PlayerControl.LocalPlayer.Is(RoleTypes.GuardianAngel))
-                    {
-                        sbTagTop.Append($"{Role}+++");
-                    }
-                }
-            }
-            else if (GameStates.IsInGame || GameStates.IsFreePlay)
-            {
-                if (player.IsLocalPlayer())
-                {
-                    if (player.IsImpostorTeam())
-                    {
-                        sbTagTop.Append($"<color={Utils.GetTeamHexColor(RoleTeamTypes.Impostor)}>Seeker</color>+++");
-                    }
-                    else
-                    {
-                        sbTagTop.Append($"<color={Utils.GetTeamHexColor(RoleTeamTypes.Crewmate)}>Hider</color>+++");
-                    }
-                }
-            }
-
-            if (player.IsImpostorTeammate() && !player.IsLocalPlayer())
-            {
-                NewName = $"<color=#ff1919>{player.Data.PlayerName}</color>";
+                SetInGameInfo(player, sbTagTop);
             }
 
             if (!player.IsInShapeshift())
             {
-                player.RawSetName(NewName);
+                player.RawSetName(newName);
             }
-            else
+            else if (!player.shapeshifting)
             {
-                if (!player.shapeshifting)
-                {
-                    var targetData = Utils.PlayerDataFromPlayerId(player.shapeshiftTargetPlayerId);
-                    if (targetData != null)
-                    {
-                        player.RawSetName(targetData.PlayerName);
-                    }
-                }
+                var targetData = Utils.PlayerDataFromPlayerId(player.shapeshiftTargetPlayerId);
+                if (targetData != null) player.RawSetName(targetData.BetterData().RealName);
             }
 
-            // Put +++ at the end of each tag
-            static StringBuilder FormatInfo(StringBuilder source)
-            {
-                var sb = new StringBuilder();
-                if (source.Length > 0)
-                {
-                    string text = source.ToString();
-                    string[] parts = text.Split("+++");
-                    for (int i = 0; i < parts.Length; i++)
-                    {
-                        if (!string.IsNullOrEmpty(Utils.RemoveHtmlText(parts[i])))
-                        {
-                            sb.Append(parts[i]);
-                            if (i != parts.Length - 2)
-                            {
-                                sb.Append(" - ");
-                            }
-                        }
-                    }
-                }
-
-                return sb;
-            }
-
-            sbTag = FormatInfo(sbTag);
-            sbTagTop = FormatInfo(sbTagTop);
-            sbTagBottom = FormatInfo(sbTagBottom);
-
-            player.SetPlayerTextInfo(sbTagTop.ToString());
-            player.SetPlayerTextInfo(sbTagBottom.ToString(), isBottom: true);
-            player.SetPlayerTextInfo(sbTag.ToString(), isInfo: true);
+            player.SetPlayerTextInfo(FormatInfo(sbTagTop));
+            player.SetPlayerTextInfo(FormatInfo(sbTagBottom), isBottom: true);
+            player.SetPlayerTextInfo(FormatInfo(sbTag), isInfo: true);
         }
         catch (Exception ex)
         {
             Logger.Error(ex);
         }
     }
+
+    private static string ValidateFriendCode(PlayerControl player, out string color)
+    {
+        void TryKick()
+        {
+            if (GameStates.IsHost)
+            {
+                if (BetterGameSettings.InvalidFriendCode.GetBool())
+                {
+                    string kickMessage = string.Format(Translator.GetString("AntiCheat.KickMessage"), Translator.GetString("AntiCheat.ByAntiCheat"), Translator.GetString("AntiCheat.Reason.InvalidFriendCode"));
+                    player.Kick(true, kickMessage, true);
+                }
+            }
+        }
+
+        string pattern = @"^[a-zA-Z0-9#]+$";
+        string hashtagPattern = @"^#[0-9]{4}$";
+        string friendCode = player.Data.FriendCode;
+        color = (Regex.Replace(friendCode, hashtagPattern, string.Empty).Length is > 10 or < 5
+            || !Regex.IsMatch(friendCode, pattern)
+            || !Regex.IsMatch(friendCode, hashtagPattern)
+            || friendCode.Contains(' ')) ? "#00f7ff" : "#ff0000";
+
+        if (string.IsNullOrEmpty(friendCode) || friendCode == "")
+        {
+            friendCode = Translator.GetString("Player.NoFriendCode");
+            color = "#ff0000";
+
+            TryKick();
+
+            return friendCode;
+        }
+        else if (color == "#ff0000")
+        {
+            TryKick();
+        }
+
+        if (DataManager.Settings.Gameplay.StreamerMode)
+        {
+            friendCode = new string('*', friendCode.Length);
+        }
+
+        return friendCode;
+    }
+
+    private static void SetPlayerOutline(PlayerControl player, string hashPuid, string friendCode, StringBuilder sbTag)
+    {
+        if (AntiCheat.SickoData.ContainsKey(hashPuid) || AntiCheat.SickoData.ContainsValue(friendCode))
+        {
+            sbTag.Append($"<color=#00f583>{Translator.GetString("Player.SickoUser")}</color>+++");
+            player.SetOutlineByHex(true, "#00f583");
+        }
+        else if (AntiCheat.AUMData.ContainsKey(hashPuid) || AntiCheat.AUMData.ContainsValue(friendCode))
+        {
+            sbTag.Append($"<color=#4f0000>{Translator.GetString("Player.AUMUser")}</color>+++");
+            player.SetOutlineByHex(true, "#4f0000");
+        }
+        else if (AntiCheat.KNData.ContainsKey(hashPuid) || AntiCheat.KNData.ContainsValue(friendCode))
+        {
+            sbTag.Append($"<color=#8731e7>{Translator.GetString("Player.KNUser")}</color>+++");
+            player.SetOutlineByHex(true, "#8731e7");
+        }
+        else if (AntiCheat.PlayerData.ContainsKey(hashPuid) || AntiCheat.PlayerData.ContainsValue(friendCode))
+        {
+            sbTag.Append($"<color=#fc0000>{Translator.GetString("Player.KnownCheater")}</color>+++");
+            player.SetOutlineByHex(true, "#fc0000");
+        }
+        else
+        {
+            player.SetOutline(false, null);
+        }
+    }
+
+    private static void SetLobbyInfo(PlayerControl player, ref string newName, ExtendedPlayerInfo betterData, StringBuilder sbTag)
+    {
+        if (player.IsHost() && Main.LobbyPlayerInfo.Value)
+            newName = player.GetPlayerNameAndColor();
+
+        if (player.IsDev() && !GameStates.IsInGamePlay)
+            sbTag.Append($"<color=#6e6e6e>(<color=#0088ff>{Translator.GetString("Player.Dev")}</color>)</color>+++");
+
+        if ((player.IsLocalPlayer() && GameStates.IsHost && Main.BetterHost.Value) ||
+            (betterData.IsBetterHost && player.IsHost()) && !GameStates.IsInGamePlay)
+        {
+            sbTag.AppendFormat("<color=#0dff00>{1}{0}</color>+++", Translator.GetString("Player.BetterHost"),
+                betterData.IsVerifiedBetterUser || player.IsLocalPlayer() ? "✓ " : "");
+        }
+        else if ((player.IsLocalPlayer() || betterData.IsBetterUser) && !GameStates.IsInGamePlay)
+        {
+            sbTag.AppendFormat("<color=#0dff00>{1}{0}</color>+++", Translator.GetString("Player.BetterUser"),
+                betterData.IsVerifiedBetterUser || player.IsLocalPlayer() ? "✓ " : "");
+        }
+        sbTag.Append($"<color=#b554ff>ID: {player.PlayerId}</color>+++");
+    }
+
+    private static void SetInGameInfo(PlayerControl player, StringBuilder sbTagTop)
+    {
+        if (player.IsImpostorTeammate() || player.IsLocalPlayer() || !PlayerControl.LocalPlayer.IsAlive() || DebugMenu.RevealRoles)
+        {
+            string roleInfo = $"<color={player.GetTeamHexColor()}>{player.GetRoleName()}</color>";
+            sbTagTop.Append(roleInfo + "+++");
+        }
+    }
+
+    private static string FormatInfo(StringBuilder source)
+    {
+        if (source.Length == 0) return string.Empty;
+
+        var sb = new StringBuilder();
+        foreach (var part in source.ToString().Split("+++"))
+        {
+            if (!string.IsNullOrEmpty(Utils.RemoveHtmlText(part)))
+            {
+                sb.Append(part).Append(" - ");
+            }
+        }
+        return sb.ToString().TrimEnd(" - ".ToCharArray());
+    }
+
 
     [HarmonyPatch(nameof(PlayerControl.RpcSetName))]
     [HarmonyPrefix]
