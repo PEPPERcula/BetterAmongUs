@@ -16,9 +16,24 @@ public class ExtendedPlayerInfo : MonoBehaviour
         hasSet = true;
     }
 
+    public void Update()
+    {
+        AntiCheatInfo.TimeSinceLastTask += Time.deltaTime;
+    }
+
+    public void LateUpdate()
+    {
+        if (gameObject == null) return;
+
+        if (_Data != null && string.IsNullOrEmpty(RealName) && !string.IsNullOrEmpty(_Data.PlayerName))
+        {
+            RealName = _Data.PlayerName;
+        }
+    }
+
     public byte _PlayerId { get; private set; }
     public NetworkedPlayerInfo? _Data { get; private set; }
-    public string? RealName { get; set; }
+    public string? RealName { get; private set; }
     public Dictionary<byte, string> LastNameSetFor { get; set; } = [];
     public bool IsBetterUser { get; set; } = false;
     public bool IsVerifiedBetterUser { get; set; } = false;

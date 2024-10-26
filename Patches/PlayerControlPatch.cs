@@ -300,8 +300,6 @@ class PlayerControlPatch
             return false;
         }
 
-        __instance.BetterData().RealName = name;
-
         return true;
     }
 
