@@ -1,122 +1,116 @@
 ﻿using AmongUs.GameOptions;
+using HarmonyLib;
 using InnerNet;
 using UnityEngine;
 
 namespace BetterAmongUs;
 
+public class ExtendedPlayerInfo : MonoBehaviour
+{
+    private bool hasSet = false;
+    public void SetInfo(NetworkedPlayerInfo data)
+    {
+        if (hasSet) return;
+        _Data = data;
+        _PlayerId = data.PlayerId;
+        hasSet = true;
+    }
+
+    public void Update()
+    {
+        AntiCheatInfo.TimeSinceLastTask += Time.deltaTime;
+    }
+
+    public void LateUpdate()
+    {
+        if (gameObject == null) return;
+
+        if (_Data != null && string.IsNullOrEmpty(RealName) && !string.IsNullOrEmpty(_Data.PlayerName))
+        {
+            RealName = _Data.PlayerName;
+        }
+    }
+
+    public byte _PlayerId { get; private set; }
+    public NetworkedPlayerInfo? _Data { get; private set; }
+    public string? RealName { get; private set; }
+    public Dictionary<byte, string> LastNameSetFor { get; set; } = [];
+    public bool IsBetterUser { get; set; } = false;
+    public bool IsVerifiedBetterUser { get; set; } = false;
+    public bool IsBetterHost { get; set; } = false;
+    public bool IsTOHEHost { get; set; } = false;
+    public bool HasShowDcMsg { get; set; } = false;
+    public DisconnectReasons DisconnectReason { get; set; } = DisconnectReasons.Unknown;
+
+    public BetterAccountInfo? AccountInfo { get; } = new();
+    public ExtendedRoleInfo? RoleInfo { get; } = new();
+    public ExtendedAntiCheatInfo? AntiCheatInfo { get; } = new();
+}
+
+public class ExtendedAntiCheatInfo
+{
+    public bool BannedByAntiCheat { get; set; } = false;
+    public List<string> AUMChats { get; set; } = [];
+    public int TimesAttemptedKilled { get; set; } = 0;
+    public int OpenSabotageNum { get; set; } = 0;
+    public bool IsFixingPanelSabotage => OpenSabotageNum != 0;
+    public int TimesCalledMeeting { get; set; } = 0;
+    public float TimeSinceLastTask { get; set; } = 5f;
+    public uint LastTaskId { get; set; } = 999;
+}
+
+public class ExtendedRoleInfo
+{
+    public int Kills { get; set; } = 0;
+    public bool HasNoisemakerNotify { get; set; } = false;
+    public RoleTypes DeadDisplayRole { get; set; }
+}
+
 public static class PlayerControlDataExtension
 {
-    // Base
-    public class ExtendedPlayerInfo
+    [HarmonyPatch(typeof(NetworkedPlayerInfo))]
+    class NetworkedPlayerInfoPatch
     {
-        public BetterAccountInfo? AccountInfo { get; set; }
-        public NetworkedPlayerInfo? _Data { get; set; }
-        public string? RealName { get; set; }
-        public Dictionary<byte, string> LastNameSetFor { get; set; } = [];
-        public bool IsBetterUser { get; set; } = false;
-        public bool IsVerifiedBetterUser { get; set; } = false;
-        public bool IsBetterHost { get; set; } = false;
-        public bool IsTOHEHost { get; set; } = false;
-        public bool HasShowDcMsg { get; set; } = false;
-
-        // Track Game Info
-        public DisconnectReasons DisconnectReason { get; set; } = DisconnectReasons.Unknown;
-        public ExtendedRoleInfo? RoleInfo { get; set; }
-        public ExtendedAntiCheatInfo? AntiCheatInfo { get; set; }
-    }
-
-    public class ExtendedAntiCheatInfo
-    {
-        public bool BannedByAntiCheat { get; set; } = false;
-        public List<string> AUMChats { get; set; } = [];
-        public int TimesAttemptedKilled { get; set; } = 0;
-        public int OpenSabotageNum { get; set; } = 0;
-        public bool IsFixingPanelSabotage => OpenSabotageNum != 0;
-        public int TimesCalledMeeting { get; set; } = 0;
-        public float TimeSinceLastTask { get; set; } = 5f;
-        public uint LastTaskId { get; set; } = 999;
-    }
-
-    public class ExtendedRoleInfo
-    {
-        public int Kills { get; set; } = 0;
-        public bool HasNoisemakerNotify { get; set; } = false;
-        public RoleTypes DeadDisplayRole { get; set; }
-    }
-
-    public static readonly Dictionary<string, ExtendedPlayerInfo> playerInfo = [];
-
-    public static void ClearData(this ExtendedPlayerInfo BetterData) => playerInfo[BetterData._Data.Puid] = new ExtendedPlayerInfo
-    {
-        _Data = BetterData._Data,
-        RoleInfo = new ExtendedRoleInfo(),
-        AntiCheatInfo = new ExtendedAntiCheatInfo(),
-        AccountInfo = new BetterAccountInfo()
-    };
-
-    // Reset info when needed
-    public static void ResetPlayerData(PlayerControl player)
-    {
-        if (player == null) return;
-
-        if (GameStates.IsLobby)
+        [HarmonyPatch(nameof(NetworkedPlayerInfo.Init))]
+        [HarmonyPostfix]
+        public static void Init_Postfix(NetworkedPlayerInfo __instance)
         {
-            player.BetterData().AntiCheatInfo.TimesCalledMeeting = 0;
-            player.BetterData().RoleInfo.HasNoisemakerNotify = false;
-            player.BetterData().AntiCheatInfo.TimeSinceLastTask = 5f;
-            player.BetterData().AntiCheatInfo.LastTaskId = 999;
-            player.BetterData().RoleInfo.Kills = 0;
-            player.BetterData().AntiCheatInfo.OpenSabotageNum = 0;
-            player.BetterData().AntiCheatInfo.TimesAttemptedKilled = 0;
-        }
-        else
-        {
-            player.BetterData().AntiCheatInfo.TimeSinceLastTask += Time.deltaTime;
-
-            if (player.IsAlive() || player.Data.RoleType == RoleTypes.GuardianAngel)
-                player.BetterData().RoleInfo.DeadDisplayRole = player.Data.RoleType;
+            TryCreateExtendedData(__instance);
         }
 
-        if (string.IsNullOrEmpty(player.BetterData().RealName))
+        [HarmonyPatch(nameof(NetworkedPlayerInfo.Deserialize))]
+        [HarmonyPostfix]
+        public static void Deserialize_Postfix(NetworkedPlayerInfo __instance)
         {
-            player.BetterData().RealName = player.Data.PlayerName;
+            TryCreateExtendedData(__instance);
         }
-    }
 
-    // Helper method to initialize and return BetterData
-    private static ExtendedPlayerInfo GetOrCreateBetterData(string puid, NetworkedPlayerInfo data, string? realName = null)
-    {
-        if (!playerInfo.ContainsKey(puid))
+        public static void TryCreateExtendedData(NetworkedPlayerInfo data)
         {
-            playerInfo[puid] = new ExtendedPlayerInfo
+            if (data.BetterData() == null)
             {
-                _Data = data,
-                RealName = realName,
-                RoleInfo = new ExtendedRoleInfo(),
-                AntiCheatInfo = new ExtendedAntiCheatInfo(),
-                AccountInfo = new BetterAccountInfo()
-            };
+                ExtendedPlayerInfo newBetterData = data.gameObject.AddComponent<ExtendedPlayerInfo>();
+                newBetterData.SetInfo(data);
+            }
         }
-        return playerInfo[puid];
     }
 
     // Get BetterData from PlayerControl
     public static ExtendedPlayerInfo? BetterData(this PlayerControl player)
     {
-        return player == null ? null : GetOrCreateBetterData(player.Data.Puid, player.Data);
+        return player?.Data?.GetComponent<ExtendedPlayerInfo>();
     }
 
     // Get BetterData from NetworkedPlayerInfo
-    public static ExtendedPlayerInfo? BetterData(this NetworkedPlayerInfo info)
+    public static ExtendedPlayerInfo? BetterData(this NetworkedPlayerInfo data)
     {
-        return GetOrCreateBetterData(info.Puid, info);
+        return data?.GetComponent<ExtendedPlayerInfo>();
     }
 
     // Get BetterData from ClientData
     public static ExtendedPlayerInfo? BetterData(this ClientData data)
     {
         var player = Utils.PlayerFromClientId(data.Id);
-        return player == null ? null : GetOrCreateBetterData(player.Data.Puid, player.Data, player.Data.PlayerName);
+        return player?.Data?.GetComponent<ExtendedPlayerInfo>();
     }
-
 }

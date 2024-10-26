@@ -11,9 +11,7 @@ class OnGameJoinedPatch
     {
         try
         {
-            PlayerControlDataExtension.playerInfo.Clear();
-
-            PlayerControlPatch.infotime = 0f;
+            PlayerControlPatch.time.Clear();
 
             AntiCheat.PauseAntiCheat();
 
@@ -35,18 +33,11 @@ public static class OnPlayerJoinedPatch
 {
     public static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData client)
     {
-        PlayerControlPatch.infotime = 0f;
-
         _ = new LateTask(() =>
         {
             if (GameStates.IsInGame)
             {
                 var player = Utils.PlayerFromClientId(client.Id);
-
-                if (player != null)
-                {
-                    player.BetterData().ClearData();
-                }
 
                 // Send Better Among Us Check RPC
                 RPC.SendBetterCheck();
@@ -91,6 +82,7 @@ public static class OnPlayerJoinedPatch
                         // Read all banned names into a HashSet with normalized names
                         HashSet<string> bannedNames = new HashSet<string>(
                             File.ReadLines(BetterDataManager.banNameListFile)
+                                .Where(line => !line.TrimStart().StartsWith("//"))
                                 .Select(normalizeName)
                                 .Where(name => !string.IsNullOrWhiteSpace(name))
                         );

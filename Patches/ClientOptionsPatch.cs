@@ -1,3 +1,4 @@
+using BepInEx;
 using HarmonyLib;
 using UnityEngine;
 
@@ -58,9 +59,9 @@ public static class OptionsMenuBehaviourPatch
             {
                 RPC.SendBetterCheck();
 
-                foreach (var kvp in PlayerControlDataExtension.playerInfo)
+                foreach (var player in Main.AllPlayerControls)
                 {
-                    PlayerControlDataExtension.playerInfo[kvp.Key].LastNameSetFor.Clear();
+                    player.BetterData().LastNameSetFor.Clear();
                 }
 
                 RPC.SyncAllNames(force: true);
@@ -162,6 +163,7 @@ public static class OptionsMenuBehaviourPatch
             SwitchToVanilla = ClientOptionItem.Create(title, null, __instance, SwitchToVanillaButtonToggle, IsToggle: false, toggleCheck: () => !toggleCheckInGame(title));
             static void SwitchToVanillaButtonToggle()
             {
+                ConsoleManager.DetachConsole();
                 UnityEngine.Object.Destroy(BetterNotificationManager.BAUNotificationManagerObj);
                 Harmony.UnpatchAll();
             }

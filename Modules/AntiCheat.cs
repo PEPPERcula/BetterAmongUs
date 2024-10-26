@@ -11,6 +11,7 @@ class AntiCheat
     public static Dictionary<string, string> PlayerData = []; // HashPuid, FriendCode
     public static Dictionary<string, string> SickoData = []; // HashPuid, FriendCode
     public static Dictionary<string, string> AUMData = []; // HashPuid, FriendCode
+    public static Dictionary<string, string> KNData = []; // HashPuid, FriendCode
     private static bool IsEnabled = true;
 
     public static void Update()
@@ -204,7 +205,23 @@ class AntiCheat
 
             return;
         }
+
+        if (callId is unchecked((byte)CustomRPC.Killnetwork) && Main.AntiCheat.Value && BetterGameSettings.DetectCheatClients.GetBool())
+        {
+            var flag = KNData.ContainsKey(Utils.GetHashPuid(player));
+
+            if (!flag)
+            {
+                player.ReportPlayer(ReportReasons.Cheating_Hacking);
+                KNData[Utils.GetHashPuid(player)] = player.Data.FriendCode;
+                BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "knData", "KN RPC");
+                BetterNotificationManager.NotifyCheat(player, Translator.GetString("AntiCheat.Cheat.KN"), Translator.GetString("AntiCheat.HasBeenDetectedWithCheat2"));
+            }
+
+            return;
+        }
     }
+
     // Check and notify for invalid rpcs
     public static void CheckRPC(PlayerControl player, byte callId, MessageReader Oldreader)
     {
@@ -563,13 +580,13 @@ class AntiCheat
                 return false;
             }
 
-            if (callId is (byte)RpcCalls.StartMeeting)
+            if (callId is (byte)RpcCalls.StartMeeting or (byte)RpcCalls.ReportDeadBody)
             {
-                if (GameStates.IsMeeting && MeetingHudUpdatePatch.timeOpen > 0.5f || GameStates.IsHideNSeek || !player.IsAlive() || player.IsInVent() || player.shapeshifting
+                if (GameStates.IsMeeting && MeetingHudUpdatePatch.timeOpen > 0.5f || GameStates.IsHideNSeek || !player.IsAlive() && callId is (byte)RpcCalls.ReportDeadBody || player.IsInVent() || player.shapeshifting
                     || player.inMovingPlat || player.onLadder || player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
                 {
                     BetterNotificationManager.NotifyCheat(player, string.Format(Translator.GetString("AntiCheat.InvalidActionRPC"), Enum.GetName((RpcCalls)callId)));
-                    Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {GameStates.IsMeeting} && {GameStates.IsHideNSeek} || {!player.IsAlive()} || {player.IsInVent()} || {player.shapeshifting}" +
+                    Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {GameStates.IsMeeting} && {MeetingHudUpdatePatch.timeOpen > 0.5f} || {!player.IsAlive() && callId is (byte)RpcCalls.ReportDeadBody} || {player.IsInVent()} || {player.shapeshifting}" +
                         $" || {player.inMovingPlat} || {player.onLadder} || {player.MyPhysics.Animations.IsPlayingAnyLadderAnimation()}");
 
                     if (GameStates.IsHost)
@@ -625,10 +642,10 @@ class AntiCheat
                 _ = reader.ReadByte();
                 var type = reader.ReadByte();
 
-                if (!GameStates.IsMeeting || !Enum.IsDefined(typeof(ChatNoteTypes), type))
+                if (!GameStates.IsMeeting || type != (byte)ChatNoteTypes.DidVote)
                 {
-                    BetterNotificationManager.NotifyCheat(player, string.Format(Translator.GetString("AntiCheat.InvalidActionRPC"), Enum.GetName((RpcCalls)callId)));
-                    Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {!GameStates.IsMeeting} || {!Enum.IsDefined(typeof(ChatNoteTypes), type)}");
+                    BetterNotificationManager.NotifyCheat(player, string.Format(Translator.GetString("AntiCheat.InvalidActionRPC"), Enum.GetName(typeof(RpcCalls), (int)callId)));
+                    Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName(typeof(RpcCalls), (int)callId)}: {!GameStates.IsMeeting} || {type != (byte)ChatNoteTypes.DidVote}");
                 }
             }
 

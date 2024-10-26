@@ -38,6 +38,9 @@ public class HudManagerPatch
                 BAUNotification.SetActive(false);
                 ChatNotifications.timeOnScreen = 0f;
                 ChatNotifications.gameObject.SetActive(false);
+                BetterNotificationManager.TextArea.enableWordWrapping = true;
+                BetterNotificationManager.TextArea.m_firstOverflowCharacterIndex = 0;
+                BetterNotificationManager.TextArea.overflowMode = TextOverflowModes.Overflow;
             }
         }
 

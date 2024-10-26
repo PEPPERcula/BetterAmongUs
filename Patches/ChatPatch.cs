@@ -105,14 +105,15 @@ class ChatPatch
         [HarmonyPostfix]
         public static void AddChat_Postfix(ChatController __instance, [HarmonyArgument(0)] PlayerControl sourcePlayer, [HarmonyArgument(1)] string chatText)
         {
-            ChatBubble chatBubble = SetChatPoolTheme();
+            ChatBubble? chatBubble = SetChatPoolTheme();
+            if (chatBubble == null) return;
 
             StringBuilder sbTag = new StringBuilder();
             StringBuilder sbInfo = new StringBuilder();
 
             string hashPuid = Utils.GetHashPuid(sourcePlayer);
             string friendCode = sourcePlayer.Data.FriendCode;
-            string playerName = sourcePlayer.Data.PlayerName;
+            string playerName = sourcePlayer.BetterData().RealName ?? "";
             string Role = $"<size=75%><color={sourcePlayer.GetTeamHexColor()}>{sourcePlayer.GetRoleName()}</color></size>+++";
 
             if (GameStates.IsLobby && !GameStates.IsFreePlay)
@@ -166,7 +167,7 @@ class ChatPatch
             }
             sbInfo.Append("</size>");
 
-            bool flag = sourcePlayer == PlayerControl.LocalPlayer;
+            bool flag = sourcePlayer.IsLocalPlayer();
             if (flag)
             {
                 playerName = $"{sbInfo} " + playerName;
@@ -178,7 +179,14 @@ class ChatPatch
 
             chatBubble.NameText.text = playerName;
             chatBubble.ColorBlindName.color = Palette.PlayerColors[sourcePlayer.Data.DefaultOutfit.ColorId];
-            Logger.Log($"{sourcePlayer.Data.PlayerName} -> {chatText}", "ChatLog");
+            if (sourcePlayer.IsAlive() || !PlayerControl.LocalPlayer.IsAlive())
+            {
+                Logger.Log($"{sourcePlayer.Data.PlayerName} -> {chatText}", "ChatLog");
+            }
+            else
+            {
+                Logger.LogPrivate($"{sourcePlayer.Data.PlayerName} -> {chatText}", "ChatLog");
+            }
         }
 
         [HarmonyPatch(nameof(ChatController.AddChatNote))]
@@ -227,7 +235,7 @@ class ChatPatch
         }
 
         // Set chat theme
-        public static ChatBubble SetChatPoolTheme(ChatBubble? asChatBubble = null)
+        public static ChatBubble? SetChatPoolTheme(ChatBubble? asChatBubble = null)
         {
             ChatBubble Get() => HudManager.Instance.Chat.chatBubblePool.activeChildren.ToArray()
                 .Select(c => c.GetComponent<ChatBubble>())
@@ -235,16 +243,18 @@ class ChatPatch
 
             ChatBubble chatBubble = asChatBubble ??= Get();
 
+            if (chatBubble == null) return chatBubble;
+
             if (Main.ChatDarkMode.Value)
             {
                 chatBubble.transform.Find("ChatText (TMP)").GetComponent<TextMeshPro>().color = new Color(1f, 1f, 1f, 1f);
-                chatBubble.transform.Find("Background").GetComponent<SpriteRenderer>().color = new Color(0.05f, 0.05f, 0.05f, 1f);
+                chatBubble.transform.Find("Background").GetComponent<SpriteRenderer>().color = new Color(0.15f, 0.15f, 0.15f, 1f);
 
                 if (chatBubble.transform.Find("PoolablePlayer/xMark") != null)
                 {
                     if (chatBubble.transform.Find("PoolablePlayer/xMark").GetComponent<SpriteRenderer>().enabled == true)
                     {
-                        chatBubble.transform.Find("Background").GetComponent<SpriteRenderer>().color = new Color(0.05f, 0.05f, 0.05f, 0.5f);
+                        chatBubble.transform.Find("Background").GetComponent<SpriteRenderer>().color = new Color(0.15f, 0.15f, 0.15f, 0.5f);
                     }
                 }
             }

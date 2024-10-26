@@ -10,6 +10,7 @@ enum CustomRPC : int
     Sicko = 420, // Results in 164
     AUM = 42069, // Results in 85
     AUMChat = 101,
+    Killnetwork = 250,
 
     // TOHE
     VersionCheck = 80,
@@ -235,7 +236,6 @@ internal static class RPC
             case (byte)RpcCalls.SetName:
                 reader.ReadUInt32();
                 var name = reader.ReadString();
-                player.BetterData().RealName = name;
                 break;
             case (byte)RpcCalls.SendChat:
                 var text = reader.ReadString();
@@ -258,6 +258,7 @@ internal static class RPC
 
                         HashSet<string> bannedWords = new HashSet<string>(
                             File.ReadLines(BetterDataManager.banWordListFile)
+                                .Where(line => !line.TrimStart().StartsWith("//"))
                                 .Select(normalizeText)
                                 .Where(text => !string.IsNullOrWhiteSpace(text))
                         );

@@ -40,26 +40,6 @@ class GamePlayManager
         {
             if (Main.DisableLobbyTheme.Value)
                 SoundManager.instance.StopSound(LobbyBehaviour.Instance.MapTheme);
-
-            // Clear unused Better Data
-            try
-            {
-                var keysToRemove = new List<string>();
-
-                foreach (var betterInfo in PlayerControlDataExtension.playerInfo)
-                {
-                    if (Main.AllPlayerControls.Any(pc => pc.Data.Puid == betterInfo.Key))
-                        continue;
-
-                    keysToRemove.Add(betterInfo.Key);
-                }
-
-                foreach (var key in keysToRemove)
-                {
-                    PlayerControlDataExtension.playerInfo.Remove(key);
-                }
-            }
-            catch { }
         }
 
         [HarmonyPatch(nameof(LobbyBehaviour.RpcExtendLobbyTimer))]
