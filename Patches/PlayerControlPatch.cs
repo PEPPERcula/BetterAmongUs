@@ -244,9 +244,13 @@ class PlayerControlPatch
 
     private static void SetInGameInfo(PlayerControl player, StringBuilder sbTagTop)
     {
-        if (player.IsImpostorTeammate() || player.IsLocalPlayer() || !PlayerControl.LocalPlayer.IsAlive() || DebugMenu.RevealRoles)
+        if (player.IsImpostorTeammate() || player.IsLocalPlayer() || !PlayerControl.LocalPlayer.IsAlive() && !PlayerControl.LocalPlayer.Is(RoleTypes.GuardianAngel) || DebugMenu.RevealRoles)
         {
             string roleInfo = $"<color={player.GetTeamHexColor()}>{player.GetRoleName()}</color>";
+            if (!player.IsImpostorTeam() && player.myTasks.Count > 0)
+            {
+                roleInfo += $" <color=#cbcbcb>({player.Data.Tasks.ToArray().Where(task => task.Complete).Count()}/{player.Data.Tasks.Count})</color>";
+            }
             sbTagTop.Append(roleInfo + "+++");
         }
     }

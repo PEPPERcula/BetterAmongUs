@@ -1,3 +1,4 @@
+using AmongUs.GameOptions;
 using HarmonyLib;
 using System.Text;
 using TMPro;
@@ -155,7 +156,7 @@ class MeetingHudUpdatePatch
                 }
                 if (!target.IsImpostorTeammate())
                 {
-                    if (PlayerControl.LocalPlayer.IsAlive() && !target.IsLocalPlayer())
+                    if (PlayerControl.LocalPlayer.IsAlive() || PlayerControl.LocalPlayer.Is(RoleTypes.GuardianAngel) && !target.IsLocalPlayer())
                     {
                         if (!DebugMenu.RevealRoles)
                         {
