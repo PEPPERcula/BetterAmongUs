@@ -36,6 +36,12 @@ class AntiCheat
                     string kickMessage = string.Format(Translator.GetString("AntiCheat.KickMessage"), Translator.GetString("AntiCheat.ByAntiCheat"), reason);
                     player.Kick(true, kickMessage, true);
                 }
+                else if (KNData.ContainsKey(hashPuid))
+                {
+                    string reason = Translator.GetString("AntiCheat.Reason.KNUser");
+                    string kickMessage = string.Format(Translator.GetString("AntiCheat.KickMessage"), Translator.GetString("AntiCheat.ByAntiCheat"), reason);
+                    player.Kick(true, kickMessage, true);
+                }
                 else if (PlayerData.ContainsKey(hashPuid))
                 {
                     string reason = Translator.GetString("AntiCheat.Reason.KnownCheater");
