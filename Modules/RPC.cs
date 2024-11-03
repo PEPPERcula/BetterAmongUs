@@ -12,6 +12,7 @@ enum CustomRPC : int
     AUM = 42069, // Results in 85
     AUMChat = 101,
     Killnetwork = 250,
+    KillnetworkChat = 119,
 
     // TOHE
     VersionCheck = 80,

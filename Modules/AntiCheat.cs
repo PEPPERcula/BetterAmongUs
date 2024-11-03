@@ -56,7 +56,7 @@ class AntiCheat
 
     public static void PauseAntiCheat()
     {
-        float time = 4f;
+        float time = 2.5f;
         if (IsEnabled)
         {
             IsEnabled = false;
@@ -224,6 +224,27 @@ class AntiCheat
                 BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "knData", "KN RPC");
                 BetterNotificationManager.NotifyCheat(player, Translator.GetString("AntiCheat.Cheat.KN"), Translator.GetString("AntiCheat.HasBeenDetectedWithCheat2"));
             }
+
+            return;
+        }
+
+        if (callId is unchecked((byte)CustomRPC.KillnetworkChat))
+        {
+            try
+            {
+                if (!Main.AntiCheat.Value || !BetterGameSettings.DetectCheatClients.GetBool()) return;
+
+                var flag = KNData.ContainsKey(Utils.GetHashPuid(player));
+
+                if (!flag)
+                {
+                    player.ReportPlayer(ReportReasons.Cheating_Hacking);
+                    KNData[Utils.GetHashPuid(player)] = player.Data.FriendCode;
+                    BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player.Data.PlayerName, "knData", "KN RPC");
+                    BetterNotificationManager.NotifyCheat(player, Translator.GetString("AntiCheat.Cheat.KNC"), Translator.GetString("AntiCheat.HasBeenDetectedWithCheat2"));
+                }
+            }
+            catch { }
 
             return;
         }
