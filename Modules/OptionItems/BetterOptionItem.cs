@@ -1,4 +1,5 @@
-﻿using BetterAmongUs.Patches;
+﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Patches;
 using TMPro;
 using UnityEngine;
 

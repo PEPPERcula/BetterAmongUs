@@ -1,10 +1,11 @@
 ﻿using AmongUs.GameOptions;
+using BetterAmongUs.Helpers;
 using Hazel;
 using InnerNet;
 using System.Text;
 using UnityEngine;
 
-namespace BetterAmongUs;
+namespace BetterAmongUs.Modules;
 
 class BetterHostManager
 {
@@ -25,7 +26,7 @@ class BetterHostManager
 
     public static bool CheckRPCAsHost(PlayerControl player, byte callId, MessageReader reader, ref bool canceled)
     {
-        if (player == null || !GameStates.IsHost) return true;
+        if (player == null || !GameState.IsHost) return true;
 
         bool shouldReturn = false;
 
@@ -101,12 +102,12 @@ class BetterHostManager
                             && !player.onLadder
                             && !player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
                         {
-                            if (!target.IsInVent() && !GameStates.IsMeeting && !GameStates.IsExilling && flag == false)
+                            if (!target.IsInVent() && !GameState.IsMeeting && !GameState.IsExilling && flag == false)
                             {
                                 break;
                             }
 
-                            player.RpcShapeshift(target, !target.IsInVent() && !GameStates.IsMeeting && !GameStates.IsExilling);
+                            player.RpcShapeshift(target, !target.IsInVent() && !GameState.IsMeeting && !GameState.IsExilling);
                             break;
                         }
                     }
@@ -214,7 +215,7 @@ class BetterHostManager
 
             if (!player.BetterData().IsBetterUser)
             {
-                if (GameStates.IsLobby)
+                if (GameState.IsLobby)
                 {
                     NewName = player.Data.PlayerName;
 
@@ -229,7 +230,7 @@ class BetterHostManager
                     else if (player.BetterData().IsBetterUser)
                         sbTopTag.Append("<color=#0dff00>Better User</color>+++");
                 }
-                else if (GameStates.IsInGamePlay && !GameStates.IsHideNSeek)
+                else if (GameState.IsInGamePlay && !GameState.IsHideNSeek)
                 {
                     string Role = $"<color={player.GetTeamHexColor()}>{player.GetRoleName()}</color>";
                     if (!player.IsImpostorTeam() && player.myTasks.Count > 0)
@@ -246,7 +247,7 @@ class BetterHostManager
 
                     sbTopTag.Append($"{Role}+++");
                 }
-                else if (GameStates.IsInGamePlay)
+                else if (GameState.IsInGamePlay)
                 {
                     if (player == target)
                     {

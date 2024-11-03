@@ -3,7 +3,7 @@ using HarmonyLib;
 using InnerNet;
 using UnityEngine;
 
-namespace BetterAmongUs;
+namespace BetterAmongUs.Modules;
 
 public class ExtendedPlayerInfo : MonoBehaviour
 {

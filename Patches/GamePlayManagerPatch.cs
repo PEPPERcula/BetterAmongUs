@@ -1,4 +1,6 @@
-﻿using HarmonyLib;
+﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Modules;
+using HarmonyLib;
 using System.Text;
 using TMPro;
 using UnityEngine;
@@ -14,7 +16,7 @@ class GamePlayManager
         [HarmonyPrefix]
         private static void OnDestroy_Prefix(/*LobbyBehaviour __instance*/)
         {
-            if (GameStates.IsInGame)
+            if (GameState.IsInGame)
             {
                 AntiCheat.PauseAntiCheat();
             }
@@ -25,7 +27,7 @@ class GamePlayManager
         {
             _ = new LateTask(() =>
             {
-                if (GameStates.IsInGame)
+                if (GameState.IsInGame)
                 {
                     RPC.SyncAllNames(force: true);
                     RPC.SendBetterCheck();
@@ -84,7 +86,7 @@ class GamePlayManager
         [HarmonyPostfix]
         private static void EndGame_Postfix(/*GameManager __instance*/)
         {
-            if (GameStates.IsHost)
+            if (GameState.IsHost)
             {
                 foreach (PlayerControl player in Main.AllPlayerControls)
                 {
@@ -120,7 +122,7 @@ class GamePlayManager
         [HarmonyPostfix]
         private static void Update_Postfix(GameStartManager __instance)
         {
-            if (!GameStates.IsHost)
+            if (!GameState.IsHost)
             {
                 __instance.StartButton.gameObject.SetActive(false);
                 return;
@@ -162,7 +164,7 @@ class GamePlayManager
         [HarmonyPrefix]
         private static void FinallyBegin_Prefix(/*GameStartManager __instance*/)
         {
-            Logger.LogHeader($"Game Has Started - {Enum.GetName(typeof(MapNames), GameStates.GetActiveMapId)}/{GameStates.GetActiveMapId}", "GamePlayManager");
+            Logger.LogHeader($"Game Has Started - {Enum.GetName(typeof(MapNames), GameState.GetActiveMapId)}/{GameState.GetActiveMapId}", "GamePlayManager");
         }
     }
     [HarmonyPatch(typeof(EndGameManager))]
@@ -172,7 +174,7 @@ class GamePlayManager
         [HarmonyPostfix]
         private static void SetEverythingUp_Postfix(EndGameManager __instance)
         {
-            Logger.LogHeader($"Game Has Ended - {Enum.GetName(typeof(MapNames), GameStates.GetActiveMapId)}/{GameStates.GetActiveMapId}", "GamePlayManager");
+            Logger.LogHeader($"Game Has Ended - {Enum.GetName(typeof(MapNames), GameState.GetActiveMapId)}/{GameState.GetActiveMapId}", "GamePlayManager");
 
             Logger.LogHeader("Game Summary Start", "GameSummary");
 
@@ -325,7 +327,7 @@ class GamePlayManager
         {
             __instance.FrontMost.gameObject.SetActive(false);
             __instance.Navigation.ShowDefaultNavigation();
-            if (!GameStates.IsLocalGame)
+            if (!GameState.IsLocalGame)
             {
                 __instance.Navigation.ShowNavigationToProgressionScreen();
                 __instance.Navigation.ContinueButton.transform.Find("ContinueButton").position -= new Vector3(0.5f, 0.2f, 0f);

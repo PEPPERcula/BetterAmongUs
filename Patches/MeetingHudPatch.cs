@@ -1,4 +1,6 @@
 using AmongUs.GameOptions;
+using BetterAmongUs.Helpers;
+using BetterAmongUs.Modules;
 using HarmonyLib;
 using System.Text;
 using TMPro;
@@ -213,7 +215,7 @@ class MeetingHud_OnDestroyPatch
     public static void Postfix()
     {
         MeetingHudUpdatePatch.timeOpen = 0f;
-        Logger.LogHeader("Meeting Has Endded");
+        Logger.LogHeader("Meeting Has Ended");
         RPC.SyncAllNames(force: true);
     }
 }

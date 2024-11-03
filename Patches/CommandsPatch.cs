@@ -1,5 +1,7 @@
 ﻿using AmongUs.Data;
 using AmongUs.GameOptions;
+using BetterAmongUs.Helpers;
+using BetterAmongUs.Modules;
 using HarmonyLib;
 using Hazel;
 using Il2CppSystem.Text;
@@ -11,12 +13,12 @@ namespace BetterAmongUs.Patches;
 [HarmonyPatch(typeof(ChatController))]
 class CommandsPatch
 {
-    private static bool _enabled => !GameStates.IsTOHEHostLobby;
+    private static bool _enabled => !GameState.IsTOHEHostLobby;
     private static PlayerControl? cmdTarget = null;
     private static bool HasPermission => Permission != null
         && AmongUsClient.Instance?.GetHost()?.Character?.Data == Permission;
     public static NetworkedPlayerInfo? Permission = null;
-    public static string CommandPrefix => !GameStates.IsTOHEHostLobby ? Main.CommandPrefix.Value : Main.CommandPrefix.Value == "/" ? "." : Main.CommandPrefix.Value;
+    public static string CommandPrefix => !GameState.IsTOHEHostLobby ? Main.CommandPrefix.Value : Main.CommandPrefix.Value == "/" ? "." : Main.CommandPrefix.Value;
 
     // List of helper text when a command is being typed out
     // First word is command, {} are arguments, first --- is command description, second --- is for help command.
@@ -130,7 +132,7 @@ class CommandsPatch
                         }
                     }
                 }
-                if (GameStates.IsDev && Main.ReleaseBuildType == ReleaseTypes.Dev)
+                if (GameState.IsDev && Main.ReleaseBuildType == ReleaseTypes.Dev)
                 {
                     list += "\n" + close + "\n";
                     list += "<color=#00751f><b><size=150%>Debug Command List</size></b></color>\n" + open;
@@ -146,7 +148,7 @@ class CommandsPatch
                 Utils.AddChatPrivate(list);
                 break;
             case var cmd when cmd == FormatCommandTranslation("Command.Helper.dump"):
-                if (GameStates.IsInGamePlay && !GameStates.IsDev) return;
+                if (GameState.IsInGamePlay && !GameState.IsDev) return;
 
                 string logFilePath = Path.Combine(BetterDataManager.filePathFolder, "better-log.txt");
                 string log = File.ReadAllText(logFilePath);
@@ -220,7 +222,7 @@ class CommandsPatch
             case var cmd when cmd == FormatCommandTranslation("Command.Helper.whisper") || cmd == FormatCommandTranslation("Command.Helper.whisper.trim"):
                 if (HandlePlayerArgument(command, subArgs) == true)
                 {
-                    if (UseCommandInGame() == true)
+                    if (UseCommandInLobby() == true)
                     {
                         var player = cmdTarget;
                         var msg = string.Join(" ", command[2..].ToArray());
@@ -245,7 +247,7 @@ class CommandsPatch
             case var cmd when cmd == FormatCommandTranslation("Command.Helper.name"):
                 bool hasSet = false;
 
-                if (GameStates.IsHost)
+                if (GameState.IsHost)
                 {
                     PlayerControl.LocalPlayer.RpcSetName(command[1]);
                     _ = new LateTask(() =>
@@ -289,7 +291,7 @@ class CommandsPatch
             case var cmd when cmd == FormatCommandTranslation("Command.Helper.endgame"):
                 if (HandleIsHost(command) == true)
                 {
-                    if (!GameStates.IsLobby && !GameStates.IsFreePlay)
+                    if (!GameState.IsLobby && !GameState.IsFreePlay)
                     {
                         if (subArgs == "")
                         {
@@ -329,7 +331,7 @@ class CommandsPatch
                     checkSponsorCommand = true;
                     break;
                 }
-                else if (GameStates.IsDev && Main.ReleaseBuildType == ReleaseTypes.Dev)
+                else if (GameState.IsDev && Main.ReleaseBuildType == ReleaseTypes.Dev)
                 {
                     checkDebugCommand = true;
                     break;
@@ -344,7 +346,7 @@ class CommandsPatch
             switch (command[0][1..].ToLower().Trim())
             {
                 default:
-                    if (GameStates.IsDev && Main.ReleaseBuildType == ReleaseTypes.Dev)
+                    if (GameState.IsDev && Main.ReleaseBuildType == ReleaseTypes.Dev)
                     {
                         checkDebugCommand = true;
                         break;
@@ -500,7 +502,17 @@ class CommandsPatch
     // Condition when a player is allowed to run a specific command
     private static bool UseCommandInGame()
     {
-        bool flag = GameStates.IsInGame && GameStates.IsMeeting || GameStates.IsExilling || GameStates.IsLobby || GameStates.IsFreePlay || !PlayerControl.LocalPlayer.IsAlive();
+        bool flag = GameState.IsInGame && GameState.IsMeeting || GameState.IsExilling || GameState.IsLobby || GameState.IsFreePlay || !PlayerControl.LocalPlayer.IsAlive();
+        if (!flag)
+        {
+            Utils.AddChatPrivate("<color=#f50000><size=125%><b>Unable To Use Command While In Game!</b></size></color>");
+        }
+        return flag;
+    }
+
+    private static bool UseCommandInLobby()
+    {
+        bool flag = GameState.IsLobby || GameState.IsFreePlay;
         if (!flag)
         {
             Utils.AddChatPrivate("<color=#f50000><size=125%><b>Unable To Use Command While In Game!</b></size></color>");
@@ -567,7 +579,7 @@ class CommandsPatch
     {
         string error = "<color=#f50000><size=150%><b>Error:</b></size></color>";
 
-        if (HasPermission != true || !GameStates.IsHost && !GameStates.IsDev)
+        if (HasPermission != true || !GameState.IsHost && !GameState.IsDev)
         {
             Utils.AddChatPrivate($"{error}\n<color=#e0b700><b>{command[0]}</b></color> Is only available with the host permission!\nask the host to type /allow in chat to get permissions");
             return false;
@@ -589,7 +601,7 @@ class CommandsPatch
 
         if (string.IsNullOrEmpty(text) || text.Length <= 1 || text[0].ToString() != CommandPrefix || 3f - __instance.timeSinceLastMessage > 0f)
         {
-            if (GameStates.InGame && !GameStates.IsLobby && !GameStates.IsFreePlay && !GameStates.IsMeeting && !GameStates.IsExilling && PlayerControl.LocalPlayer.IsAlive())
+            if (GameState.InGame && !GameState.IsLobby && !GameState.IsFreePlay && !GameState.IsMeeting && !GameState.IsExilling && PlayerControl.LocalPlayer.IsAlive())
                 return false;
 
             if (ChatPatch.ChatHistory.Count == 0 || ChatPatch.ChatHistory[^1] != text) ChatPatch.ChatHistory.Add(text);
@@ -737,7 +749,7 @@ class CommandsPatch
     {
         var closestCommand = CommandListHelper().FirstOrDefault(c => c.StartsWith(typedCommand, StringComparison.OrdinalIgnoreCase));
 
-        if (GameStates.IsDev && Main.ReleaseBuildType == ReleaseTypes.Dev)
+        if (GameState.IsDev && Main.ReleaseBuildType == ReleaseTypes.Dev)
             closestCommand ??= DebugCommandListHelper().FirstOrDefault(c => c.StartsWith(typedCommand, StringComparison.OrdinalIgnoreCase));
 
         if (Main.myAccountInfo.IsSponsor == true)

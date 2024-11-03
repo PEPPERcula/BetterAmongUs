@@ -1,9 +1,10 @@
-﻿using BetterAmongUs.Patches;
+﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Patches;
 using Cpp2IL.Core.Extensions;
 using TMPro;
 using UnityEngine;
 
-namespace BetterAmongUs;
+namespace BetterAmongUs.Modules;
 
 class BetterNotificationManager
 {
@@ -70,7 +71,7 @@ class BetterNotificationManager
 
         Logger.LogCheat(Utils.RemoveHtmlText(rawText));
 
-        if (GameStates.IsHost && kickPlayer)
+        if (GameState.IsHost && kickPlayer)
         {
             string kickMessage = string.Format(Translator.GetString("AntiCheat.KickMessage"), byAntiCheat, Reason);
             player.Kick(true, kickMessage, true);
@@ -97,7 +98,7 @@ class BetterNotificationManager
             BAUNotificationManagerObj.transform.position = AspectPosition.ComputeWorldPosition(localCamera, AspectPosition.EdgeAlignments.Bottom, new Vector3(-1.3f, 0.7f, localCamera.nearClipPlane + 0.1f));
 
             showTime -= Time.deltaTime;
-            if (showTime <= 0f && GameStates.IsInGame)
+            if (showTime <= 0f && GameState.IsInGame)
             {
                 BAUNotificationManagerObj.transform.Find("Sizer/ChatText (TMP)").GetComponent<TextMeshPro>().text = "";
                 BAUNotificationManagerObj.SetActive(false);
@@ -106,7 +107,7 @@ class BetterNotificationManager
                 CheckNotifyQueue();
             }
 
-            if (!GameStates.IsInGame)
+            if (!GameState.IsInGame)
             {
                 BAUNotificationManagerObj.SetActive(false);
                 showTime = 0f;

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace BetterAmongUs;
+namespace BetterAmongUs.Modules;
 
 public class BetterAccountInfo
 {

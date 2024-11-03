@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace BetterAmongUs;
+namespace BetterAmongUs.Helpers;
 
 public static class ObjectHelper
 {

@@ -3,7 +3,7 @@ using System.Text.Json;
 using UnityEngine.Networking;
 using IEnumerator = System.Collections.IEnumerator;
 
-namespace BetterAmongUs;
+namespace BetterAmongUs.Modules;
 
 public class DataBaseConnect
 {
@@ -70,7 +70,7 @@ public class DataBaseConnect
 
     private static bool HandlePublicWarning()
     {
-        if (GameStates.IsLobby || GameStates.InGame)
+        if (GameState.IsLobby || GameState.InGame)
         {
             DestroyableSingleton<HudManager>.Instance.ShowPopUp(Translator.GetString("DataBaseConnect.InitFailurePublic"));
         }

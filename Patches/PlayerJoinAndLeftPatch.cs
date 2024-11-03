@@ -1,3 +1,5 @@
+using BetterAmongUs.Helpers;
+using BetterAmongUs.Modules;
 using BetterAmongUs.Patches;
 using HarmonyLib;
 using InnerNet;
@@ -16,7 +18,7 @@ class OnGameJoinedPatch
             AntiCheat.PauseAntiCheat();
 
             // Fix host icon in lobby on modded servers
-            if (!GameStates.IsVanillaServer)
+            if (!GameState.IsVanillaServer)
             {
                 var host = AmongUsClient.Instance.GetHost().Character;
                 host.SetColor(-2);
@@ -35,7 +37,7 @@ public static class OnPlayerJoinedPatch
     {
         _ = new LateTask(() =>
         {
-            if (GameStates.IsInGame)
+            if (GameState.IsInGame)
             {
                 var player = Utils.PlayerFromClientId(client.Id);
 

@@ -1,4 +1,6 @@
-﻿using HarmonyLib;
+﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Modules;
+using HarmonyLib;
 using InnerNet;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -89,14 +91,14 @@ public class ClientPatch
         [HarmonyPrefix]
         public static bool CanBan_Prefix(ref bool __result)
         {
-            __result = GameStates.IsHost;
+            __result = GameState.IsHost;
             return false;
         }
         [HarmonyPatch(nameof(InnerNetClient.CanKick))]
         [HarmonyPrefix]
         public static bool CanKick_Prefix(ref bool __result)
         {
-            __result = GameStates.IsHost || (GameStates.IsInGamePlay && (GameStates.IsMeeting || GameStates.IsExilling));
+            __result = GameState.IsHost || (GameState.IsInGamePlay && (GameState.IsMeeting || GameState.IsExilling));
             return false;
         }
         [HarmonyPatch(nameof(InnerNetClient.KickPlayer))]

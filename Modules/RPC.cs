@@ -1,8 +1,9 @@
-﻿using BetterAmongUs.Patches;
+﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Patches;
 using HarmonyLib;
 using Hazel;
 
-namespace BetterAmongUs;
+namespace BetterAmongUs.Modules;
 
 enum CustomRPC : int
 {
@@ -34,7 +35,7 @@ internal class PlayerControlRPCHandlerPatch
         }
 
         var canceled = false;
-        if (GameStates.IsHost)
+        if (GameState.IsHost)
         {
             if (BetterHostManager.CheckRPCAsHost(__instance, callId, reader, ref canceled) != true)
             {
@@ -77,7 +78,7 @@ public static class MessageReaderUpdateSystemPatch
 {
     public static bool Prefix(/*ShipStatus __instance,*/ [HarmonyArgument(0)] SystemTypes systemType, [HarmonyArgument(1)] PlayerControl player, [HarmonyArgument(2)] MessageReader reader)
     {
-        if (GameStates.IsHideNSeek) return false;
+        if (GameState.IsHideNSeek) return false;
 
         var amount = MessageReader.Get(reader).ReadByte();
         if (AntiCheat.RpcUpdateSystemCheck(player, systemType, amount) != true)
@@ -110,7 +111,7 @@ internal static class RPC
 
     public static void SendBetterCheck()
     {
-        var flag = GameStates.IsHost && Main.BetterHost.Value;
+        var flag = GameState.IsHost && Main.BetterHost.Value;
         MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.BetterCheck, SendOption.None, -1);
         messageWriter.Write(true);
         messageWriter.Write(flag);
@@ -121,7 +122,7 @@ internal static class RPC
 
     public static void SetNamePrivate(PlayerControl player, string name, PlayerControl target)
     {
-        if (!GameStates.IsHost || !GameStates.IsVanillaServer)
+        if (!GameState.IsHost || !GameState.IsVanillaServer)
         {
             return;
         }
@@ -134,7 +135,7 @@ internal static class RPC
 
     public static void SyncAllNames(bool isForMeeting = false, bool force = false, bool isBetterHost = true)
     {
-        if (!GameStates.IsHost || !GameStates.IsVanillaServer)
+        if (!GameState.IsHost || !GameState.IsVanillaServer)
         {
             return;
         }
@@ -211,7 +212,7 @@ internal static class RPC
         {
             try
             {
-                if (!GameStates.IsHost && !GameStates.IsTOHEHostLobby)
+                if (!GameState.IsHost && !GameState.IsTOHEHostLobby)
                 {
                     if (player.IsHost())
                     {

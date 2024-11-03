@@ -1,4 +1,5 @@
 using BepInEx;
+using BetterAmongUs.Modules;
 using HarmonyLib;
 using UnityEngine;
 
@@ -28,7 +29,7 @@ public static class OptionsMenuBehaviourPatch
     {
         static bool toggleCheckInGamePlay(string buttonName)
         {
-            bool flag = GameStates.IsInGame && !GameStates.IsLobby || GameStates.IsFreePlay;
+            bool flag = GameState.IsInGame && !GameState.IsLobby || GameState.IsFreePlay;
             if (flag)
                 BetterNotificationManager.Notify($"Unable to toggle '{buttonName}' while in gameplay!", 2.5f);
 
@@ -36,7 +37,7 @@ public static class OptionsMenuBehaviourPatch
         }
         static bool toggleCheckInGame(string buttonName)
         {
-            bool flag = GameStates.IsInGame;
+            bool flag = GameState.IsInGame;
             if (flag)
                 BetterNotificationManager.Notify($"Unable to toggle '{buttonName}' while in game!", 2.5f);
 
@@ -116,7 +117,7 @@ public static class OptionsMenuBehaviourPatch
             DisableLobbyTheme = ClientOptionItem.Create(title, Main.DisableLobbyTheme, __instance, DisableLobbyThemeButtonToggle);
             static void DisableLobbyThemeButtonToggle()
             {
-                if (GameStates.IsLobby && !Main.DisableLobbyTheme.Value)
+                if (GameState.IsLobby && !Main.DisableLobbyTheme.Value)
                 {
                     SoundManager.instance.CrossFadeSound("MapTheme", LobbyBehaviour.Instance.MapTheme, 0.5f, 1.5f);
                 }

@@ -1,5 +1,6 @@
 ﻿using AmongUs.Data;
 using AmongUs.GameOptions;
+using BetterAmongUs.Helpers;
 using BetterAmongUs.Patches;
 using InnerNet;
 using System.Reflection;
@@ -8,7 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-namespace BetterAmongUs;
+namespace BetterAmongUs.Modules;
 
 public static class Utils
 {
@@ -61,7 +62,7 @@ public static class Utils
             {
                 chat.notificationRoutine = chat.StartCoroutine(chat.BounceDot());
             }
-            SoundManager.Instance.PlaySound(chat.messageSound, false, 1f, null).pitch = 0.5f + (float)data.PlayerId / 15f;
+            SoundManager.Instance.PlaySound(chat.messageSound, false, 1f, null).pitch = 0.5f + data.PlayerId / 15f;
             ChatPatch.ChatControllerPatch.SetChatPoolTheme(pooledBubble);
         }
         catch (Exception ex)
@@ -172,7 +173,7 @@ public static class Utils
 
     public static void DisconnectAccountFromOnline(bool apiError = false)
     {
-        if (GameStates.IsInGame)
+        if (GameState.IsInGame)
         {
             AmongUsClient.Instance.ExitGame(DisconnectReasons.ExitGame);
         }
@@ -248,7 +249,7 @@ public static class Utils
             using (var ms = new MemoryStream())
             {
                 stream.CopyTo(ms);
-                if (!ImageConversion.LoadImage(texture, ms.ToArray(), false))
+                if (!texture.LoadImage(ms.ToArray(), false))
                     return null;
             }
 

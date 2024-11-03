@@ -1,5 +1,4 @@
-
-namespace BetterAmongUs;
+namespace BetterAmongUs.Helpers;
 
 public static class EnumHelper
 {

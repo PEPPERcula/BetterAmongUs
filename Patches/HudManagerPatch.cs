@@ -1,4 +1,6 @@
-﻿using HarmonyLib;
+﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Modules;
+using HarmonyLib;
 using TMPro;
 using UnityEngine;
 
@@ -46,7 +48,7 @@ public class HudManagerPatch
 
         _ = new LateTask(() =>
         {
-            if (!HasBeenWelcomed && GameStates.IsInGame && GameStates.IsLobby && !GameStates.IsFreePlay)
+            if (!HasBeenWelcomed && GameState.IsInGame && GameState.IsLobby && !GameState.IsFreePlay)
             {
                 BetterNotificationManager.Notify($"<b><color=#00751f>{string.Format(Translator.GetString("WelcomeMsg.WelcomeToBAU"), Translator.GetString("BetterAmongUs"))}!</color></b>", 8f);
 
@@ -67,7 +69,7 @@ public class HudManagerPatch
 
 
             // Set chat
-            if (GameStates.InGame)
+            if (GameState.InGame)
             {
                 if (!Main.ChatInGameplay.Value)
                 {
@@ -75,7 +77,7 @@ public class HudManagerPatch
                     {
                         __instance.Chat.gameObject.SetActive(true);
                     }
-                    else if (GameStates.IsInGamePlay && !(GameStates.IsMeeting || GameStates.IsExilling))
+                    else if (GameState.IsInGamePlay && !(GameState.IsMeeting || GameState.IsExilling))
                     {
                         __instance.Chat.gameObject.SetActive(false);
                     }

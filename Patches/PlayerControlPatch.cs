@@ -1,8 +1,9 @@
 ﻿using AmongUs.Data;
 using AmongUs.GameOptions;
+using BetterAmongUs.Helpers;
+using BetterAmongUs.Modules;
 using HarmonyLib;
 using Il2CppSystem.Linq;
-using LibCpp2IL;
 using System.Text;
 using System.Text.RegularExpressions;
 using TMPro;
@@ -54,7 +55,7 @@ class PlayerControlPatch
             __instance.cosmetics.colorBlindText.text = string.Empty;
         }
 
-        if (GameStates.IsInGame && GameStates.IsHost && Main.BetterHost.Value)
+        if (GameState.IsInGame && GameState.IsHost && Main.BetterHost.Value)
         {
             BetterHostManager.PlayerUpdate(__instance);
         }
@@ -80,7 +81,7 @@ class PlayerControlPatch
             if (player?.Data == null) return;
 
             var betterData = player.BetterData();
-            if (GameStates.IsTOHEHostLobby) return;
+            if (GameState.IsTOHEHostLobby) return;
 
             var nameText = player.gameObject.transform.Find("Names/NameText_TMP").GetComponent<TextMeshPro>();
 
@@ -90,7 +91,7 @@ class PlayerControlPatch
                 return;
             }
 
-            if (!Main.LobbyPlayerInfo.Value && GameStates.IsLobby)
+            if (!Main.LobbyPlayerInfo.Value && GameState.IsLobby)
             {
                 player.ResetAllPlayerTextInfo();
                 player.RawSetName(player.Data.PlayerName);
@@ -115,7 +116,7 @@ class PlayerControlPatch
 
             SetPlayerOutline(player, hashPuid, friendCode, sbTag);
 
-            if (GameStates.IsInGame && GameStates.IsLobby && !GameStates.IsFreePlay)
+            if (GameState.IsInGame && GameState.IsLobby && !GameState.IsFreePlay)
             {
                 SetLobbyInfo(player, ref newName, betterData, sbTag);
                 sbTagTop.Append($"<color=#9e9e9e>{platform}</color>+++")
@@ -123,7 +124,7 @@ class PlayerControlPatch
 
                 sbTagBottom.Append($"<color={friendCodeColor}>{friendCode}</color>+++");
             }
-            else if ((GameStates.IsInGame || GameStates.IsFreePlay) && !GameStates.IsHideNSeek)
+            else if ((GameState.IsInGame || GameState.IsFreePlay) && !GameState.IsHideNSeek)
             {
                 SetInGameInfo(player, sbTagTop);
             }
@@ -152,7 +153,7 @@ class PlayerControlPatch
     {
         void TryKick()
         {
-            if (GameStates.IsHost)
+            if (GameState.IsHost)
             {
                 if (BetterGameSettings.InvalidFriendCode.GetBool())
                 {
@@ -225,16 +226,16 @@ class PlayerControlPatch
         if (player.IsHost() && Main.LobbyPlayerInfo.Value)
             newName = player.GetPlayerNameAndColor();
 
-        if (player.IsDev() && !GameStates.IsInGamePlay)
+        if (player.IsDev() && !GameState.IsInGamePlay)
             sbTag.Append($"<color=#6e6e6e>(<color=#0088ff>{Translator.GetString("Player.Dev")}</color>)</color>+++");
 
-        if ((player.IsLocalPlayer() && GameStates.IsHost && Main.BetterHost.Value) ||
-            (betterData.IsBetterHost && player.IsHost()) && !GameStates.IsInGamePlay)
+        if ((player.IsLocalPlayer() && GameState.IsHost && Main.BetterHost.Value) ||
+            (betterData.IsBetterHost && player.IsHost()) && !GameState.IsInGamePlay)
         {
             sbTag.AppendFormat("<color=#0dff00>{1}{0}</color>+++", Translator.GetString("Player.BetterHost"),
                 betterData.IsVerifiedBetterUser || player.IsLocalPlayer() ? "✓ " : "");
         }
-        else if ((player.IsLocalPlayer() || betterData.IsBetterUser) && !GameStates.IsInGamePlay)
+        else if ((player.IsLocalPlayer() || betterData.IsBetterUser) && !GameState.IsInGamePlay)
         {
             sbTag.AppendFormat("<color=#0dff00>{1}{0}</color>+++", Translator.GetString("Player.BetterUser"),
                 betterData.IsVerifiedBetterUser || player.IsLocalPlayer() ? "✓ " : "");
@@ -275,7 +276,7 @@ class PlayerControlPatch
     [HarmonyPrefix]
     public static bool RpcSetName_Prefix(PlayerControl __instance, [HarmonyArgument(0)] string name)
     {
-        if (!GameStates.IsVanillaServer && Utils.IsHtmlText(name))
+        if (!GameState.IsVanillaServer && Utils.IsHtmlText(name))
         {
             return false;
         }
@@ -287,7 +288,7 @@ class PlayerControlPatch
     [HarmonyPostfix]
     public static void SetColor_Postfix()
     {
-        if (Main.BetterHost.Value && GameStates.IsLobby)
+        if (Main.BetterHost.Value && GameState.IsLobby)
         {
             _ = new LateTask(() =>
             {

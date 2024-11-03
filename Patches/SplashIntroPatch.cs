@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using BetterAmongUs.Modules;
+using HarmonyLib;
 using UnityEngine;
 
 namespace BetterAmongUs.Patches;

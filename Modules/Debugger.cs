@@ -1,5 +1,6 @@
 ﻿
 using BepInEx;
+using BetterAmongUs.Modules;
 
 namespace BetterAmongUs;
 
@@ -36,7 +37,7 @@ class Logger
     public static void LogPrivate(string info, string tag = "Log")
     {
 #if DEBUG
-        if (GameStates.IsDev)
+        if (GameState.IsDev)
         {
             Log(info, tag);
             return;

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace BetterAmongUs;
+namespace BetterAmongUs.Modules;
 
 class BetterDataManager
 {
@@ -332,6 +332,11 @@ class BetterDataManager
                 RemoveIdentifierFromSection(jsonData["aumData"], identifier, ref successful);
             }
 
+            if (jsonData.ContainsKey("knData"))
+            {
+                RemoveIdentifierFromSection(jsonData["knData"], identifier, ref successful);
+            }
+
             json = JsonSerializer.Serialize(jsonData, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(filePath, json);
         }
@@ -395,6 +400,18 @@ class BetterDataManager
                     AntiCheat.AUMData.Remove(data.Key);
                 }
             }
+
+            foreach (var data in AntiCheat.KNData)
+            {
+                if (data.Value != identifier)
+                {
+                    AntiCheat.KNData.Remove(identifier);
+                }
+                else
+                {
+                    AntiCheat.KNData.Remove(data.Key);
+                }
+            }
         }
     }
 
@@ -421,6 +438,11 @@ class BetterDataManager
             if (jsonData.ContainsKey("aumData"))
             {
                 jsonData["aumData"].Clear();
+            }
+
+            if (jsonData.ContainsKey("knData"))
+            {
+                jsonData["knData"].Clear();
             }
 
             json = JsonSerializer.Serialize(jsonData, new JsonSerializerOptions { WriteIndented = true });

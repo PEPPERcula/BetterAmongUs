@@ -1,5 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using Assets.CoreScripts;
+using BetterAmongUs.Helpers;
+using BetterAmongUs.Modules;
 using HarmonyLib;
 using Hazel;
 using System.Text;
@@ -26,7 +28,7 @@ class ChatPatch
                 __result = false;
                 return false;
             }
-            if (!GameStates.IsBetterHostLobby)
+            if (!GameState.IsBetterHostLobby)
             {
                 __result = false;
                 return true;
@@ -116,14 +118,14 @@ class ChatPatch
             string playerName = sourcePlayer.BetterData().RealName ?? "";
             string Role = $"<size=75%><color={sourcePlayer.GetTeamHexColor()}>{sourcePlayer.GetRoleName()}</color></size>+++";
 
-            if (GameStates.IsLobby && !GameStates.IsFreePlay)
+            if (GameState.IsLobby && !GameState.IsFreePlay)
             {
                 Role = "";
 
                 if (sourcePlayer.IsDev())
                     sbTag.Append($"<color=#0088ff>Dev</color>+++");
 
-                if (((sourcePlayer.IsLocalPlayer() && GameStates.IsHost && Main.BetterHost.Value)
+                if (((sourcePlayer.IsLocalPlayer() && GameState.IsHost && Main.BetterHost.Value)
                     || (!sourcePlayer.IsLocalPlayer() && sourcePlayer.BetterData().IsBetterHost && sourcePlayer.IsHost())))
                     sbTag.AppendFormat("<color=#0dff00>{1}{0}</color>+++", Translator.GetString("Player.BetterHost"), sourcePlayer.BetterData().IsVerifiedBetterUser || sourcePlayer.IsLocalPlayer() ? "✓ " : "");
                 else if ((sourcePlayer.IsLocalPlayer() || sourcePlayer.BetterData().IsBetterUser))

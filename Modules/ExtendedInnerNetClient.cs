@@ -1,6 +1,7 @@
 ﻿using Hazel;
 using InnerNet;
-namespace BetterAmongUs;
+
+namespace BetterAmongUs.Modules;
 
 static class ExtendedInnerNetClient
 {

@@ -1,6 +1,4 @@
-// Code from: https://github.com/0xDrMoe/TownofHost-Enhanced
-
-namespace BetterAmongUs;
+namespace BetterAmongUs.Helpers;
 
 class LateTask
 {
@@ -25,9 +23,9 @@ class LateTask
     public LateTask(Action action, float time, string name = "No Name Task", bool shoudLog = true)
     {
         this.action = action;
-        this.timer = time;
+        timer = time;
         this.name = name;
-        this.shouldLog = shoudLog;
+        shouldLog = shoudLog;
         Tasks.Add(this);
     }
     public static void Update(float deltaTime)

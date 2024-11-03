@@ -2,7 +2,7 @@
 using Il2CppInterop.Runtime.Attributes;
 using UnityEngine;
 
-namespace BetterAmongUs;
+namespace BetterAmongUs.Modules;
 
 public class DebugMenu : MonoBehaviour
 {
@@ -42,7 +42,7 @@ public class DebugMenu : MonoBehaviour
 
         AddButtonToTab(Main, "Trigger Anti-Cheat", () =>
         {
-            if (GameStates.IsInGame || GameStates.IsLobby || GameStates.IsFreePlay)
+            if (GameState.IsInGame || GameState.IsLobby || GameState.IsFreePlay)
             {
                 BetterNotificationManager.NotifyCheat(PlayerControl.LocalPlayer, "Debug Test", kickPlayer: false);
             }
@@ -77,7 +77,7 @@ public class DebugMenu : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.F1))
             Toggle();
 
-        if (!GameStates.IsInGamePlay)
+        if (!GameState.IsInGamePlay)
             RevealRoles = false;
     }
 
@@ -233,7 +233,7 @@ public class DebugMenu : MonoBehaviour
 
     public void Toggle()
     {
-        if (!GameStates.IsDev || Main.ReleaseBuildType != ReleaseTypes.Dev) return;
+        if (!GameState.IsDev || Main.ReleaseBuildType != ReleaseTypes.Dev) return;
 
         WindowEnabled = !WindowEnabled;
     }

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using BetterAmongUs.Modules;
+using UnityEngine;
 
 namespace BetterAmongUs;
 

@@ -2,6 +2,8 @@
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
+using BetterAmongUs.Helpers;
+using BetterAmongUs.Modules;
 using BetterAmongUs.Patches;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
@@ -9,7 +11,6 @@ using Innersloth.IO;
 using System.Security.Cryptography;
 using System.Text;
 using UnityEngine;
-using static BetterAmongUs.PlayerControlDataExtension;
 
 namespace BetterAmongUs;
 
@@ -25,12 +26,12 @@ public enum ReleaseTypes : int
 public class Main : BasePlugin
 {
     public static readonly ReleaseTypes ReleaseBuildType = ReleaseTypes.Beta;
-    public const string BetaNum = "1";
+    public const string BetaNum = "2";
     public const string HotfixNum = "0";
     public const bool IsHotFix = false;
     public const string PluginGuid = "com.ten.betteramongus";
     public const string PluginVersion = "1.1.5";
-    public const string ReleaseDate = "10.26.2024"; // mm/dd/yyyy
+    public const string ReleaseDate = "10.28.2024"; // mm/dd/yyyy
     public const string Github = "https://github.com/EnhancedNetwork/BetterAmongUs-Public";
     public const string Discord = "https://discord.gg/ten";
     public static BetterAccountInfo myAccountInfo = new();
