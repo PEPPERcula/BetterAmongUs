@@ -1,4 +1,5 @@
 using BepInEx;
+using BetterAmongUs.Helpers;
 using BetterAmongUs.Modules;
 using HarmonyLib;
 using UnityEngine;
@@ -165,7 +166,7 @@ public static class OptionsMenuBehaviourPatch
             static void SwitchToVanillaButtonToggle()
             {
                 ConsoleManager.DetachConsole();
-                UnityEngine.Object.Destroy(BetterNotificationManager.BAUNotificationManagerObj);
+                BetterNotificationManager.BAUNotificationManagerObj.DestroyObj();
                 Harmony.UnpatchAll();
             }
         }

@@ -1,7 +1,7 @@
 ﻿using BetterAmongUs.Modules;
 using UnityEngine;
 
-namespace BetterAmongUs;
+namespace BetterAmongUs.Items.OptionItems;
 
 public class BetterOptionIntItem : BetterOptionItem
 {
@@ -34,16 +34,10 @@ public class BetterOptionIntItem : BetterOptionItem
 
         if (values.Length is < 3 or > 3) return null;
 
-        NumberOption optionBehaviour = UnityEngine.Object.Instantiate<NumberOption>(gameOptionsMenu.numberOptionOrigin, Vector3.zero, Quaternion.identity, gameOptionsMenu.settingsContainer);
+        NumberOption optionBehaviour = UnityEngine.Object.Instantiate(gameOptionsMenu.numberOptionOrigin, Vector3.zero, Quaternion.identity, gameOptionsMenu.settingsContainer);
         optionBehaviour.transform.localPosition = new Vector3(0.952f, 2f, -2f);
         SetUp(optionBehaviour);
         optionBehaviour.OnValueChanged = new Action<OptionBehaviour>((option) => ValueChanged(id, option));
-
-        // Fix Game Crash
-        foreach (RulesCategory rulesCategory in GameManager.Instance.GameSettingsList.AllCategories)
-        {
-            optionBehaviour.data = rulesCategory.AllGameSettings.ToArray().FirstOrDefault(item => item.Type == OptionTypes.Number);
-        }
 
         optionBehaviour.PlusBtn.OnClick.RemoveAllListeners();
         optionBehaviour.MinusBtn.OnClick.RemoveAllListeners();

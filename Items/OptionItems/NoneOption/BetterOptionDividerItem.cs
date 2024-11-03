@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using BetterAmongUs.Helpers;
+using UnityEngine;
 
-namespace BetterAmongUs;
+namespace BetterAmongUs.Items.OptionItems;
 
 public class BetterOptionDividerItem : BetterOptionItem
 {
@@ -13,11 +14,11 @@ public class BetterOptionDividerItem : BetterOptionItem
 
         Tab = gameOptionsMenu;
         Name = "Divider";
-        CategoryHeaderMasked categoryHeaderMasked = UnityEngine.Object.Instantiate<CategoryHeaderMasked>(gameOptionsMenu.categoryHeaderOrigin, Vector3.zero, Quaternion.identity, gameOptionsMenu.settingsContainer);
+        CategoryHeaderMasked categoryHeaderMasked = UnityEngine.Object.Instantiate(gameOptionsMenu.categoryHeaderOrigin, Vector3.zero, Quaternion.identity, gameOptionsMenu.settingsContainer);
         categoryHeaderMasked.transform.localScale = Vector3.one * 0.63f;
         categoryHeaderMasked.transform.localPosition = new Vector3(-0.903f, 2f, -2f);
-        UnityEngine.Object.Destroy(categoryHeaderMasked.Background.gameObject);
-        UnityEngine.Object.Destroy(categoryHeaderMasked.Title.gameObject);
+        categoryHeaderMasked.Background.gameObject.DestroyObj();
+        categoryHeaderMasked.Title.gameObject.DestroyObj();
         if (categoryHeaderMasked.Divider != null)
         {
             categoryHeaderMasked.Divider.material.SetInt(PlayerMaterial.MaskLayer, maskLayer);

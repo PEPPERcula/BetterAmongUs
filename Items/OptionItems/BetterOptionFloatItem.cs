@@ -1,26 +1,28 @@
 ﻿using BetterAmongUs.Modules;
 using UnityEngine;
 
-namespace BetterAmongUs;
+namespace BetterAmongUs.Items.OptionItems;
 
-public class BetterOptionStringItem : BetterOptionItem
+public class BetterOptionFloatItem : BetterOptionItem
 {
-    private StringOption? ThisOption;
-    public string[] Values = [];
-    public int CurrentValue;
+    private NumberOption? ThisOption;
+    public float CurrentValue;
+    public FloatRange floatRange = new(0f, 180f);
+    public float Increment = 2.5f;
+    private string? PostFix;
+    private string? PreFix;
 
-    public override bool ShowChildrenCondition() => CurrentValue > 0;
+    public override bool ShowChildrenCondition() => CurrentValue > floatRange.min;
     public override bool SelfShowCondition() => ShowCondition != null ? ShowCondition() : base.SelfShowCondition();
     public Func<bool>? ShowCondition = null;
 
-    public BetterOptionItem Create(int id, GameOptionsMenu gameOptionsMenu, string name, string[] strings, int DefaultValue = 0, BetterOptionItem? Parent = null, Func<bool>? selfShowCondition = null)
+    public BetterOptionItem Create(int id, GameOptionsMenu gameOptionsMenu, string name, float[] values, float DefaultValue, string preFix = "", string postFix = "", BetterOptionItem? Parent = null, Func<bool>? selfShowCondition = null)
     {
         Id = id;
-        Values = strings;
-        Tab = gameOptionsMenu;
-        Name = name;
-        if (DefaultValue < 0) DefaultValue = 0;
-        if (DefaultValue > Values.Length) DefaultValue = Values.Length;
+        floatRange = new(values[0], values[1]);
+        Increment = values[2];
+        if (DefaultValue < floatRange.min) DefaultValue = floatRange.min;
+        if (DefaultValue > floatRange.max) DefaultValue = floatRange.max;
         CurrentValue = DefaultValue;
         ShowCondition = selfShowCondition;
 
@@ -30,16 +32,12 @@ public class BetterOptionStringItem : BetterOptionItem
             return this;
         }
 
-        StringOption optionBehaviour = UnityEngine.Object.Instantiate<StringOption>(gameOptionsMenu.stringOptionOrigin, Vector3.zero, Quaternion.identity, gameOptionsMenu.settingsContainer);
+        if (values.Length is < 3 or > 3) return null;
+
+        NumberOption optionBehaviour = UnityEngine.Object.Instantiate(gameOptionsMenu.numberOptionOrigin, Vector3.zero, Quaternion.identity, gameOptionsMenu.settingsContainer);
         optionBehaviour.transform.localPosition = new Vector3(0.952f, 2f, -2f);
         SetUp(optionBehaviour);
         optionBehaviour.OnValueChanged = new Action<OptionBehaviour>((option) => ValueChanged(id, option));
-
-        // Fix Game Crash
-        foreach (RulesCategory rulesCategory in GameManager.Instance.GameSettingsList.AllCategories)
-        {
-            optionBehaviour.data = rulesCategory.AllGameSettings.ToArray().FirstOrDefault(item => item.Type == OptionTypes.String);
-        }
 
         optionBehaviour.PlusBtn.OnClick.RemoveAllListeners();
         optionBehaviour.MinusBtn.OnClick.RemoveAllListeners();
@@ -57,8 +55,12 @@ public class BetterOptionStringItem : BetterOptionItem
         optionBehaviour.TitleText.fontSize = 2.5f;
 
         // Set data
+        Tab = gameOptionsMenu;
+        Name = name;
         TitleText = optionBehaviour.TitleText;
         Option = optionBehaviour;
+        PostFix = postFix;
+        PreFix = preFix;
         ThisOption = optionBehaviour;
 
         Load(DefaultValue);
@@ -94,17 +96,14 @@ public class BetterOptionStringItem : BetterOptionItem
     {
         if (ThisOption == null) return;
 
-        if (CurrentValue <= Values.Length - 1 && CurrentValue >= 0)
-        {
-            ThisOption.ValueText.text = Values[CurrentValue];
-        }
+        ThisOption.ValueText.text = PreFix + CurrentValue.ToString() + PostFix;
 
-        if (CurrentValue >= Values.Length - 1)
+        if (CurrentValue + Increment > floatRange.max)
         {
             ThisOption.PlusBtn.SetInteractable(false);
             ThisOption.MinusBtn.SetInteractable(true);
         }
-        else if (CurrentValue <= 0)
+        else if (CurrentValue - Increment < floatRange.min)
         {
             ThisOption.PlusBtn.SetInteractable(true);
             ThisOption.MinusBtn.SetInteractable(false);
@@ -120,35 +119,57 @@ public class BetterOptionStringItem : BetterOptionItem
 
     public void Increase()
     {
-        if (CurrentValue < Values.Length)
+        int times = 1;
+        if (Input.GetKey(KeyCode.LeftShift))
+            times = 5;
+        if (Input.GetKey(KeyCode.LeftControl))
+            times = 10;
+
+        if (CurrentValue + Increment * times <= floatRange.max)
         {
-            CurrentValue++;
-            AdjustButtonsActiveState();
+            CurrentValue += Increment * times;
         }
+        else
+        {
+            CurrentValue = floatRange.max;
+        }
+
+        AdjustButtonsActiveState();
     }
 
     public void Decrease()
     {
-        if (CurrentValue > 0)
+        int times = 1;
+        if (Input.GetKey(KeyCode.LeftShift))
+            times = 5;
+        if (Input.GetKey(KeyCode.LeftControl))
+            times = 10;
+
+        if (CurrentValue - Increment * times >= floatRange.min)
         {
-            CurrentValue--;
-            AdjustButtonsActiveState();
+            CurrentValue -= Increment * times;
         }
+        else
+        {
+            CurrentValue = floatRange.min;
+        }
+
+        AdjustButtonsActiveState();
     }
 
-    public void Load(int DefaultValue)
+    public void Load(float DefaultValue)
     {
         if (BetterDataManager.CanLoadSetting(Id))
         {
-            var Int = BetterDataManager.LoadIntSetting(Id, DefaultValue);
+            var Float = BetterDataManager.LoadFloatSetting(Id, DefaultValue);
 
-            if (Int > Values.Length - 1 || Int < 0)
+            if (Float > floatRange.max || Float < floatRange.min)
             {
-                Int = DefaultValue;
+                Float = DefaultValue;
                 BetterDataManager.SaveSetting(Id, DefaultValue.ToString());
             }
 
-            CurrentValue = Int;
+            CurrentValue = Float;
         }
         else
         {
@@ -156,15 +177,27 @@ public class BetterOptionStringItem : BetterOptionItem
         }
     }
 
-    public override int GetValue()
+    public override float GetFloat()
     {
         if (BetterDataManager.CanLoadSetting(Id))
         {
-            return BetterDataManager.LoadIntSetting(Id);
+            return BetterDataManager.LoadFloatSetting(Id);
         }
         else
         {
             return CurrentValue;
+        }
+    }
+
+    public override int GetInt()
+    {
+        if (BetterDataManager.CanLoadSetting(Id))
+        {
+            return (int)BetterDataManager.LoadFloatSetting(Id);
+        }
+        else
+        {
+            return (int)CurrentValue;
         }
     }
 
@@ -173,7 +206,7 @@ public class BetterOptionStringItem : BetterOptionItem
         optionBehaviour.data = new BaseGameSetting
         {
             Title = StringNames.None,
-            Type = OptionTypes.String,
+            Type = OptionTypes.Float,
         };
     }
 

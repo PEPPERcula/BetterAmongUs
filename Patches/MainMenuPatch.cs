@@ -114,7 +114,7 @@ internal class MainMenuPatch
             buttons.Add(button);
             buttonsObj.Add(button.gameObject);
             button.name = name;
-            UnityEngine.Object.Destroy(button.GetComponent<AspectPosition>());
+            button.GetComponent<AspectPosition>().DestroyMono();
 
             // Set button position and scale
             float baseY = -2.7882f;
@@ -128,7 +128,7 @@ internal class MainMenuPatch
 
             // Set button text
             var buttonText = button.transform.Find("FontPlacer/Text_TMP").GetComponent<TMP_Text>();
-            buttonText.DestroyTranslator();
+            buttonText.DestroyTextTranslator();
             buttonText.fontSize = buttonText.fontSizeMax = buttonText.fontSizeMin = 3.5f;
             buttonText.enableWordWrapping = false;
             buttonText.text = label;
@@ -141,8 +141,8 @@ internal class MainMenuPatch
 
             // Align text
             var container = buttonText.transform.parent;
-            UnityEngine.Object.Destroy(container.GetComponent<AspectPosition>());
-            UnityEngine.Object.Destroy(buttonText.GetComponent<AspectPosition>());
+            container.GetComponent<AspectPosition>().DestroyMono();
+            buttonText.GetComponent<AspectPosition>().DestroyMono();
             container.SetLocalX(0f);
             buttonText.transform.SetLocalX(0f);
             buttonText.horizontalAlignment = HorizontalAlignmentOptions.Center;

@@ -1,7 +1,7 @@
 ﻿using BetterAmongUs.Modules;
 using UnityEngine;
 
-namespace BetterAmongUs;
+namespace BetterAmongUs.Items.OptionItems;
 
 public class BetterOptionCheckboxItem : BetterOptionItem
 {
@@ -26,7 +26,7 @@ public class BetterOptionCheckboxItem : BetterOptionItem
             return this;
         }
 
-        ToggleOption optionBehaviour = UnityEngine.Object.Instantiate<ToggleOption>(gameOptionsMenu.checkboxOrigin, Vector3.zero, Quaternion.identity, gameOptionsMenu.settingsContainer);
+        ToggleOption optionBehaviour = UnityEngine.Object.Instantiate(gameOptionsMenu.checkboxOrigin, Vector3.zero, Quaternion.identity, gameOptionsMenu.settingsContainer);
         optionBehaviour.transform.localPosition = new Vector3(0.952f, 2f, -2f);
         SetUp(optionBehaviour);
         optionBehaviour.OnValueChanged = new Action<OptionBehaviour>((option) => ValueChanged(id, option));

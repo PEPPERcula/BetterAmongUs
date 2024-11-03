@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using BetterAmongUs.Helpers;
+using UnityEngine;
 
-namespace BetterAmongUs;
+namespace BetterAmongUs.Items.OptionItems;
 
 public class BetterOptionTitleItem : BetterOptionItem
 {
@@ -11,12 +12,12 @@ public class BetterOptionTitleItem : BetterOptionItem
             return this;
         }
 
-        ToggleOption optionBehaviour = UnityEngine.Object.Instantiate<ToggleOption>(gameOptionsMenu.checkboxOrigin, Vector3.zero, Quaternion.identity, gameOptionsMenu.settingsContainer);
+        ToggleOption optionBehaviour = UnityEngine.Object.Instantiate(gameOptionsMenu.checkboxOrigin, Vector3.zero, Quaternion.identity, gameOptionsMenu.settingsContainer);
         optionBehaviour.transform.localPosition = new Vector3(0.952f, 2f, -2f);
         SetUp(optionBehaviour);
 
-        UnityEngine.Object.Destroy(optionBehaviour.CheckMark.transform.parent.gameObject);
-        UnityEngine.Object.Destroy(optionBehaviour.GetComponent<ToggleOption>());
+        optionBehaviour.CheckMark.transform.parent.gameObject.DestroyObj();
+        optionBehaviour.GetComponent<ToggleOption>().DestroyMono();
         optionBehaviour.TitleText.alignment = TMPro.TextAlignmentOptions.Center;
         optionBehaviour.TitleText.outlineColor = Color.black;
         optionBehaviour.TitleText.outlineWidth = 0.2f;

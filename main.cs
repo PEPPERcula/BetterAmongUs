@@ -26,15 +26,15 @@ public enum ReleaseTypes : int
 public class Main : BasePlugin
 {
     public static readonly ReleaseTypes ReleaseBuildType = ReleaseTypes.Beta;
-    public const string BetaNum = "2";
+    public const string BetaNum = "3";
     public const string HotfixNum = "0";
     public const bool IsHotFix = false;
     public const string PluginGuid = "com.ten.betteramongus";
     public const string PluginVersion = "1.1.5";
-    public const string ReleaseDate = "10.28.2024"; // mm/dd/yyyy
+    public const string ReleaseDate = "11.3.2024"; // mm/dd/yyyy
     public const string Github = "https://github.com/EnhancedNetwork/BetterAmongUs-Public";
     public const string Discord = "https://discord.gg/ten";
-    public static BetterAccountInfo myAccountInfo = new();
+    public static BetterAccountInfo MyAccountInfo = new();
 
     public static string modSignature
     {
@@ -112,8 +112,9 @@ public class Main : BasePlugin
     ];
 
     public static PlayerControl[] AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(pc => pc != null).ToArray();
-
     public static PlayerControl[] AllAlivePlayerControls => AllPlayerControls.ToArray().Where(pc => pc.IsAlive()).ToArray();
+    public static DeadBody[] AllDeadBodys => UnityEngine.Object.FindObjectsOfType<DeadBody>().ToArray();
+    public static Vent[] AllVents => UnityEngine.Object.FindObjectsOfType<Vent>();
 
     public static Dictionary<int, string> GetRoleName()
     {

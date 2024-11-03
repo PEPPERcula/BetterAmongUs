@@ -120,7 +120,7 @@ class CommandsPatch
                         list += $"\n{mid}<color=#e0b700><b>{CommandPrefix}{allCommands[i].Split(' ')[0].Split("---")[0]}</b></color> <size=65%><color=#735e00>{allCommands[i].Split("---")[1]}.</color></size>";
                     }
                 }
-                if (Main.myAccountInfo.IsSponsor == true)
+                if (Main.MyAccountInfo.IsSponsor == true)
                 {
                     list += "\n" + close + "\n";
                     list += "<color=#00751f><b><size=150%>Debug Command List</size></b></color>\n" + open;
@@ -326,7 +326,7 @@ class CommandsPatch
                 Utils.AddChatPrivate($"All data successfully removed from local <color=#4f92ff>Anti-Cheat</color>!");
                 break;
             default:
-                if (Main.myAccountInfo.IsSponsor == true) // use Sponsor check when there is a API
+                if (Main.MyAccountInfo.IsSponsor == true) // use Sponsor check when there is a API
                 {
                     checkSponsorCommand = true;
                     break;
@@ -752,7 +752,7 @@ class CommandsPatch
         if (GameState.IsDev && Main.ReleaseBuildType == ReleaseTypes.Dev)
             closestCommand ??= DebugCommandListHelper().FirstOrDefault(c => c.StartsWith(typedCommand, StringComparison.OrdinalIgnoreCase));
 
-        if (Main.myAccountInfo.IsSponsor == true)
+        if (Main.MyAccountInfo.IsSponsor == true)
         {
             closestCommand ??= SponsorCommandListHelper().FirstOrDefault(c => c.StartsWith(typedCommand, StringComparison.OrdinalIgnoreCase));
         }

@@ -3,7 +3,7 @@ using BetterAmongUs.Patches;
 using TMPro;
 using UnityEngine;
 
-namespace BetterAmongUs;
+namespace BetterAmongUs.Items.OptionItems;
 
 public class BetterOptionItem
 {
@@ -80,7 +80,6 @@ public class BetterOptionItem
 
     public void SetUp(OptionBehaviour optionBehaviour)
     {
-        SetData(optionBehaviour);
         SpriteRenderer[] componentsInChildren = optionBehaviour.GetComponentsInChildren<SpriteRenderer>(true);
         for (int i = 0; i < componentsInChildren.Length; i++)
         {

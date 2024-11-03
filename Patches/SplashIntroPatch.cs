@@ -1,4 +1,5 @@
-﻿using BetterAmongUs.Modules;
+﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Modules;
 using HarmonyLib;
 using UnityEngine;
 
@@ -26,7 +27,7 @@ class SplashIntroPatch
         {
             if (Time.time - __instance.startTime > 2f && BetterIntro)
             {
-                UnityEngine.Object.Destroy(__instance.logoAnimFinish.GetComponent<AudioSource>());
+                __instance.logoAnimFinish.GetComponent<AudioSource>().DestroyCom();
             }
 
             if (Input.GetKeyDown(KeyCode.Mouse0) || Input.GetKeyDown(KeyCode.Mouse1))
@@ -48,7 +49,7 @@ class SplashIntroPatch
                     __instance.logoAnimFinish.gameObject.SetActive(true);
                     GameObject InnerLogo = __instance.logoAnimFinish.transform.Find("LogoRoot/ISLogo").gameObject;
                     BetterLogo = UnityEngine.Object.Instantiate(InnerLogo, InnerLogo.transform.parent);
-                    UnityEngine.Object.Destroy(InnerLogo);
+                    InnerLogo.DestroyObj();
                     BetterLogo.name = "BetterLogo";
                     BetterLogo.GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("BetterAmongUs.Resources.Images.BetterAmongUs-By-The-Enhanced-Network-Logo.png", 150f);
                     __instance.logoAnimFinish.transform.Find("BlackOverlay").transform.SetLocalY(0f);
