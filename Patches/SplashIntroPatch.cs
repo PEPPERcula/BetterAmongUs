@@ -27,7 +27,7 @@ class SplashIntroPatch
         {
             if (Time.time - __instance.startTime > 2f && BetterIntro)
             {
-                __instance.logoAnimFinish.GetComponent<AudioSource>().DestroyCom();
+                UnityEngine.Object.Destroy(__instance.logoAnimFinish.GetComponent<AudioSource>());
             }
 
             if (Input.GetKeyDown(KeyCode.Mouse0) || Input.GetKeyDown(KeyCode.Mouse1))
