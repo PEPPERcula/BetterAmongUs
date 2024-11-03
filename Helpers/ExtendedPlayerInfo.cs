@@ -55,7 +55,6 @@ public class ExtendedAntiCheatInfo
     public int TimesAttemptedKilled { get; set; } = 0;
     public int OpenSabotageNum { get; set; } = 0;
     public bool IsFixingPanelSabotage => OpenSabotageNum != 0;
-    public int TimesCalledMeeting { get; set; } = 0;
     public float TimeSinceLastTask { get; set; } = 5f;
     public uint LastTaskId { get; set; } = 999;
 }

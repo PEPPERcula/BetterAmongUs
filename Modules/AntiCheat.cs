@@ -627,15 +627,15 @@ class AntiCheat
                     }
                 }
 
-                var deadPlayerInfo = GameData.Instance.GetPlayerById(reader.ReadByte());
+                var deadPlayerInfo = reader.ReadPlayerDataId();
                 bool isBodyReport = deadPlayerInfo != null;
 
                 if (isBodyReport)
                 {
-                    if (!UnityEngine.Object.FindAnyObjectByType<DeadBody>() || !deadPlayerInfo.IsDead || deadPlayerInfo == player.Data)
+                    if (!Main.AllDeadBodys.Any() || !deadPlayerInfo.IsDead || deadPlayerInfo == player.Data)
                     {
                         BetterNotificationManager.NotifyCheat(player, string.Format(Translator.GetString("AntiCheat.InvalidActionRPC"), Enum.GetName((RpcCalls)callId)));
-                        Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {!UnityEngine.Object.FindAnyObjectByType<DeadBody>()} || {!deadPlayerInfo.IsDead} || {deadPlayerInfo == player.Data}");
+                        Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {!Main.AllDeadBodys.Any()} || {!deadPlayerInfo.IsDead} || {deadPlayerInfo == player.Data}");
                         if (GameState.IsHost)
                         {
                             return false;
@@ -648,11 +648,12 @@ class AntiCheat
                 }
                 else
                 {
-                    if (player.BetterData().AntiCheatInfo.TimesCalledMeeting >= GameOptionsManager.Instance.currentNormalGameOptions.NumEmergencyMeetings)
+                    if (player.RemainingEmergencies <= 0)
                     {
                         BetterNotificationManager.NotifyCheat(player, string.Format(Translator.GetString("AntiCheat.InvalidActionRPC"), Enum.GetName((RpcCalls)callId)));
-                        Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {player.BetterData().AntiCheatInfo.TimesCalledMeeting} -> {GameOptionsManager.Instance.currentNormalGameOptions.NumEmergencyMeetings}" +
-                            $" - {player.BetterData().AntiCheatInfo.TimesCalledMeeting >= GameOptionsManager.Instance.currentNormalGameOptions.NumEmergencyMeetings}");
+                        Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {player.RemainingEmergencies} -> {GameOptionsManager.Instance.currentNormalGameOptions.NumEmergencyMeetings}" +
+                            $" - {player.RemainingEmergencies <= 0}");
+
                         if (GameState.IsHost)
                         {
                             return false;
