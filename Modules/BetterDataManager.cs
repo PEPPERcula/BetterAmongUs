@@ -453,6 +453,7 @@ class BetterDataManager
         AntiCheat.PlayerData.Clear();
         AntiCheat.SickoData.Clear();
         AntiCheat.AUMData.Clear();
+        AntiCheat.KNData.Clear();
 
         Logger.LogCheat("Cleared cheat memory and data");
     }

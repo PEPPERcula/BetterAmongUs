@@ -42,7 +42,6 @@ public class ExtendedPlayerInfo : MonoBehaviour
     public bool IsTOHEHost { get; set; } = false;
     public bool HasShowDcMsg { get; set; } = false;
     public DisconnectReasons DisconnectReason { get; set; } = DisconnectReasons.Unknown;
-
     public BetterAccountInfo? AccountInfo { get; } = new();
     public ExtendedRoleInfo? RoleInfo { get; } = new();
     public ExtendedAntiCheatInfo? AntiCheatInfo { get; } = new();
