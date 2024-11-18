@@ -1,6 +1,7 @@
-﻿using System.Text.Json;
+﻿using BetterAmongUs.Modules;
+using System.Text.Json;
 
-namespace BetterAmongUs.Modules;
+namespace BetterAmongUs.Managers;
 
 class BetterDataManager
 {

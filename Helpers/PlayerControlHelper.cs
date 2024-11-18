@@ -218,7 +218,7 @@ static class PlayerControlHelper
         return string.Empty;
     }
     // Check if player is Shapeshifting
-    public static bool IsInShapeshift(this PlayerControl player) => player != null && (player.shapeshiftTargetPlayerId > -1 || player.shapeshifting);
+    public static bool IsInShapeshift(this PlayerControl player) => player != null && (player.shapeshiftTargetPlayerId > -1 || player.shapeshifting) && !player.waitingForShapeshiftResponse;
     // Check if player is in vanish as Phantom
     public static bool IsInVanish(this PlayerControl player)
     {

@@ -1,10 +1,11 @@
 ﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Modules;
 using BetterAmongUs.Patches;
 using Cpp2IL.Core.Extensions;
 using TMPro;
 using UnityEngine;
 
-namespace BetterAmongUs.Modules;
+namespace BetterAmongUs.Managers;
 
 class BetterNotificationManager
 {

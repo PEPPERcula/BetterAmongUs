@@ -1,4 +1,5 @@
 using BetterAmongUs.Helpers;
+using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
 using BetterAmongUs.Patches;
 using HarmonyLib;

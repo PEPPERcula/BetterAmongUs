@@ -1,6 +1,7 @@
 ﻿using AmongUs.Data;
 using AmongUs.GameOptions;
 using BetterAmongUs.Helpers;
+using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
 using HarmonyLib;
 using Il2CppSystem.Linq;
@@ -133,7 +134,7 @@ class PlayerControlPatch
             {
                 player.RawSetName(newName);
             }
-            else if (!player.shapeshifting)
+            else
             {
                 var targetData = Utils.PlayerDataFromPlayerId(player.shapeshiftTargetPlayerId);
                 if (targetData != null) player.RawSetName(targetData.BetterData().RealName);
@@ -312,6 +313,11 @@ class PlayerControlPatch
     public static void Shapeshift_Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] bool animate)
     {
         if (target == null) return;
+
+        if (GameState.IsHost)
+        {
+            RPC.SyncAllNames();
+        }
 
         if (__instance != target)
             Logger.LogPrivate($"{__instance.Data.PlayerName} Has Shapeshifted into {target.Data.PlayerName}, did animate: {animate}", "EventLog");

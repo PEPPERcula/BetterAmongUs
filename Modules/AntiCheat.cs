@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using BetterAmongUs.Helpers;
+using BetterAmongUs.Managers;
 using BetterAmongUs.Patches;
 using HarmonyLib;
 using Hazel;

@@ -1,4 +1,5 @@
-﻿using BetterAmongUs.Resources;
+﻿using BetterAmongUs.Managers;
+using BetterAmongUs.Resources;
 using Il2CppInterop.Runtime.Attributes;
 using UnityEngine;
 
