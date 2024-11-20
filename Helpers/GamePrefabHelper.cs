@@ -1,5 +1,4 @@
-﻿using AmongUs.GameOptions;
-using Il2CppInterop.Runtime;
+﻿using Il2CppInterop.Runtime;
 using UnityEngine;
 
 namespace BetterAmongUs.Helpers;

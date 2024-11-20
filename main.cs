@@ -3,6 +3,7 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
 using BetterAmongUs.Helpers;
+using BetterAmongUs.Items;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
 using BetterAmongUs.Patches;
@@ -35,7 +36,7 @@ public class Main : BasePlugin
     public const string ReleaseDate = "11.3.2024"; // mm/dd/yyyy
     public const string Github = "https://github.com/EnhancedNetwork/BetterAmongUs-Public";
     public const string Discord = "https://discord.gg/ten";
-    public static BetterAccountInfo MyAccountInfo = new();
+    public static UserData MyData = UserData.AllUsers.First();
 
     public static string modSignature
     {
@@ -101,6 +102,7 @@ public class Main : BasePlugin
 
     public static List<string> SupportedAmongUsVersions =
     [
+        "2024.11.26",
         "2024.10.29",
         "2024.9.4",
         "2024.8.13",
@@ -157,6 +159,7 @@ public class Main : BasePlugin
     public override void Load()
     {
         AddComponent<ExtendedPlayerInfo>();
+        // AddComponent<UserDataLoader>();
 
         try
         {

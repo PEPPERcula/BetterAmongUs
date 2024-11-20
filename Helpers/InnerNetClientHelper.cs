@@ -1,5 +1,4 @@
-﻿using BetterAmongUs.Modules;
-using Hazel;
+﻿using Hazel;
 using InnerNet;
 
 namespace BetterAmongUs.Helpers;

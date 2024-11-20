@@ -138,35 +138,6 @@
   "Game.Summary.Result.TimeOut": "Time Out",
   "Game.Summary.Result.NoSurvivors": "No Survivors",
 
-  "Command.HostOnly": "<color=red>Host Only</color>",
-  "Command.PermOnly": "<color=red>Host Only/Host Permission</color>",
-  "Command.DevOnly": "<color=#ff00f7>DeBug</color>",
-
-  "Command.Helper.help": "help---Get help with commands",
-  "Command.Helper.commands": "commands---Get a list of all available commands",
-  "Command.Helper.dump": "dump---Dump the entire log to the user's desktop",
-  "Command.Helper.player": "player [id]---Get a Players information---[player id]",
-  "Command.Helper.players": "players---Get all Player information",
-  "Command.Helper.whisper": "whisper [id] [msg]---Privately send an message to a player---[player id] [text]",
-  "Command.Helper.whisper.trim": "w [id] [msg]---Privately send an message to a player---[player id] [text]",
-  "Command.Helper.setprefix": "setprefix [prefix]---Set command prefix",
-  "Command.Helper.name": "name [name]---Set player name - {2}---[text]",
-  "Command.Helper.kick": "kick [id]---Kick a player from the game - {1}---[player id]",
-  "Command.Helper.ban": "ban [id]---Ban a player from the game - {1}---[player id]",
-  "Command.Helper.endgame": "endgame [reason]---Force end the game - {1}---[player id]",
-  "Command.Helper.removeplayer": "removeplayer [identifier]---Remove player from local <color=#4f92ff>Anti-Cheat</color> data---[FriendCode, HashPuid]",
-  "Command.Helper.removeall": "removeall---Remove all players from local <color=#4f92ff>Anti-Cheat</color> data",
-
-  "Command.SponsorHelper.": "",
-
-  "Command.DebugHelper.getposition": "getposition---Get current player position - {3}",
-  "Command.DebugHelper.role": "role [role]---Set your role for the next game - {1} - {3}",
-  "Command.DebugHelper.setrole": "setrole [id] [role]---Set another players role for the next game - {1} & {3}",
-  "Command.DebugHelper.syncallnames": "syncallnames---Sync all players names for better host - {1} & {3}",
-  "Command.DebugHelper.suicide": "suicide---Kill self - {3}",
-  "Command.DebugHelper.exile": "exile---Set self as dead - {3}",
-  "Command.DebugHelper.revive": "revive---Set self as alive - {3}",
-
   "DataBaseConnect.InitFailure": "Error while connecting to BAU API, please check your network connection and retry login!",
   "DataBaseConnect.InitFailurePublic": "Error while connecting to BAU API, this could be caused by your internet connection. And so user perks are not available, you may continue to play as usual without these."
 }

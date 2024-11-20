@@ -255,11 +255,32 @@ static class PlayerControlHelper
         PlayerControl.LocalPlayer.IsImpostorTeam() && player.IsImpostorTeam());
     // Check if player is in the Anti-Cheat list
     public static bool IsCheater(this PlayerControl player) =>
-        player != null && (AntiCheat.PlayerData.ContainsKey(Utils.GetHashPuid(player)) ||
-                           AntiCheat.SickoData.ContainsKey(Utils.GetHashPuid(player)) ||
-                           AntiCheat.AUMData.ContainsKey(Utils.GetHashPuid(player)));
+        player != null && (AntiCheat.PlayerData.ContainsKey(player.GetHashPuid()) ||
+                           AntiCheat.SickoData.ContainsKey(player.GetHashPuid()) ||
+                           AntiCheat.AUMData.ContainsKey(player.GetHashPuid()));
     // Check if player is the host
     public static bool IsHost(this PlayerControl player) => player?.Data != null && GameData.Instance?.GetHost()?.Puid == player.Data.Puid;
+
+    // Get players HashPuid
+    public static string GetHashPuid(this PlayerControl player)
+    {
+        return player.Data.GetHashPuid() ?? "";
+    }
+    public static string GetHashPuid(this NetworkedPlayerInfo data)
+    {
+        if (data?.Puid == null) return "";
+        return Utils.GetHashStr(data.Puid);
+    }
+    // Get players Friendcode
+    public static string GetHashFriendcode(this PlayerControl player)
+    {
+        return player.Data.GetHashFriendcode() ?? "";
+    }
+    public static string GetHashFriendcode(this NetworkedPlayerInfo data)
+    {
+        if (data?.FriendCode == null) return "";
+        return Utils.GetHashStr(data.FriendCode);
+    }
 
     // Report player
     public static void ReportPlayer(this PlayerControl player, ReportReasons reason = ReportReasons.None)

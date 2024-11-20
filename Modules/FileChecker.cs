@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using BetterAmongUs.Helpers;
+using System.Collections.ObjectModel;
 using UnityEngine;
 
 namespace BetterAmongUs.Modules;
@@ -116,7 +117,7 @@ class FileChecker
         {
             ClientUserName = GameObject.Find("AccountTab")?.GetComponent<AccountTab>()?.userName.text;
             ClientFriendCode = EOSManager.Instance.friendCode;
-            ClientPUIDHash = Utils.GetHashPuid(EOSManager.Instance.ProductUserId);
+            ClientPUIDHash = Utils.GetHashStr(EOSManager.Instance.ProductUserId);
         }
         else
         {

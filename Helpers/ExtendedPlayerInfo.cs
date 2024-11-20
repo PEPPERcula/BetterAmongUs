@@ -1,5 +1,5 @@
 ﻿using AmongUs.GameOptions;
-using BetterAmongUs.Modules;
+using BetterAmongUs.Items;
 using HarmonyLib;
 using InnerNet;
 using UnityEngine;
@@ -12,6 +12,7 @@ public class ExtendedPlayerInfo : MonoBehaviour
     public void SetInfo(NetworkedPlayerInfo data)
     {
         if (hasSet) return;
+        MyUserData = UserData.GetPlayerUserData(data);
         _Data = data;
         _PlayerId = data.PlayerId;
         hasSet = true;
@@ -32,6 +33,7 @@ public class ExtendedPlayerInfo : MonoBehaviour
         }
     }
 
+    public UserData? MyUserData { get; private set; } = UserData.AllUsers.First();
     public byte _PlayerId { get; private set; }
     public NetworkedPlayerInfo? _Data { get; private set; }
     public string? RealName { get; private set; }
@@ -42,7 +44,6 @@ public class ExtendedPlayerInfo : MonoBehaviour
     public bool IsTOHEHost { get; set; } = false;
     public bool HasShowDcMsg { get; set; } = false;
     public DisconnectReasons DisconnectReason { get; set; } = DisconnectReasons.Unknown;
-    public BetterAccountInfo? AccountInfo { get; } = new();
     public ExtendedRoleInfo? RoleInfo { get; } = new();
     public ExtendedAntiCheatInfo? AntiCheatInfo { get; } = new();
 }

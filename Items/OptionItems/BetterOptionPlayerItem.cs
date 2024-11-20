@@ -1,5 +1,4 @@
 ﻿using BetterAmongUs.Helpers;
-using BetterAmongUs.Modules;
 using UnityEngine;
 
 namespace BetterAmongUs.Items.OptionItems;

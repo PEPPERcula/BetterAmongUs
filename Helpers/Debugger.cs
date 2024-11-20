@@ -1,5 +1,6 @@
 ﻿
 using BepInEx;
+using BetterAmongUs.Helpers;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
 

@@ -243,15 +243,6 @@ internal static class RPC
             case (byte)RpcCalls.SendChat:
                 var text = reader.ReadString();
 
-                if (player.IsHost() && !player.IsLocalPlayer())
-                {
-                    if (text.ToLower() == "/allow")
-                    {
-                        CommandsPatch.Permission = player.Data;
-                        BetterNotificationManager.Notify($"{player.GetPlayerNameAndColor()} has granted permission!");
-                    }
-                }
-
                 // Check banned words
                 if (BetterGameSettings.UseBanWordList.GetBool())
                 {
