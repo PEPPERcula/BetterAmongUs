@@ -1,4 +1,5 @@
 ﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Items;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
 using HarmonyLib;
@@ -18,6 +19,8 @@ public class ClientPatch
         [HarmonyPostfix]
         public static void EndFinalPartsOfLoginFlow_Postfix()
         {
+            UserData.TrySetLocalData();
+
             var varSupportedVersions = Main.SupportedAmongUsVersions;
             Version currentVersion = new Version(Main.AmongUsVersion);
             Version firstSupportedVersion = new Version(varSupportedVersions.First());

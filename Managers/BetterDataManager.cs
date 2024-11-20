@@ -1,4 +1,5 @@
-﻿using BetterAmongUs.Modules;
+﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Modules;
 using System.Text.Json;
 
 namespace BetterAmongUs.Managers;
@@ -271,7 +272,7 @@ class BetterDataManager
                 {
                     newText += ", ";
                 }
-                newText += Utils.GetHashPuid(hashPUID);
+                newText += Utils.GetHashStr(hashPUID);
             }
 
             // Check if the file already contains the new entry

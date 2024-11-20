@@ -1,4 +1,5 @@
-﻿using BetterAmongUs.Modules;
+﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Modules;
 using HarmonyLib;
 
 namespace BetterAmongUs.Patches;
