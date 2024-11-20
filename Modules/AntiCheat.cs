@@ -16,6 +16,20 @@ class AntiCheat
     public static Dictionary<string, string> KNData = []; // HashPuid, FriendCode
     private static bool IsEnabled = true;
 
+    public static string[] GatherAllData()
+    {
+        return PlayerData.Keys
+            .Concat(PlayerData.Values)
+            .Concat(SickoData.Values)
+            .Concat(AUMData.Values)
+            .Concat(KNData.Values)
+            .Concat(SickoData.Keys)
+            .Concat(AUMData.Keys)
+            .Concat(KNData.Keys)
+            .ToHashSet()
+            .ToArray();
+    }
+
     public static void Update()
     {
         if (GameState.IsHost && GameState.IsInGame)

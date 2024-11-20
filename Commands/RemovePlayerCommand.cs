@@ -1,5 +1,6 @@
 ﻿using BetterAmongUs.Helpers;
 using BetterAmongUs.Managers;
+using BetterAmongUs.Modules;
 
 namespace BetterAmongUs.Commands;
 
@@ -15,13 +16,7 @@ public class RemovePlayerCommand : BaseCommand
             new StringArgument(this),
         });
         identifierArgument.suggestion = "{Identifier}";
-        identifierArgument.GetArgSuggestions = () =>
-        {
-            return Main.AllPlayerControls
-                .Select(pc => pc.Data.FriendCode)
-                .Concat(Main.AllPlayerControls.Select(pc => pc.GetHashPuid()))
-                .ToArray();
-        };
+        identifierArgument.GetArgSuggestions = AntiCheat.GatherAllData;
     }
     private readonly Lazy<BaseArgument[]> _arguments;
     public override BaseArgument[]? Arguments => _arguments.Value;
@@ -35,7 +30,7 @@ public class RemovePlayerCommand : BaseCommand
         }
         else
         {
-            Utils.AddChatPrivate($"{identifierArgument.Arg}\nCould not find player data from identifier");
+            Utils.AddChatPrivate($"{identifierArgument.Arg} Could not find player data from identifier");
         }
     }
 }

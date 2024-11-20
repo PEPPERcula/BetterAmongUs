@@ -109,11 +109,6 @@ public class Main : BasePlugin
         "2024.6.18",
     ];
 
-    public static string[] DevUser =
-    [
-        "J4sxGDREO5bjLvzvMkv059g+7wpNg7PbyWa9vLVWQkw=",
-    ];
-
     public static PlayerControl[] AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(pc => pc != null).ToArray();
     public static PlayerControl[] AllAlivePlayerControls => AllPlayerControls.ToArray().Where(pc => pc.IsAlive()).ToArray();
     public static DeadBody[] AllDeadBodys => UnityEngine.Object.FindObjectsOfType<DeadBody>().ToArray();
@@ -185,10 +180,6 @@ public class Main : BasePlugin
 
             File.WriteAllText(Path.Combine(BetterDataManager.filePathFolder, "better-log.txt"), "");
             BetterAmongUs.Logger.Log("Better Among Us successfully loaded!");
-
-            // Set up debug menu
-            for (int i = 0; i < DevUser.Length; i++)
-                DevUser[i] = Encryptor.Decrypt(DevUser[i]);
 
 #if DEBUG
             ClassInjector.RegisterTypeInIl2Cpp<DebugMenu>();
