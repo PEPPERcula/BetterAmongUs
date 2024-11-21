@@ -16,9 +16,8 @@ public class SetRoleCommand : BaseCommand
         _arguments = new Lazy<BaseArgument[]>(() => new BaseArgument[]
         {
             new PlayerArgument(this),
-            new StringArgument(this),
+            new StringArgument(this, "{role}"),
         }); ;
-        roleArgument.suggestion = "{Name}";
         roleArgument.GetArgSuggestions = () => { return RoleManager.Instance.AllRoles.Select(role => role.NiceName.ToLower()).ToArray(); };
     }
     private readonly Lazy<BaseArgument[]> _arguments;

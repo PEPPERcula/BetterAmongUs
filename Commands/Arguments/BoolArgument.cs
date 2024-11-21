@@ -1,9 +1,7 @@
 ﻿namespace BetterAmongUs.Commands;
 
-public class BoolArgument(BaseCommand? command) : BaseArgument(command)
+public class BoolArgument(BaseCommand? command, string argInfo = "{bool}") : BaseArgument(command, argInfo)
 {
-    public override string ArgInfo => suggestion;
-    public string suggestion = "{bool}";
     protected override string[] ArgSuggestions => ["true", "false"];
     public bool? GetBool()
     {

@@ -9,9 +9,8 @@ public class SetPrefixCommand : BaseCommand
     {
         _arguments = new Lazy<BaseArgument[]>(() => new BaseArgument[]
         {
-            new StringArgument(this),
+            new StringArgument(this, "{prefix}"),
         });
-        prefixArgument.suggestion = "{Prefix}";
     }
     private readonly Lazy<BaseArgument[]> _arguments;
     public override BaseArgument[]? Arguments => _arguments.Value;

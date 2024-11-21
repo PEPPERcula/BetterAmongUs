@@ -13,9 +13,8 @@ public class RemovePlayerCommand : BaseCommand
     {
         _arguments = new Lazy<BaseArgument[]>(() => new BaseArgument[]
         {
-            new StringArgument(this),
+            new StringArgument(this, "{identifier}"),
         });
-        identifierArgument.suggestion = "{Identifier}";
         identifierArgument.GetArgSuggestions = AntiCheat.GatherAllData;
     }
     private readonly Lazy<BaseArgument[]> _arguments;

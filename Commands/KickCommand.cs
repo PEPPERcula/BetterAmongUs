@@ -12,10 +12,8 @@ public class KickCommand : BaseCommand
         _arguments = new Lazy<BaseArgument[]>(() => new BaseArgument[]
         {
             new PlayerArgument(this),
-            new BoolArgument(this),
+            new BoolArgument(this, "{ban}"),
         });
-
-        boolArgument.suggestion = "{Ban}";
     }
     private readonly Lazy<BaseArgument[]> _arguments;
     public override BaseArgument[]? Arguments => _arguments.Value;
