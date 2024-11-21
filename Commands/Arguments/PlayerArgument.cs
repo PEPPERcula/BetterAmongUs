@@ -4,38 +4,17 @@ namespace BetterAmongUs.Commands;
 
 public class PlayerArgument(BaseCommand? command) : BaseArgument(command)
 {
-    protected override string[] ArgSuggestions => Main.AllPlayerControls.OrderBy(pc => pc.PlayerId).Select(pc => pc.PlayerId.ToString()).ToArray();
-    public override string ArgInfo => "{Id}";
+    protected override string[] ArgSuggestions => Main.AllPlayerControls.OrderBy(pc => pc.PlayerId).Select(pc => pc.Data.PlayerName.Replace(' ', '_')).ToArray();
+    public override string ArgInfo => "{Player}";
     public PlayerControl? TryGetTarget()
     {
-        var digits = Arg.Where(char.IsDigit).ToArray();
-        bool isDigitFlag = digits.Any();
-        bool playerFound = false;
+        var player = Main.AllPlayerControls.FirstOrDefault(pc => pc.Data.PlayerName.ToLower().Replace(' ', '_') == Arg.ToLower());
 
-        if (isDigitFlag)
+        if (player == null)
         {
-            if (int.TryParse(new string(digits), out var playerId))
-            {
-                playerFound = Main.AllPlayerControls.Any(player => !player.isDummy && player.Data.PlayerId == playerId);
-            }
+            BaseCommand.CommandErrorText($"Player not found!");
         }
 
-        if (playerFound && byte.TryParse(Arg, out var num))
-        {
-            return Utils.PlayerFromPlayerId(num);
-        }
-        else
-        {
-            if (!isDigitFlag)
-            {
-                BaseCommand.CommandErrorText($"Invalid Syntax!");
-            }
-            else if (!playerFound)
-            {
-                BaseCommand.CommandErrorText($"Player not found!");
-            }
-        }
-
-        return null;
+        return player;
     }
 }
