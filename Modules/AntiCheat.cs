@@ -625,7 +625,7 @@ class AntiCheat
 
             if (callId is (byte)RpcCalls.StartMeeting or (byte)RpcCalls.ReportDeadBody)
             {
-                if (GameState.IsMeeting && MeetingHudUpdatePatch.timeOpen > 0.5f || GameState.IsHideNSeek || !player.IsAlive() && callId is (byte)RpcCalls.ReportDeadBody || player.IsInVent() || player.shapeshifting
+                if ((GameState.IsMeeting && MeetingHudUpdatePatch.timeOpen > 0.5f) || GameState.IsHideNSeek || !player.IsAlive() && callId is (byte)RpcCalls.ReportDeadBody || player.IsInVent() || player.shapeshifting
                     || player.inMovingPlat || player.onLadder || player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
                 {
                     BetterNotificationManager.NotifyCheat(player, string.Format(Translator.GetString("AntiCheat.InvalidActionRPC"), Enum.GetName((RpcCalls)callId)));
