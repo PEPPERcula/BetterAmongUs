@@ -10,6 +10,7 @@ using BetterAmongUs.Patches;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using Innersloth.IO;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using UnityEngine;
@@ -153,17 +154,21 @@ public class Main : BasePlugin
 
     public override void Load()
     {
-        AddComponent<ExtendedPlayerInfo>();
-        // AddComponent<UserDataLoader>();
-
         try
         {
             ConsoleManager.CreateConsole();
             ConsoleManager.SetConsoleTitle("Among Us - BAU Console");
             ConsoleManager.ConfigPreventClose.Value = true;
+            Logger = BepInEx.Logging.Logger.CreateLogSource(PluginGuid);
+            var customLogListener = new CustomLogListener();
+            BepInEx.Logging.Logger.Listeners.Add(customLogListener);
+            ConsoleManager.SetConsoleColor(ConsoleColor.Green);
             ConsoleManager.ConsoleStream.WriteLine($".--------------------------------------------------------------------------------.\r\n|  ____       _   _                 _                                  _   _     |\r\n| | __ )  ___| |_| |_ ___ _ __     / \\   _ __ ___   ___  _ __   __ _  | | | |___ |\r\n| |  _ \\ / _ \\ __| __/ _ \\ '__|   / _ \\ | '_ ` _ \\ / _ \\| '_ \\ / _` | | | | / __||\r\n| | |_) |  __/ |_| ||  __/ |     / ___ \\| | | | | | (_) | | | | (_| | | |_| \\__ \\|\r\n| |____/ \\___|\\__|\\__\\___|_|    /_/   \\_\\_| |_| |_|\\___/|_| |_|\\__, |  \\___/|___/|\r\n|                                                              |___/             |\r\n'--------------------------------------------------------------------------------'");
 
-            Logger = BepInEx.Logging.Logger.CreateLogSource(PluginGuid);
+            {
+                RegisterAllMonoBehavioursInAssembly();
+                // AddComponent<UserDataLoader>();
+            }
 
             BetterDataManager.SetUp();
             BetterDataManager.LoadData();
@@ -199,7 +204,26 @@ public class Main : BasePlugin
         }
     }
 
+    public static void RegisterAllMonoBehavioursInAssembly()
+    {
+        var assembly = Assembly.GetExecutingAssembly();
 
+        var monoBehaviourTypes = assembly.GetTypes()
+            .Where(type => type.IsSubclassOf(typeof(MonoBehaviour)) && !type.IsAbstract)
+            .OrderBy(type => type.Name);
+
+        foreach (var type in monoBehaviourTypes)
+        {
+            try
+            {
+                ClassInjector.RegisterTypeInIl2Cpp(type);
+            }
+            catch (Exception ex)
+            {
+                BetterAmongUs.Logger.Error($"Failed to register MonoBehaviour: {type.FullName}\n{ex}");
+            }
+        }
+    }
 
     public static ConfigEntry<bool> AntiCheat { get; private set; }
     public static ConfigEntry<bool> BetterHost { get; private set; }

@@ -1,5 +1,5 @@
 ﻿using BetterAmongUs.Helpers;
-using BetterAmongUs.Modules;
+using BetterAmongUs.Modules.AntiCheat;
 using System.Text.Json;
 
 namespace BetterAmongUs.Managers;
@@ -367,51 +367,51 @@ class BetterDataManager
 
         if (successful)
         {
-            foreach (var data in AntiCheat.PlayerData)
+            foreach (var data in BAUAntiCheat.PlayerData)
             {
                 if (data.Value != identifier)
                 {
-                    AntiCheat.PlayerData.Remove(identifier);
+                    BAUAntiCheat.PlayerData.Remove(identifier);
                 }
                 else
                 {
-                    AntiCheat.PlayerData.Remove(data.Key);
+                    BAUAntiCheat.PlayerData.Remove(data.Key);
                 }
             }
 
-            foreach (var data in AntiCheat.SickoData)
+            foreach (var data in BAUAntiCheat.SickoData)
             {
                 if (data.Value != identifier)
                 {
-                    AntiCheat.SickoData.Remove(identifier);
+                    BAUAntiCheat.SickoData.Remove(identifier);
                 }
                 else
                 {
-                    AntiCheat.SickoData.Remove(data.Key);
+                    BAUAntiCheat.SickoData.Remove(data.Key);
                 }
             }
 
-            foreach (var data in AntiCheat.AUMData)
+            foreach (var data in BAUAntiCheat.AUMData)
             {
                 if (data.Value != identifier)
                 {
-                    AntiCheat.AUMData.Remove(identifier);
+                    BAUAntiCheat.AUMData.Remove(identifier);
                 }
                 else
                 {
-                    AntiCheat.AUMData.Remove(data.Key);
+                    BAUAntiCheat.AUMData.Remove(data.Key);
                 }
             }
 
-            foreach (var data in AntiCheat.KNData)
+            foreach (var data in BAUAntiCheat.KNData)
             {
                 if (data.Value != identifier)
                 {
-                    AntiCheat.KNData.Remove(identifier);
+                    BAUAntiCheat.KNData.Remove(identifier);
                 }
                 else
                 {
-                    AntiCheat.KNData.Remove(data.Key);
+                    BAUAntiCheat.KNData.Remove(data.Key);
                 }
             }
         }
@@ -452,10 +452,10 @@ class BetterDataManager
         }
 
         // Clear in-memory data
-        AntiCheat.PlayerData.Clear();
-        AntiCheat.SickoData.Clear();
-        AntiCheat.AUMData.Clear();
-        AntiCheat.KNData.Clear();
+        BAUAntiCheat.PlayerData.Clear();
+        BAUAntiCheat.SickoData.Clear();
+        BAUAntiCheat.AUMData.Clear();
+        BAUAntiCheat.KNData.Clear();
 
         Logger.LogCheat("Cleared cheat memory and data");
     }
@@ -479,7 +479,7 @@ class BetterDataManager
                 {
                     foreach (var item in jsonData["cheatData"])
                     {
-                        AntiCheat.PlayerData[item.Value["HashPUID"]] = item.Value["FriendCode"];
+                        BAUAntiCheat.PlayerData[item.Value["HashPUID"]] = item.Value["FriendCode"];
                     }
                 }
 
@@ -487,7 +487,7 @@ class BetterDataManager
                 {
                     foreach (var item in jsonData["sickoData"])
                     {
-                        AntiCheat.SickoData[item.Value["HashPUID"]] = item.Value["FriendCode"];
+                        BAUAntiCheat.SickoData[item.Value["HashPUID"]] = item.Value["FriendCode"];
                     }
                 }
 
@@ -495,7 +495,7 @@ class BetterDataManager
                 {
                     foreach (var item in jsonData["aumData"])
                     {
-                        AntiCheat.AUMData[item.Value["HashPUID"]] = item.Value["FriendCode"];
+                        BAUAntiCheat.AUMData[item.Value["HashPUID"]] = item.Value["FriendCode"];
                     }
                 }
 
@@ -503,7 +503,7 @@ class BetterDataManager
                 {
                     foreach (var item in jsonData["knData"])
                     {
-                        AntiCheat.KNData[item.Value["HashPUID"]] = item.Value["FriendCode"];
+                        BAUAntiCheat.KNData[item.Value["HashPUID"]] = item.Value["FriendCode"];
                     }
                 }
             }

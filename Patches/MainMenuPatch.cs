@@ -1,8 +1,10 @@
 ﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Items;
 using BetterAmongUs.Modules;
 using HarmonyLib;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace BetterAmongUs.Patches;
 
@@ -10,27 +12,37 @@ internal class MainMenuPatch
 {
     private static List<PassiveButton> buttons = [];
     private static List<GameObject> buttonsObj = [];
-    private static PassiveButton template;
-    private static PassiveButton creditsButton;
-    private static PassiveButton gitHubButton;
-    private static PassiveButton discordButton;
+    private static PassiveButton? template;
+    private static PassiveButton? creditsButton;
+    private static PassiveButton? gitHubButton;
+    private static PassiveButton? discordButton;
 
-    // Handle FileChecker
-    [HarmonyPatch(typeof(AccountManager))]
-    internal class AccountManagerPatch
+    private static SpriteRenderer? sprite;
+    [HarmonyPatch(nameof(MainMenuManager.LateUpdate))]
+    [HarmonyPostfix]
+    public static void LateUpdate_Postfix(MainMenuManager __instance)
     {
-        [HarmonyPatch(nameof(AccountManager.CanPlayOnline))]
-        [HarmonyPostfix]
-        public static void Postfix()
+        if (BannedUserData.IsBanned || FileChecker.HasUnauthorizedFileOrMod)
         {
-            if (!FileChecker.HasShownPopUp && FileChecker.CheckIfUnauthorizedFiles())
+            __instance.playButton.enabled = false;
+            sprite ??= __instance.playButton.transform.Find("Inactive").GetComponent<SpriteRenderer>();
+            if (sprite != null)
             {
-                var lines = "<color=#ebbd34>----------------------------------------------------------------------------------------------</color>";
-                var icon = $"<color=#278720>{Translator.GetString("BAUMark")}</color>";
-                var warning = $"<color=#e60000>{Translator.GetString("WarningIcon")}</color>";
-                FileChecker.HasShownPopUp = true;
-                Utils.ShowPopUp($"{lines}\n<b><size=200%>{icon}<color=#0ed400>{Translator.GetString("BetterAmongUs")}</color>{icon}</size></b>\n<color=#757575><u><size=150%>{warning}<color=#8f0000>{FileChecker.UnauthorizedReason}</color>{warning}</size></u>\n\n<color=white>\n{Translator.GetString("FileChecker.OnlineMsg")}\n{lines}");
+                sprite.color = new Color(0.7f, 0.7f, 0.7f);
             }
+
+            SceneManager.s_AllowLoadScene = false;
+        }
+        else
+        {
+            __instance.playButton.enabled = true;
+            sprite ??= __instance.playButton.transform.Find("Inactive").GetComponent<SpriteRenderer>();
+            if (sprite != null)
+            {
+                sprite.color = Color.white;
+            }
+
+            SceneManager.s_AllowLoadScene = true;
         }
     }
 

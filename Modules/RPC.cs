@@ -1,6 +1,6 @@
 ﻿using BetterAmongUs.Helpers;
 using BetterAmongUs.Managers;
-using BetterAmongUs.Patches;
+using BetterAmongUs.Modules.AntiCheat;
 using HarmonyLib;
 using Hazel;
 
@@ -12,8 +12,8 @@ enum CustomRPC : int
     Sicko = 420, // Results in 164
     AUM = 42069, // Results in 85
     AUMChat = 101,
-    Killnetwork = 250,
-    KillnetworkChat = 119,
+    KillNetwork = 250,
+    KillNetworkChat = 119,
 
     // TOHE
     VersionCheck = 80,
@@ -28,9 +28,9 @@ internal class PlayerControlRPCHandlerPatch
 {
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
-        AntiCheat.HandleCheatRPCBeforeCheck(__instance, callId, reader);
+        BAUAntiCheat.HandleCheatRPCBeforeCheck(__instance, callId, reader);
 
-        if (AntiCheat.CheckCancelRPC(__instance, callId, reader) != true)
+        if (BAUAntiCheat.CheckCancelRPC(__instance, callId, reader) != true)
         {
             Logger.LogCheat($"RPC canceled by Anti-Cheat: {Enum.GetName((RpcCalls)callId)}{Enum.GetName((CustomRPC)callId)} - {callId}");
             return false;
@@ -49,7 +49,7 @@ internal class PlayerControlRPCHandlerPatch
             }
         }
 
-        AntiCheat.CheckRPC(__instance, callId, reader);
+        BAUAntiCheat.CheckRPC(__instance, callId, reader);
         RPC.HandleRPC(__instance, callId, reader);
 
         return true;
@@ -65,12 +65,12 @@ internal class PlayerPhysicsRPCHandlerPatch
 {
     public static void Prefix(PlayerPhysics __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
-        if (AntiCheat.CheckCancelRPC(__instance.myPlayer, callId, reader) != true)
+        if (BAUAntiCheat.CheckCancelRPC(__instance.myPlayer, callId, reader) != true)
         {
             Logger.LogCheat($"RPC canceled by Anti-Cheat: {Enum.GetName((RpcCalls)callId)}{Enum.GetName((CustomRPC)callId)} - {callId}");
         }
 
-        AntiCheat.CheckRPC(__instance.myPlayer, callId, reader);
+        BAUAntiCheat.CheckRPC(__instance.myPlayer, callId, reader);
         RPC.HandleRPC(__instance.myPlayer, callId, reader);
     }
 }
@@ -81,11 +81,9 @@ public static class MessageReaderUpdateSystemPatch
     public static bool Prefix(/*ShipStatus __instance,*/ [HarmonyArgument(0)] SystemTypes systemType, [HarmonyArgument(1)] PlayerControl player, [HarmonyArgument(2)] MessageReader reader)
     {
         if (GameState.IsHideNSeek) return false;
-
-        var amount = MessageReader.Get(reader).ReadByte();
-        if (AntiCheat.RpcUpdateSystemCheck(player, systemType, amount) != true)
+        if (BAUAntiCheat.RpcUpdateSystemCheck(player, systemType, reader) != true)
         {
-            Logger.LogCheat($"RPC canceled by Anti-Cheat: {Enum.GetName(typeof(SystemTypes), (int)systemType)} - {amount}");
+            Logger.LogCheat($"RPC canceled by Anti-Cheat: {Enum.GetName(typeof(SystemTypes), (int)systemType)} - {MessageReader.Get(reader).ReadByte()}");
             return false;
         }
 
@@ -234,49 +232,7 @@ internal static class RPC
 
         MessageReader reader = MessageReader.Get(oldReader);
 
-        switch (callId)
-        {
-            case (byte)RpcCalls.SetName:
-                reader.ReadUInt32();
-                var name = reader.ReadString();
-                break;
-            case (byte)RpcCalls.SendChat:
-                var text = reader.ReadString();
-
-                // Check banned words
-                if (BetterGameSettings.UseBanWordList.GetBool())
-                {
-                    try
-                    {
-                        Func<string, string> normalizeText = text => new string(text.Where(c => char.IsLetterOrDigit(c)).ToArray()).ToLower();
-
-                        HashSet<string> bannedWords = new HashSet<string>(
-                            File.ReadLines(BetterDataManager.banWordListFile)
-                                .Where(line => !line.TrimStart().StartsWith("//"))
-                                .Select(normalizeText)
-                                .Where(text => !string.IsNullOrWhiteSpace(text))
-                        );
-
-                        string normalizedMessage = normalizeText(text);
-
-                        bool isWordBanned = bannedWords.Any(bannedWord =>
-                            normalizedMessage.Contains(bannedWord)
-                        );
-
-                        if (!string.IsNullOrEmpty(normalizedMessage) && isWordBanned)
-                        {
-                            _ = new LateTask(() =>
-                            {
-                                player.Kick(false, $"has been kicked due to\nchat message containing a banned word!");
-                            }, 1f, shoudLog: false);
-                        }
-                    }
-                    catch { }
-                }
-
-
-                break;
-        }
+        RPCHandler.HandleRPC(callId, player, reader, HandlerFlag.Handle);
     }
 }
 

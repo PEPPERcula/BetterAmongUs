@@ -150,6 +150,8 @@ public static class Utils
         return text;
     }
 
+    public static string ToColor(this string str, string hexColor) => $"<{hexColor}>{str}</color>";
+    public static string ToColor(this string str, Color color) => $"<{Color32ToHex(color)}>{str}</color>";
 
     public static bool IsHtmlText(string text)
     {

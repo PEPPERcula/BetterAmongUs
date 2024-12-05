@@ -1,6 +1,6 @@
 ﻿using BetterAmongUs.Helpers;
 using BetterAmongUs.Managers;
-using BetterAmongUs.Modules;
+using BetterAmongUs.Modules.AntiCheat;
 using HarmonyLib;
 using UnityEngine;
 
@@ -21,8 +21,7 @@ public class ModManagerPatch
         if (__instance.ModStamp.gameObject.active == true)
             __instance.ModStamp.GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("BetterAmongUs.Resources.Images.BetterAmongUs-Mod.png", 250f);
 
-        AntiCheat.Update();
-        FileChecker.UpdateUnauthorizedFiles();
+        BAUAntiCheat.Update();
         LateTask.Update(Time.deltaTime);
         BetterNotificationManager.Update();
     }

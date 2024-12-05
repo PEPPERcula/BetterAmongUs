@@ -22,9 +22,10 @@ public class BannedUserData(string name = "", string puid = "", string friendCod
     [JsonPropertyName("reason")]
     public string Reason { get; } = reason;
 
-    private static bool IsBanned = false;
-    public static bool CheckLocalBan()
+    public static bool IsBanned = false;
+    public static bool CheckLocalBan(out BannedUserData? bannedData)
     {
+        bannedData = null;
         if (IsBanned) return true;
 
         if (EOSManager.Instance)
@@ -32,6 +33,7 @@ public class BannedUserData(string name = "", string puid = "", string friendCod
             var data = AllBannedUsers?.FirstOrDefault(user => user.Puid == Utils.GetHashStr(EOSManager.Instance.ProductUserId) || user.FriendCode == Utils.GetHashStr(EOSManager.Instance.FriendCode));
             if (data != null)
             {
+                bannedData = data;
                 data.IsLocalBan = true;
                 IsBanned = true;
                 return true;

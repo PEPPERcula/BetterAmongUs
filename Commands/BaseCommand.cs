@@ -12,9 +12,9 @@ public enum CommandType
 
 public abstract class BaseCommand
 {
-    public static readonly BaseCommand?[] allCommands = GetAllCustomRoleInstances();
+    public static readonly BaseCommand?[] allCommands = GetAllCommandInstances();
 
-    public static BaseCommand?[] GetAllCustomRoleInstances() => Assembly.GetExecutingAssembly()
+    public static BaseCommand?[] GetAllCommandInstances() => Assembly.GetExecutingAssembly()
         .GetTypes()
         .Where(t => t.IsSubclassOf(typeof(BaseCommand)) && !t.IsAbstract)
         .Select(t => (BaseCommand)Activator.CreateInstance(t))

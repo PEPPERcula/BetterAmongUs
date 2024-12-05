@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using BetterAmongUs.Modules;
+using BetterAmongUs.Modules.AntiCheat;
 using BetterAmongUs.Patches;
 using InnerNet;
 using TMPro;
@@ -43,27 +44,28 @@ static class PlayerControlHelper
     {
         if (player == null) return;
 
-        string infoType = isBottom ? "InfoText_B_TMP" : "InfoText_T_TMP";
+        var textTop = player.ExtendedPlayerControl().InfoTextTop;
+        var textBottom = player.ExtendedPlayerControl().InfoTextBottom;
+        var textInfo = player.ExtendedPlayerControl().InfoTextInfo;
 
+        var targetText = isBottom ? textBottom : textTop;
         if (isInfo)
         {
-            infoType = "InfoText_Info_TMP";
-            var topText = player.gameObject.transform.Find("Names/NameText_TMP/InfoText_T_TMP")?.GetComponent<TextMeshPro>();
+            targetText = textInfo;
 
-            if (topText != null && string.IsNullOrEmpty(Utils.RemoveHtmlText(topText.text)))
+            if (string.IsNullOrEmpty(Utils.RemoveHtmlText(textTop.text)))
             {
                 text = "<voffset=-2.25em>" + text + "</voffset>";
             }
         }
 
         text = "<size=65%>" + text + "</size>";
-        var textObj = player.gameObject.transform.Find($"Names/NameText_TMP/{infoType}")?.GetComponent<TextMeshPro>();
-
-        if (textObj != null)
+        if (targetText != null)
         {
-            textObj.text = text;
+            targetText.text = text;
         }
     }
+
     // Reset players over head text
     public static void ResetAllPlayerTextInfo(this PlayerControl player)
     {
@@ -203,6 +205,21 @@ static class PlayerControlHelper
     // Check if player is in a vent
     public static bool IsInVent(this PlayerControl player) => player != null && (player.inVent || player.walkingToVent || player.MyPhysics?.Animations?.IsPlayingEnterVentAnimation() == true);
     // Check if player role name
+
+    public static void UpdateColorBlindTextPosition(this PlayerControl player)
+    {
+        var text = player.cosmetics.colorBlindText;
+        if (!text.enabled) return;
+        if (!player.onLadder && !player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
+        {
+            text.transform.localPosition = new Vector3(0f, -1.5f, 0.4999f);
+        }
+        else
+        {
+            text.transform.localPosition = new Vector3(0f, -1.75f, 0.4999f);
+        }
+    }
+
     public static string GetRoleName(this PlayerControl player)
     {
         if (!player.IsAlive() && !player.IsGhostRole() && Main.GetRoleName().TryGetValue((int)player.BetterData().RoleInfo.DeadDisplayRole, out var roleName))
@@ -255,9 +272,9 @@ static class PlayerControlHelper
         PlayerControl.LocalPlayer.IsImpostorTeam() && player.IsImpostorTeam());
     // Check if player is in the Anti-Cheat list
     public static bool IsCheater(this PlayerControl player) =>
-        player != null && (AntiCheat.PlayerData.ContainsKey(player.GetHashPuid()) ||
-                           AntiCheat.SickoData.ContainsKey(player.GetHashPuid()) ||
-                           AntiCheat.AUMData.ContainsKey(player.GetHashPuid()));
+        player != null && (BAUAntiCheat.PlayerData.ContainsKey(player.GetHashPuid()) ||
+                           BAUAntiCheat.SickoData.ContainsKey(player.GetHashPuid()) ||
+                           BAUAntiCheat.AUMData.ContainsKey(player.GetHashPuid()));
     // Check if player is the host
     public static bool IsHost(this PlayerControl player) => player?.Data != null && GameData.Instance?.GetHost()?.Puid == player.Data.Puid;
 

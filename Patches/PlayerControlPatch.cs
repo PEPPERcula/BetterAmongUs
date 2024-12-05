@@ -1,8 +1,8 @@
 ﻿using AmongUs.Data;
 using AmongUs.GameOptions;
 using BetterAmongUs.Helpers;
-using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
+using BetterAmongUs.Modules.AntiCheat;
 using HarmonyLib;
 using Il2CppSystem.Linq;
 using System.Text;
@@ -20,47 +20,6 @@ class PlayerControlPatch
     [HarmonyPrefix]
     public static void FixedUpdate_Prefix(PlayerControl __instance)
     {
-        // Set up player text info
-        var nameTextTransform = __instance.gameObject.transform.Find("Names/NameText_TMP");
-        var nameText = nameTextTransform?.gameObject;
-        var infoText = nameTextTransform?.Find("InfoText_T_TMP");
-
-        if (nameText != null && infoText == null)
-        {
-            void InstantiatePlayerInfoText(string name, Vector3 positionOffset)
-            {
-                var newTextObject = UnityEngine.Object.Instantiate(nameText, nameTextTransform);
-                newTextObject.name = name;
-                newTextObject.transform.DestroyChildren();
-                newTextObject.transform.position += positionOffset;
-                var textMesh = newTextObject.GetComponent<TextMeshPro>();
-                if (textMesh != null)
-                {
-                    textMesh.text = string.Empty;
-                }
-                newTextObject.SetActive(true);
-            }
-
-            InstantiatePlayerInfoText("InfoText_Info_TMP", new Vector3(0f, 0.25f));
-            InstantiatePlayerInfoText("InfoText_T_TMP", new Vector3(0f, 0.15f));
-            InstantiatePlayerInfoText("InfoText_B_TMP", new Vector3(0f, -0.15f));
-        }
-
-        // Set color blind text on player
-        if (__instance.DataIsCollected() && !__instance.shapeshifting)
-        {
-            __instance.cosmetics.SetColorBlindColor(__instance.CurrentOutfit.ColorId);
-        }
-        else
-        {
-            __instance.cosmetics.colorBlindText.text = string.Empty;
-        }
-
-        if (GameState.IsInGame && GameState.IsHost && Main.BetterHost.Value)
-        {
-            BetterHostManager.PlayerUpdate(__instance);
-        }
-
         // Set text info
         if (!time.ContainsKey(__instance.PlayerId))
         {
@@ -73,6 +32,8 @@ class PlayerControlPatch
             SetPlayerInfo(__instance);
             time[__instance.PlayerId] = 0.6f;
         }
+
+        __instance.UpdateColorBlindTextPosition();
     }
 
     public static void SetPlayerInfo(PlayerControl player)
@@ -196,22 +157,22 @@ class PlayerControlPatch
 
     private static void SetPlayerOutline(PlayerControl player, string hashPuid, string friendCode, StringBuilder sbTag)
     {
-        if (AntiCheat.SickoData.ContainsKey(hashPuid) || AntiCheat.SickoData.ContainsValue(friendCode))
+        if (BAUAntiCheat.SickoData.ContainsKey(hashPuid) || BAUAntiCheat.SickoData.ContainsValue(friendCode))
         {
             sbTag.Append($"<color=#00f583>{Translator.GetString("Player.SickoUser")}</color>+++");
             player.SetOutlineByHex(true, "#00f583");
         }
-        else if (AntiCheat.AUMData.ContainsKey(hashPuid) || AntiCheat.AUMData.ContainsValue(friendCode))
+        else if (BAUAntiCheat.AUMData.ContainsKey(hashPuid) || BAUAntiCheat.AUMData.ContainsValue(friendCode))
         {
             sbTag.Append($"<color=#4f0000>{Translator.GetString("Player.AUMUser")}</color>+++");
             player.SetOutlineByHex(true, "#4f0000");
         }
-        else if (AntiCheat.KNData.ContainsKey(hashPuid) || AntiCheat.KNData.ContainsValue(friendCode))
+        else if (BAUAntiCheat.KNData.ContainsKey(hashPuid) || BAUAntiCheat.KNData.ContainsValue(friendCode))
         {
             sbTag.Append($"<color=#8731e7>{Translator.GetString("Player.KNUser")}</color>+++");
             player.SetOutlineByHex(true, "#8731e7");
         }
-        else if (AntiCheat.PlayerData.ContainsKey(hashPuid) || AntiCheat.PlayerData.ContainsValue(friendCode))
+        else if (BAUAntiCheat.PlayerData.ContainsKey(hashPuid) || BAUAntiCheat.PlayerData.ContainsValue(friendCode))
         {
             sbTag.Append($"<color=#fc0000>{Translator.GetString("Player.KnownCheater")}</color>+++");
             player.SetOutlineByHex(true, "#fc0000");

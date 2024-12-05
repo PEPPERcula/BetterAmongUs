@@ -1,5 +1,6 @@
 ﻿using BetterAmongUs.Helpers;
 using BetterAmongUs.Modules;
+using BetterAmongUs.Modules.AntiCheat;
 using HarmonyLib;
 using System.Text;
 using TMPro;
@@ -18,7 +19,7 @@ class GamePlayManager
         {
             if (GameState.IsInGame)
             {
-                AntiCheat.PauseAntiCheat();
+                BAUAntiCheat.PauseAntiCheat();
             }
         }
         [HarmonyPatch(nameof(LobbyBehaviour.Start))]

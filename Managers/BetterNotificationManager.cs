@@ -1,5 +1,6 @@
 ﻿using BetterAmongUs.Helpers;
 using BetterAmongUs.Modules;
+using BetterAmongUs.Modules.AntiCheat;
 using BetterAmongUs.Patches;
 using Cpp2IL.Core.Extensions;
 using TMPro;
@@ -63,9 +64,9 @@ class BetterNotificationManager
             rawText = $"{playerDetectedLog}: <color=#0097b5>{player?.BetterData().RealName}</color> " + newText + $": <b><color=#fc0000>{reason}</color></b>";
         }
 
-        if (!AntiCheat.PlayerData.ContainsKey(Utils.GetHashPuid(player)))
+        if (!BAUAntiCheat.PlayerData.ContainsKey(Utils.GetHashPuid(player)))
         {
-            AntiCheat.PlayerData[Utils.GetHashPuid(player)] = player.Data.FriendCode;
+            BAUAntiCheat.PlayerData[Utils.GetHashPuid(player)] = player.Data.FriendCode;
             BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player?.BetterData().RealName, "cheatData", Reason);
             Notify(text, Time: 8f);
         }
