@@ -171,6 +171,13 @@ public static class Utils
         return false;
     }
 
+    public static void DirtyAllNames()
+    {
+        foreach (var player in Main.AllPlayerControls)
+        {
+            player.DirtyName();
+        }
+    }
 
     // Get name for role
     public static string GetRoleName(RoleTypes role) => Main.GetRoleName()[(int)role];

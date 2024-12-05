@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace BetterAmongUs.Helpers;
 
-public class ExtendedPlayerControl(IntPtr intPtr) : MonoBehaviour(intPtr)
+public class BetterPlayerControl(IntPtr intPtr) : MonoBehaviour(intPtr)
 {
     public PlayerControl? _Player { get; set; }
     public TextMeshPro? InfoTextInfo { get; set; }
@@ -48,9 +48,9 @@ public static class PlayerControlExtension
 
         public static void TryCreateExtendedPlayerControl(PlayerControl pc, TextMeshPro InfoText_Info_TMP, TextMeshPro InfoText_T_TMP, TextMeshPro InfoText_B_TMP)
         {
-            if (pc.ExtendedPlayerControl() == null)
+            if (pc.BetterPlayerControl() == null)
             {
-                ExtendedPlayerControl newExtendedPc = pc.gameObject.AddComponent<ExtendedPlayerControl>();
+                BetterPlayerControl newExtendedPc = pc.gameObject.AddComponent<BetterPlayerControl>();
                 newExtendedPc._Player = pc;
                 newExtendedPc.InfoTextInfo = InfoText_Info_TMP;
                 newExtendedPc.InfoTextTop = InfoText_T_TMP;
@@ -59,13 +59,13 @@ public static class PlayerControlExtension
         }
     }
 
-    public static ExtendedPlayerControl? ExtendedPlayerControl(this PlayerControl player)
+    public static BetterPlayerControl? BetterPlayerControl(this PlayerControl player)
     {
-        return player?.GetComponent<ExtendedPlayerControl>();
+        return player?.GetComponent<BetterPlayerControl>();
     }
 
-    public static ExtendedPlayerControl? ExtendedPlayerControl(this PlayerPhysics playerPhysics)
+    public static BetterPlayerControl? BetterPlayerControl(this PlayerPhysics playerPhysics)
     {
-        return playerPhysics?.GetComponent<ExtendedPlayerControl>();
+        return playerPhysics?.GetComponent<BetterPlayerControl>();
     }
 }

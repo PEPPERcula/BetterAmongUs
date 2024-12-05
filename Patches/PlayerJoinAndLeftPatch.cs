@@ -125,7 +125,11 @@ class GameDataHandleDisconnectPatch
 {
     public static void Prefix(/*GameData __instance,*/ [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] DisconnectReasons reason)
     {
-        player.BetterData().DisconnectReason = reason;
+        if (player.BetterData() != null)
+        {
+            player.BetterData().DisconnectReason = reason;
+            player.DirtyName();
+        }
 
         GameDataShowNotificationPatch.BetterShowNotification(player.Data, reason);
     }

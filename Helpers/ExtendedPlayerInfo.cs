@@ -37,6 +37,7 @@ public class ExtendedPlayerInfo : MonoBehaviour
     public byte _PlayerId { get; private set; }
     public NetworkedPlayerInfo? _Data { get; private set; }
     public string? RealName { get; private set; }
+    public bool IsDirtyInfo { get; set; } = true;
     public Dictionary<byte, string> LastNameSetFor { get; set; } = [];
     public bool IsBetterUser { get; set; } = false;
     public bool IsVerifiedBetterUser { get; set; } = false;
@@ -78,11 +79,19 @@ public static class PlayerControlDataExtension
             TryCreateExtendedData(__instance);
         }
 
+        [HarmonyPatch(nameof(NetworkedPlayerInfo.Serialize))]
+        [HarmonyPostfix]
+        public static void Serialize_Postfix(NetworkedPlayerInfo __instance)
+        {
+            __instance.DirtyNameDelay();
+        }
+
         [HarmonyPatch(nameof(NetworkedPlayerInfo.Deserialize))]
         [HarmonyPostfix]
         public static void Deserialize_Postfix(NetworkedPlayerInfo __instance)
         {
             TryCreateExtendedData(__instance);
+            __instance.DirtyNameDelay();
         }
 
         public static void TryCreateExtendedData(NetworkedPlayerInfo data)
@@ -91,6 +100,7 @@ public static class PlayerControlDataExtension
             {
                 ExtendedPlayerInfo newBetterData = data.gameObject.AddComponent<ExtendedPlayerInfo>();
                 newBetterData.SetInfo(data);
+                data.DirtyNameDelay(3f);
             }
         }
     }

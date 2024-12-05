@@ -39,14 +39,30 @@ static class PlayerControlHelper
             return player.Data.PlayerName;
         }
     }
+
+    public static void DirtyName(this PlayerControl player) => player.BetterData().IsDirtyInfo = true;
+    public static void DirtyName(this NetworkedPlayerInfo data) => data.BetterData().IsDirtyInfo = true;
+    public static void DirtyNameDelay(this PlayerControl player, float delay = 1f) => player.Data.DirtyNameDelay(delay);
+    public static void DirtyNameDelay(this NetworkedPlayerInfo data, float delay = 1f)
+    {
+        _ = new LateTask(() =>
+        {
+            if (data != null)
+            {
+                data.DirtyName();
+            }
+        }, delay, shoudLog: false);
+    }
+
+
     // Set players over head text
     public static void SetPlayerTextInfo(this PlayerControl player, string text, bool isBottom = false, bool isInfo = false)
     {
         if (player == null) return;
 
-        var textTop = player.ExtendedPlayerControl().InfoTextTop;
-        var textBottom = player.ExtendedPlayerControl().InfoTextBottom;
-        var textInfo = player.ExtendedPlayerControl().InfoTextInfo;
+        var textTop = player.BetterPlayerControl().InfoTextTop;
+        var textBottom = player.BetterPlayerControl().InfoTextBottom;
+        var textInfo = player.BetterPlayerControl().InfoTextInfo;
 
         var targetText = isBottom ? textBottom : textTop;
         if (isInfo)

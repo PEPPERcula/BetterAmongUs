@@ -17,6 +17,8 @@ class MeetingHudStartPatch
     {
         foreach (var pva in __instance.playerStates)
         {
+            pva.ColorBlindName.transform.localPosition = new Vector3(-0.91f, -0.19f, -0.05f);
+
             var TextTopMeeting = UnityEngine.Object.Instantiate(pva.NameText, pva.NameText.transform);
             TextTopMeeting.gameObject.name = "TextTop";
             TextTopMeeting.DestroyChildren();
@@ -48,6 +50,7 @@ class MeetingHudStartPatch
         }
 
         RPC.SyncAllNames(true, true);
+        Utils.DirtyAllNames();
 
         Logger.LogHeader("Meeting Has Started");
     }
@@ -65,11 +68,6 @@ class MeetingHudUpdatePatch
         foreach (var pva in __instance.playerStates)
         {
             if (pva == null) return;
-
-            if (pva.ColorBlindName.isActiveAndEnabled)
-            {
-                pva.ColorBlindName.transform.localPosition = new Vector3(-0.91f, -0.19f, -0.05f);
-            }
 
             TextMeshPro TopText = pva.NameText.transform.Find("TextTop").gameObject.GetComponent<TextMeshPro>();
             TextMeshPro InfoText = pva.NameText.transform.Find("TextInfo").gameObject.GetComponent<TextMeshPro>();
@@ -117,6 +115,9 @@ class MeetingHudUpdatePatch
             {
                 var target = Utils.PlayerFromPlayerId(pva.TargetPlayerId);
                 if (target == null) return;
+                if (target?.BetterData()?.IsDirtyInfo != true) return;
+                target.BetterData().IsDirtyInfo = false;
+
                 string hashPuid = Utils.GetHashPuid(target);
                 string friendCode = target.Data.FriendCode;
 

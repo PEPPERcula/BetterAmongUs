@@ -10,7 +10,7 @@ public class AUMChatHandler : RPCHandler
 {
     public override byte CallId => unchecked((byte)CustomRPC.AUMChat);
 
-    public override void HandleAntiCheat(PlayerControl? sender, MessageReader reader)
+    public override void HandleAntiCheatCheck(PlayerControl? sender, MessageReader reader)
     {
         var nameString = reader.ReadString();
         var msgString = reader.ReadString();

@@ -48,10 +48,10 @@ public class SendChatHandler : RPCHandler
 
     public override void HandleAntiCheat(PlayerControl? sender, MessageReader reader)
     {
-        if (sender.IsAlive() && GameState.IsInGamePlay && !GameState.IsMeeting && !GameState.IsExilling || DataManager.Settings.Multiplayer.ChatMode == InnerNet.QuickChatModes.FreeChatOrQuickChat)
+        if (sender.IsAlive() && GameState.IsInGamePlay && !GameState.IsMeeting && !GameState.IsExilling || DataManager.Settings.Multiplayer.ChatMode == InnerNet.QuickChatModes.QuickChatOnly)
         {
             BetterNotificationManager.NotifyCheat(sender, GetFormatActionText());
-            LogRpcInfo($"{sender.IsAlive()} && {GameState.IsInGamePlay} && {!GameState.IsMeeting} && {!GameState.IsExilling}");
+            LogRpcInfo($"{sender.IsAlive()} && {GameState.IsInGamePlay} && {!GameState.IsMeeting} && {!GameState.IsExilling} || {DataManager.Settings.Multiplayer.ChatMode == InnerNet.QuickChatModes.QuickChatOnly}");
         }
     }
 }

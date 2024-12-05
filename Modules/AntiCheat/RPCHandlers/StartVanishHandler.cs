@@ -27,10 +27,10 @@ public class StartVanishHandler : RPCHandler
 
     public bool RoleCheck(PlayerControl? sender)
     {
-        if (Role is not RoleTypes.Phantom || !sender.IsAlive())
+        if (!sender.Is(RoleTypes.Phantom) || !sender.IsAlive())
         {
             BetterNotificationManager.NotifyCheat(sender, GetFormatActionText());
-            LogRpcInfo($"{Role is not RoleTypes.Phantom} || {!sender.IsAlive()}");
+            LogRpcInfo($"{!sender.Is(RoleTypes.Phantom)} || {!sender.IsAlive()}");
             return false;
         }
 

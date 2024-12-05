@@ -8,7 +8,6 @@ using Il2CppSystem.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using TMPro;
-using UnityEngine;
 
 namespace BetterAmongUs.Patches;
 
@@ -20,95 +19,77 @@ class PlayerControlPatch
     [HarmonyPrefix]
     public static void FixedUpdate_Prefix(PlayerControl __instance)
     {
-        // Set text info
-        if (!time.ContainsKey(__instance.PlayerId))
-        {
-            time[__instance.PlayerId] = 0f;
-        }
-        time[__instance.PlayerId] -= Time.deltaTime;
-
-        if (time[__instance.PlayerId] <= 0)
-        {
-            SetPlayerInfo(__instance);
-            time[__instance.PlayerId] = 0.6f;
-        }
-
+        SetPlayerInfo(__instance);
         __instance.UpdateColorBlindTextPosition();
     }
 
     public static void SetPlayerInfo(PlayerControl player)
     {
-        try
+        if (player?.Data == null || player?.BetterData()?.IsDirtyInfo != true) return;
+        player.BetterData().IsDirtyInfo = false;
+
+        var betterData = player.BetterData();
+        if (GameState.IsTOHEHostLobby) return;
+
+        var nameText = player.gameObject.transform.Find("Names/NameText_TMP").GetComponent<TextMeshPro>();
+
+        if (!player.DataIsCollected())
         {
-            if (player?.Data == null) return;
-
-            var betterData = player.BetterData();
-            if (GameState.IsTOHEHostLobby) return;
-
-            var nameText = player.gameObject.transform.Find("Names/NameText_TMP").GetComponent<TextMeshPro>();
-
-            if (!player.DataIsCollected())
-            {
-                nameText.text = Translator.GetString("Player.Loading");
-                return;
-            }
-
-            if (!Main.LobbyPlayerInfo.Value && GameState.IsLobby)
-            {
-                player.ResetAllPlayerTextInfo();
-                player.RawSetName(player.Data.PlayerName);
-                return;
-            }
-
-            string newName = player.Data.PlayerName;
-            string hashPuid = Utils.GetHashPuid(player);
-            string platform = Utils.GetPlatformName(player, useTag: true);
-
-            string friendCode = ValidateFriendCode(player, out string friendCodeColor);
-
-            if (DataManager.Settings.Gameplay.StreamerMode)
-            {
-                platform = Translator.GetString("Player.PlatformHidden");
-            }
-
-            // Set Tags
-            var sbTag = new StringBuilder();
-            var sbTagTop = new StringBuilder();
-            var sbTagBottom = new StringBuilder();
-
-            SetPlayerOutline(player, hashPuid, friendCode, sbTag);
-
-            if (GameState.IsInGame && GameState.IsLobby && !GameState.IsFreePlay)
-            {
-                SetLobbyInfo(player, ref newName, betterData, sbTag);
-                sbTagTop.Append($"<color=#9e9e9e>{platform}</color>+++")
-                        .Append($"<color=#ffd829>Lv: {player.Data.PlayerLevel + 1}</color>+++");
-
-                sbTagBottom.Append($"<color={friendCodeColor}>{friendCode}</color>+++");
-            }
-            else if ((GameState.IsInGame || GameState.IsFreePlay) && !GameState.IsHideNSeek)
-            {
-                SetInGameInfo(player, sbTagTop);
-            }
-
-            if (!player.IsInShapeshift())
-            {
-                player.RawSetName(newName);
-            }
-            else
-            {
-                var targetData = Utils.PlayerDataFromPlayerId(player.shapeshiftTargetPlayerId);
-                if (targetData != null) player.RawSetName(targetData.BetterData().RealName);
-            }
-
-            player.SetPlayerTextInfo(FormatInfo(sbTagTop));
-            player.SetPlayerTextInfo(FormatInfo(sbTagBottom), isBottom: true);
-            player.SetPlayerTextInfo(FormatInfo(sbTag), isInfo: true);
+            nameText.text = Translator.GetString("Player.Loading");
+            return;
         }
-        catch (Exception ex)
+
+        if (!Main.LobbyPlayerInfo.Value && GameState.IsLobby)
         {
-            Logger.Error(ex);
+            player.ResetAllPlayerTextInfo();
+            player.RawSetName(player.Data.PlayerName);
+            return;
         }
+
+        string newName = player.Data.PlayerName;
+        string hashPuid = Utils.GetHashPuid(player);
+        string platform = Utils.GetPlatformName(player, useTag: true);
+
+        string friendCode = ValidateFriendCode(player, out string friendCodeColor);
+
+        if (DataManager.Settings.Gameplay.StreamerMode)
+        {
+            platform = Translator.GetString("Player.PlatformHidden");
+        }
+
+        // Set Tags
+        var sbTag = new StringBuilder();
+        var sbTagTop = new StringBuilder();
+        var sbTagBottom = new StringBuilder();
+
+        SetPlayerOutline(player, hashPuid, friendCode, sbTag);
+
+        if (GameState.IsInGame && GameState.IsLobby && !GameState.IsFreePlay)
+        {
+            SetLobbyInfo(player, ref newName, betterData, sbTag);
+            sbTagTop.Append($"<color=#9e9e9e>{platform}</color>+++")
+                    .Append($"<color=#ffd829>Lv: {player.Data.PlayerLevel + 1}</color>+++");
+
+            sbTagBottom.Append($"<color={friendCodeColor}>{friendCode}</color>+++");
+        }
+        else if ((GameState.IsInGame || GameState.IsFreePlay) && !GameState.IsHideNSeek)
+        {
+            SetInGameInfo(player, sbTagTop);
+        }
+
+        if (!player.IsInShapeshift())
+        {
+            player.RawSetName(newName);
+        }
+        else
+        {
+            var targetData = Utils.PlayerDataFromPlayerId(player.shapeshiftTargetPlayerId);
+            if (targetData != null) player.RawSetName(targetData.BetterData().RealName);
+        }
+
+        player.SetPlayerTextInfo(FormatInfo(sbTagTop));
+        player.SetPlayerTextInfo(FormatInfo(sbTagBottom), isBottom: true);
+        player.SetPlayerTextInfo(FormatInfo(sbTag), isInfo: true);
     }
 
     private static string ValidateFriendCode(PlayerControl player, out string color)
@@ -257,6 +238,20 @@ class PlayerControlPatch
                 RPC.SyncAllNames(force: true);
             }, 0.25f, shoudLog: false);
         }
+    }
+
+    [HarmonyPatch(nameof(PlayerControl.CompleteTask))]
+    [HarmonyPostfix]
+    public static void CompleteTask_Postfix(PlayerControl __instance)
+    {
+        __instance.DirtyName();
+    }
+
+    [HarmonyPatch(nameof(PlayerControl.CoSetRole))]
+    [HarmonyPostfix]
+    public static void CoSetRole_Postfix(PlayerControl __instance)
+    {
+        __instance.DirtyName();
     }
 
     [HarmonyPatch(nameof(PlayerControl.MurderPlayer))]

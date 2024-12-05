@@ -196,6 +196,7 @@ internal static class RPC
                             $"Signature: {Signature}");
 
                         SyncAllNames(force: true);
+                        Utils.DirtyAllNames();
                     }
                     break;
                     /*

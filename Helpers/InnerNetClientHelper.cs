@@ -75,6 +75,8 @@ static class InnerNetClientHelper
 
     public static Vent? ReadVentId(this MessageReader reader) => Main.AllVents.FirstOrDefault(vent => vent.Id == reader.ReadInt32());
 
+    public static MessageReader ToReader(this MessageWriter writer) => MessageReader.Get(writer.ToByteArray(false));
+
     public static MessageWriter Copy(this MessageWriter writer)
     {
         var list = new Il2CppSystem.Collections.Generic.Stack<int>();

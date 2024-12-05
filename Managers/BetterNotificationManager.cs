@@ -73,6 +73,8 @@ class BetterNotificationManager
 
         Logger.LogCheat(Utils.RemoveHtmlText(rawText));
 
+        player.DirtyName();
+
         if (GameState.IsHost && kickPlayer)
         {
             string kickMessage = string.Format(Translator.GetString("AntiCheat.KickMessage"), byAntiCheat, Reason);

@@ -10,7 +10,7 @@ public class AUMHandler : RPCHandler
 {
     public override byte CallId => unchecked((byte)CustomRPC.AUM);
 
-    public override void HandleAntiCheat(PlayerControl? sender, MessageReader reader)
+    public override void HandleAntiCheatCheck(PlayerControl? sender, MessageReader reader)
     {
         if (Main.AntiCheat.Value && BetterGameSettings.DetectCheatClients.GetBool())
         {

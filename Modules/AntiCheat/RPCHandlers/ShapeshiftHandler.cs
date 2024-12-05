@@ -15,10 +15,10 @@ public class ShapeshiftHandler : RPCHandler
         var target = reader.ReadNetObject<PlayerControl>();
         var flag = reader.ReadBoolean();
 
-        if (Role is not RoleTypes.Shapeshifter || !sender.IsAlive())
+        if (!sender.Is(RoleTypes.Shapeshifter) || !sender.IsAlive())
         {
             BetterNotificationManager.NotifyCheat(sender, GetFormatActionText());
-            LogRpcInfo($"{Role is not RoleTypes.Shapeshifter} || {!sender.IsAlive()}");
+            LogRpcInfo($"{!sender.Is(RoleTypes.Shapeshifter)} || {!sender.IsAlive()}");
             return false;
         }
         else if (!flag && !GameState.IsMeeting && !GameState.IsExilling && !sender.IsInVent())

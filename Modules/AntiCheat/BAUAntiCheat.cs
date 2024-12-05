@@ -150,7 +150,7 @@ class BAUAntiCheat
 
         if (player.IsLocalPlayer() || player == null || !IsEnabled) return;
 
-        RPCHandler.HandleRPC(callId, player, reader, HandlerFlag.AntiCheat);
+        RPCHandler.HandleRPC(callId, player, reader, HandlerFlag.AntiCheatCheck);
     }
 
     // Check and notify for invalid rpcs

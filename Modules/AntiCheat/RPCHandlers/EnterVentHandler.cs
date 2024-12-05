@@ -11,10 +11,10 @@ public class EnterVentHandler : RPCHandler
 
     public override void HandleAntiCheat(PlayerControl? sender, MessageReader reader)
     {
-        if (!sender.IsImpostorTeam() && Role != RoleTypes.Engineer)
+        if (!sender.IsImpostorTeam() && !sender.Is(RoleTypes.Engineer))
         {
             BetterNotificationManager.NotifyCheat(sender, GetFormatActionText());
-            LogRpcInfo($"{sender.IsImpostorTeam()} && {Role != RoleTypes.Engineer} && {sender.IsAlive()}");
+            LogRpcInfo($"{sender.IsImpostorTeam()} && {!sender.Is(RoleTypes.Engineer)}");
         }
     }
 }
