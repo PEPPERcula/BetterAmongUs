@@ -8,6 +8,11 @@ public class SetNameHandler : RPCHandler
 {
     public override byte CallId => (byte)RpcCalls.SetName;
 
+    public override void Handle(PlayerControl? sender, MessageReader reader)
+    {
+        Utils.DirtyAllNames();
+    }
+
     public override bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader)
     {
         var name = reader.ReadString();

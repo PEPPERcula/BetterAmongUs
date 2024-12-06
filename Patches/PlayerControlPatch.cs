@@ -228,10 +228,8 @@ class PlayerControlPatch
     [HarmonyPrefix]
     public static bool RpcSetName_Prefix(PlayerControl __instance, [HarmonyArgument(0)] string name)
     {
-        if (!GameState.IsVanillaServer && Utils.IsHtmlText(name))
-        {
-            return false;
-        }
+
+        Utils.DirtyAllNames();
 
         return true;
     }

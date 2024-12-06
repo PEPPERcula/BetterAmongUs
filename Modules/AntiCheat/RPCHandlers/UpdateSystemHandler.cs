@@ -34,16 +34,14 @@ public class UpdateSystemHandler : RPCHandler
     public static bool CheckConsoleDistance<T>(PlayerControl? player, float distance = 2f) where T : PlayerTask, new()
     {
         bool isClose = false;
-        Console[]? consoles = new T().FindConsoles().ToArray();
-        foreach (var console in consoles)
+        Vector2[] consolesPos = new T().FindConsolesPos().ToArray();
+        if (consolesPos != null)
         {
-            if (console == null)
+            foreach (var consolePos in consolesPos)
             {
-                isClose = true;
-                break;
+                isClose = Vector2.Distance(consolePos, player.GetCustomPosition()) < distance;
+                if (isClose) break;
             }
-            isClose = Vector2.Distance(console.transform.position, player.GetCustomPosition()) < distance;
-            if (isClose) break;
         }
 
         return isClose;
@@ -141,7 +139,6 @@ public class UpdateSystemHandler : RPCHandler
 
     private static bool HandleHqHudSystem(PlayerControl? sender, HqHudSystemType hqHudSystem, byte count)
     {
-        Logger.InGame("TEST");
         if ((count & 128) > 0) // Direct sabotage call from client, which is not possible, only the host should have this count when HandleSabotageSystem it's called
         {
             return false;
@@ -162,7 +159,6 @@ public class UpdateSystemHandler : RPCHandler
 
     private static bool HandleHudOverrideSystem(PlayerControl? sender, HudOverrideSystemType hudOverrideSystem, byte count)
     {
-        Logger.InGame("TEST");
         if (count == 128) // Direct sabotage call from client, which is not possible, only the host should have this count when HandleSabotageSystem it's called
         {
             return false;
@@ -208,7 +204,6 @@ public class UpdateSystemHandler : RPCHandler
 
     private static bool HandleReactorSystem(PlayerControl? sender, ReactorSystemType reactorSystem, byte count)
     {
-        Logger.InGame(count.ToString());
         if (count == 128 || count == 16) // Direct sabotage call from client, which is not possible, only the host should have this count when HandleSabotageSystem it's called
         {
             return false;
@@ -230,7 +225,6 @@ public class UpdateSystemHandler : RPCHandler
             {
                 if (tuple.Item1 == sender.PlayerId)
                 {
-                    Logger.InGame("TEST 1");
                     return false;
                 }
             }
@@ -271,10 +265,12 @@ public class UpdateSystemHandler : RPCHandler
             return false;
         }
 
+        /*
         if (!CheckConsoleDistance<NoOxyTask>(sender))
         {
             return false;
         }
+        */
 
         return true;
     }
