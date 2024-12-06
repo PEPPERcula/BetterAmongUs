@@ -1,3 +1,4 @@
+using AmongUs.GameOptions;
 using BetterAmongUs.Helpers;
 using BetterAmongUs.Managers;
 using Hazel;
@@ -9,6 +10,11 @@ public class MurderPlayerHandler : RPCHandler
 {
     public override byte CallId => (byte)RpcCalls.MurderPlayer;
 
+    public override void Handle(PlayerControl? sender, MessageReader reader)
+    {
+        Utils.DirtyAllNames();
+    }
+
     // Prevent ban exploit
     public override bool HandleAntiCheatCancel(PlayerControl? player, MessageReader reader)
     {
@@ -16,7 +22,7 @@ public class MurderPlayerHandler : RPCHandler
 
         if (target != null)
         {
-            if (target.IsLocalPlayer())
+            if (target.IsLocalPlayer() && GameOptionsManager.Instance.CurrentGameOptions.GetFloat(FloatOptionNames.KillCooldown) > 2.5f)
             {
                 target.BetterData().AntiCheatInfo.TimesAttemptedKilled++;
 

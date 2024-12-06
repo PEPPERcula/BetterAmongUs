@@ -13,6 +13,16 @@ public class CompleteTaskHandler : RPCHandler
         sender.DirtyName();
     }
 
+    public override bool BetterHandle(PlayerControl? sender, MessageReader reader)
+    {
+        _ = new LateTask(() =>
+        {
+            RPC.SyncAllNames(force: true);
+        }, 1f, shoudLog: false);
+
+        return true;
+    }
+
     public override void HandleAntiCheat(PlayerControl? sender, MessageReader reader)
     {
         var taskId = reader.ReadPackedUInt32();

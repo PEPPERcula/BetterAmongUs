@@ -254,6 +254,13 @@ class PlayerControlPatch
         __instance.DirtyName();
     }
 
+    [HarmonyPatch(nameof(PlayerControl.Revive))]
+    [HarmonyPostfix]
+    public static void Revive_Postfix(PlayerControl __instance)
+    {
+        Utils.DirtyAllNames();
+    }
+
     [HarmonyPatch(nameof(PlayerControl.MurderPlayer))]
     [HarmonyPostfix]
     public static void MurderPlayer_Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
@@ -263,6 +270,8 @@ class PlayerControlPatch
         Logger.LogPrivate($"{__instance.Data.PlayerName} Has killed {target.Data.PlayerName} as {Utils.GetRoleName(__instance.Data.RoleType)}", "EventLog");
 
         __instance.BetterData().RoleInfo.Kills += 1;
+
+        Utils.DirtyAllNames();
     }
     [HarmonyPatch(nameof(PlayerControl.Shapeshift))]
     [HarmonyPostfix]

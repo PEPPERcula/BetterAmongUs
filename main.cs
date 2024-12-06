@@ -176,6 +176,7 @@ public class Main : BasePlugin
             Translator.Init();
             Harmony.PatchAll();
             GameSettingMenuPatch.SetupSettings(true);
+            FileChecker.Initialize();
 
             if (PlatformData.Platform == Platforms.StandaloneSteamPC)
                 File.WriteAllText(Path.Combine(Environment.CurrentDirectory, "steam_appid.txt"), "945360");

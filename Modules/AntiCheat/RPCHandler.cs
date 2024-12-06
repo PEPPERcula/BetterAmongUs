@@ -1,6 +1,7 @@
 ﻿using BetterAmongUs.Helpers;
 using Hazel;
 using System.Reflection;
+using UnityEngine;
 
 namespace BetterAmongUs.Modules.AntiCheat;
 
@@ -28,6 +29,7 @@ public abstract class RPCHandler
     public virtual bool LocalHandling { get; set; }
     protected static bool CancelAsHost => !(GameState.IsHost);
 
+    public static bool CheckRange(Vector2 pos1, Vector2 pos2, float range) => Vector2.Distance(pos1, pos2) <= range;
     public virtual void Handle(PlayerControl? sender, MessageReader reader) { }
     public virtual void HandleAntiCheatCheck(PlayerControl? sender, MessageReader reader) { }
     public virtual bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader) => true;
