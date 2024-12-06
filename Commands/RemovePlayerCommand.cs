@@ -26,6 +26,7 @@ public class RemovePlayerCommand : BaseCommand
         if (BetterDataManager.RemovePlayer(identifierArgument.Arg) == true)
         {
             Utils.AddChatPrivate($"{identifierArgument.Arg} successfully removed from local <color=#4f92ff>Anti-Cheat</color> data!");
+            Utils.DirtyAllNames();
         }
         else
         {

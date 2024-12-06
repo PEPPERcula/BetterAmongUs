@@ -20,7 +20,16 @@ class PlayerControlPatch
     public static void FixedUpdate_Prefix(PlayerControl __instance)
     {
         SetPlayerInfo(__instance);
+        SetPlayerHighlight(__instance);
         __instance.UpdateColorBlindTextPosition();
+    }
+
+    public static void SetPlayerHighlight(PlayerControl player)
+    {
+        string hashPuid = Utils.GetHashPuid(player);
+        string friendCode = ValidateFriendCode(player, out string _);
+
+        SetPlayerOutline(player, hashPuid, friendCode, new());
     }
 
     public static void SetPlayerInfo(PlayerControl player)

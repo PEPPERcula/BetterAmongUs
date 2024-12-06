@@ -11,5 +11,6 @@ public class RemoveAllCommand : BaseCommand
     {
         BetterDataManager.ClearCheatData();
         Utils.AddChatPrivate($"All data successfully removed from local <color=#4f92ff>Anti-Cheat</color>!");
+        Utils.DirtyAllNames();
     }
 }

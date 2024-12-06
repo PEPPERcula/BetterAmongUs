@@ -71,6 +71,7 @@ class BetterNotificationManager
             Notify(text, Time: 8f);
         }
 
+        Logger.LogCheat($"{player.cosmetics.nameText.text} Info: {player.Data.PlayerName} - {player.Data.FriendCode} - {player.GetHashPuid()}");
         Logger.LogCheat(Utils.RemoveHtmlText(rawText));
 
         player.DirtyName();
