@@ -51,10 +51,10 @@ public abstract class RPCHandler
                 try
                 {
                     if (handlerFlag == HandlerFlag.Handle) handler.Handle(sender, MessageReader.Get(reader));
-                    if (handlerFlag == HandlerFlag.AntiCheatCheck) handler.HandleAntiCheatCheck(sender, MessageReader.Get(reader));
-                    if (handlerFlag == HandlerFlag.AntiCheatCancel) cancel = !handler.HandleAntiCheatCancel(sender, MessageReader.Get(reader));
-                    if (handlerFlag == HandlerFlag.AntiCheat) handler.HandleAntiCheat(sender, MessageReader.Get(reader));
-                    if (handlerFlag == HandlerFlag.BetterHost) cancel = !handler.BetterHandle(sender, MessageReader.Get(reader));
+                    else if (handlerFlag == HandlerFlag.AntiCheatCheck) handler.HandleAntiCheatCheck(sender, MessageReader.Get(reader));
+                    else if (handlerFlag == HandlerFlag.AntiCheatCancel) cancel = !handler.HandleAntiCheatCancel(sender, MessageReader.Get(reader));
+                    else if (handlerFlag == HandlerFlag.AntiCheat) handler.HandleAntiCheat(sender, MessageReader.Get(reader));
+                    else if (handlerFlag == HandlerFlag.BetterHost) cancel = !handler.BetterHandle(sender, MessageReader.Get(reader));
                     if (!(cancel)) break;
                 }
                 catch (Exception ex)

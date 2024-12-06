@@ -80,7 +80,6 @@ public static class MessageReaderUpdateSystemPatch
 {
     public static bool Prefix(/*ShipStatus __instance,*/ [HarmonyArgument(0)] SystemTypes systemType, [HarmonyArgument(1)] PlayerControl player, [HarmonyArgument(2)] MessageReader reader)
     {
-        if (GameState.IsHideNSeek) return false;
         if (BAUAntiCheat.RpcUpdateSystemCheck(player, systemType, reader) != true)
         {
             Logger.LogCheat($"RPC canceled by Anti-Cheat: {Enum.GetName(typeof(SystemTypes), (int)systemType)} - {MessageReader.Get(reader).ReadByte()}");
