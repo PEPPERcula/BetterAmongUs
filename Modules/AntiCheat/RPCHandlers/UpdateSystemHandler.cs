@@ -1,5 +1,6 @@
 using BetterAmongUs.Helpers;
 using Hazel;
+using UnityEngine;
 
 namespace BetterAmongUs.Modules.AntiCheat;
 
@@ -30,12 +31,30 @@ public class UpdateSystemHandler : RPCHandler
         };
     }
 
+    public static bool CheckConsoleDistance<T>(PlayerControl? player, float distance = 2f) where T : PlayerTask, new()
+    {
+        bool isClose = false;
+        Console[]? consoles = new T().FindConsoles().ToArray();
+        foreach (var console in consoles)
+        {
+            if (console == null)
+            {
+                isClose = true;
+                break;
+            }
+            isClose = Vector2.Distance(console.transform.position, player.GetCustomPosition()) < distance;
+            if (isClose) break;
+        }
+
+        return isClose;
+    }
+
     public override bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader)
     {
+        if (GameState.IsHost && sender.IsHost()) return true;
+
         MessageReader oldReader = MessageReader.Get(reader);
         byte count = reader.ReadByte();
-
-        Logger.InGame($"{Enum.GetName(CatchedSystemType)}");
 
         if (ShipStatus.Instance.Systems.TryGetValue(CatchedSystemType, out ISystemType system))
         {
@@ -80,6 +99,16 @@ public class UpdateSystemHandler : RPCHandler
             return false;
         }
 
+        if (!switchSystem.IsActive)
+        {
+            return false;
+        }
+
+        if (!CheckConsoleDistance<ElectricTask>(sender))
+        {
+            return false;
+        }
+
         return true;
     }
 
@@ -87,13 +116,24 @@ public class UpdateSystemHandler : RPCHandler
     {
         if (system == null) return false;
 
-        if (system.TryCast<HqHudSystemType>(out var hqHudSystem))
+        try
         {
+            var hqHudSystem = system.Cast<HqHudSystemType>();
             return HandleHqHudSystem(sender, hqHudSystem, count);
         }
-        if (system.TryCast<HudOverrideSystemType>(out var HudOverrideSystem))
+        catch
         {
-            return HandleHudOverrideSystem(sender, HudOverrideSystem, count);
+
+        }
+
+        try
+        {
+            var hudOverrideSystem = system.Cast<HudOverrideSystemType>();
+            return HandleHudOverrideSystem(sender, hudOverrideSystem, count);
+        }
+        catch
+        {
+
         }
 
         return true;
@@ -101,7 +141,18 @@ public class UpdateSystemHandler : RPCHandler
 
     private static bool HandleHqHudSystem(PlayerControl? sender, HqHudSystemType hqHudSystem, byte count)
     {
-        if (count == 128) // Direct sabotage call from client, which is not possible, only the host should have this count when HandleSabotageSystem it's called
+        Logger.InGame("TEST");
+        if ((count & 128) > 0) // Direct sabotage call from client, which is not possible, only the host should have this count when HandleSabotageSystem it's called
+        {
+            return false;
+        }
+
+        if (!hqHudSystem.IsActive)
+        {
+            return false;
+        }
+
+        if (!CheckConsoleDistance<HqHudOverrideTask>(sender, 2f))
         {
             return false;
         }
@@ -111,7 +162,18 @@ public class UpdateSystemHandler : RPCHandler
 
     private static bool HandleHudOverrideSystem(PlayerControl? sender, HudOverrideSystemType hudOverrideSystem, byte count)
     {
+        Logger.InGame("TEST");
         if (count == 128) // Direct sabotage call from client, which is not possible, only the host should have this count when HandleSabotageSystem it's called
+        {
+            return false;
+        }
+
+        if (!hudOverrideSystem.IsActive)
+        {
+            return false;
+        }
+
+        if (!CheckConsoleDistance<HudOverrideTask>(sender, 2f))
         {
             return false;
         }
@@ -122,6 +184,11 @@ public class UpdateSystemHandler : RPCHandler
     private static bool HandleMushroomMixupSabotageSystem(PlayerControl? sender, MushroomMixupSabotageSystem mushroomMixupSabotage, byte count)
     {
         if (count == 1) // Direct sabotage call from client, which is not possible, only the host should have this count when HandleSabotageSystem it's called
+        {
+            return false;
+        }
+
+        if (mushroomMixupSabotage.IsActive)
         {
             return false;
         }
@@ -141,9 +208,32 @@ public class UpdateSystemHandler : RPCHandler
 
     private static bool HandleReactorSystem(PlayerControl? sender, ReactorSystemType reactorSystem, byte count)
     {
-        if (count == 128) // Direct sabotage call from client, which is not possible, only the host should have this count when HandleSabotageSystem it's called
+        Logger.InGame(count.ToString());
+        if (count == 128 || count == 16) // Direct sabotage call from client, which is not possible, only the host should have this count when HandleSabotageSystem it's called
         {
             return false;
+        }
+
+        if (!reactorSystem.IsActive)
+        {
+            return false;
+        }
+
+        if (!CheckConsoleDistance<ReactorTask>(sender))
+        {
+            return false;
+        }
+
+        if (count.HasAnyBit(64))
+        {
+            foreach (var tuple in reactorSystem.UserConsolePairs)
+            {
+                if (tuple.Item1 == sender.PlayerId)
+                {
+                    Logger.InGame("TEST 1");
+                    return false;
+                }
+            }
         }
 
         return true;
@@ -156,12 +246,32 @@ public class UpdateSystemHandler : RPCHandler
             return false;
         }
 
+        if (!heliSabotageSystem.IsActive)
+        {
+            return false;
+        }
+
+        if (!CheckConsoleDistance<HeliCharlesTask>(sender))
+        {
+            return false;
+        }
+
         return true;
     }
 
     private static bool HandleLifeSuppSystem(PlayerControl? sender, LifeSuppSystemType lifeSuppSystem, byte count)
     {
         if (count == 128) // Direct sabotage call from client, which is not possible, only the host should have this count when HandleSabotageSystem it's called
+        {
+            return false;
+        }
+
+        if (!lifeSuppSystem.IsActive)
+        {
+            return false;
+        }
+
+        if (!CheckConsoleDistance<NoOxyTask>(sender))
         {
             return false;
         }
