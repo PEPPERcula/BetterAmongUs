@@ -74,7 +74,7 @@ class GamePlayManager
                     __instance.YouAreText.color = RoleColor;
                     __instance.RoleText.color = RoleColor;
                     __instance.RoleBlurbText.color = RoleColor;
-                }, 0.0025f, shoudLog: false);
+                }, 0.0025f, shouldLog: false);
             }
             catch { }
         }

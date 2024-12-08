@@ -39,7 +39,7 @@ public class SendChatHandler : RPCHandler
                     _ = new LateTask(() =>
                     {
                         sender.Kick(false, $"has been kicked due to\nchat message containing a banned word!");
-                    }, 1f, shoudLog: false);
+                    }, 1f, shouldLog: false);
                 }
             }
             catch { }

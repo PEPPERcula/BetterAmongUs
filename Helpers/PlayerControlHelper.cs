@@ -51,7 +51,7 @@ static class PlayerControlHelper
             {
                 data.DirtyName();
             }
-        }, delay, shoudLog: false);
+        }, delay, shouldLog: false);
     }
 
 

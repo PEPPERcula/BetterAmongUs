@@ -123,7 +123,7 @@ public class ClientPatch
                 {
                     SceneManager.MoveGameObjectToScene(data.gameObject, SceneManager.GetActiveScene());
                 }
-            }, 0.6f, shoudLog: false);
+            }, 0.6f, shouldLog: false);
         }
     }
     [HarmonyPatch(typeof(InnerNetClient))]

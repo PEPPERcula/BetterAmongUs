@@ -18,7 +18,7 @@ public class CompleteTaskHandler : RPCHandler
         _ = new LateTask(() =>
         {
             RPC.SyncAllNames(force: true);
-        }, 1f, shoudLog: false);
+        }, 1f, shouldLog: false);
 
         return true;
     }

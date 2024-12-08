@@ -45,7 +45,7 @@ public class BetterOptionItem
                     _ = new LateTask(() =>
                     {
                         item.obj.SetActive(item.ThisParent.ShowChildrenCondition() && item.SelfShowCondition() && item.ThisParent.Option.gameObject.active);
-                    }, 0.005f, shoudLog: false);
+                    }, 0.005f, shouldLog: false);
                     if (!(item.ThisParent.ShowChildrenCondition() && item.SelfShowCondition() && item.ThisParent.Option.gameObject.active))
                         continue;
                 }

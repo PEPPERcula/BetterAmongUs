@@ -243,7 +243,7 @@ class PlayerControlPatch
             _ = new LateTask(() =>
             {
                 RPC.SyncAllNames(force: true);
-            }, 0.25f, shoudLog: false);
+            }, 0.25f, shouldLog: false);
         }
     }
 

@@ -153,7 +153,7 @@ static class GameSettingMenuPatch
             }
 
             BetterOptionItem.UpdatePositions();
-        }, 0.005f, shoudLog: false);
+        }, 0.005f, shouldLog: false);
     }
 
     [HarmonyPatch(nameof(GameSettingMenu.Update))]

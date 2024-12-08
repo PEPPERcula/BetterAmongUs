@@ -136,7 +136,7 @@ class BAUAntiCheat
                             }
                         }
 
-                    }, 3.5f, shoudLog: false);
+                    }, 3.5f, shouldLog: false);
                 }
                 catch { }
             }
