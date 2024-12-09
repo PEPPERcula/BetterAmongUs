@@ -43,6 +43,8 @@ class BetterNotificationManager
 
     public static void NotifyCheat(PlayerControl player, string reason, string newText = "", bool kickPlayer = true)
     {
+        if (player?.Data == null) return;
+
         var Reason = reason;
         if (BetterGameSettings.CensorDetectionReason.GetBool())
         {
@@ -67,7 +69,7 @@ class BetterNotificationManager
         if (!BAUAntiCheat.PlayerData.ContainsKey(Utils.GetHashPuid(player)))
         {
             BAUAntiCheat.PlayerData[Utils.GetHashPuid(player)] = player.Data.FriendCode;
-            BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player?.BetterData().RealName, "cheatData", Reason);
+            BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player?.BetterData().RealName ?? player.Data.PlayerName, "cheatData", Reason);
             Notify(text, Time: 8f);
         }
 

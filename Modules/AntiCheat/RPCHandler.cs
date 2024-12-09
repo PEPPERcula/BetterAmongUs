@@ -1,5 +1,6 @@
 ﻿using BetterAmongUs.Helpers;
 using Hazel;
+using InnerNet;
 using System.Reflection;
 using UnityEngine;
 
@@ -12,6 +13,7 @@ public enum HandlerFlag
     AntiCheatCancel,
     AntiCheat,
     BetterHost,
+    HandleGameDataTag
 }
 
 public abstract class RPCHandler
@@ -25,12 +27,15 @@ public abstract class RPCHandler
         .Select(t => (RPCHandler?)Activator.CreateInstance(t))
         .ToArray();
 
-    public abstract byte CallId { get; }
+    public InnerNetClient innerNetClient => DestroyableSingleton<InnerNetClient>.Instance;
+    public virtual byte CallId => byte.MaxValue;
+    public virtual byte GameDataTag => byte.MaxValue;
     public virtual bool LocalHandling { get; set; }
     protected static bool CancelAsHost => !(GameState.IsHost);
 
     public static bool CheckRange(Vector2 pos1, Vector2 pos2, float range) => Vector2.Distance(pos1, pos2) <= range;
     public virtual void Handle(PlayerControl? sender, MessageReader reader) { }
+    public virtual void HandleGameData(MessageReader reader) { }
     public virtual void HandleAntiCheatCheck(PlayerControl? sender, MessageReader reader) { }
     public virtual bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader) => true;
     public virtual void HandleAntiCheat(PlayerControl? sender, MessageReader reader) { }
@@ -46,7 +51,7 @@ public abstract class RPCHandler
 
         foreach (var handler in allHandlers)
         {
-            if (calledId == handler.CallId)
+            if (calledId == handler.CallId && handlerFlag != HandlerFlag.HandleGameDataTag)
             {
                 try
                 {
@@ -56,6 +61,17 @@ public abstract class RPCHandler
                     else if (handlerFlag == HandlerFlag.AntiCheat) handler.HandleAntiCheat(sender, MessageReader.Get(reader));
                     else if (handlerFlag == HandlerFlag.BetterHost) cancel = !handler.BetterHandle(sender, MessageReader.Get(reader));
                     if (!(cancel)) break;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                }
+            }
+            else if (calledId == handler.GameDataTag && handlerFlag == HandlerFlag.HandleGameDataTag)
+            {
+                try
+                {
+                    handler.HandleGameData(MessageReader.Get(reader));
                 }
                 catch (Exception ex)
                 {

@@ -23,6 +23,15 @@ enum CustomRPC : int
     BetterCheck = 150,
 }
 
+enum HandleGameDataTags : byte
+{
+    NetObjectDeserialize = 1,
+    NetObjectHandleRPC = 2,
+    NetObjectSpawn = 4,
+    NetObjectDespawn = 5,
+    ClientDataReady = 7,
+}
+
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.HandleRpc))]
 internal class PlayerControlRPCHandlerPatch
 {

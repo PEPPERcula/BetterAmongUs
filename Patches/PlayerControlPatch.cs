@@ -103,6 +103,9 @@ class PlayerControlPatch
 
     private static string ValidateFriendCode(PlayerControl player, out string color)
     {
+        color = "#FFFFFF";
+        if (player?.Data == null) return "";
+
         void TryKick()
         {
             if (GameState.IsHost)

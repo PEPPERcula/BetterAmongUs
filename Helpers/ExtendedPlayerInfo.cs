@@ -58,6 +58,8 @@ public class ExtendedAntiCheatInfo
     public bool IsFixingPanelSabotage => OpenSabotageNum != 0;
     public float TimeSinceLastTask { get; set; } = 5f;
     public uint LastTaskId { get; set; } = 999;
+    public bool HasSetName { get; set; }
+    public bool HasSetLevel { get; set; }
 }
 
 public class ExtendedRoleInfo

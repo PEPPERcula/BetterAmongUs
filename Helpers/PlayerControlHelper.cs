@@ -95,16 +95,14 @@ static class PlayerControlHelper
     {
         if (player == null) return false;
 
-        if (player.isDummy || GameState.IsLocalGame || !GameState.IsVanillaServer)
+        if (player.isDummy || GameState.IsLocalGame/* || !GameState.IsVanillaServer*/)
         {
             return true;
         }
 
         if (player.gameObject.transform.Find("Names/NameText_TMP").GetComponent<TextMeshPro>().text
-        is "???" or "Player" or "<color=#b5b5b5>Loading</color>" or null
+        is "???" or "Player" or "<color=#b5b5b5>Loading</color>" or "" or null
         || player.Data == null
-        || string.IsNullOrEmpty(player.Data.Puid)
-        || player.Data.PlayerLevel == uint.MaxValue
         || player.CurrentOutfit == null
         || player.CurrentOutfit.ColorId == -1)
         {

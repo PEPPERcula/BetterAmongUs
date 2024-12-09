@@ -2,7 +2,9 @@
 using BetterAmongUs.Items;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
+using BetterAmongUs.Modules.AntiCheat;
 using HarmonyLib;
+using Hazel;
 using InnerNet;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -129,6 +131,18 @@ public class ClientPatch
     [HarmonyPatch(typeof(InnerNetClient))]
     public class InnerNetClientPatch
     {
+        [HarmonyPatch(nameof(InnerNetClient.HandleGameData))]
+        [HarmonyPrefix]
+        public static void HandleGameDataInner_Prefix(/*InnerNetClient __instance,*/ [HarmonyArgument(0)] MessageReader oldReader)
+        {
+            var parentReader = MessageReader.Get(oldReader);
+            while (parentReader.Position < parentReader.Length)
+            {
+                MessageReader messageReader = parentReader.ReadMessageAsNewBuffer();
+                MessageReader reader = messageReader;
+                RPCHandler.HandleRPC(reader.Tag, null, MessageReader.Get(reader), HandlerFlag.HandleGameDataTag);
+            }
+        }
         [HarmonyPatch(nameof(InnerNetClient.CanBan))]
         [HarmonyPrefix]
         public static bool CanBan_Prefix(ref bool __result)

@@ -144,9 +144,9 @@ class BAUAntiCheat
     }
 
     // Handle RPC before anti cheat detection
-    public static void HandleCheatRPCBeforeCheck(PlayerControl player, byte callId, MessageReader Oldreader)
+    public static void HandleCheatRPCBeforeCheck(PlayerControl player, byte callId, MessageReader oldReader)
     {
-        MessageReader reader = MessageReader.Get(Oldreader);
+        MessageReader reader = MessageReader.Get(oldReader);
 
         if (player.IsLocalPlayer() || player == null || !IsEnabled) return;
 
@@ -154,9 +154,9 @@ class BAUAntiCheat
     }
 
     // Check and notify for invalid rpcs
-    public static void CheckRPC(PlayerControl player, byte callId, MessageReader Oldreader)
+    public static void CheckRPC(PlayerControl player, byte callId, MessageReader oldReader)
     {
-        MessageReader reader = MessageReader.Get(Oldreader);
+        MessageReader reader = MessageReader.Get(oldReader);
 
         if (player == null || player.IsLocalPlayer() || player.BetterData().IsBetterHost || reader == null || !IsEnabled || !Main.AntiCheat.Value
             || GameState.IsBetterHostLobby && !GameState.IsHost || !BetterGameSettings.DetectInvalidRPCs.GetBool()) return;
@@ -165,11 +165,11 @@ class BAUAntiCheat
     }
 
     // Check notify and cancel out request for invalid rpcs
-    public static bool CheckCancelRPC(PlayerControl player, byte callId, MessageReader Oldreader)
+    public static bool CheckCancelRPC(PlayerControl player, byte callId, MessageReader oldReader)
     {
         try
         {
-            MessageReader reader = MessageReader.Get(Oldreader);
+            MessageReader reader = MessageReader.Get(oldReader);
 
             if (PlayerControl.LocalPlayer == null || player == null || player.IsLocalPlayer() || player.BetterData().IsBetterHost || reader == null) return true;
 
@@ -259,8 +259,10 @@ class BAUAntiCheat
     }
 
     // Check game states when sabotaging
-    public static bool RpcUpdateSystemCheck(PlayerControl player, SystemTypes systemType, MessageReader reader)
+    public static bool RpcUpdateSystemCheck(PlayerControl player, SystemTypes systemType, MessageReader oldReader)
     {
+        MessageReader reader = MessageReader.Get(oldReader);
+
         RPCHandler.GetHandlerInstance<UpdateSystemHandler>().CatchedSystemType = systemType;
         return RPCHandler.HandleRPC((byte)RpcCalls.UpdateSystem, player, reader, HandlerFlag.AntiCheatCancel);
     }
