@@ -15,8 +15,6 @@ class OnGameJoinedPatch
     {
         try
         {
-            PlayerControlPatch.time.Clear();
-
             BAUAntiCheat.PauseAntiCheat();
 
             // Fix host icon in lobby on modded servers

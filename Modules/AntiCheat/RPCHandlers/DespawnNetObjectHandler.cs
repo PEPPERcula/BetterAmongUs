@@ -11,7 +11,7 @@ public class DespawnNetObjectHandler : RPCHandler
 
     public override void HandleGameData(MessageReader reader)
     {
-        if (!GameState.IsHost) return;
+        // if (!GameState.IsHost) return;
 
         uint netId = reader.ReadPackedUInt32();
         var innerNetObject = innerNetClient.FindObjectByNetId<InnerNetObject>(netId);

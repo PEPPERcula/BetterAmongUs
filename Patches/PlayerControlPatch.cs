@@ -14,7 +14,6 @@ namespace BetterAmongUs.Patches;
 [HarmonyPatch(typeof(PlayerControl))]
 class PlayerControlPatch
 {
-    public static Dictionary<byte, float> time = [];
     [HarmonyPatch(nameof(PlayerControl.FixedUpdate))]
     [HarmonyPrefix]
     public static void FixedUpdate_Prefix(PlayerControl __instance)
@@ -71,7 +70,7 @@ class PlayerControlPatch
         var sbTagTop = new StringBuilder();
         var sbTagBottom = new StringBuilder();
 
-        SetPlayerOutline(player, hashPuid, friendCode, sbTag);
+        SetPlayerOutline(player, hashPuid, player.Data.FriendCode, sbTag);
 
         if (GameState.IsInGame && GameState.IsLobby && !GameState.IsFreePlay)
         {
@@ -104,7 +103,7 @@ class PlayerControlPatch
     private static string ValidateFriendCode(PlayerControl player, out string color)
     {
         color = "#FFFFFF";
-        if (player?.Data == null) return "";
+        if (player?.Data == null) return string.Empty;
 
         void TryKick()
         {
@@ -145,36 +144,37 @@ class PlayerControlPatch
             friendCode = new string('*', friendCode.Length);
         }
 
-        return friendCode;
+        return friendCode.Trim();
     }
 
     private static void SetPlayerOutline(PlayerControl player, string hashPuid, string friendCode, StringBuilder sbTag)
     {
-        if (hashPuid != "" && BAUAntiCheat.SickoData.ContainsKey(hashPuid)
-            || friendCode != "" && BAUAntiCheat.SickoData.ContainsValue(friendCode))
+        var color = player.cosmetics.currentBodySprite.BodySprite.material.GetColor("_OutlineColor");
+        if ((!string.IsNullOrEmpty(hashPuid) && hashPuid.Length > 0 && BAUAntiCheat.SickoData.ContainsKey(hashPuid))
+            || (!string.IsNullOrEmpty(friendCode) && friendCode.Length > 0 && BAUAntiCheat.SickoData.ContainsValue(friendCode)))
         {
             sbTag.Append($"<color=#00f583>{Translator.GetString("Player.SickoUser")}</color>+++");
             player.SetOutlineByHex(true, "#00f583");
         }
-        else if (hashPuid != "" && BAUAntiCheat.AUMData.ContainsKey(hashPuid)
-            || friendCode != "" && BAUAntiCheat.AUMData.ContainsValue(friendCode))
+        else if ((!string.IsNullOrEmpty(hashPuid) && hashPuid.Length > 0 && BAUAntiCheat.AUMData.ContainsKey(hashPuid))
+            || (!string.IsNullOrEmpty(friendCode) && friendCode.Length > 0 && BAUAntiCheat.AUMData.ContainsValue(friendCode)))
         {
             sbTag.Append($"<color=#4f0000>{Translator.GetString("Player.AUMUser")}</color>+++");
             player.SetOutlineByHex(true, "#4f0000");
         }
-        else if (hashPuid != "" && BAUAntiCheat.KNData.ContainsKey(hashPuid)
-            || friendCode != "" && BAUAntiCheat.KNData.ContainsValue(friendCode))
+        else if ((!string.IsNullOrEmpty(hashPuid) && hashPuid.Length > 0 && BAUAntiCheat.KNData.ContainsKey(hashPuid))
+            || (!string.IsNullOrEmpty(friendCode) && friendCode.Length > 0 && BAUAntiCheat.KNData.ContainsValue(friendCode)))
         {
             sbTag.Append($"<color=#8731e7>{Translator.GetString("Player.KNUser")}</color>+++");
             player.SetOutlineByHex(true, "#8731e7");
         }
-        else if (hashPuid != "" && BAUAntiCheat.PlayerData.ContainsKey(hashPuid)
-            || friendCode != "" && BAUAntiCheat.PlayerData.ContainsValue(friendCode))
+        else if ((!string.IsNullOrEmpty(hashPuid) && hashPuid.Length > 0 && BAUAntiCheat.PlayerData.ContainsKey(hashPuid))
+            || (!string.IsNullOrEmpty(friendCode) && friendCode.Length > 0 && BAUAntiCheat.PlayerData.ContainsValue(friendCode)))
         {
             sbTag.Append($"<color=#fc0000>{Translator.GetString("Player.KnownCheater")}</color>+++");
             player.SetOutlineByHex(true, "#fc0000");
         }
-        else
+        else if (color == Utils.HexToColor32("#00f583") || color == Utils.HexToColor32("#4f0000") || color == Utils.HexToColor32("#fc0000") || color == Utils.HexToColor32("#8731e7"))
         {
             player.SetOutline(false, null);
         }

@@ -290,7 +290,7 @@ static class PlayerControlHelper
                            BAUAntiCheat.SickoData.ContainsKey(player.GetHashPuid()) ||
                            BAUAntiCheat.AUMData.ContainsKey(player.GetHashPuid()));
     // Check if player is the host
-    public static bool IsHost(this PlayerControl player) => player?.Data != null && GameData.Instance?.GetHost()?.Puid == player.Data.Puid;
+    public static bool IsHost(this PlayerControl player) => player?.Data != null && GameData.Instance?.GetHost() == player.Data;
 
     // Get players HashPuid
     public static string GetHashPuid(this PlayerControl player)

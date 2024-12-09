@@ -113,13 +113,7 @@ public static class Utils
     public static string GetHashPuid(PlayerControl player)
     {
         if (player?.Data?.Puid == null) return "";
-
-        string puid = player.Data.Puid;
-
-        using SHA256 sha256 = SHA256.Create();
-        byte[] sha256Bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(puid));
-        string sha256Hash = BitConverter.ToString(sha256Bytes).Replace("-", "").ToLower();
-        return sha256Hash.Substring(0, 5) + sha256Hash.Substring(sha256Hash.Length - 4);
+        return GetHashStr(player.Data.Puid);
     }
     // Get HashPuid from puid
     public static string GetHashStr(string str)
