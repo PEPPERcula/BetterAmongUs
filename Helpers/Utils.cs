@@ -267,7 +267,7 @@ public static class Utils
             sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), pixelsPerUnit);
             sprite.hideFlags |= HideFlags.HideAndDontSave | HideFlags.DontSaveInEditor;
 
-            Logger.Log($"Successfully loaded sprite from {path}");
+            // Logger.Log($"Successfully loaded sprite from {path}");
             return CachedSprites[path + pixelsPerUnit] = sprite;
         }
         catch (Exception ex)
@@ -293,7 +293,7 @@ public static class Utils
                     return null;
             }
 
-            Logger.Log($"Successfully loaded texture from {path}");
+            // Logger.Log($"Successfully loaded texture from {path}");
             return texture;
         }
         catch (Exception ex)

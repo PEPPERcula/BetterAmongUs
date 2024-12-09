@@ -156,14 +156,22 @@ public class Main : BasePlugin
     {
         try
         {
-            ConsoleManager.DetachConsole();
+            foreach (var listener in BepInEx.Logging.Logger.Listeners)
+            {
+                if (listener.GetType().Name.ToLower().Contains("Unity"))
+                {
+                    BepInEx.Logging.Logger.Listeners.Remove(listener);
+                    break;
+                }
+            }
+
             ConsoleManager.CreateConsole();
-            ConsoleManager.ConfigConsoleEnabled.BoxedValue = false;
-            ConsoleManager.SetConsoleTitle("Among Us - BAU Console");
             ConsoleManager.ConfigPreventClose.Value = true;
+            if (ConsoleManager.ConfigConsoleEnabled.Value) ConsoleManager.DetachConsole();
+            ConsoleManager.ConfigConsoleEnabled.Value = false;
+            ConsoleManager.SetConsoleTitle("Among Us - BAU Console");
             Logger = BepInEx.Logging.Logger.CreateLogSource(PluginGuid);
             var customLogListener = new CustomLogListener();
-            BepInEx.Logging.Logger.Listeners.Clear();
             BepInEx.Logging.Logger.Listeners.Add(customLogListener);
             ConsoleManager.SetConsoleColor(ConsoleColor.Green);
             ConsoleManager.ConsoleStream.WriteLine($".--------------------------------------------------------------------------------.\r\n|  ____       _   _                 _                                  _   _     |\r\n| | __ )  ___| |_| |_ ___ _ __     / \\   _ __ ___   ___  _ __   __ _  | | | |___ |\r\n| |  _ \\ / _ \\ __| __/ _ \\ '__|   / _ \\ | '_ ` _ \\ / _ \\| '_ \\ / _` | | | | / __||\r\n| | |_) |  __/ |_| ||  __/ |     / ___ \\| | | | | | (_) | | | | (_| | | |_| \\__ \\|\r\n| |____/ \\___|\\__|\\__\\___|_|    /_/   \\_\\_| |_| |_|\\___/|_| |_|\\__, |  \\___/|___/|\r\n|                                                              |___/             |\r\n'--------------------------------------------------------------------------------'");

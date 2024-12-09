@@ -27,7 +27,7 @@ class PlayerControlPatch
     public static void SetPlayerHighlight(PlayerControl player)
     {
         string hashPuid = Utils.GetHashPuid(player);
-        string friendCode = ValidateFriendCode(player, out string _);
+        string friendCode = player.Data.FriendCode;
 
         SetPlayerOutline(player, hashPuid, friendCode, new());
     }
@@ -150,22 +150,26 @@ class PlayerControlPatch
 
     private static void SetPlayerOutline(PlayerControl player, string hashPuid, string friendCode, StringBuilder sbTag)
     {
-        if (BAUAntiCheat.SickoData.ContainsKey(hashPuid) || BAUAntiCheat.SickoData.ContainsValue(friendCode))
+        if (hashPuid != "" && BAUAntiCheat.SickoData.ContainsKey(hashPuid)
+            || friendCode != "" && BAUAntiCheat.SickoData.ContainsValue(friendCode))
         {
             sbTag.Append($"<color=#00f583>{Translator.GetString("Player.SickoUser")}</color>+++");
             player.SetOutlineByHex(true, "#00f583");
         }
-        else if (BAUAntiCheat.AUMData.ContainsKey(hashPuid) || BAUAntiCheat.AUMData.ContainsValue(friendCode))
+        else if (hashPuid != "" && BAUAntiCheat.AUMData.ContainsKey(hashPuid)
+            || friendCode != "" && BAUAntiCheat.AUMData.ContainsValue(friendCode))
         {
             sbTag.Append($"<color=#4f0000>{Translator.GetString("Player.AUMUser")}</color>+++");
             player.SetOutlineByHex(true, "#4f0000");
         }
-        else if (BAUAntiCheat.KNData.ContainsKey(hashPuid) || BAUAntiCheat.KNData.ContainsValue(friendCode))
+        else if (hashPuid != "" && BAUAntiCheat.KNData.ContainsKey(hashPuid)
+            || friendCode != "" && BAUAntiCheat.KNData.ContainsValue(friendCode))
         {
             sbTag.Append($"<color=#8731e7>{Translator.GetString("Player.KNUser")}</color>+++");
             player.SetOutlineByHex(true, "#8731e7");
         }
-        else if (BAUAntiCheat.PlayerData.ContainsKey(hashPuid) || BAUAntiCheat.PlayerData.ContainsValue(friendCode))
+        else if (hashPuid != "" && BAUAntiCheat.PlayerData.ContainsKey(hashPuid)
+            || friendCode != "" && BAUAntiCheat.PlayerData.ContainsValue(friendCode))
         {
             sbTag.Append($"<color=#fc0000>{Translator.GetString("Player.KnownCheater")}</color>+++");
             player.SetOutlineByHex(true, "#fc0000");
