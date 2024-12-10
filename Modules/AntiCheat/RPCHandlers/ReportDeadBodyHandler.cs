@@ -10,6 +10,14 @@ public class ReportDeadBodyHandler : RPCHandler
 
     public override bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader)
     {
+        if (!GameState.IsInGamePlay || !Main.AllPlayerControls.All(pc => pc.roleAssigned))
+        {
+            BetterNotificationManager.NotifyCheat(sender, string.Format(Translator.GetString("AntiCheat.InvalidActionRPC"), Enum.GetName((RpcCalls)CallId)), forceBan: true);
+            LogRpcInfo($"{!GameState.IsInGamePlay} || {!Main.AllPlayerControls.All(pc => pc.roleAssigned)}");
+
+            return CancelAsHost;
+        }
+
         if (GameState.IsMeeting && MeetingHudUpdatePatch.timeOpen > 0.5f || GameState.IsHideNSeek || sender.IsInVent() || sender.shapeshifting
             || sender.inMovingPlat || sender.onLadder || sender.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
         {

@@ -41,7 +41,7 @@ class BetterNotificationManager
         }
     }
 
-    public static void NotifyCheat(PlayerControl player, string reason, string newText = "", bool kickPlayer = true)
+    public static void NotifyCheat(PlayerControl player, string reason, string newText = "", bool kickPlayer = true, bool forceBan = false)
     {
         if (player?.Data == null) return;
 
@@ -81,7 +81,7 @@ class BetterNotificationManager
         if (GameState.IsHost && kickPlayer)
         {
             string kickMessage = string.Format(Translator.GetString("AntiCheat.KickMessage"), byAntiCheat, Reason);
-            player.Kick(true, kickMessage, true);
+            player.Kick(true, kickMessage, true, false, forceBan);
         }
     }
 

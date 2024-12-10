@@ -1,4 +1,3 @@
-using BetterAmongUs.Helpers;
 using BetterAmongUs.Managers;
 using Hazel;
 using InnerNet;
@@ -17,8 +16,7 @@ public class DespawnNetObjectHandler : RPCHandler
         var innerNetObject = innerNetClient.FindObjectByNetId<InnerNetObject>(netId);
         if (innerNetObject is PlayerControl player)
         {
-            BetterNotificationManager.NotifyCheat(player, "Attempting to despawn player", kickPlayer: false);
-            player.Kick(true);
+            BetterNotificationManager.NotifyCheat(player, "Attempting to despawn player", forceBan: true);
         }
     }
 }

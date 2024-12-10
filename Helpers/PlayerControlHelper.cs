@@ -111,9 +111,9 @@ static class PlayerControlHelper
         return true;
     }
     // Kick player
-    public static void Kick(this PlayerControl player, bool ban = false, string setReasonInfo = "", bool AntiCheatBan = false, bool bypassDataCheck = false)
+    public static void Kick(this PlayerControl player, bool ban = false, string setReasonInfo = "", bool AntiCheatBan = false, bool bypassDataCheck = false, bool forceBan = false)
     {
-        var Ban = ban;
+        var Ban = ban || forceBan;
 
         if (!GameState.IsHost || player.IsLocalPlayer() || !player.DataIsCollected() && !bypassDataCheck || player.IsHost() || player.isDummy)
         {
@@ -122,12 +122,12 @@ static class PlayerControlHelper
 
         if (AntiCheatBan)
         {
-            if (BetterGameSettings.WhenCheating.GetValue() == 0)
+            if (BetterGameSettings.WhenCheating.GetValue() == 0 && !forceBan)
             {
                 return;
             }
 
-            Ban = Ban && BetterGameSettings.WhenCheating.GetValue() == 2;
+            Ban = (Ban && BetterGameSettings.WhenCheating.GetValue() == 2) || forceBan;
         }
 
         if (setReasonInfo != "")
