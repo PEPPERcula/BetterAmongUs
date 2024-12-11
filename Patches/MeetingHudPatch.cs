@@ -9,12 +9,16 @@ using UnityEngine;
 
 namespace BetterAmongUs;
 
-[HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Start))]
-class MeetingHudStartPatch
+[HarmonyPatch(typeof(MeetingHud))]
+class MeetingHudPatch
 {
-    // Set up meeting player info text
-    public static void Postfix(MeetingHud __instance)
+    [HarmonyPatch(nameof(MeetingHud.Start))]
+    [HarmonyPostfix]
+    public static void Start_Postfix(MeetingHud __instance)
     {
+        TopText.Clear();
+        InfoText.Clear();
+
         foreach (var pva in __instance.playerStates)
         {
             pva.ColorBlindName.transform.localPosition = new Vector3(-0.91f, -0.19f, -0.05f);
@@ -24,14 +28,16 @@ class MeetingHudStartPatch
             TextTopMeeting.DestroyChildren();
             TextTopMeeting.transform.position = pva.NameText.transform.position;
             TextTopMeeting.transform.position += new Vector3(0f, 0.15f);
-            TextTopMeeting.GetComponent<TextMeshPro>().text = "";
+            TextTopMeeting.text = "";
+            TopText[pva.TargetPlayerId] = TextTopMeeting;
 
             var TextInfoMeeting = UnityEngine.Object.Instantiate(pva.NameText, pva.NameText.transform);
             TextInfoMeeting.gameObject.name = "TextInfo";
             TextInfoMeeting.DestroyChildren();
             TextInfoMeeting.transform.position = pva.NameText.transform.position;
             TextInfoMeeting.transform.position += new Vector3(0f, 0.28f);
-            TextInfoMeeting.GetComponent<TextMeshPro>().text = "";
+            TextInfoMeeting.text = "";
+            InfoText[pva.TargetPlayerId] = TextInfoMeeting;
 
             var PlayerLevel = pva.transform.Find("PlayerLevel");
             PlayerLevel.localPosition = new Vector3(PlayerLevel.localPosition.x, PlayerLevel.localPosition.y, -2f);
@@ -50,31 +56,35 @@ class MeetingHudStartPatch
         }
 
         RPC.SyncAllNames(true, true);
-        Utils.DirtyAllNames();
 
         Logger.LogHeader("Meeting Has Started");
     }
-}
-[HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Update))]
-class MeetingHudUpdatePatch
-{
+
+    [HarmonyPatch(nameof(MeetingHud.SetMasksEnabled))]
+    [HarmonyPostfix]
+    public static void SetMasksEnabled_Postfix(/*MeetingHud __instance*/)
+    {
+        Utils.DirtyAllNames();
+    }
+
+    public static Dictionary<byte, TextMeshPro?> TopText = [];
+    public static Dictionary<byte, TextMeshPro?> InfoText = [];
     public static float timeOpen = 0f;
 
     // Set player meeting info
-    public static void Postfix(MeetingHud __instance)
+    [HarmonyPatch(nameof(MeetingHud.Update))]
+    [HarmonyPostfix]
+    public static void Update_Postfix(MeetingHud __instance)
     {
         timeOpen += Time.deltaTime;
 
         foreach (var pva in __instance.playerStates)
         {
-            if (pva == null) return;
+            if (pva == null) continue;
 
-            TextMeshPro TopText = pva.NameText.transform.Find("TextTop").gameObject.GetComponent<TextMeshPro>();
-            TextMeshPro InfoText = pva.NameText.transform.Find("TextInfo").gameObject.GetComponent<TextMeshPro>();
+            bool flag = Main.AllPlayerControls.Any(pc => pc.PlayerId == pva.TargetPlayerId);
 
-            bool flag = Main.AllPlayerControls.Any(player => player.PlayerId == pva.TargetPlayerId);
-
-            if (!flag)
+            if (!flag && TopText != null && InfoText != null)
             {
                 string DisconnectText;
                 var playerData = GameData.Instance.GetPlayerById(pva.TargetPlayerId);
@@ -114,8 +124,8 @@ class MeetingHudUpdatePatch
             else if (TopText != null && InfoText != null)
             {
                 var target = Utils.PlayerFromPlayerId(pva.TargetPlayerId);
-                if (target == null) return;
-                if (target?.BetterData()?.IsDirtyInfo != true) return;
+                if (target == null) continue;
+                if (target?.BetterData()?.IsDirtyInfo != true) continue;
                 target.BetterData().IsDirtyInfo = false;
 
                 string hashPuid = Utils.GetHashPuid(target);
@@ -158,7 +168,7 @@ class MeetingHudUpdatePatch
                 }
                 if (!target.IsImpostorTeammate())
                 {
-                    if (PlayerControl.LocalPlayer.IsAlive() || PlayerControl.LocalPlayer.Is(RoleTypes.GuardianAngel) && !target.IsLocalPlayer())
+                    if ((PlayerControl.LocalPlayer.IsAlive() || PlayerControl.LocalPlayer.Is(RoleTypes.GuardianAngel)) && !target.IsLocalPlayer())
                     {
                         if (!DebugMenu.RevealRoles)
                         {
@@ -178,7 +188,7 @@ class MeetingHudUpdatePatch
 
                 pva.NameText.transform.localPosition = textPos;
 
-                SetPlayerTextInfoMeeting(pva, $"{sbInfo}", isInfo: true);
+                SetPlayerTextInfoMeeting(pva, $"{sbInfo}", true);
                 SetPlayerTextInfoMeeting(pva, $"{Role}");
             }
         }
@@ -186,35 +196,31 @@ class MeetingHudUpdatePatch
 
     private static void SetPlayerTextInfoMeeting(PlayerVoteArea pva, string text, bool isInfo = false)
     {
-        string InfoType = "TextTop";
         if (isInfo)
         {
-            InfoType = "TextInfo";
-            GameObject TopText = pva.NameText.transform.Find("TextTop").gameObject;
-            if (TopText != null)
+            if (TopText[pva.TargetPlayerId].text.Replace("<size=65%>", string.Empty).Replace("</size>", string.Empty).Length < 1)
             {
-                if (TopText.GetComponent<TextMeshPro>()?.text.Replace("<size=65%>", string.Empty).Replace("</size>", string.Empty).Length < 1)
-                {
-                    text = "<voffset=-2em>" + text + "</voffset>";
-                }
+                text = "<voffset=-2em>" + text + "</voffset>";
             }
         }
 
         text = "<size=65%>" + text + "</size>";
-        GameObject TextObj = pva.NameText.transform.Find(InfoType).gameObject; ;
-        if (TextObj != null)
+
+        if (!isInfo)
         {
-            TextObj.GetComponent<TextMeshPro>().text = text;
+            TopText[pva.TargetPlayerId].text = text;
+        }
+        else
+        {
+            InfoText[pva.TargetPlayerId].text = text;
         }
     }
-}
 
-[HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.OnDestroy))]
-class MeetingHud_OnDestroyPatch
-{
-    public static void Postfix()
+    [HarmonyPatch(nameof(MeetingHud.Close))]
+    [HarmonyPostfix]
+    public static void Close_Postfix()
     {
-        MeetingHudUpdatePatch.timeOpen = 0f;
+        timeOpen = 0f;
         Logger.LogHeader("Meeting Has Ended");
         RPC.SyncAllNames(force: true);
     }

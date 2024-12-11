@@ -18,11 +18,11 @@ public class ReportDeadBodyHandler : RPCHandler
             return CancelAsHost;
         }
 
-        if (GameState.IsMeeting && MeetingHudUpdatePatch.timeOpen > 0.5f || GameState.IsHideNSeek || sender.IsInVent() || sender.shapeshifting
+        if (GameState.IsMeeting && MeetingHudPatch.timeOpen > 0.5f || GameState.IsHideNSeek || sender.IsInVent() || sender.shapeshifting
             || sender.inMovingPlat || sender.onLadder || sender.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
         {
             BetterNotificationManager.NotifyCheat(sender, string.Format(Translator.GetString("AntiCheat.InvalidActionRPC"), Enum.GetName((RpcCalls)CallId)));
-            LogRpcInfo($"{GameState.IsMeeting} && {MeetingHudUpdatePatch.timeOpen > 0.5f} || {sender.IsInVent()} || {sender.shapeshifting}" +
+            LogRpcInfo($"{GameState.IsMeeting} && {MeetingHudPatch.timeOpen > 0.5f} || {sender.IsInVent()} || {sender.shapeshifting}" +
                 $" || {sender.inMovingPlat} || {sender.onLadder} || {sender.MyPhysics.Animations.IsPlayingAnyLadderAnimation()}");
 
             return CancelAsHost;

@@ -204,7 +204,7 @@ class PlayerControlPatch
 
     private static void SetInGameInfo(PlayerControl player, StringBuilder sbTagTop)
     {
-        if (player.IsImpostorTeammate() || player.IsLocalPlayer() || !PlayerControl.LocalPlayer.IsAlive() && !PlayerControl.LocalPlayer.Is(RoleTypes.GuardianAngel) || DebugMenu.RevealRoles)
+        if (player.IsImpostorTeammate() || player.IsLocalPlayer() || (!PlayerControl.LocalPlayer.IsAlive() && !PlayerControl.LocalPlayer.Is(RoleTypes.GuardianAngel)) || DebugMenu.RevealRoles)
         {
             string roleInfo = $"<color={player.GetTeamHexColor()}>{player.GetRoleName()}</color>";
             if (!player.IsImpostorTeam() && player.myTasks.Count > 0)
