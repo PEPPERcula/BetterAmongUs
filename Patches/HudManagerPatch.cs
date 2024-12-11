@@ -1,4 +1,7 @@
-﻿using HarmonyLib;
+﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Managers;
+using BetterAmongUs.Modules;
+using HarmonyLib;
 using TMPro;
 using UnityEngine;
 
@@ -27,9 +30,9 @@ public class HudManagerPatch
                 ChatNotifications.gameObject.SetActive(true);
                 GameObject BAUNotification = UnityEngine.Object.Instantiate(ChatNotifications.gameObject);
                 BAUNotification.name = "BAUNotification";
-                UnityEngine.Object.Destroy(BAUNotification.GetComponent<ChatNotification>());
-                UnityEngine.Object.Destroy(GameObject.Find($"{BAUNotification.name}/Sizer/PoolablePlayer"));
-                UnityEngine.Object.Destroy(GameObject.Find($"{BAUNotification.name}/Sizer/ColorText"));
+                BAUNotification.GetComponent<ChatNotification>().DestroyMono();
+                GameObject.Find($"{BAUNotification.name}/Sizer/PoolablePlayer").DestroyObj();
+                GameObject.Find($"{BAUNotification.name}/Sizer/ColorText").DestroyObj();
                 BAUNotification.GetComponent<AspectPosition>().DistanceFromEdge = new Vector3(-1.57f, 5.3f, -15f);
                 GameObject.Find($"{BAUNotification.name}/Sizer/NameText").transform.localPosition = new Vector3(-3.3192f, -0.0105f);
                 BetterNotificationManager.NameText = GameObject.Find($"{BAUNotification.name}/Sizer/NameText").GetComponent<TextMeshPro>();
@@ -46,7 +49,7 @@ public class HudManagerPatch
 
         _ = new LateTask(() =>
         {
-            if (!HasBeenWelcomed && GameStates.IsInGame && GameStates.IsLobby && !GameStates.IsFreePlay)
+            if (!HasBeenWelcomed && GameState.IsInGame && GameState.IsLobby && !GameState.IsFreePlay)
             {
                 BetterNotificationManager.Notify($"<b><color=#00751f>{string.Format(Translator.GetString("WelcomeMsg.WelcomeToBAU"), Translator.GetString("BetterAmongUs"))}!</color></b>", 8f);
 
@@ -67,7 +70,7 @@ public class HudManagerPatch
 
 
             // Set chat
-            if (GameStates.InGame)
+            if (GameState.InGame)
             {
                 if (!Main.ChatInGameplay.Value)
                 {
@@ -75,7 +78,7 @@ public class HudManagerPatch
                     {
                         __instance.Chat.gameObject.SetActive(true);
                     }
-                    else if (GameStates.IsInGamePlay && !(GameStates.IsMeeting || GameStates.IsExilling))
+                    else if (GameState.IsInGamePlay && !(GameState.IsMeeting || GameState.IsExilling))
                     {
                         __instance.Chat.gameObject.SetActive(false);
                     }

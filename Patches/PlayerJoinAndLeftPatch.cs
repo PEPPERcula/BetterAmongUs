@@ -1,3 +1,7 @@
+using BetterAmongUs.Helpers;
+using BetterAmongUs.Managers;
+using BetterAmongUs.Modules;
+using BetterAmongUs.Modules.AntiCheat;
 using BetterAmongUs.Patches;
 using HarmonyLib;
 using InnerNet;
@@ -11,12 +15,10 @@ class OnGameJoinedPatch
     {
         try
         {
-            PlayerControlPatch.time.Clear();
-
-            AntiCheat.PauseAntiCheat();
+            BAUAntiCheat.PauseAntiCheat();
 
             // Fix host icon in lobby on modded servers
-            if (!GameStates.IsVanillaServer)
+            if (!GameState.IsVanillaServer)
             {
                 var host = AmongUsClient.Instance.GetHost().Character;
                 host.SetColor(-2);
@@ -35,7 +37,7 @@ public static class OnPlayerJoinedPatch
     {
         _ = new LateTask(() =>
         {
-            if (GameStates.IsInGame)
+            if (GameState.IsInGame)
             {
                 var player = Utils.PlayerFromClientId(client.Id);
 
@@ -121,7 +123,11 @@ class GameDataHandleDisconnectPatch
 {
     public static void Prefix(/*GameData __instance,*/ [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] DisconnectReasons reason)
     {
-        player.BetterData().DisconnectReason = reason;
+        if (player.BetterData() != null)
+        {
+            player.BetterData().DisconnectReason = reason;
+            player.DirtyName();
+        }
 
         GameDataShowNotificationPatch.BetterShowNotification(player.Data, reason);
     }

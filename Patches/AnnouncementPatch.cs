@@ -2,6 +2,7 @@
 using AmongUs.Data.Player;
 using Assets.InnerNet;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
+using BetterAmongUs.Helpers;
 using HarmonyLib;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using System.Collections;

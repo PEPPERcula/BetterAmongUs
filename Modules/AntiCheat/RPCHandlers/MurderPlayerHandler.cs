@@ -1,0 +1,61 @@
+using AmongUs.GameOptions;
+using BetterAmongUs.Helpers;
+using BetterAmongUs.Managers;
+using Hazel;
+using InnerNet;
+
+namespace BetterAmongUs.Modules.AntiCheat;
+
+public class MurderPlayerHandler : RPCHandler
+{
+    public override byte CallId => (byte)RpcCalls.MurderPlayer;
+
+    public override void Handle(PlayerControl? sender, MessageReader reader)
+    {
+        Utils.DirtyAllNames();
+    }
+
+    // Prevent ban exploit
+    public override bool HandleAntiCheatCancel(PlayerControl? player, MessageReader reader)
+    {
+        PlayerControl target = reader.ReadNetObject<PlayerControl>();
+
+        if (target != null)
+        {
+            if (target.IsLocalPlayer() && GameOptionsManager.Instance.CurrentGameOptions.GetFloat(FloatOptionNames.KillCooldown) > 2.5f)
+            {
+                target.BetterData().AntiCheatInfo.TimesAttemptedKilled++;
+
+                if (target.BetterData().AntiCheatInfo.TimesAttemptedKilled >= 5 && !target.IsAlive())
+                {
+                    BetterNotificationManager.NotifyCheat(player, string.Format(Translator.GetString("AntiCheat.InvalidAction"), Translator.GetString("AntiCheat.TryBanExploit")));
+                    LogRpcInfo($"{target.BetterData().AntiCheatInfo.TimesAttemptedKilled >= 5} && {!target.IsAlive()}");
+                    return false;
+                }
+
+                // Cancel murder on client if not alive
+                if (!target.IsAlive())
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public override void HandleAntiCheat(PlayerControl? sender, MessageReader reader)
+    {
+        PlayerControl target = reader.ReadNetObject<PlayerControl>();
+
+        if (target != null)
+        {
+            if (!sender.IsImpostorTeam() || !sender.IsAlive() || sender.IsInVanish() || target.IsImpostorTeam())
+            {
+                BetterNotificationManager.NotifyCheat(sender, GetFormatActionText());
+                LogRpcInfo($"{!sender.IsImpostorTeam()} || {sender.IsInVanish()}" +
+                    $" || {!target.IsAlive()} || {target.IsImpostorTeam()}");
+            }
+        }
+    }
+}

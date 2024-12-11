@@ -1,4 +1,10 @@
-﻿using HarmonyLib;
+﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Items;
+using BetterAmongUs.Managers;
+using BetterAmongUs.Modules;
+using BetterAmongUs.Modules.AntiCheat;
+using HarmonyLib;
+using Hazel;
 using InnerNet;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -15,6 +21,8 @@ public class ClientPatch
         [HarmonyPostfix]
         public static void EndFinalPartsOfLoginFlow_Postfix()
         {
+            UserData.TrySetLocalData();
+
             var varSupportedVersions = Main.SupportedAmongUsVersions;
             Version currentVersion = new Version(Main.AmongUsVersion);
             Version firstSupportedVersion = new Version(varSupportedVersions.First());
@@ -45,14 +53,52 @@ public class ClientPatch
                     $"<color=#ae1700>You may encounter minor to game breaking bugs.</color></size>");
             }
         }
+    }
 
-        [HarmonyPatch(nameof(EOSManager.StartInitialLoginFlow))]
-        [HarmonyPostfix]
-        public static void StartInitialLoginFlow_Postfix(EOSManager __instance)
+    // If developer set account status color to Blue
+    [HarmonyPatch(typeof(SignInStatusComponent))]
+    public class SignInStatusComponentPatch
+    {
+        [HarmonyPatch(nameof(SignInStatusComponent.SetOnline))]
+        [HarmonyPrefix]
+        public static bool SetOnline_Prefix(SignInStatusComponent __instance)
         {
-            // __instance.StartCoroutine(DataBaseConnect.Init());
+            var lines = "<color=#ebbd34>----------------------------------------------------------------------------------------------</color>";
+            if (!FileChecker.HasShownWarning && FileChecker.HasUnauthorizedFileOrMod)
+            {
+                Utils.ShowPopUp($"{lines}\n<b><size=200%><#0DFF00>{Translator.GetString("BetterAmongUs")}</color></size></b>\n<color=#757575><u><size=150%>{FileChecker.WarningMsg}</size></u>\n{lines}");
+                FileChecker.HasShownWarning = true;
+            }
+
+            if (BannedUserData.CheckLocalBan(out var bannedData))
+            {
+                __instance.statusSprite.sprite = __instance.guestSprite;
+                __instance.glowSprite.sprite = __instance.guestGlow;
+                __instance.statusSprite.color = Color.red;
+                __instance.glowSprite.color = Color.red;
+                __instance.friendsButton.SetActive(false);
+
+                var reason = bannedData.Reason;
+                Utils.ShowPopUp($"{lines}\n<b><size=200%><#0DFF00>{Translator.GetString("BetterAmongUs")}</color></size></b>\n<color=#757575><u><size=150%><color=#8f0000>You have been banned\nReason: {reason}</color></size></u>\n{lines}");
+
+                return false;
+            }
+
+            if (Main.MyData.IsDev())
+            {
+                __instance.statusSprite.sprite = __instance.guestSprite;
+                __instance.glowSprite.sprite = __instance.guestGlow;
+                __instance.statusSprite.color = Color.cyan;
+                __instance.glowSprite.color = Color.cyan;
+                __instance.friendsButton.SetActive(true);
+
+                return false;
+            }
+
+            return true;
         }
     }
+
     // Log game exit
     [HarmonyPatch(typeof(AmongUsClient))]
     public class AmongUsClientPatch
@@ -79,24 +125,36 @@ public class ClientPatch
                 {
                     SceneManager.MoveGameObjectToScene(data.gameObject, SceneManager.GetActiveScene());
                 }
-            }, 0.6f, shoudLog: false);
+            }, 0.6f, shouldLog: false);
         }
     }
     [HarmonyPatch(typeof(InnerNetClient))]
     public class InnerNetClientPatch
     {
+        [HarmonyPatch(nameof(InnerNetClient.HandleGameData))]
+        [HarmonyPrefix]
+        public static void HandleGameDataInner_Prefix(/*InnerNetClient __instance,*/ [HarmonyArgument(0)] MessageReader oldReader)
+        {
+            var parentReader = MessageReader.Get(oldReader);
+            while (parentReader.Position < parentReader.Length)
+            {
+                MessageReader messageReader = parentReader.ReadMessageAsNewBuffer();
+                MessageReader reader = messageReader;
+                RPCHandler.HandleRPC(reader.Tag, null, MessageReader.Get(reader), HandlerFlag.HandleGameDataTag);
+            }
+        }
         [HarmonyPatch(nameof(InnerNetClient.CanBan))]
         [HarmonyPrefix]
         public static bool CanBan_Prefix(ref bool __result)
         {
-            __result = GameStates.IsHost;
+            __result = GameState.IsHost;
             return false;
         }
         [HarmonyPatch(nameof(InnerNetClient.CanKick))]
         [HarmonyPrefix]
         public static bool CanKick_Prefix(ref bool __result)
         {
-            __result = GameStates.IsHost || (GameStates.IsInGamePlay && (GameStates.IsMeeting || GameStates.IsExilling));
+            __result = GameState.IsHost || (GameState.IsInGamePlay && (GameState.IsMeeting || GameState.IsExilling));
             return false;
         }
         [HarmonyPatch(nameof(InnerNetClient.KickPlayer))]
@@ -114,38 +172,22 @@ public class ClientPatch
     [HarmonyPatch(typeof(CosmeticsLayer))]
     public class CosmeticsLayerPatch
     {
-        [HarmonyPatch(nameof(CosmeticsLayer.SetColorBlindColor))]
+        [HarmonyPatch(nameof(CosmeticsLayer.GetColorBlindText))]
         [HarmonyPrefix]
-        public static bool SetColorBlindColor_Prefix(CosmeticsLayer __instance, [HarmonyArgument(0)] int color)
+        public static bool GetColorBlindText_Prefix(CosmeticsLayer __instance, ref string __result)
         {
-            try
-            {
-                if (__instance.colorBlindText == null || !__instance.showColorBlindText)
-                {
-                    return false;
-                }
-                __instance.colorBlindText.text = __instance.GetColorBlindText();
-                __instance.colorBlindText.color = Palette.PlayerColors[color];
-                var player = Main.AllPlayerControls.FirstOrDefault(pc => pc.cosmetics == __instance);
+            if (__instance.bodyMatProperties.ColorId > Palette.PlayerColors.Length) return true;
 
-                if (player != null)
-                {
-                    // Set new pos
-                    if (!player.onLadder && !player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
-                    {
-                        __instance.colorBlindText.transform.localPosition = new Vector3(0f, -1.5f, 0.4999f);
-                    }
-                    else // Set pos when on a ladder
-                    {
-                        __instance.colorBlindText.transform.localPosition = new Vector3(0f, -1.75f, 0.4999f);
-                    }
-                }
-                else // Set new pos if player is null
-                {
-                    __instance.colorBlindText.transform.localPosition = new Vector3(0f, -1.5f, 0.4999f);
-                }
+            string colorName = Palette.GetColorName(__instance.bodyMatProperties.ColorId);
+
+            if (!string.IsNullOrEmpty(colorName))
+            {
+                __result = (char.ToUpperInvariant(colorName[0]) + colorName.Substring(1).ToLowerInvariant()).ToColor(Palette.PlayerColors[__instance.bodyMatProperties.ColorId]);
             }
-            catch { }
+            else
+            {
+                __result = string.Empty;
+            }
 
             return false;
         }

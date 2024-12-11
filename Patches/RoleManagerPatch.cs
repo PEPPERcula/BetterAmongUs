@@ -1,4 +1,6 @@
 ﻿using AmongUs.GameOptions;
+using BetterAmongUs.Helpers;
+using BetterAmongUs.Modules;
 using HarmonyLib;
 using Hazel;
 
@@ -21,7 +23,7 @@ public class RoleManagerPatch
     [HarmonyPrefix]
     public static bool RoleManager_Prefix(/*RoleManager __instance*/)
     {
-        if (!GameStates.IsHideNSeek)
+        if (!GameState.IsHideNSeek)
         {
             RegularBetterRoleAssignment();
         }

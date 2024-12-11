@@ -1,0 +1,31 @@
+using AmongUs.GameOptions;
+using BetterAmongUs.Helpers;
+using Hazel;
+using InnerNet;
+
+namespace BetterAmongUs.Modules.AntiCheat;
+
+public class CheckProtectHandler : RPCHandler
+{
+    public override byte CallId => (byte)RpcCalls.CheckProtect;
+
+    public override bool BetterHandle(PlayerControl? sender, MessageReader reader)
+    {
+        PlayerControl target = reader.ReadNetObject<PlayerControl>();
+        if (target != null)
+        {
+            if (sender.Is(RoleTypes.GuardianAngel)
+                && !sender.IsAlive()
+                && !sender.IsImpostorTeam()
+                && CheckRange(sender.GetCustomPosition(), target.GetCustomPosition(), 3f))
+            {
+                if (target.IsAlive())
+                {
+                    sender.RpcProtectPlayer(target, sender.Data.DefaultOutfit.ColorId); ;
+                }
+            }
+        }
+
+        return false;
+    }
+}

@@ -2,14 +2,18 @@
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
+using BetterAmongUs.Helpers;
+using BetterAmongUs.Items;
+using BetterAmongUs.Managers;
+using BetterAmongUs.Modules;
 using BetterAmongUs.Patches;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using Innersloth.IO;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using UnityEngine;
-using static BetterAmongUs.PlayerControlDataExtension;
 
 namespace BetterAmongUs;
 
@@ -25,15 +29,15 @@ public enum ReleaseTypes : int
 public class Main : BasePlugin
 {
     public static readonly ReleaseTypes ReleaseBuildType = ReleaseTypes.Beta;
-    public const string BetaNum = "1";
+    public const string BetaNum = "3";
     public const string HotfixNum = "0";
     public const bool IsHotFix = false;
     public const string PluginGuid = "com.ten.betteramongus";
     public const string PluginVersion = "1.1.5";
-    public const string ReleaseDate = "10.26.2024"; // mm/dd/yyyy
+    public const string ReleaseDate = "11.3.2024"; // mm/dd/yyyy
     public const string Github = "https://github.com/EnhancedNetwork/BetterAmongUs-Public";
     public const string Discord = "https://discord.gg/ten";
-    public static BetterAccountInfo myAccountInfo = new();
+    public static UserData MyData = UserData.AllUsers.First();
 
     public static string modSignature
     {
@@ -99,20 +103,17 @@ public class Main : BasePlugin
 
     public static List<string> SupportedAmongUsVersions =
     [
+        "2024.11.26",
         "2024.10.29",
         "2024.9.4",
         "2024.8.13",
         "2024.6.18",
     ];
 
-    public static string[] DevUser =
-    [
-        "J4sxGDREO5bjLvzvMkv059g+7wpNg7PbyWa9vLVWQkw=",
-    ];
-
     public static PlayerControl[] AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(pc => pc != null).ToArray();
-
     public static PlayerControl[] AllAlivePlayerControls => AllPlayerControls.ToArray().Where(pc => pc.IsAlive()).ToArray();
+    public static DeadBody[] AllDeadBodys => UnityEngine.Object.FindObjectsOfType<DeadBody>().ToArray();
+    public static Vent[] AllVents => UnityEngine.Object.FindObjectsOfType<Vent>();
 
     public static Dictionary<int, string> GetRoleName()
     {
@@ -153,16 +154,32 @@ public class Main : BasePlugin
 
     public override void Load()
     {
-        AddComponent<ExtendedPlayerInfo>();
-
         try
         {
+            foreach (var listener in BepInEx.Logging.Logger.Listeners)
+            {
+                if (listener.GetType().Name.ToLower().Contains("Unity"))
+                {
+                    BepInEx.Logging.Logger.Listeners.Remove(listener);
+                    break;
+                }
+            }
+
             ConsoleManager.CreateConsole();
-            ConsoleManager.SetConsoleTitle("Among Us - BAU Console");
             ConsoleManager.ConfigPreventClose.Value = true;
+            if (ConsoleManager.ConfigConsoleEnabled.Value) ConsoleManager.DetachConsole();
+            ConsoleManager.ConfigConsoleEnabled.Value = false;
+            ConsoleManager.SetConsoleTitle("Among Us - BAU Console");
+            Logger = BepInEx.Logging.Logger.CreateLogSource(PluginGuid);
+            var customLogListener = new CustomLogListener();
+            BepInEx.Logging.Logger.Listeners.Add(customLogListener);
+            ConsoleManager.SetConsoleColor(ConsoleColor.Green);
             ConsoleManager.ConsoleStream.WriteLine($".--------------------------------------------------------------------------------.\r\n|  ____       _   _                 _                                  _   _     |\r\n| | __ )  ___| |_| |_ ___ _ __     / \\   _ __ ___   ___  _ __   __ _  | | | |___ |\r\n| |  _ \\ / _ \\ __| __/ _ \\ '__|   / _ \\ | '_ ` _ \\ / _ \\| '_ \\ / _` | | | | / __||\r\n| | |_) |  __/ |_| ||  __/ |     / ___ \\| | | | | | (_) | | | | (_| | | |_| \\__ \\|\r\n| |____/ \\___|\\__|\\__\\___|_|    /_/   \\_\\_| |_| |_|\\___/|_| |_|\\__, |  \\___/|___/|\r\n|                                                              |___/             |\r\n'--------------------------------------------------------------------------------'");
 
-            Logger = BepInEx.Logging.Logger.CreateLogSource(PluginGuid);
+            {
+                RegisterAllMonoBehavioursInAssembly();
+                // AddComponent<UserDataLoader>();
+            }
 
             BetterDataManager.SetUp();
             BetterDataManager.LoadData();
@@ -170,6 +187,7 @@ public class Main : BasePlugin
             Translator.Init();
             Harmony.PatchAll();
             GameSettingMenuPatch.SetupSettings(true);
+            FileChecker.Initialize();
 
             if (PlatformData.Platform == Platforms.StandaloneSteamPC)
                 File.WriteAllText(Path.Combine(Environment.CurrentDirectory, "steam_appid.txt"), "945360");
@@ -179,10 +197,6 @@ public class Main : BasePlugin
 
             File.WriteAllText(Path.Combine(BetterDataManager.filePathFolder, "better-log.txt"), "");
             BetterAmongUs.Logger.Log("Better Among Us successfully loaded!");
-
-            // Set up debug menu
-            for (int i = 0; i < DevUser.Length; i++)
-                DevUser[i] = Encryptor.Decrypt(DevUser[i]);
 
 #if DEBUG
             ClassInjector.RegisterTypeInIl2Cpp<DebugMenu>();
@@ -202,7 +216,26 @@ public class Main : BasePlugin
         }
     }
 
+    public static void RegisterAllMonoBehavioursInAssembly()
+    {
+        var assembly = Assembly.GetExecutingAssembly();
 
+        var monoBehaviourTypes = assembly.GetTypes()
+            .Where(type => type.IsSubclassOf(typeof(MonoBehaviour)) && !type.IsAbstract)
+            .OrderBy(type => type.Name);
+
+        foreach (var type in monoBehaviourTypes)
+        {
+            try
+            {
+                ClassInjector.RegisterTypeInIl2Cpp(type);
+            }
+            catch (Exception ex)
+            {
+                BetterAmongUs.Logger.Error($"Failed to register MonoBehaviour: {type.FullName}\n{ex}");
+            }
+        }
+    }
 
     public static ConfigEntry<bool> AntiCheat { get; private set; }
     public static ConfigEntry<bool> BetterHost { get; private set; }

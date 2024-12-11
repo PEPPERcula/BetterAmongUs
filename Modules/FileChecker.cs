@@ -1,236 +1,134 @@
 ﻿using System.Collections.ObjectModel;
-using UnityEngine;
+using System.Reflection;
 
-namespace BetterAmongUs;
+namespace BetterAmongUs.Modules;
 
 class FileChecker
 {
-    private static bool Enabled = true;
-    private static readonly ReadOnlyCollection<string> UnsupportedBepInExMods = new(new List<string> { "TOHE", "YuAntiCheat" }); // Put BepInEx BepInPlugin name, not dll name here lol.
-    private static readonly ReadOnlyCollection<string> BannedBepInExMods = new(new List<string> { "MalumMenu", "MalumMenu-Yu", "MalumMenuYu"/*, "AUnlocker" */}); // Put BepInEx BepInPlugin name, not dll name here lol.
-    private static readonly ReadOnlyCollection<string> KeyWordsInVersionInfo = new(new List<string> { "Malum", "Sicko", "AUM" }); // Banned words for version text
-    public static string UnauthorizedReason = string.Empty;
-    public static List<string> CheatTags = []; // For API report
-    public static bool HasTrySpoofFriendCode = false;
-    public static bool HasUnauthorizedFile = false;
-    public static bool HasShownPopUp = false;
-    private static float waitTime = 5f;
+    private static bool check = false;
+    private static bool enabled = false;
+    private static FileSystemWatcher? fileWatcher;
+    private static bool hasUnauthorizedFileOrMod = false;
+    public static string WarningMsg { get; private set; } = string.Empty;
+    public static bool HasShownWarning { get; set; } = false;
+    public static bool HasUnauthorizedFileOrMod => hasUnauthorizedFileOrMod && (!Main.MyData.IsDev() || !Main.MyData.IsVerified());
 
-    // Set up if unauthorized files have been found.
-    public static void UpdateUnauthorizedFiles()
+    private static readonly ReadOnlyCollection<string> TrustedNamespaces = new(new List<string>
     {
-#if DEBUG
-        if (GameStates.IsDev)
+        "System", "Unity", "Harmony", "BepInEx", "Microsoft", "Il2Cpp", "Hazel",
+        "MonoMod", "netstandard", "mscorlib", "AssetRipper", "Cpp2IL", "AsmResolver", "Iced",
+        "SemanticVersioning", "Mono.Cecil", "Assembly-CSharp", "StableNameDotNet",
+        "Disarm", "Gee.External.Capstone", "Rewired_Core", "AddressablesPlayAssetDelivery",
+        "Assembly-CSharp-firstpass", "BetterAmongUs", "MCI", "CrowdedMod", "Mini.RegionInstall", "Unlock", "Skin"
+    });
+
+    private static readonly ReadOnlyCollection<string> UntrustedNamespaces = new(new List<string>
+    {
+        "Sicko", "Malum", "Menu", "Cheat", "Hack", "Exploit", "Bypass", "Crack", "Spoof"
+    });
+
+    private static readonly string[] TrustedPaths =
+    {
+        Environment.CurrentDirectory,
+        Path.Combine(Environment.CurrentDirectory, "BepInEx"),
+    };
+
+    private static readonly string[] UnauthorizedFiles = [
+        "version.dll",
+        "sicko-settings.json",
+        "sicko-log.txt",
+        "sicko-prev-log.txt",
+        "sicko-config",
+        "settings.json",
+        "aum-log.txt",
+        "aum-prev-log.txt"
+    ];
+
+    public static void Initialize()
+    {
+        if (enabled || !check) return;
+
+        enabled = true;
+
+        fileWatcher = new FileSystemWatcher(Environment.CurrentDirectory)
         {
-            HasTrySpoofFriendCode = false;
-        }
-#endif
+            NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite | NotifyFilters.DirectoryName,
+            IncludeSubdirectories = true
+        };
 
-        if (Enabled == false) return;
+        fileWatcher.Created += (sender, args) => CheckUnauthorizedFiles();
+        fileWatcher.Deleted += (sender, args) => CheckUnauthorizedFiles();
 
-        GameObject PlayButton = GameObject.Find("Main Buttons/PlayButton");
+        fileWatcher.EnableRaisingEvents = true;
 
-        // Disable play button
-        if (PlayButton != null)
+        CheckUnauthorizedFiles();
+        CheckUnauthorizedMods();
+    }
+
+    private static void CheckUnauthorizedFiles()
+    {
+        if (hasUnauthorizedFileOrMod) return;
+
+        foreach (var fileName in UnauthorizedFiles)
         {
-            if (EOSManager.Instance.userId == null || HasTrySpoofFriendCode)
+            if (File.Exists(Path.Combine(Environment.CurrentDirectory, fileName)))
             {
-                PlayButton.GetComponent<UnityEngine.BoxCollider2D>().enabled = false;
-                GameObject.Find("Main Buttons/PlayButton/Inactive").GetComponent<SpriteRenderer>().color = Color.gray;
-            }
-            else
-            {
-                PlayButton.GetComponent<UnityEngine.BoxCollider2D>().enabled = true;
-                GameObject.Find("Main Buttons/PlayButton/Inactive").GetComponent<SpriteRenderer>().color = new Color(1.0f, 1.0f, 1.0f);
-            }
-        }
-
-        // Unauthorized file or ban detected.
-        if (HasUnauthorizedFile)
-        {
-            if (GameStates.IsInGame)
-            {
-                Utils.DisconnectSelf(OnlineMsg);
-            }
-
-            GameObject playOnlineButton = GameObject.Find("PlayOnlineButton");
-
-            if (playOnlineButton != null)
-            {
-                PassiveButton PassiveButtonComponent = playOnlineButton.GetComponent<PassiveButton>();
-                PlayOnlineButtonSprite PlayOnlineButtonSpriteComponent = playOnlineButton.GetComponent<PlayOnlineButtonSprite>();
-
-                if (PassiveButtonComponent != null)
+                WarningMsg = "<#D20200>Unauthorized File Detected</color>\n<#9D9D9D><size=70%>Look in logs for further information!</size></color>";
+                Logger.Warning($"Unauthorized File: {Path.Combine(Environment.CurrentDirectory, fileName)}");
+                if (GameState.IsInGame)
                 {
-                    if (PassiveButtonComponent != null)
-                        PassiveButtonComponent.enabled = false;
-
-                    PlayOnlineButtonSpriteComponent?.SetGreyscale();
+                    SceneChanger.ChangeScene("MainMenu");
                 }
+                hasUnauthorizedFileOrMod = true;
+                return;
             }
-
-            Utils.DisconnectAccountFromOnline();
-
-            SoundManager.instance?.ChangeMusicVolume(0);
-            return;
-        }
-
-        if (EOSManager.Instance.editAccountUsername.gameObject.active || EOSManager.Instance.askToMergeAccount.gameObject.active)
-        {
-            HasTrySpoofFriendCode = true;
-        }
-
-        if (GameStates.IsInGame && GameStates.IsLobby)
-        {
-            waitTime -= Time.deltaTime;
-
-            if (waitTime <= 0)
-            {
-                CheckIfUnauthorizedFiles();
-                waitTime = 5f;
-            }
-        }
-        else
-        {
-            waitTime = 5f;
         }
     }
 
-    private static string UnauthorizedTextDetectedMsg => Translator.GetString("FileChecker.UnauthorizedTextDetectedMsg");
-    private static string UnauthorizedFileMsg => Translator.GetString("FileChecker.UnauthorizedFileMsg");
-    private static string OnlineMsg => Translator.GetString("FileChecker.OnlineMsg");
-    private static string UnsupportedBepInExModMsg => Translator.GetString("FileChecker.UnsupportedBepInExModMsg");
-    private static string BannedBepInExModMsg => Translator.GetString("FileChecker.BannedBepInExModMsg");
-
-    // Check if there's any unauthorized files.
-    public static bool CheckIfUnauthorizedFiles()
+    private static void CheckUnauthorizedMods()
     {
-        if (Enabled == false) return false;
+        if (hasUnauthorizedFileOrMod) return;
 
-        // Get user info for later use with API.
-        string ClientUserName = string.Empty;
-        string ClientFriendCode = string.Empty;
-        string ClientPUIDHash = string.Empty;
-
-        if (!GameStates.IsInGame)
-        {
-            ClientUserName = GameObject.Find("AccountTab")?.GetComponent<AccountTab>()?.userName.text;
-            ClientFriendCode = EOSManager.Instance.friendCode;
-            ClientPUIDHash = Utils.GetHashPuid(EOSManager.Instance.ProductUserId);
-        }
-        else
-        {
-            if (PlayerControl.LocalPlayer?.Data != null)
-            {
-                ClientUserName = PlayerControl.LocalPlayer.Data.PlayerName;
-                ClientFriendCode = PlayerControl.LocalPlayer.Data.FriendCode;
-                ClientPUIDHash = Utils.GetHashPuid(PlayerControl.LocalPlayer);
-            }
-        }
-
-#if DEBUG
-        if (GameStates.IsDev)
-        {
-            Enabled = false;
-            return false;
-        }
-#endif
-
-        // Check for Banned BepInEx Mods
-        foreach (var bannedMod in BannedBepInExMods)
-        {
-            if (IsBepInExModLoaded(bannedMod))
-            {
-                if (!HasUnauthorizedFile) UnauthorizedReason = BannedBepInExModMsg;
-                if (!CheatTags.Contains($"{bannedMod}-BepInEx")) CheatTags.Add($"{bannedMod}-BepInEx");
-                HasUnauthorizedFile = true;
-            }
-        }
-
-        // Check for Unsupported BepInEx Mods
-        foreach (var unsupportedMod in UnsupportedBepInExMods)
-        {
-            if (IsBepInExModLoaded(unsupportedMod))
-            {
-                if (!HasUnauthorizedFile) UnauthorizedReason = UnsupportedBepInExModMsg;
-                HasUnauthorizedFile = true;
-            }
-        }
-
-        // Check for version.dll
-        if (File.Exists(Path.Combine(Environment.CurrentDirectory, "version.dll")))
-        {
-            string versiondll = "<color=#ffffff>'</color><color=#ffca2b>version.dll</color><color=#ffffff>'</color>";
-            if (!HasUnauthorizedFile) UnauthorizedReason = string.Format(UnauthorizedTextDetectedMsg, versiondll);
-            if (!CheatTags.Contains("version.dll")) CheatTags.Add("version.dll");
-            HasUnauthorizedFile = true;
-        }
-
-        // Check for banned words in VersionInfo display. Aka check cheat developers ego
-        foreach (var WordInVersionInfo in KeyWordsInVersionInfo)
-        {
-            if (!GameStates.IsInGame)
-            {
-                if (UnityEngine.Object.FindFirstObjectByType<VersionShower>().text.text.ToLower().Contains(WordInVersionInfo.ToLower()))
-                {
-                    if (!HasUnauthorizedFile) UnauthorizedReason = UnauthorizedFileMsg;
-                    if (!CheatTags.Contains($"{WordInVersionInfo}-VersionInfo")) CheatTags.Add($"{WordInVersionInfo}-VersionInfo");
-                    HasUnauthorizedFile = true;
-                }
-            }
-            else
-            {
-                if (UnityEngine.Object.FindFirstObjectByType<PingTracker>().text.text.ToLower().Contains(WordInVersionInfo.ToLower()))
-                {
-                    if (!HasUnauthorizedFile) UnauthorizedReason = UnauthorizedFileMsg;
-                    if (!CheatTags.Contains($"{WordInVersionInfo}-VersionInfo")) CheatTags.Add($"{WordInVersionInfo}-VersionInfo");
-                    HasUnauthorizedFile = true;
-                }
-            }
-        }
-
-        // Check for Sicko leftover files
-        if (File.Exists(Path.Combine(Environment.CurrentDirectory, "sicko-settings.json")) ||
-            File.Exists(Path.Combine(Environment.CurrentDirectory, "sicko-log.txt")) ||
-            File.Exists(Path.Combine(Environment.CurrentDirectory, "sicko-prev-log.txt")) ||
-            File.Exists(Path.Combine(Environment.CurrentDirectory, "sicko-config")))
-        {
-            if (!HasUnauthorizedFile) UnauthorizedReason = UnauthorizedFileMsg;
-            if (!CheatTags.Contains("Sicko-Menu-Files")) CheatTags.Add("Sicko-Menu-Files");
-            HasUnauthorizedFile = true;
-        }
-
-        // Check for AUM leftover files
-        if (File.Exists(Path.Combine(Environment.CurrentDirectory, "settings.json")) ||
-            File.Exists(Path.Combine(Environment.CurrentDirectory, "aum-log.txt")) ||
-            File.Exists(Path.Combine(Environment.CurrentDirectory, "aum-prev-log.txt")))
-        {
-            if (!HasUnauthorizedFile) UnauthorizedReason = UnauthorizedFileMsg;
-            if (!CheatTags.Contains("AUM-Menu-Files")) CheatTags.Add("AUM-Menu-Files");
-            HasUnauthorizedFile = true;
-        }
-
-        // ----------- Unused Until API support is added! -----------
-
-        // Combine Player information and Tags
-        string tagsAsString = string.Join(" - ", CheatTags);
-        string playerInfo = $"{ClientUserName}.{ClientFriendCode}.{ClientPUIDHash} - {tagsAsString}"; // If Detection goes off send this information to the API database!
-
-        // ----------------------------------------------------------
-
-        return HasUnauthorizedFile;
-    }
-
-    // Get all loaded BepInEx mods and check if one is on the ban list.
-    private static bool IsBepInExModLoaded(string modName)
-    {
         foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
         {
-            if (assembly.FullName.Contains(modName, StringComparison.OrdinalIgnoreCase))
+            if (assembly.IsDynamic)
             {
-                return true;
+                continue;
+            }
+
+            if (!TrustedNamespaces.Any(ns => assembly.FullName.Contains(ns, StringComparison.OrdinalIgnoreCase)))
+            {
+                WarningMsg = "<#D20200>Unregistered Assembly Detected</color>\n<#9D9D9D><size=70%>Look in logs for further information!</size></color>";
+                Logger.Warning($"Unauthorized Assembly: {assembly.FullName} (Unregistered Namespace)");
+                hasUnauthorizedFileOrMod = true;
+                return;
+            }
+
+            if (UntrustedNamespaces.Any(ns => assembly.FullName.Contains(ns, StringComparison.OrdinalIgnoreCase)))
+            {
+                WarningMsg = "<#D20200>Untrusted Assembly Detected</color>\n<#9D9D9D><size=70%>Look in logs for further information!</size></color>";
+                Logger.Warning($"Unauthorized Assembly: {assembly.FullName} (Untrusted Namespace)");
+                hasUnauthorizedFileOrMod = true;
+                return;
+            }
+
+            if (!IsSafeLocation(assembly))
+            {
+                WarningMsg = "<#D20200>Unregistered Assembly Location Detected</color>\n<#9D9D9D><size=70%>Look in logs for further information!</size></color>";
+                Logger.Warning($"Unauthorized Assembly: {assembly.FullName} (Unregistered Location: {assembly.Location})");
+                hasUnauthorizedFileOrMod = true;
+                return;
             }
         }
-        return false;
+    }
+
+    private static bool IsSafeLocation(Assembly assembly)
+    {
+        if (string.IsNullOrEmpty(assembly.Location))
+        {
+            return true;
+        }
+
+        return TrustedPaths.Any(path => assembly.Location.StartsWith(path, StringComparison.OrdinalIgnoreCase));
     }
 }

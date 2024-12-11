@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace BetterAmongUs;
+namespace BetterAmongUs.Modules;
 
 class Encryptor
 {

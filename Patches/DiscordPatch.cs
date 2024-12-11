@@ -1,4 +1,5 @@
 using AmongUs.Data;
+using BetterAmongUs.Modules;
 using Discord;
 using HarmonyLib;
 
@@ -27,15 +28,15 @@ public class DiscordRPC
                 UpdateRegionAndLobbyCode();
                 if (!string.IsNullOrEmpty(lobbycode) && !string.IsNullOrEmpty(region))
                 {
-                    if (GameStates.IsNormalGame)
+                    if (GameState.IsNormalGame)
                         details = $"BAU - {lobbycode} ({region})";
-                    else if (GameStates.IsHideNSeek)
+                    else if (GameState.IsHideNSeek)
                         details = $"BAU Hide & Seek - {lobbycode} ({region})";
                 }
             }
             else
             {
-                if (GameStates.IsHideNSeek)
+                if (GameState.IsHideNSeek)
                     details = $"BAU v{Main.PluginVersion} - Hide & Seek";
             }
         }
@@ -48,7 +49,7 @@ public class DiscordRPC
 
     private static void UpdateRegionAndLobbyCode()
     {
-        if (GameStates.IsLobby)
+        if (GameState.IsLobby)
         {
             lobbycode = GameStartManager.Instance.GameRoomNameCode.text;
             region = ServerManager.Instance.CurrentRegion.Name;

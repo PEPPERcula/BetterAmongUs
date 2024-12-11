@@ -16,12 +16,12 @@ public static class Coroutines
         {
         }
 
-        private void Awake()
+        public void Awake()
         {
             Instance = this;
         }
 
-        private void OnDestroy()
+        public void OnDestroy()
         {
             Instance = null;
         }

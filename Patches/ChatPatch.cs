@@ -1,5 +1,8 @@
 ﻿using AmongUs.GameOptions;
 using Assets.CoreScripts;
+using BetterAmongUs.Helpers;
+using BetterAmongUs.Modules;
+using BetterAmongUs.Modules.AntiCheat;
 using HarmonyLib;
 using Hazel;
 using System.Text;
@@ -26,7 +29,7 @@ class ChatPatch
                 __result = false;
                 return false;
             }
-            if (!GameStates.IsBetterHostLobby)
+            if (!GameState.IsBetterHostLobby)
             {
                 __result = false;
                 return true;
@@ -116,24 +119,24 @@ class ChatPatch
             string playerName = sourcePlayer.BetterData().RealName ?? "";
             string Role = $"<size=75%><color={sourcePlayer.GetTeamHexColor()}>{sourcePlayer.GetRoleName()}</color></size>+++";
 
-            if (GameStates.IsLobby && !GameStates.IsFreePlay)
+            if (GameState.IsLobby && !GameState.IsFreePlay)
             {
                 Role = "";
 
                 if (sourcePlayer.IsDev())
                     sbTag.Append($"<color=#0088ff>Dev</color>+++");
 
-                if (((sourcePlayer.IsLocalPlayer() && GameStates.IsHost && Main.BetterHost.Value)
+                if (((sourcePlayer.IsLocalPlayer() && GameState.IsHost && Main.BetterHost.Value)
                     || (!sourcePlayer.IsLocalPlayer() && sourcePlayer.BetterData().IsBetterHost && sourcePlayer.IsHost())))
                     sbTag.AppendFormat("<color=#0dff00>{1}{0}</color>+++", Translator.GetString("Player.BetterHost"), sourcePlayer.BetterData().IsVerifiedBetterUser || sourcePlayer.IsLocalPlayer() ? "✓ " : "");
                 else if ((sourcePlayer.IsLocalPlayer() || sourcePlayer.BetterData().IsBetterUser))
                     sbTag.AppendFormat("<color=#0dff00>{1}{0}</color>+++", Translator.GetString("Player.BetterUser"), sourcePlayer.BetterData().IsVerifiedBetterUser || sourcePlayer.IsLocalPlayer() ? "✓ " : "");
 
-                if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.SickoData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.SickoData.ContainsValue(friendCode))
+                if (!string.IsNullOrEmpty(hashPuid) && BAUAntiCheat.SickoData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && BAUAntiCheat.SickoData.ContainsValue(friendCode))
                     sbTag.Append($"<color=#00f583>{Translator.GetString("Player.SickoUser")}</color>+++");
-                else if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.AUMData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.AUMData.ContainsValue(friendCode))
+                else if (!string.IsNullOrEmpty(hashPuid) && BAUAntiCheat.AUMData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && BAUAntiCheat.AUMData.ContainsValue(friendCode))
                     sbTag.Append($"<color=#4f0000>{Translator.GetString("Player.AUMUser")}</color>+++");
-                else if (!string.IsNullOrEmpty(hashPuid) && AntiCheat.PlayerData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && AntiCheat.PlayerData.ContainsValue(friendCode))
+                else if (!string.IsNullOrEmpty(hashPuid) && BAUAntiCheat.PlayerData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && BAUAntiCheat.PlayerData.ContainsValue(friendCode))
                     sbTag.Append($"<color=#fc0000>{Translator.GetString("Player.KnownCheater")}</color>+++");
             }
 
@@ -178,7 +181,6 @@ class ChatPatch
             }
 
             chatBubble.NameText.text = playerName;
-            chatBubble.ColorBlindName.color = Palette.PlayerColors[sourcePlayer.Data.DefaultOutfit.ColorId];
             if (sourcePlayer.IsAlive() || !PlayerControl.LocalPlayer.IsAlive())
             {
                 Logger.Log($"{sourcePlayer.Data.PlayerName} -> {chatText}", "ChatLog");

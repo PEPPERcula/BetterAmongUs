@@ -1,158 +1,113 @@
 ﻿using AmongUs.Data;
 using AmongUs.GameOptions;
+using BetterAmongUs.Helpers;
+using BetterAmongUs.Modules;
+using BetterAmongUs.Modules.AntiCheat;
 using HarmonyLib;
 using Il2CppSystem.Linq;
-using LibCpp2IL;
 using System.Text;
 using System.Text.RegularExpressions;
 using TMPro;
-using UnityEngine;
 
 namespace BetterAmongUs.Patches;
 
 [HarmonyPatch(typeof(PlayerControl))]
 class PlayerControlPatch
 {
-    public static Dictionary<byte, float> time = [];
     [HarmonyPatch(nameof(PlayerControl.FixedUpdate))]
     [HarmonyPrefix]
     public static void FixedUpdate_Prefix(PlayerControl __instance)
     {
-        // Set up player text info
-        var nameTextTransform = __instance.gameObject.transform.Find("Names/NameText_TMP");
-        var nameText = nameTextTransform?.gameObject;
-        var infoText = nameTextTransform?.Find("InfoText_T_TMP");
+        SetPlayerInfo(__instance);
+        SetPlayerHighlight(__instance);
+        __instance.UpdateColorBlindTextPosition();
+    }
 
-        if (nameText != null && infoText == null)
-        {
-            void InstantiatePlayerInfoText(string name, Vector3 positionOffset)
-            {
-                var newTextObject = UnityEngine.Object.Instantiate(nameText, nameTextTransform);
-                newTextObject.name = name;
-                newTextObject.transform.DestroyChildren();
-                newTextObject.transform.position += positionOffset;
-                var textMesh = newTextObject.GetComponent<TextMeshPro>();
-                if (textMesh != null)
-                {
-                    textMesh.text = string.Empty;
-                }
-                newTextObject.SetActive(true);
-            }
+    public static void SetPlayerHighlight(PlayerControl player)
+    {
+        string hashPuid = Utils.GetHashPuid(player);
+        string friendCode = player.Data.FriendCode;
 
-            InstantiatePlayerInfoText("InfoText_Info_TMP", new Vector3(0f, 0.25f));
-            InstantiatePlayerInfoText("InfoText_T_TMP", new Vector3(0f, 0.15f));
-            InstantiatePlayerInfoText("InfoText_B_TMP", new Vector3(0f, -0.15f));
-        }
-
-        // Set color blind text on player
-        if (__instance.DataIsCollected() && !__instance.shapeshifting)
-        {
-            __instance.cosmetics.SetColorBlindColor(__instance.CurrentOutfit.ColorId);
-        }
-        else
-        {
-            __instance.cosmetics.colorBlindText.text = string.Empty;
-        }
-
-        if (GameStates.IsInGame && GameStates.IsHost && Main.BetterHost.Value)
-        {
-            BetterHostManager.PlayerUpdate(__instance);
-        }
-
-        // Set text info
-        if (!time.ContainsKey(__instance.PlayerId))
-        {
-            time[__instance.PlayerId] = 0f;
-        }
-        time[__instance.PlayerId] -= Time.deltaTime;
-
-        if (time[__instance.PlayerId] <= 0)
-        {
-            SetPlayerInfo(__instance);
-            time[__instance.PlayerId] = 0.6f;
-        }
+        SetPlayerOutline(player, hashPuid, friendCode, new());
     }
 
     public static void SetPlayerInfo(PlayerControl player)
     {
-        try
+        if (player?.Data == null || player?.BetterData()?.IsDirtyInfo != true) return;
+        player.BetterData().IsDirtyInfo = false;
+
+        var betterData = player.BetterData();
+        if (GameState.IsTOHEHostLobby) return;
+
+        var nameText = player.gameObject.transform.Find("Names/NameText_TMP").GetComponent<TextMeshPro>();
+
+        if (!player.DataIsCollected())
         {
-            if (player?.Data == null) return;
-
-            var betterData = player.BetterData();
-            if (GameStates.IsTOHEHostLobby) return;
-
-            var nameText = player.gameObject.transform.Find("Names/NameText_TMP").GetComponent<TextMeshPro>();
-
-            if (!player.DataIsCollected())
-            {
-                nameText.text = Translator.GetString("Player.Loading");
-                return;
-            }
-
-            if (!Main.LobbyPlayerInfo.Value && GameStates.IsLobby)
-            {
-                player.ResetAllPlayerTextInfo();
-                player.RawSetName(player.Data.PlayerName);
-                return;
-            }
-
-            string newName = player.Data.PlayerName;
-            string hashPuid = Utils.GetHashPuid(player);
-            string platform = Utils.GetPlatformName(player, useTag: true);
-
-            string friendCode = ValidateFriendCode(player, out string friendCodeColor);
-
-            if (DataManager.Settings.Gameplay.StreamerMode)
-            {
-                platform = Translator.GetString("Player.PlatformHidden");
-            }
-
-            // Set Tags
-            var sbTag = new StringBuilder();
-            var sbTagTop = new StringBuilder();
-            var sbTagBottom = new StringBuilder();
-
-            SetPlayerOutline(player, hashPuid, friendCode, sbTag);
-
-            if (GameStates.IsInGame && GameStates.IsLobby && !GameStates.IsFreePlay)
-            {
-                SetLobbyInfo(player, ref newName, betterData, sbTag);
-                sbTagTop.Append($"<color=#9e9e9e>{platform}</color>+++")
-                        .Append($"<color=#ffd829>Lv: {player.Data.PlayerLevel + 1}</color>+++");
-
-                sbTagBottom.Append($"<color={friendCodeColor}>{friendCode}</color>+++");
-            }
-            else if ((GameStates.IsInGame || GameStates.IsFreePlay) && !GameStates.IsHideNSeek)
-            {
-                SetInGameInfo(player, sbTagTop);
-            }
-
-            if (!player.IsInShapeshift())
-            {
-                player.RawSetName(newName);
-            }
-            else if (!player.shapeshifting)
-            {
-                var targetData = Utils.PlayerDataFromPlayerId(player.shapeshiftTargetPlayerId);
-                if (targetData != null) player.RawSetName(targetData.BetterData().RealName);
-            }
-
-            player.SetPlayerTextInfo(FormatInfo(sbTagTop));
-            player.SetPlayerTextInfo(FormatInfo(sbTagBottom), isBottom: true);
-            player.SetPlayerTextInfo(FormatInfo(sbTag), isInfo: true);
+            nameText.text = Translator.GetString("Player.Loading");
+            return;
         }
-        catch (Exception ex)
+
+        if (!Main.LobbyPlayerInfo.Value && GameState.IsLobby)
         {
-            Logger.Error(ex);
+            player.ResetAllPlayerTextInfo();
+            player.RawSetName(player.Data.PlayerName);
+            return;
         }
+
+        string newName = player.Data.PlayerName;
+        string hashPuid = Utils.GetHashPuid(player);
+        string platform = Utils.GetPlatformName(player, useTag: true);
+
+        string friendCode = ValidateFriendCode(player, out string friendCodeColor);
+
+        if (DataManager.Settings.Gameplay.StreamerMode)
+        {
+            platform = Translator.GetString("Player.PlatformHidden");
+        }
+
+        // Set Tags
+        var sbTag = new StringBuilder();
+        var sbTagTop = new StringBuilder();
+        var sbTagBottom = new StringBuilder();
+
+        SetPlayerOutline(player, hashPuid, player.Data.FriendCode, sbTag);
+
+        if (GameState.IsInGame && GameState.IsLobby && !GameState.IsFreePlay)
+        {
+            SetLobbyInfo(player, ref newName, betterData, sbTag);
+            sbTagTop.Append($"<color=#9e9e9e>{platform}</color>+++")
+                    .Append($"<color=#ffd829>Lv: {player.Data.PlayerLevel + 1}</color>+++");
+
+            sbTagBottom.Append($"<color={friendCodeColor}>{friendCode}</color>+++");
+        }
+        else if ((GameState.IsInGame || GameState.IsFreePlay) && !GameState.IsHideNSeek)
+        {
+            SetInGameInfo(player, sbTagTop);
+        }
+
+        if (!player.IsInShapeshift())
+        {
+            player.RawSetName(newName);
+        }
+        else
+        {
+            var targetData = Utils.PlayerDataFromPlayerId(player.shapeshiftTargetPlayerId);
+            if (targetData != null) player.RawSetName(targetData.BetterData().RealName);
+        }
+
+        player.SetPlayerTextInfo(FormatInfo(sbTagTop));
+        player.SetPlayerTextInfo(FormatInfo(sbTagBottom), isBottom: true);
+        player.SetPlayerTextInfo(FormatInfo(sbTag), isInfo: true);
     }
 
     private static string ValidateFriendCode(PlayerControl player, out string color)
     {
+        color = "#FFFFFF";
+        if (player?.Data == null) return string.Empty;
+
         void TryKick()
         {
-            if (GameStates.IsHost)
+            if (GameState.IsHost)
             {
                 if (BetterGameSettings.InvalidFriendCode.GetBool())
                 {
@@ -189,32 +144,37 @@ class PlayerControlPatch
             friendCode = new string('*', friendCode.Length);
         }
 
-        return friendCode;
+        return friendCode.Trim();
     }
 
     private static void SetPlayerOutline(PlayerControl player, string hashPuid, string friendCode, StringBuilder sbTag)
     {
-        if (AntiCheat.SickoData.ContainsKey(hashPuid) || AntiCheat.SickoData.ContainsValue(friendCode))
+        var color = player.cosmetics.currentBodySprite.BodySprite.material.GetColor("_OutlineColor");
+        if ((!string.IsNullOrEmpty(hashPuid) && hashPuid.Length > 0 && BAUAntiCheat.SickoData.ContainsKey(hashPuid))
+            || (!string.IsNullOrEmpty(friendCode) && friendCode.Length > 0 && BAUAntiCheat.SickoData.ContainsValue(friendCode)))
         {
             sbTag.Append($"<color=#00f583>{Translator.GetString("Player.SickoUser")}</color>+++");
             player.SetOutlineByHex(true, "#00f583");
         }
-        else if (AntiCheat.AUMData.ContainsKey(hashPuid) || AntiCheat.AUMData.ContainsValue(friendCode))
+        else if ((!string.IsNullOrEmpty(hashPuid) && hashPuid.Length > 0 && BAUAntiCheat.AUMData.ContainsKey(hashPuid))
+            || (!string.IsNullOrEmpty(friendCode) && friendCode.Length > 0 && BAUAntiCheat.AUMData.ContainsValue(friendCode)))
         {
             sbTag.Append($"<color=#4f0000>{Translator.GetString("Player.AUMUser")}</color>+++");
             player.SetOutlineByHex(true, "#4f0000");
         }
-        else if (AntiCheat.KNData.ContainsKey(hashPuid) || AntiCheat.KNData.ContainsValue(friendCode))
+        else if ((!string.IsNullOrEmpty(hashPuid) && hashPuid.Length > 0 && BAUAntiCheat.KNData.ContainsKey(hashPuid))
+            || (!string.IsNullOrEmpty(friendCode) && friendCode.Length > 0 && BAUAntiCheat.KNData.ContainsValue(friendCode)))
         {
             sbTag.Append($"<color=#8731e7>{Translator.GetString("Player.KNUser")}</color>+++");
             player.SetOutlineByHex(true, "#8731e7");
         }
-        else if (AntiCheat.PlayerData.ContainsKey(hashPuid) || AntiCheat.PlayerData.ContainsValue(friendCode))
+        else if ((!string.IsNullOrEmpty(hashPuid) && hashPuid.Length > 0 && BAUAntiCheat.PlayerData.ContainsKey(hashPuid))
+            || (!string.IsNullOrEmpty(friendCode) && friendCode.Length > 0 && BAUAntiCheat.PlayerData.ContainsValue(friendCode)))
         {
             sbTag.Append($"<color=#fc0000>{Translator.GetString("Player.KnownCheater")}</color>+++");
             player.SetOutlineByHex(true, "#fc0000");
         }
-        else
+        else if (color == Utils.HexToColor32("#00f583") || color == Utils.HexToColor32("#4f0000") || color == Utils.HexToColor32("#fc0000") || color == Utils.HexToColor32("#8731e7"))
         {
             player.SetOutline(false, null);
         }
@@ -225,16 +185,16 @@ class PlayerControlPatch
         if (player.IsHost() && Main.LobbyPlayerInfo.Value)
             newName = player.GetPlayerNameAndColor();
 
-        if (player.IsDev() && !GameStates.IsInGamePlay)
+        if (player.IsDev() && !GameState.IsInGamePlay)
             sbTag.Append($"<color=#6e6e6e>(<color=#0088ff>{Translator.GetString("Player.Dev")}</color>)</color>+++");
 
-        if ((player.IsLocalPlayer() && GameStates.IsHost && Main.BetterHost.Value) ||
-            (betterData.IsBetterHost && player.IsHost()) && !GameStates.IsInGamePlay)
+        if ((player.IsLocalPlayer() && GameState.IsHost && Main.BetterHost.Value) ||
+            (betterData.IsBetterHost && player.IsHost()) && !GameState.IsInGamePlay)
         {
             sbTag.AppendFormat("<color=#0dff00>{1}{0}</color>+++", Translator.GetString("Player.BetterHost"),
                 betterData.IsVerifiedBetterUser || player.IsLocalPlayer() ? "✓ " : "");
         }
-        else if ((player.IsLocalPlayer() || betterData.IsBetterUser) && !GameStates.IsInGamePlay)
+        else if ((player.IsLocalPlayer() || betterData.IsBetterUser) && !GameState.IsInGamePlay)
         {
             sbTag.AppendFormat("<color=#0dff00>{1}{0}</color>+++", Translator.GetString("Player.BetterUser"),
                 betterData.IsVerifiedBetterUser || player.IsLocalPlayer() ? "✓ " : "");
@@ -244,7 +204,7 @@ class PlayerControlPatch
 
     private static void SetInGameInfo(PlayerControl player, StringBuilder sbTagTop)
     {
-        if (player.IsImpostorTeammate() || player.IsLocalPlayer() || !PlayerControl.LocalPlayer.IsAlive() && !PlayerControl.LocalPlayer.Is(RoleTypes.GuardianAngel) || DebugMenu.RevealRoles)
+        if (player.IsImpostorTeammate() || player.IsLocalPlayer() || (!PlayerControl.LocalPlayer.IsAlive() && !PlayerControl.LocalPlayer.Is(RoleTypes.GuardianAngel)) || DebugMenu.RevealRoles)
         {
             string roleInfo = $"<color={player.GetTeamHexColor()}>{player.GetRoleName()}</color>";
             if (!player.IsImpostorTeam() && player.myTasks.Count > 0)
@@ -275,10 +235,8 @@ class PlayerControlPatch
     [HarmonyPrefix]
     public static bool RpcSetName_Prefix(PlayerControl __instance, [HarmonyArgument(0)] string name)
     {
-        if (!GameStates.IsVanillaServer && Utils.IsHtmlText(name))
-        {
-            return false;
-        }
+
+        Utils.DirtyAllNames();
 
         return true;
     }
@@ -287,13 +245,34 @@ class PlayerControlPatch
     [HarmonyPostfix]
     public static void SetColor_Postfix()
     {
-        if (Main.BetterHost.Value && GameStates.IsLobby)
+        if (Main.BetterHost.Value && GameState.IsLobby)
         {
             _ = new LateTask(() =>
             {
                 RPC.SyncAllNames(force: true);
-            }, 0.25f, shoudLog: false);
+            }, 0.25f, shouldLog: false);
         }
+    }
+
+    [HarmonyPatch(nameof(PlayerControl.CompleteTask))]
+    [HarmonyPostfix]
+    public static void CompleteTask_Postfix(PlayerControl __instance)
+    {
+        __instance.DirtyName();
+    }
+
+    [HarmonyPatch(nameof(PlayerControl.CoSetRole))]
+    [HarmonyPostfix]
+    public static void CoSetRole_Postfix(PlayerControl __instance)
+    {
+        __instance.DirtyName();
+    }
+
+    [HarmonyPatch(nameof(PlayerControl.Revive))]
+    [HarmonyPostfix]
+    public static void Revive_Postfix(PlayerControl __instance)
+    {
+        Utils.DirtyAllNames();
     }
 
     [HarmonyPatch(nameof(PlayerControl.MurderPlayer))]
@@ -305,12 +284,19 @@ class PlayerControlPatch
         Logger.LogPrivate($"{__instance.Data.PlayerName} Has killed {target.Data.PlayerName} as {Utils.GetRoleName(__instance.Data.RoleType)}", "EventLog");
 
         __instance.BetterData().RoleInfo.Kills += 1;
+
+        Utils.DirtyAllNames();
     }
     [HarmonyPatch(nameof(PlayerControl.Shapeshift))]
     [HarmonyPostfix]
     public static void Shapeshift_Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] bool animate)
     {
         if (target == null) return;
+
+        if (GameState.IsHost)
+        {
+            RPC.SyncAllNames();
+        }
 
         if (__instance != target)
             Logger.LogPrivate($"{__instance.Data.PlayerName} Has Shapeshifted into {target.Data.PlayerName}, did animate: {animate}", "EventLog");

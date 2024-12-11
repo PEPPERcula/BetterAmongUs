@@ -1,4 +1,7 @@
 ﻿using AmongUs.GameOptions;
+using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.OptionItems;
+using BetterAmongUs.Modules;
 using HarmonyLib;
 using UnityEngine;
 
@@ -49,7 +52,7 @@ static class GameSettingMenuPatch
         {
             TitleList.Add(new BetterOptionHeaderItem().Create(BetterSettingsTab, Translator.GetString("BetterSetting.MainHeader.AntiCheat")));
 
-            if (IsPreload || GameStates.IsHost)
+            if (IsPreload || GameState.IsHost)
             {
                 TitleList.Add(new BetterOptionTitleItem().Create(BetterSettingsTab, Translator.GetString("BetterSetting.TextHeader.HostOnly")));
                 BetterGameSettings.WhenCheating = new BetterOptionStringItem().Create(100, BetterSettingsTab, Translator.GetString("BetterSetting.Setting.WhenCheating"),
@@ -77,7 +80,7 @@ static class GameSettingMenuPatch
             */
         }
 
-        if (IsPreload || GameStates.IsHost)
+        if (IsPreload || GameState.IsHost)
         {
             TitleList.Add(new BetterOptionHeaderItem().Create(BetterSettingsTab, Translator.GetString("BetterSetting.MainHeader.RoleAlgorithm")));
             BetterGameSettings.RoleRandomizer = new BetterOptionStringItem().Create(1100, BetterSettingsTab, Translator.GetString("BetterSetting.Setting.RoleRandomizer"), ["System.Random", "UnityEngine.Random"], 0);
@@ -86,13 +89,13 @@ static class GameSettingMenuPatch
 
         // Gameplay Settings
         {
-            if (IsPreload || GameStates.IsHost)
+            if (IsPreload || GameState.IsHost)
             {
-                if (IsPreload || !GameStates.IsHideNSeek)
+                if (IsPreload || !GameState.IsHideNSeek)
                 {
                     new BetterOptionHeaderItem().Create(BetterSettingsTab, Translator.GetString("BetterSetting.MainHeader.Gameplay"));
                 }
-                else if (IsPreload || GameStates.IsHideNSeek)
+                else if (IsPreload || GameState.IsHideNSeek)
                 {
                     new BetterOptionHeaderItem().Create(BetterSettingsTab, Translator.GetString("BetterSetting.MainHeader.HideNSeek"));
                     new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color={Utils.GetRoleColor(RoleTypes.Impostor)}>{Translator.GetString(StringNames.ImpostorsCategory)}</color>");
@@ -150,7 +153,7 @@ static class GameSettingMenuPatch
             }
 
             BetterOptionItem.UpdatePositions();
-        }, 0.005f, shoudLog: false);
+        }, 0.005f, shouldLog: false);
     }
 
     [HarmonyPatch(nameof(GameSettingMenu.Update))]
@@ -215,11 +218,11 @@ static class GameSettingMenuPatch
 
 
         BetterSettingsButton.transform.position = BetterSettingsButton.transform.position - new Vector3(0f, 1.265f, 0f);
-        if (!GameStates.IsHideNSeek && GameStates.IsHost)
+        if (!GameState.IsHideNSeek && GameState.IsHost)
         {
             __instance.ChangeTab(1, false);
         }
-        else if (GameStates.IsHost)
+        else if (GameState.IsHost)
         {
             __instance.RoleSettingsButton.gameObject.SetActive(true);
             __instance.RoleSettingsButton.GetComponent<PassiveButton>().enabled = false;
