@@ -83,11 +83,11 @@ public abstract class RPCHandler
         return !(cancel);
     }
 
-    public void LogRpcInfo(string info)
+    public void LogRpcInfo(string info, PlayerControl? player = null)
     {
         string Name = Enum.GetName((RpcCalls)CallId) ?? Enum.GetName((CustomRPC)CallId) ?? $"Unregistered({CallId})";
         Name = $"[{Enum.GetName(catchedHandlerFlag)}] > " + Name;
-        Logger.LogCheat($"{catchedSender.BetterData().RealName} {Name}: {info}");
+        Logger.LogCheat($"{catchedSender?.BetterData()?.RealName ?? player.BetterData()?.RealName ?? string.Empty} {Name}: {info}");
     }
 
     public string GetFormatActionText()

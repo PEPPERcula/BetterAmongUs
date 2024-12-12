@@ -28,8 +28,8 @@ public enum ReleaseTypes : int
 [BepInProcess("Among Us.exe")]
 public class Main : BasePlugin
 {
-    public static readonly ReleaseTypes ReleaseBuildType = ReleaseTypes.Beta;
-    public const string BetaNum = "3";
+    public static readonly ReleaseTypes ReleaseBuildType = ReleaseTypes.Release;
+    public const string BetaNum = "0";
     public const string HotfixNum = "0";
     public const bool IsHotFix = false;
     public const string PluginGuid = "com.ten.betteramongus";
