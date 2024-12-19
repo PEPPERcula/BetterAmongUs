@@ -28,4 +28,14 @@ public class CheckVanishHandler : RPCHandler
 
         return false;
     }
+
+    public override bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader)
+    {
+        if (!GameState.IsHost)
+        {
+            return false;
+        }
+
+        return true;
+    }
 }
