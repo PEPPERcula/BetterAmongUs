@@ -45,19 +45,6 @@ internal class PlayerControlRPCHandlerPatch
             return false;
         }
 
-        var canceled = false;
-        if (GameState.IsHost)
-        {
-            if (BetterHostManager.CheckRPCAsHost(__instance, callId, reader, ref canceled) != true)
-            {
-                if (canceled)
-                {
-                    Logger.LogCheat($"RPC canceled by Host: {Enum.GetName((RpcCalls)callId)}{Enum.GetName((CustomRPC)callId)} - {callId}");
-                }
-                return false;
-            }
-        }
-
         BAUAntiCheat.CheckRPC(__instance, callId, reader);
         RPC.HandleRPC(__instance, callId, reader);
 
@@ -119,10 +106,8 @@ internal static class RPC
 
     public static void SendBetterCheck()
     {
-        var flag = GameState.IsHost && Main.BetterHost.Value;
         MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.BetterCheck, SendOption.None, -1);
         messageWriter.Write(true);
-        messageWriter.Write(flag);
         messageWriter.Write(Main.modSignature);
         messageWriter.Write(Main.GetVersionText().Replace(" ", ""));
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
@@ -139,17 +124,6 @@ internal static class RPC
         writer.Write(player.Data.NetId);
         writer.Write(name);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
-
-    public static void SyncAllNames(bool isForMeeting = false, bool force = false, bool isBetterHost = true)
-    {
-        if (!GameState.IsHost || !GameState.IsVanillaServer)
-        {
-            return;
-        }
-
-        foreach (PlayerControl player in Main.AllPlayerControls)
-            BetterHostManager.SetPlayersInfoAsHost(player, isForMeeting, force, isBetterHost);
     }
 
     public static void ExileAsync(PlayerControl player)
@@ -172,15 +146,9 @@ internal static class RPC
                 case (byte)CustomRPC.BetterCheck:
                     {
                         var SetBetterUser = reader.ReadBoolean();
-                        var IsBetterHost = reader.ReadBoolean();
                         var Signature = reader.ReadString();
                         var Version = reader.ReadString();
                         var IsVerified = Signature == Main.modSignature;
-                        if (!player.IsHost() && IsBetterHost)
-                        {
-                            BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((CustomRPC)callId)} called as BetterHost");
-                            break;
-                        }
 
                         if (string.IsNullOrEmpty(Signature) || string.IsNullOrEmpty(Version))
                         {
@@ -189,7 +157,6 @@ internal static class RPC
                         }
 
                         player.BetterData().IsBetterUser = SetBetterUser;
-                        player.BetterData().IsBetterHost = IsBetterHost;
 
                         if (IsVerified)
                         {
@@ -198,12 +165,10 @@ internal static class RPC
 
                         Logger.Log($"Received better user RPC from: {player.Data.PlayerName}:{player.Data.FriendCode}:{Utils.GetHashPuid(player)} - " +
                             $"BetterUser: {SetBetterUser} - " +
-                            $"BetterHost: {IsBetterHost} - " +
                             $"Version: {Version} - " +
                             $"Verified: {IsVerified} - " +
                             $"Signature: {Signature}");
 
-                        SyncAllNames(force: true);
                         Utils.DirtyAllNames();
                     }
                     break;

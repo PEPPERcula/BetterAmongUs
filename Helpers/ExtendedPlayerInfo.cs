@@ -41,7 +41,6 @@ public class ExtendedPlayerInfo : MonoBehaviour
     public Dictionary<byte, string> LastNameSetFor { get; set; } = [];
     public bool IsBetterUser { get; set; } = false;
     public bool IsVerifiedBetterUser { get; set; } = false;
-    public bool IsBetterHost { get; set; } = false;
     public bool IsTOHEHost { get; set; } = false;
     public bool HasShowDcMsg { get; set; } = false;
     public DisconnectReasons DisconnectReason { get; set; } = DisconnectReasons.Unknown;

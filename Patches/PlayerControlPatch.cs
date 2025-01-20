@@ -185,16 +185,7 @@ class PlayerControlPatch
         if (player.IsHost() && Main.LobbyPlayerInfo.Value)
             newName = player.GetPlayerNameAndColor();
 
-        if (player.IsDev() && !GameState.IsInGamePlay)
-            sbTag.Append($"<color=#6e6e6e>(<color=#0088ff>{Translator.GetString("Player.Dev")}</color>)</color>+++");
-
-        if ((player.IsLocalPlayer() && GameState.IsHost && Main.BetterHost.Value) ||
-            (betterData.IsBetterHost && player.IsHost()) && !GameState.IsInGamePlay)
-        {
-            sbTag.AppendFormat("<color=#0dff00>{1}{0}</color>+++", Translator.GetString("Player.BetterHost"),
-                betterData.IsVerifiedBetterUser || player.IsLocalPlayer() ? "✓ " : "");
-        }
-        else if ((player.IsLocalPlayer() || betterData.IsBetterUser) && !GameState.IsInGamePlay)
+        if ((player.IsLocalPlayer() || betterData.IsBetterUser) && !GameState.IsInGamePlay)
         {
             sbTag.AppendFormat("<color=#0dff00>{1}{0}</color>+++", Translator.GetString("Player.BetterUser"),
                 betterData.IsVerifiedBetterUser || player.IsLocalPlayer() ? "✓ " : "");
@@ -241,19 +232,6 @@ class PlayerControlPatch
         return true;
     }
 
-    [HarmonyPatch(nameof(PlayerControl.SetColor))]
-    [HarmonyPostfix]
-    public static void SetColor_Postfix()
-    {
-        if (Main.BetterHost.Value && GameState.IsLobby)
-        {
-            _ = new LateTask(() =>
-            {
-                RPC.SyncAllNames(force: true);
-            }, 0.25f, shouldLog: false);
-        }
-    }
-
     [HarmonyPatch(nameof(PlayerControl.CompleteTask))]
     [HarmonyPostfix]
     public static void CompleteTask_Postfix(PlayerControl __instance)
@@ -292,11 +270,6 @@ class PlayerControlPatch
     public static void Shapeshift_Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] bool animate)
     {
         if (target == null) return;
-
-        if (GameState.IsHost)
-        {
-            RPC.SyncAllNames();
-        }
 
         if (__instance != target)
             Logger.LogPrivate($"{__instance.Data.PlayerName} Has Shapeshifted into {target.Data.PlayerName}, did animate: {animate}", "EventLog");

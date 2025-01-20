@@ -38,11 +38,6 @@ public class PingTrackerPatch
 
             if (GameState.IsTOHEHostLobby) sb.Append($"<size=75%><color=#e197dc>TOHE Lobby</color></size>\n");
 
-            if (Main.BetterHost.Value && GameState.IsHost)
-            {
-                sb.Append($"<size=75%>{Translator.GetString("BetterOption.BetterHost")}: <color=#00f04c>Enabled</color></size>\n");
-            }
-
             if (Main.ShowFPS.Value)
             {
                 float FPSNum = 1.0f / Time.deltaTime;

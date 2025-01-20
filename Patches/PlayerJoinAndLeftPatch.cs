@@ -44,8 +44,6 @@ public static class OnPlayerJoinedPatch
                 // Send Better Among Us Check RPC
                 RPC.SendBetterCheck();
 
-                RPC.SyncAllNames(force: true);
-
                 // Auto ban player on ban list
                 if (BetterGameSettings.UseBanPlayerList.GetBool())
                 {

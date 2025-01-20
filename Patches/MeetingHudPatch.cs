@@ -55,8 +55,6 @@ class MeetingHudPatch
             PlayerLevel.transform.position += new Vector3(0.23f, 0f);
         }
 
-        RPC.SyncAllNames(true, true);
-
         Logger.LogHeader("Meeting Has Started");
     }
 
@@ -222,6 +220,5 @@ class MeetingHudPatch
     {
         timeOpen = 0f;
         Logger.LogHeader("Meeting Has Ended");
-        RPC.SyncAllNames(force: true);
     }
 }

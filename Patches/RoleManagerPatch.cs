@@ -261,11 +261,6 @@ public class RoleManagerPatch
 
         SetPlayerRole.Clear();
 
-        _ = new LateTask(() =>
-        {
-            RPC.SyncAllNames(false, true, Main.BetterHost.Value);
-        }, 1f, "RoleManager SyncAllNames");
-
         Logger.LogHeader($"Better Role Assignment Has Finished", "RoleManager");
     }
 
@@ -380,11 +375,6 @@ public class RoleManagerPatch
             var player = Utils.PlayerFromPlayerId(data.PlayerId);
             player.RpcSetRole(RoleTypes.Engineer);
         }
-
-        _ = new LateTask(() =>
-        {
-            RPC.SyncAllNames(false, true, Main.BetterHost.Value);
-        }, 1f, "RoleManager SyncAllNames");
 
         Logger.LogHeader($"Better Role Assignment Has Finished", "RoleManager");
     }

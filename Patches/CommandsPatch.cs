@@ -66,9 +66,8 @@ class CommandsPatch
     }
 
     // Set up command helper
-    private static TextMeshPro commandText;
-    private static TextMeshPro commandInfo;
-    private static RandomNameGenerator NameRNG;
+    private static TextMeshPro? commandText;
+    private static TextMeshPro? commandInfo;
     [HarmonyPatch(nameof(ChatController.Toggle))]
     [HarmonyPostfix]
     public static void Awake_Postfix(ChatController __instance)
@@ -96,12 +95,6 @@ class CommandsPatch
             commandInfo.GetComponent<TextMeshPro>().outlineWidth = 0.2f;
             commandInfo.GetComponent<TextMeshPro>().characterWidthAdjustment = 1.5f;
             commandInfo.GetComponent<TextMeshPro>().enableWordWrapping = false;
-        }
-
-        if (NameRNG == null)
-        {
-            RandomNameGenerator rng = __instance.gameObject.AddComponent<RandomNameGenerator>();
-            NameRNG = rng;
         }
     }
 
