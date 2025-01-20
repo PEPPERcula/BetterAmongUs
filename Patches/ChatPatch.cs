@@ -19,6 +19,11 @@ class ChatPatch
     public static List<string> ChatHistory = [];
     public static int CurrentHistorySelection = -1;
 
+    public static void ClearChat()
+    {
+        HudManager.Instance.Chat.chatBubblePool.ReclaimAll();
+    }
+
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSendChat))]
     class RpcSendChatPatch
     {

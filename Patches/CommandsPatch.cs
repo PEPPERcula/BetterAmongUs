@@ -36,9 +36,11 @@ class CommandsPatch
             return true;
         }
 
+        bool IsOnCooldown = 3f - __instance.timeSinceLastMessage > 0f;
+
         string text = __instance.freeChatField.textArea.text;
 
-        if (!text.StartsWith(CommandPrefix) || 3f - __instance.timeSinceLastMessage > 0f)
+        if (!text.StartsWith(CommandPrefix) || IsOnCooldown)
         {
             if (GameState.IsInGame && !GameState.IsLobby && !GameState.IsFreePlay && !GameState.IsMeeting && !GameState.IsExilling && PlayerControl.LocalPlayer.IsAlive())
                 return false;

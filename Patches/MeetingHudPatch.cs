@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using BetterAmongUs.Helpers;
 using BetterAmongUs.Modules;
 using BetterAmongUs.Modules.AntiCheat;
+using BetterAmongUs.Patches;
 using HarmonyLib;
 using System.Text;
 using TMPro;
@@ -220,5 +221,10 @@ class MeetingHudPatch
     {
         timeOpen = 0f;
         Logger.LogHeader("Meeting Has Ended");
+
+        if (Main.ChatInGameplay.Value && !GameState.IsFreePlay && PlayerControl.LocalPlayer.IsAlive())
+        {
+            ChatPatch.ClearChat();
+        }
     }
 }
