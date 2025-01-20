@@ -33,8 +33,6 @@ class BAUAntiCheat
     {
         if (GameState.IsHost && GameState.IsInGame)
         {
-            RPC.SyncAllNames(isBetterHost: false);
-
             foreach (var player in Main.AllPlayerControls)
             {
                 var hashPuid = Utils.GetHashPuid(player);
@@ -158,7 +156,7 @@ class BAUAntiCheat
     {
         MessageReader reader = MessageReader.Get(oldReader);
 
-        if (player == null || player.IsLocalPlayer() || player.BetterData().IsBetterHost || reader == null || !IsEnabled || !Main.AntiCheat.Value
+        if (player == null || player.IsLocalPlayer() || (player.IsHost() && player.BetterData().IsBetterUser) || reader == null || !IsEnabled || !Main.AntiCheat.Value
             || GameState.IsBetterHostLobby && !GameState.IsHost || !BetterGameSettings.DetectInvalidRPCs.GetBool()) return;
 
         RPCHandler.HandleRPC(callId, player, reader, HandlerFlag.AntiCheat);
@@ -171,7 +169,7 @@ class BAUAntiCheat
         {
             MessageReader reader = MessageReader.Get(oldReader);
 
-            if (PlayerControl.LocalPlayer == null || player == null || player.IsLocalPlayer() || player.BetterData().IsBetterHost || reader == null) return true;
+            if (PlayerControl.LocalPlayer == null || player == null || player.IsLocalPlayer() || (player.IsHost() && player.BetterData().IsBetterUser) || reader == null) return true;
 
             if (!IsEnabled || !Main.AntiCheat.Value || GameState.IsBetterHostLobby && !GameState.IsHost || !BetterGameSettings.DetectInvalidRPCs.GetBool()) return true;
 

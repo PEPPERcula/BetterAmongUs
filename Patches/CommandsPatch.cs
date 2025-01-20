@@ -36,9 +36,11 @@ class CommandsPatch
             return true;
         }
 
+        bool IsOnCooldown = 3f - __instance.timeSinceLastMessage > 0f;
+
         string text = __instance.freeChatField.textArea.text;
 
-        if (!text.StartsWith(CommandPrefix) || 3f - __instance.timeSinceLastMessage > 0f)
+        if (!text.StartsWith(CommandPrefix) || IsOnCooldown)
         {
             if (GameState.IsInGame && !GameState.IsLobby && !GameState.IsFreePlay && !GameState.IsMeeting && !GameState.IsExilling && PlayerControl.LocalPlayer.IsAlive())
                 return false;
@@ -66,9 +68,8 @@ class CommandsPatch
     }
 
     // Set up command helper
-    private static TextMeshPro commandText;
-    private static TextMeshPro commandInfo;
-    private static RandomNameGenerator NameRNG;
+    private static TextMeshPro? commandText;
+    private static TextMeshPro? commandInfo;
     [HarmonyPatch(nameof(ChatController.Toggle))]
     [HarmonyPostfix]
     public static void Awake_Postfix(ChatController __instance)
@@ -96,12 +97,6 @@ class CommandsPatch
             commandInfo.GetComponent<TextMeshPro>().outlineWidth = 0.2f;
             commandInfo.GetComponent<TextMeshPro>().characterWidthAdjustment = 1.5f;
             commandInfo.GetComponent<TextMeshPro>().enableWordWrapping = false;
-        }
-
-        if (NameRNG == null)
-        {
-            RandomNameGenerator rng = __instance.gameObject.AddComponent<RandomNameGenerator>();
-            NameRNG = rng;
         }
     }
 

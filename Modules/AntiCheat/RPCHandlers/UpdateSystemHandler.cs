@@ -204,7 +204,7 @@ public class UpdateSystemHandler : RPCHandler
 
     private static bool HandleReactorSystem(PlayerControl? sender, ReactorSystemType reactorSystem, byte count)
     {
-        if (count == 128 || count == 16) // Direct sabotage call from client, which is not possible, only the host should have this count when HandleSabotageSystem it's called
+        if (count == 128) // Direct sabotage call from client, which is not possible, only the host should have this count when HandleSabotageSystem it's called
         {
             return false;
         }
@@ -219,6 +219,7 @@ public class UpdateSystemHandler : RPCHandler
             return false;
         }
 
+        /*
         if (count.HasAnyBit(64))
         {
             foreach (var tuple in reactorSystem.UserConsolePairs)
@@ -229,6 +230,7 @@ public class UpdateSystemHandler : RPCHandler
                 }
             }
         }
+        */
 
         return true;
     }

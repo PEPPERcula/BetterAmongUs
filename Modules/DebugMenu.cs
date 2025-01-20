@@ -59,11 +59,6 @@ public class DebugMenu : MonoBehaviour
             RPC.SendBetterCheck();
         }, true);
 
-        AddButtonToTab(HostOnly, "Sync All Names", () =>
-        {
-            RPC.SyncAllNames();
-        });
-
         // Automatically select the first tab
         if (tabs.Count > 0)
         {

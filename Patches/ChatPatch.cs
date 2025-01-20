@@ -19,6 +19,11 @@ class ChatPatch
     public static List<string> ChatHistory = [];
     public static int CurrentHistorySelection = -1;
 
+    public static void ClearChat()
+    {
+        HudManager.Instance.Chat.chatBubblePool.ReclaimAll();
+    }
+
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSendChat))]
     class RpcSendChatPatch
     {
@@ -126,10 +131,7 @@ class ChatPatch
                 if (sourcePlayer.IsDev())
                     sbTag.Append($"<color=#0088ff>Dev</color>+++");
 
-                if (((sourcePlayer.IsLocalPlayer() && GameState.IsHost && Main.BetterHost.Value)
-                    || (!sourcePlayer.IsLocalPlayer() && sourcePlayer.BetterData().IsBetterHost && sourcePlayer.IsHost())))
-                    sbTag.AppendFormat("<color=#0dff00>{1}{0}</color>+++", Translator.GetString("Player.BetterHost"), sourcePlayer.BetterData().IsVerifiedBetterUser || sourcePlayer.IsLocalPlayer() ? "✓ " : "");
-                else if ((sourcePlayer.IsLocalPlayer() || sourcePlayer.BetterData().IsBetterUser))
+                if ((sourcePlayer.IsLocalPlayer() || sourcePlayer.BetterData().IsBetterUser))
                     sbTag.AppendFormat("<color=#0dff00>{1}{0}</color>+++", Translator.GetString("Player.BetterUser"), sourcePlayer.BetterData().IsVerifiedBetterUser || sourcePlayer.IsLocalPlayer() ? "✓ " : "");
 
                 if (!string.IsNullOrEmpty(hashPuid) && BAUAntiCheat.SickoData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && BAUAntiCheat.SickoData.ContainsValue(friendCode))
@@ -298,25 +300,25 @@ class ChatPatch
         {
             int length = __instance.textArea.text.Length;
             __instance.charCountText.text = string.Format("{0}/118", length);
-            __instance.charCountText.color = GetCharColor(length, UnityEngine.Color.white);
+            __instance.charCountText.color = GetCharColor(length, Color.white);
         }
     }
 
-    private static UnityEngine.Color GetCharColor(int length, UnityEngine.Color color)
+    private static Color GetCharColor(int length, Color color)
     {
 
         switch (length)
         {
             case int n when n > 117:
-                if (ColorUtility.TryParseHtmlString("#ff0000", out UnityEngine.Color newColor1))
+                if (ColorUtility.TryParseHtmlString("#ff0000", out Color newColor1))
                     color = newColor1;
                 break;
             case int n when n > 74:
-                if (ColorUtility.TryParseHtmlString("#ffff00", out UnityEngine.Color newColor3))
+                if (ColorUtility.TryParseHtmlString("#ffff00", out Color newColor3))
                     color = newColor3;
                 break;
             default:
-                if (ColorUtility.TryParseHtmlString("#00f04c", out UnityEngine.Color newColor4))
+                if (ColorUtility.TryParseHtmlString("#00f04c", out Color newColor4))
                     color = newColor4;
                 break;
         }

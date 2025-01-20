@@ -28,10 +28,10 @@ public enum ReleaseTypes : int
 [BepInProcess("Among Us.exe")]
 public class Main : BasePlugin
 {
-    public static readonly ReleaseTypes ReleaseBuildType = ReleaseTypes.Beta;
-    public const string BetaNum = "3";
-    public const string HotfixNum = "0";
-    public const bool IsHotFix = false;
+    public static readonly ReleaseTypes ReleaseBuildType = ReleaseTypes.Release;
+    public const string BetaNum = "0";
+    public const string HotfixNum = "1";
+    public const bool IsHotFix = true;
     public const string PluginGuid = "com.ten.betteramongus";
     public const string PluginVersion = "1.1.5";
     public const string ReleaseDate = "11.3.2024"; // mm/dd/yyyy
@@ -90,7 +90,7 @@ public class Main : BasePlugin
         }
 
         if (IsHotFix)
-            text += $" Hotfix {HotfixNum}";
+            text += $"{newLineText}Hotfix {HotfixNum}";
 
         return text;
     }
@@ -237,21 +237,19 @@ public class Main : BasePlugin
         }
     }
 
-    public static ConfigEntry<bool> AntiCheat { get; private set; }
-    public static ConfigEntry<bool> BetterHost { get; private set; }
-    public static ConfigEntry<bool> BetterNotifications { get; private set; }
-    public static ConfigEntry<bool> ForceOwnLanguage { get; private set; }
-    public static ConfigEntry<bool> ChatDarkMode { get; private set; }
-    public static ConfigEntry<bool> ChatInGameplay { get; private set; }
-    public static ConfigEntry<bool> LobbyPlayerInfo { get; private set; }
-    public static ConfigEntry<bool> DisableLobbyTheme { get; private set; }
-    public static ConfigEntry<bool> UnlockFPS { get; private set; }
-    public static ConfigEntry<bool> ShowFPS { get; private set; }
-    public static ConfigEntry<string> CommandPrefix { get; set; }
+    public static ConfigEntry<bool>? AntiCheat { get; private set; }
+    public static ConfigEntry<bool>? BetterNotifications { get; private set; }
+    public static ConfigEntry<bool>? ForceOwnLanguage { get; private set; }
+    public static ConfigEntry<bool>? ChatDarkMode { get; private set; }
+    public static ConfigEntry<bool>? ChatInGameplay { get; private set; }
+    public static ConfigEntry<bool>? LobbyPlayerInfo { get; private set; }
+    public static ConfigEntry<bool>? DisableLobbyTheme { get; private set; }
+    public static ConfigEntry<bool>? UnlockFPS { get; private set; }
+    public static ConfigEntry<bool>? ShowFPS { get; private set; }
+    public static ConfigEntry<string>? CommandPrefix { get; set; }
     private void LoadOptions()
     {
         AntiCheat = Config.Bind("Better Options", "AntiCheat", true);
-        BetterHost = Config.Bind("Better Options", "BetterHost", false);
         BetterNotifications = Config.Bind("Better Options", "BetterNotifications", true);
         ForceOwnLanguage = Config.Bind("Better Options", "ForceOwnLanguage", false);
         ChatDarkMode = Config.Bind("Better Options", "ChatDarkMode", true);

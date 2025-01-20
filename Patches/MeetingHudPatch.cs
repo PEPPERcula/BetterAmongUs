@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using BetterAmongUs.Helpers;
 using BetterAmongUs.Modules;
 using BetterAmongUs.Modules.AntiCheat;
+using BetterAmongUs.Patches;
 using HarmonyLib;
 using System.Text;
 using TMPro;
@@ -54,8 +55,6 @@ class MeetingHudPatch
             IdNumber.name = "IdNumber";
             PlayerLevel.transform.position += new Vector3(0.23f, 0f);
         }
-
-        RPC.SyncAllNames(true, true);
 
         Logger.LogHeader("Meeting Has Started");
     }
@@ -222,6 +221,10 @@ class MeetingHudPatch
     {
         timeOpen = 0f;
         Logger.LogHeader("Meeting Has Ended");
-        RPC.SyncAllNames(force: true);
+
+        if (Main.ChatInGameplay.Value && !GameState.IsFreePlay && PlayerControl.LocalPlayer.IsAlive())
+        {
+            ChatPatch.ClearChat();
+        }
     }
 }

@@ -30,7 +30,6 @@ class GamePlayManager
             {
                 if (GameState.IsInGame)
                 {
-                    RPC.SyncAllNames(force: true);
                     RPC.SendBetterCheck();
                 }
             }, 1.5f, "LobbyBehaviourPatch SyncAllNames");
