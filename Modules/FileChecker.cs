@@ -5,7 +5,6 @@ namespace BetterAmongUs.Modules;
 
 class FileChecker
 {
-    private static bool check = false;
     private static bool enabled = false;
     private static FileSystemWatcher? fileWatcher;
     private static bool hasUnauthorizedFileOrMod = false;
@@ -19,7 +18,7 @@ class FileChecker
         "MonoMod", "netstandard", "mscorlib", "AssetRipper", "Cpp2IL", "AsmResolver", "Iced",
         "SemanticVersioning", "Mono.Cecil", "Assembly-CSharp", "StableNameDotNet",
         "Disarm", "Gee.External.Capstone", "Rewired_Core", "AddressablesPlayAssetDelivery",
-        "Assembly-CSharp-firstpass", "BetterAmongUs", "MCI", "CrowdedMod", "Mini.RegionInstall", "Unlock", "Skin"
+        "Assembly-CSharp-firstpass", "Sentry", "BetterAmongUs", "MCI", "CrowdedMod", "Mini.RegionInstall", "Unlock", "Skin"
     });
 
     private static readonly ReadOnlyCollection<string> UntrustedNamespaces = new(new List<string>
@@ -46,8 +45,7 @@ class FileChecker
 
     public static void Initialize()
     {
-        if (enabled || !check) return;
-
+        if (enabled) return;
         enabled = true;
 
         fileWatcher = new FileSystemWatcher(Environment.CurrentDirectory)
