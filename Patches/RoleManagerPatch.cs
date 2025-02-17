@@ -45,7 +45,7 @@ public class RoleManagerPatch
 
         int NumImpostors = GameOptionsManager.Instance.CurrentGameOptions.NumImpostors;
 
-        int NumPlayers = Main.AllPlayerControls.Length;
+        int NumPlayers = Main.AllPlayerControls.Count;
 
         var impostorLimits = new Dictionary<int, int>
         {
@@ -270,8 +270,8 @@ public class RoleManagerPatch
 
         int NumImpostors = BetterGameSettings.HideAndSeekImpNum.GetInt();
 
-        if (NumImpostors > Main.AllPlayerControls.Length)
-            NumImpostors = Main.AllPlayerControls.Length;
+        if (NumImpostors > Main.AllPlayerControls.Count)
+            NumImpostors = Main.AllPlayerControls.Count;
 
         List<NetworkedPlayerInfo> Impostors = [];
         List<NetworkedPlayerInfo> Crewmates = [];

@@ -91,7 +91,7 @@ public class BetterOptionPlayerItem : BetterOptionItem
             ThisOption.ValueText.text = "<color=#ababab>Random</color>";
         }
 
-        if (CurrentIndex >= Main.AllPlayerControls.Length - 1)
+        if (CurrentIndex >= Main.AllPlayerControls.Count - 1)
         {
             ThisOption.PlusBtn.SetInteractable(false);
             ThisOption.MinusBtn.SetInteractable(true);
@@ -112,7 +112,7 @@ public class BetterOptionPlayerItem : BetterOptionItem
 
     public void Increase()
     {
-        if (CurrentIndex < Main.AllPlayerControls.Length)
+        if (CurrentIndex < Main.AllPlayerControls.Count)
         {
             CurrentIndex++;
             AdjustButtonsActiveState();
@@ -135,7 +135,7 @@ public class BetterOptionPlayerItem : BetterOptionItem
             var saveindex = TempPlayerOptionData[Id];
 
             if (saveindex != -1 && Utils.PlayerFromPlayerId(saveindex) == null)
-                saveindex = Main.AllPlayerControls.Length - 1;
+                saveindex = Main.AllPlayerControls.Count - 1;
 
             CurrentIndex = saveindex;
         }

@@ -9,7 +9,6 @@ using BetterAmongUs.Modules;
 using BetterAmongUs.Patches;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
-using Innersloth.IO;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
@@ -110,8 +109,8 @@ public class Main : BasePlugin
         "2024.6.18",
     ];
 
-    public static PlayerControl[] AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(pc => pc != null).ToArray();
-    public static PlayerControl[] AllAlivePlayerControls => AllPlayerControls.ToArray().Where(pc => pc.IsAlive()).ToArray();
+    public static List<PlayerControl> AllPlayerControls = [];
+    public static List<PlayerControl> AllAlivePlayerControls => AllPlayerControls.Where(pc => pc.IsAlive()).ToList();
     public static DeadBody[] AllDeadBodys => UnityEngine.Object.FindObjectsOfType<DeadBody>().ToArray();
     public static Vent[] AllVents => UnityEngine.Object.FindObjectsOfType<Vent>();
 
@@ -261,6 +260,6 @@ public class Main : BasePlugin
         CommandPrefix = Config.Bind("Client Options", "CommandPrefix", "/");
     }
 
-    public static string GetDataPathToAmongUs() => FileIO.GetRootDataPath();
-    public static string GetGamePathToAmongUs() => Environment.CurrentDirectory;
+    public static string GetDataPathToAmongUs() => Application.persistentDataPath;
+    public static string GetGamePathToAmongUs() => Path.GetDirectoryName(Application.dataPath) ?? Application.dataPath;
 }

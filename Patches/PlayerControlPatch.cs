@@ -14,6 +14,20 @@ namespace BetterAmongUs.Patches;
 [HarmonyPatch(typeof(PlayerControl))]
 class PlayerControlPatch
 {
+    [HarmonyPatch(nameof(PlayerControl.Awake))]
+    [HarmonyPostfix]
+    public static void Awake_Postfix(PlayerControl __instance)
+    {
+        Main.AllPlayerControls.Add(__instance);
+    }
+
+    [HarmonyPatch(nameof(PlayerControl.OnDestroy))]
+    [HarmonyPostfix]
+    public static void OnDestroy_Postfix(PlayerControl __instance)
+    {
+        Main.AllPlayerControls.Remove(__instance);
+    }
+
     [HarmonyPatch(nameof(PlayerControl.FixedUpdate))]
     [HarmonyPrefix]
     public static void FixedUpdate_Prefix(PlayerControl __instance)
