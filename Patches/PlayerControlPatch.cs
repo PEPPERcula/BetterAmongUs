@@ -14,9 +14,9 @@ namespace BetterAmongUs.Patches;
 [HarmonyPatch(typeof(PlayerControl))]
 class PlayerControlPatch
 {
-    [HarmonyPatch(nameof(PlayerControl.Awake))]
+    [HarmonyPatch(nameof(PlayerControl.Start))]
     [HarmonyPostfix]
-    public static void Awake_Postfix(PlayerControl __instance)
+    public static void Start_Postfix(PlayerControl __instance)
     {
         Main.AllPlayerControls.Add(__instance);
     }
