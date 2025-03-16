@@ -169,6 +169,7 @@ public static class Utils
     {
         foreach (var player in Main.AllPlayerControls)
         {
+            if (player == null) return;
             player.DirtyName();
         }
     }

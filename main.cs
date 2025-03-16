@@ -29,11 +29,11 @@ public class Main : BasePlugin
 {
     public static readonly ReleaseTypes ReleaseBuildType = ReleaseTypes.Release;
     public const string BetaNum = "0";
-    public const string HotfixNum = "1";
-    public const bool IsHotFix = true;
+    public const string HotfixNum = "0";
+    public const bool IsHotFix = false;
     public const string PluginGuid = "com.ten.betteramongus";
-    public const string PluginVersion = "1.1.5";
-    public const string ReleaseDate = "11.3.2024"; // mm/dd/yyyy
+    public const string PluginVersion = "1.1.6";
+    public const string ReleaseDate = "3.25.2025"; // mm/dd/yyyy
     public const string Github = "https://github.com/EnhancedNetwork/BetterAmongUs-Public";
     public const string Discord = "https://discord.gg/ten";
     public static UserData MyData = UserData.AllUsers.First();
