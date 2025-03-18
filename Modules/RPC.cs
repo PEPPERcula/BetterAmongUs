@@ -37,6 +37,12 @@ internal class PlayerControlRPCHandlerPatch
 {
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
+        __instance.BetterData().AntiCheatInfo.RPCSentPS++;
+        if (__instance.BetterData().AntiCheatInfo.RPCSentPS >= ExtendedAntiCheatInfo.MaxRPCSent)
+        {
+            return false;
+        }
+
         BAUAntiCheat.HandleCheatRPCBeforeCheck(__instance, callId, reader);
 
         if (BAUAntiCheat.CheckCancelRPC(__instance, callId, reader) != true)
@@ -59,8 +65,14 @@ internal class PlayerControlRPCHandlerPatch
 [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.HandleRpc))]
 internal class PlayerPhysicsRPCHandlerPatch
 {
-    public static void Prefix(PlayerPhysics __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
+    public static bool Prefix(PlayerPhysics __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
+        __instance.myPlayer.BetterData().AntiCheatInfo.RPCSentPS++;
+        if (__instance.myPlayer.BetterData().AntiCheatInfo.RPCSentPS >= ExtendedAntiCheatInfo.MaxRPCSent)
+        {
+            return false;
+        }
+
         if (BAUAntiCheat.CheckCancelRPC(__instance.myPlayer, callId, reader) != true)
         {
             Logger.LogCheat($"RPC canceled by Anti-Cheat: {Enum.GetName((RpcCalls)callId)}{Enum.GetName((CustomRPC)callId)} - {callId}");
@@ -68,6 +80,8 @@ internal class PlayerPhysicsRPCHandlerPatch
 
         BAUAntiCheat.CheckRPC(__instance.myPlayer, callId, reader);
         RPC.HandleRPC(__instance.myPlayer, callId, reader);
+
+        return true;
     }
 }
 
@@ -76,6 +90,12 @@ public static class MessageReaderUpdateSystemPatch
 {
     public static bool Prefix(/*ShipStatus __instance,*/ [HarmonyArgument(0)] SystemTypes systemType, [HarmonyArgument(1)] PlayerControl player, [HarmonyArgument(2)] MessageReader reader)
     {
+        player.BetterData().AntiCheatInfo.RPCSentPS++;
+        if (player.BetterData().AntiCheatInfo.RPCSentPS >= ExtendedAntiCheatInfo.MaxRPCSent)
+        {
+            return false;
+        }
+
         if (BAUAntiCheat.RpcUpdateSystemCheck(player, systemType, reader) != true)
         {
             Logger.LogCheat($"RPC canceled by Anti-Cheat: {Enum.GetName(typeof(SystemTypes), (int)systemType)} - {MessageReader.Get(reader).ReadByte()}");

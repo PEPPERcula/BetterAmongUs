@@ -119,6 +119,7 @@
   "AntiCheat.Cheat.KNC": "KN Chat",
   "AntiCheat.Reason.InvalidFriendCode": "Invalid Friend Code",
   "AntiCheat.Reason.PlatformSpoofer": "Platform Spoofer",
+  "AntiCheat.Reason.RPCSentPS": "RPC Spam",
   "AntiCheat.Reason.SickoMenuUser": "Known Sicko User",
   "AntiCheat.Reason.AUMUser": "Known AUM User",
   "AntiCheat.Reason.KNUser": "Known KN User",

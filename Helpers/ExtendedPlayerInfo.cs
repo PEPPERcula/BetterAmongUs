@@ -1,5 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using BetterAmongUs.Items;
+using BetterAmongUs.Managers;
+using BetterAmongUs.Modules;
 using HarmonyLib;
 using InnerNet;
 using UnityEngine;
@@ -18,9 +20,33 @@ public class ExtendedPlayerInfo : MonoBehaviour
         hasSet = true;
     }
 
+    private float timeAccumulator = 0f;
     public void Update()
     {
-        AntiCheatInfo.TimeSinceLastTask += Time.deltaTime;
+        var time = Time.deltaTime;
+
+        AntiCheatInfo.TimeSinceLastTask += time;
+
+        if (AntiCheatInfo.RPCSentPS > 0)
+        {
+            bool flag = _Data.Object.IsCheater();
+
+            if (AntiCheatInfo.RPCSentPS >= ExtendedAntiCheatInfo.MaxRPCSent && !flag)
+            {
+                BetterNotificationManager.NotifyCheat(_Data.Object,
+                    Translator.GetString("AntiCheat.Reason.RPCSentPS"),
+                    Translator.GetString("AntiCheat.UnauthorizedAction")
+                );
+                Logger.LogCheat($"{_Data.Object.BetterData().RealName} {AntiCheatInfo.RPCSentPS} Sent.");
+            }
+
+            timeAccumulator += time;
+            if (timeAccumulator >= 0.25f - (0.005 * AntiCheatInfo.RPCSentPS))
+            {
+                AntiCheatInfo.RPCSentPS -= 1;
+                timeAccumulator = 0f;
+            }
+        }
     }
 
     public void LateUpdate()
@@ -52,6 +78,8 @@ public class ExtendedAntiCheatInfo
 {
     public bool BannedByAntiCheat { get; set; } = false;
     public List<string> AUMChats { get; set; } = [];
+    public static int MaxRPCSent => 35;
+    public int RPCSentPS { get; set; } = 0;
     public int TimesAttemptedKilled { get; set; } = 0;
     public int OpenSabotageNum { get; set; } = 0;
     public bool IsFixingPanelSabotage => OpenSabotageNum != 0;

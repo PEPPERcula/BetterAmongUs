@@ -1,7 +1,6 @@
 using BetterAmongUs.Helpers;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
-using BetterAmongUs.Modules.AntiCheat;
 using BetterAmongUs.Patches;
 using HarmonyLib;
 using InnerNet;
@@ -15,8 +14,6 @@ class OnGameJoinedPatch
     {
         try
         {
-            BAUAntiCheat.PauseAntiCheat();
-
             // Fix host icon in lobby on modded servers
             if (!GameState.IsVanillaServer)
             {

@@ -13,7 +13,7 @@ class BAUAntiCheat
     public static Dictionary<string, string> SickoData = []; // HashPuid, FriendCode
     public static Dictionary<string, string> AUMData = []; // HashPuid, FriendCode
     public static Dictionary<string, string> KNData = []; // HashPuid, FriendCode
-    public static bool IsEnabled { get; private set; } = true;
+    public static bool IsEnabled => PlayerControl.LocalPlayer?.Data?.IsIncomplete == false;
 
     public static string[] GatherAllData()
     {
@@ -62,21 +62,6 @@ class BAUAntiCheat
                     player.Kick(true, kickMessage, true);
                 }
             }
-        }
-    }
-
-
-    public static void PauseAntiCheat()
-    {
-        float time = 2.5f;
-        if (IsEnabled)
-        {
-            IsEnabled = false;
-
-            _ = new LateTask(() =>
-            {
-                IsEnabled = true;
-            }, time, "PauseAntiCheat");
         }
     }
 
