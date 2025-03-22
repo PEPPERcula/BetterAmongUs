@@ -1,10 +1,12 @@
 using AmongUs.GameOptions;
 using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Attributes;
 using Hazel;
 
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class CheckAppearHandler : RPCHandler
+[RegisterRPCHandler]
+public sealed class CheckAppearHandler : RPCHandler
 {
     public override byte CallId => (byte)RpcCalls.CheckAppear;
 

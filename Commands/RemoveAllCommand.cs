@@ -1,8 +1,10 @@
 ﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Managers;
 
 namespace BetterAmongUs.Commands;
 
+[RegisterCommand]
 public class RemoveAllCommand : BaseCommand
 {
     public override string Name => "removeall";

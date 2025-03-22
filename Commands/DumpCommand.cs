@@ -1,8 +1,10 @@
-﻿using BetterAmongUs.Managers;
+﻿using BetterAmongUs.Items.Attributes;
+using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
 
 namespace BetterAmongUs.Commands;
 
+[RegisterCommand]
 public class DumpCommand : BaseCommand
 {
     public override string Name => "dump";

@@ -1,4 +1,5 @@
 ﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Patches;
 using HarmonyLib;
@@ -246,7 +247,7 @@ class BAUAntiCheat
     {
         MessageReader reader = MessageReader.Get(oldReader);
 
-        RPCHandler.GetHandlerInstance<UpdateSystemHandler>().CatchedSystemType = systemType;
+        RegisterRPCHandlerAttribute.GetClassInstance<UpdateSystemHandler>().CatchedSystemType = systemType;
         return RPCHandler.HandleRPC((byte)RpcCalls.UpdateSystem, player, reader, HandlerFlag.AntiCheatCancel);
     }
 

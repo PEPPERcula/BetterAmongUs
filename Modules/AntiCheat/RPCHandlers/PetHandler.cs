@@ -1,9 +1,11 @@
+using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Managers;
 using Hazel;
 
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class PetHandler : RPCHandler
+[RegisterRPCHandler]
+public sealed class PetHandler : RPCHandler
 {
     public override byte CallId => (byte)RpcCalls.Pet;
     public override void HandleAntiCheat(PlayerControl? sender, MessageReader reader)

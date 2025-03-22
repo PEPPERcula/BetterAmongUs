@@ -1,10 +1,12 @@
 using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Attributes;
 using Hazel;
 using UnityEngine;
 
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class UpdateSystemHandler : RPCHandler
+[RegisterRPCHandler]
+public sealed class UpdateSystemHandler : RPCHandler
 {
     public override byte CallId => (byte)RpcCalls.UpdateSystem;
 

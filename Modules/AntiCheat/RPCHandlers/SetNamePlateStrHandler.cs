@@ -1,6 +1,9 @@
+using BetterAmongUs.Items.Attributes;
+
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class SetNamePlateStrHandler : RPCHandler
+[RegisterRPCHandler]
+public sealed class SetNamePlateStrHandler : RPCHandler
 {
     public override byte CallId => (byte)RpcCalls.SetNamePlateStr;
 }

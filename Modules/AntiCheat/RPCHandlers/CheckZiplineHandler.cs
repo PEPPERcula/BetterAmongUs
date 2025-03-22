@@ -1,8 +1,10 @@
+using BetterAmongUs.Items.Attributes;
 using Hazel;
 
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class CheckZiplineHandler : RPCHandler
+[RegisterRPCHandler]
+public sealed class CheckZiplineHandler : RPCHandler
 {
     public override byte CallId => (byte)RpcCalls.CheckZipline;
 

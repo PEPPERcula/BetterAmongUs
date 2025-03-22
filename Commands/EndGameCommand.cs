@@ -1,7 +1,9 @@
-﻿using BetterAmongUs.Modules;
+﻿using BetterAmongUs.Items.Attributes;
+using BetterAmongUs.Modules;
 
 namespace BetterAmongUs.Commands;
 
+[RegisterCommand]
 public class EndGameCommand : BaseCommand
 {
     public override string Name => "endgame";

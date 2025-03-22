@@ -1,4 +1,5 @@
 using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Patches;
 using Hazel;
@@ -6,7 +7,8 @@ using InnerNet;
 
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class KillNetworkHandler : RPCHandler
+[RegisterRPCHandler]
+public sealed class KillNetworkHandler : RPCHandler
 {
     public override byte CallId => unchecked((byte)CustomRPC.KillNetwork);
 

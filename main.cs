@@ -4,6 +4,7 @@ using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
 using BetterAmongUs.Helpers;
 using BetterAmongUs.Items;
+using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
 using BetterAmongUs.Patches;
@@ -187,6 +188,7 @@ public class Main : BasePlugin
             Harmony.PatchAll();
             GameSettingMenuPatch.SetupSettings(true);
             FileChecker.Initialize();
+            InstanceAttribute.RegisterAll();
 
             if (PlatformData.Platform == Platforms.StandaloneSteamPC)
                 File.WriteAllText(Path.Combine(Environment.CurrentDirectory, "steam_appid.txt"), "945360");

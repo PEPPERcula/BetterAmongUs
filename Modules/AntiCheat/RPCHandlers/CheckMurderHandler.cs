@@ -1,10 +1,12 @@
 using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Attributes;
 using Hazel;
 using InnerNet;
 
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class CheckMurderHandler : RPCHandler
+[RegisterRPCHandler]
+public sealed class CheckMurderHandler : RPCHandler
 {
     public override byte CallId => (byte)RpcCalls.CheckMurder;
 

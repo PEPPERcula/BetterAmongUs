@@ -1,5 +1,5 @@
 ﻿using BetterAmongUs.Helpers;
-using System.Reflection;
+using BetterAmongUs.Items.Attributes;
 
 namespace BetterAmongUs.Commands;
 
@@ -12,14 +12,7 @@ public enum CommandType
 
 public abstract class BaseCommand
 {
-    public static readonly BaseCommand?[] allCommands = GetAllCommandInstances();
-
-    public static BaseCommand?[] GetAllCommandInstances() => Assembly.GetExecutingAssembly()
-        .GetTypes()
-        .Where(t => t.IsSubclassOf(typeof(BaseCommand)) && !t.IsAbstract)
-        .Select(t => (BaseCommand)Activator.CreateInstance(t))
-        .ToArray();
-
+    public static readonly BaseCommand?[] allCommands = [.. RegisterCommandAttribute.Instances];
     public virtual CommandType Type => CommandType.Normal;
     public string[] Names => ShortNames.Concat(new[] { Name }).ToArray();
     public abstract string Name { get; }

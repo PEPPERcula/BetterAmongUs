@@ -1,6 +1,9 @@
+using BetterAmongUs.Items.Attributes;
+
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class SetPetHandler : RPCHandler
+[RegisterRPCHandler]
+public sealed class SetPetHandler : RPCHandler
 {
     public override byte CallId => (byte)RpcCalls.SetPet;
 }

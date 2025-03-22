@@ -1,8 +1,10 @@
+using BetterAmongUs.Items.Attributes;
 using Hazel;
 
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class CheckColorHandler : RPCHandler
+[RegisterRPCHandler]
+public sealed class CheckColorHandler : RPCHandler
 {
     public override byte CallId => (byte)RpcCalls.CheckColor;
 

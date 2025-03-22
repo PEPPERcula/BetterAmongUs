@@ -1,12 +1,14 @@
 using AmongUs.Data;
 using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Patches;
 using Hazel;
 
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class SendChatHandler : RPCHandler
+[RegisterRPCHandler]
+public sealed class SendChatHandler : RPCHandler
 {
     public override byte CallId => (byte)RpcCalls.SendChat;
 

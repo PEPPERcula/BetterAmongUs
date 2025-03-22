@@ -1,6 +1,9 @@
+using BetterAmongUs.Items.Attributes;
+
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class SetVisorHandler : RPCHandler
+[RegisterRPCHandler]
+public sealed class SetVisorHandler : RPCHandler
 {
     public override byte CallId => (byte)RpcCalls.SetVisor;
 }

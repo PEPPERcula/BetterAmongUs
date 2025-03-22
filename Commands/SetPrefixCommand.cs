@@ -1,5 +1,8 @@
-﻿namespace BetterAmongUs.Commands;
+﻿using BetterAmongUs.Items.Attributes;
 
+namespace BetterAmongUs.Commands;
+
+[RegisterCommand]
 public class SetPrefixCommand : BaseCommand
 {
     public override string Name => "setprefix";

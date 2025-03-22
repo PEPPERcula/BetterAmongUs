@@ -1,11 +1,13 @@
 using AmongUs.GameOptions;
 using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Attributes;
 using Hazel;
 using InnerNet;
 
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class CheckShapeshiftHandler : RPCHandler
+[RegisterRPCHandler]
+public sealed class CheckShapeshiftHandler : RPCHandler
 {
     public override byte CallId => (byte)RpcCalls.CheckShapeshift;
 

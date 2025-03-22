@@ -1,10 +1,12 @@
 ﻿#if DEBUG
 using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Modules;
 using BetterAmongUs.Patches;
 
 namespace BetterAmongUs.Commands;
 
+[RegisterCommand]
 public class SetRoleCommand : BaseCommand
 {
     public override CommandType Type => CommandType.Debug;

@@ -1,4 +1,5 @@
 ﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Attributes;
 using Hazel;
 using InnerNet;
 using System.Reflection;
@@ -18,8 +19,7 @@ public enum HandlerFlag
 
 public abstract class RPCHandler
 {
-    public static T? GetHandlerInstance<T>() where T : RPCHandler => allHandlers.FirstOrDefault(handler => handler.GetType() == typeof(T)) as T;
-    public static readonly RPCHandler?[] allHandlers = GetAllHandlerInstances();
+    public static readonly RPCHandler?[] allHandlers = [.. RegisterRPCHandlerAttribute.Instances];
 
     public static RPCHandler?[] GetAllHandlerInstances() => Assembly.GetExecutingAssembly()
         .GetTypes()

@@ -1,8 +1,10 @@
+using BetterAmongUs.Items.Attributes;
 using Hazel;
 
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class CheckSporeHandler : RPCHandler
+[RegisterRPCHandler]
+public sealed class CheckSporeHandler : RPCHandler
 {
     public override byte CallId => (byte)RpcCalls.CheckSpore;
 

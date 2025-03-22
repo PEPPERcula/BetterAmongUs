@@ -1,8 +1,10 @@
 ﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Attributes;
 using System.Text;
 
 namespace BetterAmongUs.Commands;
 
+[RegisterCommand]
 public class PlayerInfoCommand : BaseCommand
 {
     public override string Name => "player";

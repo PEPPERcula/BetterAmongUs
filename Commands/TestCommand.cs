@@ -1,5 +1,8 @@
-﻿namespace BetterAmongUs.Commands;
+﻿using BetterAmongUs.Items.Attributes;
 
+namespace BetterAmongUs.Commands;
+
+[RegisterCommand]
 public class TestCommand : BaseCommand
 {
     public override CommandType Type => CommandType.Debug;

@@ -1,11 +1,13 @@
 using AmongUs.GameOptions;
 using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Managers;
 using Hazel;
 
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class EnterVentHandler : RPCHandler
+[RegisterRPCHandler]
+public sealed class EnterVentHandler : RPCHandler
 {
     public override byte CallId => (byte)RpcCalls.EnterVent;
 

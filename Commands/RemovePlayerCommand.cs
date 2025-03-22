@@ -1,9 +1,11 @@
 ﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Modules.AntiCheat;
 
 namespace BetterAmongUs.Commands;
 
+[RegisterCommand]
 public class RemovePlayerCommand : BaseCommand
 {
     public override string Name => "removeplayer";

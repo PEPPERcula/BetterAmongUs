@@ -1,11 +1,13 @@
 using AmongUs.GameOptions;
 using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Managers;
 using Hazel;
 
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class StartVanishHandler : RPCHandler
+[RegisterRPCHandler]
+public sealed class StartVanishHandler : RPCHandler
 {
     public override byte CallId => (byte)RpcCalls.StartVanish;
 

@@ -1,6 +1,9 @@
+using BetterAmongUs.Items.Attributes;
+
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class PlayAnimationHandler : RPCHandler
+[RegisterRPCHandler]
+public sealed class PlayAnimationHandler : RPCHandler
 {
     public override byte CallId => (byte)RpcCalls.PlayAnimation;
 }

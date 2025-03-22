@@ -1,8 +1,10 @@
 ﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Modules;
 
 namespace BetterAmongUs.Commands;
 
+[RegisterCommand]
 public class KickCommand : BaseCommand
 {
     public override string Name => "kick";
