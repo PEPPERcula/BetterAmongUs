@@ -90,7 +90,7 @@ class PlayerControlPatch
         {
             SetLobbyInfo(player, ref newName, betterData, sbTag);
             sbTagTop.Append($"<color=#9e9e9e>{platform}</color>+++")
-                    .Append($"<color=#ffd829>Lv: {player.Data.PlayerLevel + 1}</color>+++");
+                    .Append($"<color=#ffd829>Lv: {player.Data.PlayerLevel}</color>+++");
 
             sbTagBottom.Append($"<color={friendCodeColor}>{friendCode}</color>+++");
         }
