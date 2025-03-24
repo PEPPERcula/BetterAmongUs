@@ -10,6 +10,7 @@ namespace BetterAmongUs.Patches;
 internal class PrivateLobbyPatch
 {
     private static AprilFoolsModeToggleButton? toggle;
+    private static TextMeshPro? toggleText;
 
     [HarmonyPatch(typeof(CreateGameOptions))]
     [HarmonyPatch(nameof(CreateGameOptions.Show))]
@@ -44,6 +45,7 @@ internal class PrivateLobbyPatch
             {
                 text.DestroyTextTranslator();
                 text.text = "Private Only Lobby";
+                toggleText = text;
             }
 
             var banner = toggle.transform.Find("Banner")?.GetComponent<SpriteRenderer>();
@@ -74,6 +76,7 @@ internal class PrivateLobbyPatch
                 __instance.onButton.OutColor = Color.white;
                 __instance.onText.color = Color.white;
                 __instance.onButtonSprite.color = Color.green;
+                if (toggleText != null) toggleText.color = new(1, 1, 1, 1);
             }
             else
             {
@@ -83,6 +86,7 @@ internal class PrivateLobbyPatch
                 __instance.offButton.OutColor = Color.white;
                 __instance.offText.color = Color.white;
                 __instance.offButtonSprite.color = Color.green;
+                if (toggleText != null) toggleText.color = new(1, 1, 1, 0.5f);
             }
 
             return false;

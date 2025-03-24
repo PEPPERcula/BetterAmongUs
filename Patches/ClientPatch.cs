@@ -2,7 +2,6 @@
 using BetterAmongUs.Items;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
-using BetterAmongUs.Modules.AntiCheat;
 using HarmonyLib;
 using Hazel;
 using InnerNet;
@@ -133,16 +132,12 @@ internal class ClientPatch
     {
         [HarmonyPatch(nameof(InnerNetClient.HandleGameData))]
         [HarmonyPrefix]
-        internal static void HandleGameDataInner_Prefix(/*InnerNetClient __instance,*/ [HarmonyArgument(0)] MessageReader oldReader)
+        internal static bool HandleGameDataInner_Prefix([HarmonyArgument(0)] MessageReader oldReader)
         {
-            var parentReader = MessageReader.Get(oldReader);
-            while (parentReader.Position < parentReader.Length)
-            {
-                MessageReader messageReader = parentReader.ReadMessageAsNewBuffer();
-                MessageReader reader = messageReader;
-                RPCHandler.HandleRPC(reader.Tag, null, MessageReader.Get(reader), HandlerFlag.HandleGameDataTag);
-            }
+            NetworkManager.HandleGameData(oldReader);
+            return false;
         }
+
         [HarmonyPatch(nameof(InnerNetClient.CanBan))]
         [HarmonyPrefix]
         internal static bool CanBan_Prefix(ref bool __result)
@@ -150,6 +145,7 @@ internal class ClientPatch
             __result = GameState.IsHost;
             return false;
         }
+
         [HarmonyPatch(nameof(InnerNetClient.CanKick))]
         [HarmonyPrefix]
         internal static bool CanKick_Prefix(ref bool __result)
@@ -157,6 +153,7 @@ internal class ClientPatch
             __result = GameState.IsHost || (GameState.IsInGamePlay && (GameState.IsMeeting || GameState.IsExilling));
             return false;
         }
+
         [HarmonyPatch(nameof(InnerNetClient.KickPlayer))]
         [HarmonyPrefix]
         internal static void KickPlayer_Prefix(ref int clientId, ref bool ban)

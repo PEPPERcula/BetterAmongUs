@@ -1,7 +1,6 @@
 ﻿using BetterAmongUs.Helpers;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Modules.AntiCheat;
-using HarmonyLib;
 using Hazel;
 
 namespace BetterAmongUs.Modules;
@@ -30,84 +29,6 @@ enum HandleGameDataTags : byte
     NetObjectSpawn = 4,
     NetObjectDespawn = 5,
     ClientDataReady = 7,
-}
-
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.HandleRpc))]
-internal class PlayerControlRPCHandlerPatch
-{
-    internal static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
-    {
-        __instance.BetterData().AntiCheatInfo.RPCSentPS++;
-        if (__instance.BetterData().AntiCheatInfo.RPCSentPS >= ExtendedAntiCheatInfo.MaxRPCSent)
-        {
-            return false;
-        }
-
-        BAUAntiCheat.HandleCheatRPCBeforeCheck(__instance, callId, reader);
-
-        if (BAUAntiCheat.CheckCancelRPC(__instance, callId, reader) != true)
-        {
-            Logger.LogCheat($"RPC canceled by Anti-Cheat: {Enum.GetName((RpcCalls)callId)}{Enum.GetName((CustomRPC)callId)} - {callId}");
-            return false;
-        }
-
-        BAUAntiCheat.CheckRPC(__instance, callId, reader);
-        RPC.HandleRPC(__instance, callId, reader);
-
-        return true;
-    }
-
-    internal static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
-    {
-        if (!Enum.IsDefined(typeof(RpcCalls), callId))
-        {
-            RPC.HandleCustomRPC(__instance, callId, reader);
-        }
-    }
-}
-
-[HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.HandleRpc))]
-internal class PlayerPhysicsRPCHandlerPatch
-{
-    internal static bool Prefix(PlayerPhysics __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
-    {
-        __instance.myPlayer.BetterData().AntiCheatInfo.RPCSentPS++;
-        if (__instance.myPlayer.BetterData().AntiCheatInfo.RPCSentPS >= ExtendedAntiCheatInfo.MaxRPCSent)
-        {
-            return false;
-        }
-
-        if (BAUAntiCheat.CheckCancelRPC(__instance.myPlayer, callId, reader) != true)
-        {
-            Logger.LogCheat($"RPC canceled by Anti-Cheat: {Enum.GetName((RpcCalls)callId)}{Enum.GetName((CustomRPC)callId)} - {callId}");
-        }
-
-        BAUAntiCheat.CheckRPC(__instance.myPlayer, callId, reader);
-        RPC.HandleRPC(__instance.myPlayer, callId, reader);
-
-        return true;
-    }
-}
-
-[HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.UpdateSystem), typeof(SystemTypes), typeof(PlayerControl), typeof(MessageReader))]
-internal static class MessageReaderUpdateSystemPatch
-{
-    internal static bool Prefix(/*ShipStatus __instance,*/ [HarmonyArgument(0)] SystemTypes systemType, [HarmonyArgument(1)] PlayerControl player, [HarmonyArgument(2)] MessageReader reader)
-    {
-        player.BetterData().AntiCheatInfo.RPCSentPS++;
-        if (player.BetterData().AntiCheatInfo.RPCSentPS >= ExtendedAntiCheatInfo.MaxRPCSent)
-        {
-            return false;
-        }
-
-        if (BAUAntiCheat.RpcUpdateSystemCheck(player, systemType, reader) != true)
-        {
-            Logger.LogCheat($"RPC canceled by Anti-Cheat: {Enum.GetName(typeof(SystemTypes), (int)systemType)} - {MessageReader.Get(reader).ReadByte()}");
-            return false;
-        }
-
-        return true;
-    }
 }
 
 internal static class RPC
