@@ -9,6 +9,5 @@ internal sealed class SetColorHandler : RPCHandler
     internal override byte CallId => (byte)RpcCalls.SetColor;
     internal override void Handle(PlayerControl? sender, MessageReader reader)
     {
-        Logger.InGame("TEST");
     }
 }

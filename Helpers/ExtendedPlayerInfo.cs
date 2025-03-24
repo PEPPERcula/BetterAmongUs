@@ -78,7 +78,7 @@ internal class ExtendedAntiCheatInfo
 {
     internal bool BannedByAntiCheat { get; set; } = false;
     internal List<string> AUMChats { get; set; } = [];
-    internal static int MaxRPCSent => 35;
+    internal static int MaxRPCSent => 50;
     internal int RPCSentPS { get; set; } = 0;
     internal int TimesAttemptedKilled { get; set; } = 0;
     internal int OpenSabotageNum { get; set; } = 0;
