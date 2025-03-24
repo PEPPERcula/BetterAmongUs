@@ -8,7 +8,7 @@ internal class SetPrefixCommand : BaseCommand
     internal override string Name => "setprefix";
     internal override string Description => "Set command prefix";
 
-    public SetPrefixCommand()
+    internal SetPrefixCommand()
     {
         _arguments = new Lazy<BaseArgument[]>(() => new BaseArgument[]
         {

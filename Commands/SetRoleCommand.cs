@@ -13,7 +13,7 @@ internal class SetRoleCommand : BaseCommand
     internal override string Name => "setrole";
     internal override string Description => "Set another players role for the next game";
 
-    public SetRoleCommand()
+    internal SetRoleCommand()
     {
         _arguments = new Lazy<BaseArgument[]>(() => new BaseArgument[]
         {
