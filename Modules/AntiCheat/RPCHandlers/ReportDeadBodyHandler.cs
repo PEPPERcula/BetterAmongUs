@@ -20,7 +20,7 @@ internal sealed class ReportDeadBodyHandler : RPCHandler
             return CancelAsHost;
         }
 
-        if (GameState.IsMeeting && MeetingHudPatch.timeOpen > 2f || GameState.IsHideNSeek || sender.IsInVent() || sender.shapeshifting
+        if (GameState.IsMeeting && MeetingHudPatch.timeOpen > 5f || GameState.IsHideNSeek || sender.IsInVent() || sender.shapeshifting
             || sender.inMovingPlat || sender.onLadder || sender.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
         {
             BetterNotificationManager.NotifyCheat(sender, string.Format(Translator.GetString("AntiCheat.InvalidActionRPC"), Enum.GetName((RpcCalls)CallId)));
