@@ -44,12 +44,12 @@ class BetterDataManager
 
         if (!File.Exists(banNameListFile))
         {
-            File.WriteAllText(banNameListFile, "// Example\nBanName1\nBanName2");
+            File.WriteAllText(banNameListFile, "// Example\n// Use \"BanThisName\" to check if the Banned Name completely matches the Player Name.\n// Use \"BanThisName**\" to check if the Banned Name is a prefix of a Player Name.\n// Use \"**BanThisName\" to check if the Banned Name is a postfix of a Player Name.\n// Use \"**BanThisName**\" to check if the Player Name contains any pattern of the Banned Name.\n");
         }
 
         if (!File.Exists(banWordListFile))
         {
-            File.WriteAllText(banWordListFile, "// Example\nStart");
+            File.WriteAllText(banWordListFile, "// Example\n// Use \"BanWord\" to check if the Banned Word completely matches the Message.\n// Use \"BanWord**\" to check if the Banned Word is a prefix of a word in the Message.\n// Use \"**BanWord\" to check if the Banned Word is a postfix of a word in the Message.\n// Use \"**BanWord**\" to check if the Message contains any pattern of the Banned Word.\n");
         }
 
         if (!File.Exists(SettingsFile))

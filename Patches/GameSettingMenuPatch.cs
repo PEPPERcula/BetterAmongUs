@@ -15,6 +15,7 @@ class BetterGameSettings
     internal static BetterOptionItem? UseBanPlayerList;
     internal static BetterOptionItem? UseBanNameList;
     internal static BetterOptionItem? UseBanWordList;
+    internal static BetterOptionItem? UseBanWordListOnlyLobby;
     internal static BetterOptionItem? HideAndSeekImpNum;
     internal static BetterOptionItem? DetectedLevelAbove;
     internal static BetterOptionItem? DetectCheatClients;
@@ -46,7 +47,7 @@ static class GameSettingMenuPatch
         BetterOptionItem.TempPlayerOptionDataNum = 0;
         TitleList.Clear();
 
-        // Use 1400 next ID
+        // Use 1500 next ID
 
         // Anti-Cheat Settings
         {
@@ -64,6 +65,7 @@ static class GameSettingMenuPatch
                 BetterGameSettings.UseBanPlayerList = new BetterOptionCheckboxItem().Create(300, BetterSettingsTab, Translator.GetString("BetterSetting.Setting.UseBanPlayerList"), true);
                 BetterGameSettings.UseBanNameList = new BetterOptionCheckboxItem().Create(400, BetterSettingsTab, Translator.GetString("BetterSetting.Setting.UseBanNameList"), true);
                 BetterGameSettings.UseBanWordList = new BetterOptionCheckboxItem().Create(500, BetterSettingsTab, Translator.GetString("BetterSetting.Setting.UseBanWordList"), true);
+                BetterGameSettings.UseBanWordListOnlyLobby = new BetterOptionCheckboxItem().Create(1400, BetterSettingsTab, Translator.GetString("BetterSetting.Setting.UseBanWordListOnlyLobby"), true, BetterGameSettings.UseBanWordList);
                 TitleList.Add(new BetterOptionDividerItem().Create(BetterSettingsTab));
             }
 

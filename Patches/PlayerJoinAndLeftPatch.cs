@@ -46,57 +46,21 @@ internal static class OnPlayerJoinedPatch
                 {
                     if (player != null)
                     {
-                        try
+                        if (TextFileHandler.CompareStringMatch(BetterDataManager.banPlayerListFile,
+                            Main.AllPlayerControls.Select(player => player.Data.FriendCode)
+                            .Concat(Main.AllPlayerControls.Select(player => player.GetHashPuid())).ToArray()))
                         {
-                            string banPlayerListContent = File.ReadAllText(BetterDataManager.banPlayerListFile);
-
-                            string[] listPlayerArray = banPlayerListContent.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
-
-                            foreach (string text in listPlayerArray)
-                            {
-                                if (!string.IsNullOrEmpty(player.Data.FriendCode) && text.Contains(player.Data.FriendCode)
-                                    || !string.IsNullOrEmpty(Utils.GetHashPuid(player)) && text.Contains(Utils.GetHashPuid(player)))
-                                {
-                                    player.Kick(true, Translator.GetString("AntiCheat.BanPlayerListMessage"), bypassDataCheck: true);
-                                    break;
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.Error(ex);
+                            player.Kick(true, Translator.GetString("AntiCheat.BanPlayerListMessage"), bypassDataCheck: true);
                         }
                     }
                 }
 
                 if (BetterGameSettings.UseBanNameList.GetBool())
                 {
-                    try
+                    if (TextFileHandler.CompareStringFilters(BetterDataManager.banNameListFile, [player.Data.PlayerName]))
                     {
-                        // Normalize and remove spaces and special characters from names
-                        Func<string, string> normalizeName = name => new string(name.Where(c => char.IsLetterOrDigit(c)).ToArray()).ToLower();
-
-                        // Read all banned names into a HashSet with normalized names
-                        HashSet<string> bannedNames = new HashSet<string>(
-                            File.ReadLines(BetterDataManager.banNameListFile)
-                                .Where(line => !line.TrimStart().StartsWith("//"))
-                                .Select(normalizeName)
-                                .Where(name => !string.IsNullOrWhiteSpace(name))
-                        );
-
-                        string normalizedPlayerName = normalizeName(player.Data.PlayerName);
-
-                        // Check if any banned name is a prefix of the player's normalized name
-                        bool isNameBanned = bannedNames.Any(bannedName =>
-                            normalizedPlayerName.StartsWith(bannedName)
-                        );
-
-                        if (!string.IsNullOrEmpty(normalizedPlayerName) && isNameBanned)
-                        {
-                            player.Kick(false, Translator.GetString("AntiCheat.BanNameListMessage"), bypassDataCheck: true);
-                        }
+                        player.Kick(true, Translator.GetString("AntiCheat.BanPlayerListMessage"), bypassDataCheck: true);
                     }
-                    catch { }
                 }
             }
         }, 2.5f, "OnPlayerJoinedPatch", false);

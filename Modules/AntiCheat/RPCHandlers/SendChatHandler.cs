@@ -17,34 +17,12 @@ internal sealed class SendChatHandler : RPCHandler
         var text = reader.ReadString();
 
         // Check banned words
-        if (BetterGameSettings.UseBanWordList.GetBool())
+        if (BetterGameSettings.UseBanWordList.GetBool() && (!BetterGameSettings.UseBanWordListOnlyLobby.GetBool() || GameState.IsLobby))
         {
-            try
+            if (TextFileHandler.CompareStringFilters(BetterDataManager.banWordListFile, text.Split(' ')))
             {
-                Func<string, string> normalizeText = text => new string(text.Where(c => char.IsLetterOrDigit(c)).ToArray()).ToLower();
-
-                HashSet<string> bannedWords = new HashSet<string>(
-                    File.ReadLines(BetterDataManager.banWordListFile)
-                        .Where(line => !line.TrimStart().StartsWith("//"))
-                        .Select(normalizeText)
-                        .Where(text => !string.IsNullOrWhiteSpace(text))
-                );
-
-                string normalizedMessage = normalizeText(text);
-
-                bool isWordBanned = bannedWords.Any(bannedWord =>
-                    normalizedMessage.Contains(bannedWord)
-                );
-
-                if (!string.IsNullOrEmpty(normalizedMessage) && isWordBanned)
-                {
-                    _ = new LateTask(() =>
-                    {
-                        sender.Kick(false, $"has been kicked due to\nchat message containing a banned word!");
-                    }, 1f, shouldLog: false);
-                }
+                sender.Kick(false, $"has been kicked due to\nchat message containing a banned word!");
             }
-            catch { }
         }
     }
 

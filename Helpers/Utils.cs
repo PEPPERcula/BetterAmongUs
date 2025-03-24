@@ -116,7 +116,7 @@ internal static class Utils
         return GetHashStr(player.Data.Puid);
     }
     // Get HashPuid from puid
-    internal static string GetHashStr(string str)
+    internal static string GetHashStr(this string str)
     {
         if (string.IsNullOrEmpty(str)) return "";
 
