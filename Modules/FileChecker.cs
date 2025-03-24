@@ -8,9 +8,9 @@ class FileChecker
     private static bool enabled = false;
     private static FileSystemWatcher? fileWatcher;
     private static bool hasUnauthorizedFileOrMod = false;
-    public static string WarningMsg { get; private set; } = string.Empty;
-    public static bool HasShownWarning { get; set; } = false;
-    public static bool HasUnauthorizedFileOrMod => hasUnauthorizedFileOrMod && (!Main.MyData.IsDev() || !Main.MyData.IsVerified());
+    internal static string WarningMsg { get; private set; } = string.Empty;
+    internal static bool HasShownWarning { get; set; } = false;
+    internal static bool HasUnauthorizedFileOrMod => hasUnauthorizedFileOrMod && (!Main.MyData.IsDev() || !Main.MyData.IsVerified());
 
     private static readonly ReadOnlyCollection<string> TrustedNamespaces = new(new List<string>
     {
@@ -43,7 +43,7 @@ class FileChecker
         "aum-prev-log.txt"
     ];
 
-    public static void Initialize()
+    internal static void Initialize()
     {
         if (enabled) return;
         enabled = true;

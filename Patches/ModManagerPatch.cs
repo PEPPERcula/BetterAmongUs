@@ -7,11 +7,11 @@ using UnityEngine;
 namespace BetterAmongUs.Patches;
 
 [HarmonyPatch(typeof(ModManager))]
-public class ModManagerPatch
+internal class ModManagerPatch
 {
     [HarmonyPatch(nameof(ModManager.LateUpdate))]
     [HarmonyPostfix]
-    public static void LateUpdate_Postfix(ModManager __instance)
+    internal static void LateUpdate_Postfix(ModManager __instance)
     {
         if (SplashIntroPatch.IsReallyDoneLoading)
         {

@@ -2,9 +2,9 @@
 
 namespace BetterAmongUs.Helpers;
 
-public static class ObjectHelper
+internal static class ObjectHelper
 {
-    public static GameObject? FindObjectByName(string objectName)
+    internal static GameObject? FindObjectByName(string objectName)
     {
         GameObject[] allObjects = UnityEngine.Object.FindObjectsOfType<GameObject>(true);
 
@@ -18,19 +18,19 @@ public static class ObjectHelper
 
         return null;
     }
-    public static void DestroyObj(this GameObject obj)
+    internal static void DestroyObj(this GameObject obj)
     {
         if (obj != null)
         {
             UnityEngine.Object.Destroy(obj);
         }
     }
-    public static void DestroyObj(this UnityEngine.Object obj) => obj.DestroyObj();
-    public static void DestroyCom(this Component com) => com.DestroyObj();
-    public static void DestroyObj(this MonoBehaviour mono) => mono?.gameObject?.DestroyObj();
-    public static void DestroyMono(this MonoBehaviour mono) => UnityEngine.Object.Destroy(mono);
+    internal static void DestroyObj(this UnityEngine.Object obj) => obj.DestroyObj();
+    internal static void DestroyCom(this Component com) => com.DestroyObj();
+    internal static void DestroyObj(this MonoBehaviour mono) => mono?.gameObject?.DestroyObj();
+    internal static void DestroyMono(this MonoBehaviour mono) => UnityEngine.Object.Destroy(mono);
 
-    public static void DestroyTextTranslator(this GameObject obj)
+    internal static void DestroyTextTranslator(this GameObject obj)
     {
         var translator = obj.GetComponent<TextTranslatorTMP>();
         if (translator != null)
@@ -38,5 +38,5 @@ public static class ObjectHelper
             UnityEngine.Object.Destroy(translator);
         }
     }
-    public static void DestroyTextTranslator(this MonoBehaviour mono) => mono.gameObject.DestroyTextTranslator();
+    internal static void DestroyTextTranslator(this MonoBehaviour mono) => mono.gameObject.DestroyTextTranslator();
 }

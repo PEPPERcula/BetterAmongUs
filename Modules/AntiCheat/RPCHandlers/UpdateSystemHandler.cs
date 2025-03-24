@@ -6,17 +6,17 @@ using UnityEngine;
 namespace BetterAmongUs.Modules.AntiCheat;
 
 [RegisterRPCHandler]
-public sealed class UpdateSystemHandler : RPCHandler
+internal sealed class UpdateSystemHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.UpdateSystem;
+    internal override byte CallId => (byte)RpcCalls.UpdateSystem;
 
-    public SystemTypes CatchedSystemType;
+    internal SystemTypes CatchedSystemType;
 
     private readonly Dictionary<uint, Func<PlayerControl?, ISystemType, MessageReader, byte, bool>> systemHandlers;
 
     private static SabotageSystemType SabotageSystem => ShipStatus.Instance.Systems[SystemTypes.Sabotage].Cast<SabotageSystemType>();
 
-    public UpdateSystemHandler()
+    internal UpdateSystemHandler()
     {
         systemHandlers = new Dictionary<uint, Func<PlayerControl?, ISystemType, MessageReader, byte, bool>>
         {
@@ -33,7 +33,7 @@ public sealed class UpdateSystemHandler : RPCHandler
         };
     }
 
-    public static bool CheckConsoleDistance<T>(PlayerControl? player, float distance = 2f) where T : PlayerTask, new()
+    internal static bool CheckConsoleDistance<T>(PlayerControl? player, float distance = 2f) where T : PlayerTask, new()
     {
         bool isClose = false;
         Vector2[] consolesPos = new T().FindConsolesPos().ToArray();
@@ -49,7 +49,7 @@ public sealed class UpdateSystemHandler : RPCHandler
         return isClose;
     }
 
-    public override bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader)
+    internal override bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader)
     {
         if (GameState.IsHost && sender.IsHost()) return true;
 

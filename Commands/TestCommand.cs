@@ -3,12 +3,12 @@
 namespace BetterAmongUs.Commands;
 
 [RegisterCommand]
-public class TestCommand : BaseCommand
+internal class TestCommand : BaseCommand
 {
-    public override CommandType Type => CommandType.Debug;
-    public override string Name => "test";
-    public override string Description => "Test Command";
-    public override void Run()
+    internal override CommandType Type => CommandType.Debug;
+    internal override string Name => "test";
+    internal override string Description => "Test Command";
+    internal override void Run()
     {
     }
 }

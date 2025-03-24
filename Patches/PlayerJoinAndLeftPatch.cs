@@ -10,7 +10,7 @@ namespace BetterAmongUs;
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnGameJoined))]
 class OnGameJoinedPatch
 {
-    public static void Postfix(/*AmongUsClient __instance*/)
+    internal static void Postfix(/*AmongUsClient __instance*/)
     {
         try
         {
@@ -28,9 +28,9 @@ class OnGameJoinedPatch
     }
 }
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnPlayerJoined))]
-public static class OnPlayerJoinedPatch
+internal static class OnPlayerJoinedPatch
 {
-    public static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData client)
+    internal static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData client)
     {
         _ = new LateTask(() =>
         {
@@ -105,7 +105,7 @@ public static class OnPlayerJoinedPatch
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnPlayerLeft))]
 class OnPlayerLeftPatch
 {
-    public static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData data, [HarmonyArgument(1)] DisconnectReasons reason)
+    internal static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData data, [HarmonyArgument(1)] DisconnectReasons reason)
     {
     }
 }
@@ -116,7 +116,7 @@ class OnPlayerLeftPatch
 [HarmonyPatch(new Type[] { typeof(PlayerControl), typeof(DisconnectReasons) })]
 class GameDataHandleDisconnectPatch
 {
-    public static void Prefix(/*GameData __instance,*/ [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] DisconnectReasons reason)
+    internal static void Prefix(/*GameData __instance,*/ [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] DisconnectReasons reason)
     {
         if (player.BetterData() != null)
         {
@@ -131,7 +131,7 @@ class GameDataHandleDisconnectPatch
 [HarmonyPatch(typeof(GameData), nameof(GameData.ShowNotification))]
 class GameDataShowNotificationPatch
 {
-    public static void BetterShowNotification(NetworkedPlayerInfo playerData, DisconnectReasons reason = DisconnectReasons.Unknown, string forceReasonText = "")
+    internal static void BetterShowNotification(NetworkedPlayerInfo playerData, DisconnectReasons reason = DisconnectReasons.Unknown, string forceReasonText = "")
     {
         if (playerData.BetterData().AntiCheatInfo.BannedByAntiCheat || playerData.BetterData().HasShowDcMsg) return;
         playerData.BetterData().HasShowDcMsg = true;
@@ -184,7 +184,7 @@ class GameDataShowNotificationPatch
         }
     }
 
-    public static bool Prefix()
+    internal static bool Prefix()
     {
         return false;
     }

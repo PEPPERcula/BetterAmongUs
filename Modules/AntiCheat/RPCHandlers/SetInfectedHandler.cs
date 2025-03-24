@@ -3,7 +3,7 @@ using BetterAmongUs.Items.Attributes;
 namespace BetterAmongUs.Modules.AntiCheat;
 
 [RegisterRPCHandler]
-public sealed class SetInfectedHandler : RPCHandler
+internal sealed class SetInfectedHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.SetInfected;
+    internal override byte CallId => (byte)RpcCalls.SetInfected;
 }

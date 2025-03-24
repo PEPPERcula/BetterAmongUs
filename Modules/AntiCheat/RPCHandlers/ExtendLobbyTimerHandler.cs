@@ -3,7 +3,7 @@ using BetterAmongUs.Items.Attributes;
 namespace BetterAmongUs.Modules.AntiCheat;
 
 [RegisterRPCHandler]
-public sealed class ExtendLobbyTimerHandler : RPCHandler
+internal sealed class ExtendLobbyTimerHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.ExtendLobbyTimer;
+    internal override byte CallId => (byte)RpcCalls.ExtendLobbyTimer;
 }

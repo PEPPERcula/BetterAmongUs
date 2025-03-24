@@ -5,10 +5,10 @@ using System.Text;
 namespace BetterAmongUs.Commands;
 
 [RegisterCommand]
-public class PlayerInfoCommand : BaseCommand
+internal class PlayerInfoCommand : BaseCommand
 {
-    public override string Name => "player";
-    public override string Description => "Get a Players information";
+    internal override string Name => "player";
+    internal override string Description => "Get a Players information";
 
     public PlayerInfoCommand()
     {
@@ -18,11 +18,11 @@ public class PlayerInfoCommand : BaseCommand
         });
     }
     private readonly Lazy<BaseArgument[]> _arguments;
-    public override BaseArgument[]? Arguments => _arguments.Value;
+    internal override BaseArgument[]? Arguments => _arguments.Value;
 
     private PlayerArgument? playerArgument => (PlayerArgument)Arguments[0];
 
-    public override void Run()
+    internal override void Run()
     {
         var player = playerArgument.TryGetTarget();
         if (player != null)

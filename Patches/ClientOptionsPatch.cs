@@ -10,7 +10,7 @@ namespace BetterAmongUs.Patches;
 // Code from: https://github.com/tukasa0001/TownOfHost/pull/1265
 // Code from: https://github.com/0xDrMoe/TownofHost-Enhanced
 [HarmonyPatch(typeof(OptionsMenuBehaviour))]
-public static class OptionsMenuBehaviourPatch
+internal static class OptionsMenuBehaviourPatch
 {
     private static ClientOptionItem? AntiCheat;
     private static ClientOptionItem? BetterNotifications;
@@ -26,7 +26,7 @@ public static class OptionsMenuBehaviourPatch
 
     [HarmonyPatch(nameof(OptionsMenuBehaviour.Start))]
     [HarmonyPrefix]
-    public static void Start_Postfix(OptionsMenuBehaviour __instance)
+    internal static void Start_Postfix(OptionsMenuBehaviour __instance)
     {
         static bool toggleCheckInGamePlay(string buttonName)
         {
@@ -157,7 +157,7 @@ public static class OptionsMenuBehaviourPatch
 
     [HarmonyPatch(nameof(OptionsMenuBehaviour.Close))]
     [HarmonyPrefix]
-    public static void Close_Postfix()
+    internal static void Close_Postfix()
     {
         ClientOptionItem.CustomBackground?.gameObject.SetActive(false);
     }

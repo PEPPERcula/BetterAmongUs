@@ -3,9 +3,9 @@
 namespace BetterAmongUs.Patches;
 
 [HarmonyPatch(typeof(StatsManager), nameof(StatsManager.BanMinutesLeft), MethodType.Getter)]
-public static class DisconnectPenaltyPatch
+internal static class DisconnectPenaltyPatch
 {
-    public static bool Prefix(StatsManager __instance, ref int __result)
+    internal static bool Prefix(StatsManager __instance, ref int __result)
     {
         if (__instance.BanPoints != 0f)
         {

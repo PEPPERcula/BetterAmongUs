@@ -8,11 +8,11 @@ using Hazel;
 namespace BetterAmongUs.Modules.AntiCheat;
 
 [RegisterRPCHandler]
-public sealed class SendChatHandler : RPCHandler
+internal sealed class SendChatHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.SendChat;
+    internal override byte CallId => (byte)RpcCalls.SendChat;
 
-    public override void Handle(PlayerControl? sender, MessageReader reader)
+    internal override void Handle(PlayerControl? sender, MessageReader reader)
     {
         var text = reader.ReadString();
 
@@ -48,7 +48,7 @@ public sealed class SendChatHandler : RPCHandler
         }
     }
 
-    public override void HandleAntiCheat(PlayerControl? sender, MessageReader reader)
+    internal override void HandleAntiCheat(PlayerControl? sender, MessageReader reader)
     {
         if (sender.IsAlive() && GameState.IsInGamePlay && !GameState.IsMeeting && !GameState.IsExilling || DataManager.Settings.Multiplayer.ChatMode == InnerNet.QuickChatModes.QuickChatOnly)
         {

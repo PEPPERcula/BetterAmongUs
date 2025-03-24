@@ -11,7 +11,7 @@ namespace BetterAmongUs.Patches;
 class CommandsPatch
 {
     private static bool _enabled = true;
-    public static string CommandPrefix => Main.CommandPrefix.Value;
+    internal static string CommandPrefix => Main.CommandPrefix.Value;
 
     // Run code for specific commands
     private static void HandleCommand()
@@ -29,7 +29,7 @@ class CommandsPatch
     // Check if command is typed when sending chat message
     [HarmonyPatch(nameof(ChatController.SendChat))]
     [HarmonyPrefix]
-    public static bool SendChat_Prefix(ChatController __instance)
+    internal static bool SendChat_Prefix(ChatController __instance)
     {
         if (!_enabled)
         {
@@ -72,7 +72,7 @@ class CommandsPatch
     private static TextMeshPro? commandInfo;
     [HarmonyPatch(nameof(ChatController.Toggle))]
     [HarmonyPostfix]
-    public static void Awake_Postfix(ChatController __instance)
+    internal static void Awake_Postfix(ChatController __instance)
     {
         if (commandText == null)
         {
@@ -107,7 +107,7 @@ class CommandsPatch
     // Command helper
     [HarmonyPatch(nameof(ChatController.Update))]
     [HarmonyPostfix]
-    public static void Update_Postfix(ChatController __instance)
+    internal static void Update_Postfix(ChatController __instance)
     {
         if (!_enabled)
         {
@@ -208,7 +208,7 @@ class CommandsPatch
     }
 
 
-    public static BaseCommand? GetClosestCommand(string typedCommand)
+    internal static BaseCommand? GetClosestCommand(string typedCommand)
     {
         var directNormalMatch = BaseCommand.allCommands
             .FirstOrDefault(c => c.Type == CommandType.Normal

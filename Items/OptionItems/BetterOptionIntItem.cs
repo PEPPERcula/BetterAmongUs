@@ -3,20 +3,20 @@ using UnityEngine;
 
 namespace BetterAmongUs.Items.OptionItems;
 
-public class BetterOptionIntItem : BetterOptionItem
+internal class BetterOptionIntItem : BetterOptionItem
 {
     private NumberOption? ThisOption;
-    public int CurrentValue;
-    public IntRange intRange = new(0, 180);
-    public int Increment = 1;
+    internal int CurrentValue;
+    internal IntRange intRange = new(0, 180);
+    internal int Increment = 1;
     private string? PostFix;
     private string? PreFix;
 
-    public override bool ShowChildrenCondition() => CurrentValue > intRange.min;
-    public override bool SelfShowCondition() => ShowCondition != null ? ShowCondition() : base.SelfShowCondition();
-    public Func<bool>? ShowCondition = null;
+    internal override bool ShowChildrenCondition() => CurrentValue > intRange.min;
+    internal override bool SelfShowCondition() => ShowCondition != null ? ShowCondition() : base.SelfShowCondition();
+    internal Func<bool>? ShowCondition = null;
 
-    public BetterOptionItem Create(int id, GameOptionsMenu gameOptionsMenu, string name, int[] values, int DefaultValue, string preFix = "", string postFix = "", BetterOptionItem? Parent = null, Func<bool>? selfShowCondition = null)
+    internal BetterOptionItem Create(int id, GameOptionsMenu gameOptionsMenu, string name, int[] values, int DefaultValue, string preFix = "", string postFix = "", BetterOptionItem? Parent = null, Func<bool>? selfShowCondition = null)
     {
         Id = id;
         intRange = new(values[0], values[1]);
@@ -117,7 +117,7 @@ public class BetterOptionIntItem : BetterOptionItem
         BetterDataManager.SaveSetting(Id, CurrentValue.ToString());
     }
 
-    public void Increase()
+    internal void Increase()
     {
         int times = 1;
         if (Input.GetKey(KeyCode.LeftShift))
@@ -137,7 +137,7 @@ public class BetterOptionIntItem : BetterOptionItem
         AdjustButtonsActiveState();
     }
 
-    public void Decrease()
+    internal void Decrease()
     {
         int times = 1;
         if (Input.GetKey(KeyCode.LeftShift))
@@ -157,7 +157,7 @@ public class BetterOptionIntItem : BetterOptionItem
         AdjustButtonsActiveState();
     }
 
-    public void Load(int DefaultValue)
+    internal void Load(int DefaultValue)
     {
         if (BetterDataManager.CanLoadSetting(Id))
         {
@@ -177,7 +177,7 @@ public class BetterOptionIntItem : BetterOptionItem
         }
     }
 
-    public override float GetFloat()
+    internal override float GetFloat()
     {
         if (BetterDataManager.CanLoadSetting(Id))
         {
@@ -189,7 +189,7 @@ public class BetterOptionIntItem : BetterOptionItem
         }
     }
 
-    public override int GetInt()
+    internal override int GetInt()
     {
         if (BetterDataManager.CanLoadSetting(Id))
         {
@@ -201,7 +201,7 @@ public class BetterOptionIntItem : BetterOptionItem
         }
     }
 
-    public override void SetData(OptionBehaviour optionBehaviour)
+    internal override void SetData(OptionBehaviour optionBehaviour)
     {
         optionBehaviour.data = new BaseGameSetting
         {
@@ -210,7 +210,7 @@ public class BetterOptionIntItem : BetterOptionItem
         };
     }
 
-    public override void ValueChanged(int id, OptionBehaviour optionBehaviour)
+    internal override void ValueChanged(int id, OptionBehaviour optionBehaviour)
     {
         if (IsParent || IsChild)
         {

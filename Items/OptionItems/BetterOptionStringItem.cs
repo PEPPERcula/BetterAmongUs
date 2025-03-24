@@ -3,17 +3,17 @@ using UnityEngine;
 
 namespace BetterAmongUs.Items.OptionItems;
 
-public class BetterOptionStringItem : BetterOptionItem
+internal class BetterOptionStringItem : BetterOptionItem
 {
     private StringOption? ThisOption;
-    public string[] Values = [];
-    public int CurrentValue;
+    internal string[] Values = [];
+    internal int CurrentValue;
 
-    public override bool ShowChildrenCondition() => CurrentValue > 0;
-    public override bool SelfShowCondition() => ShowCondition != null ? ShowCondition() : base.SelfShowCondition();
-    public Func<bool>? ShowCondition = null;
+    internal override bool ShowChildrenCondition() => CurrentValue > 0;
+    internal override bool SelfShowCondition() => ShowCondition != null ? ShowCondition() : base.SelfShowCondition();
+    internal Func<bool>? ShowCondition = null;
 
-    public BetterOptionItem Create(int id, GameOptionsMenu gameOptionsMenu, string name, string[] strings, int DefaultValue = 0, BetterOptionItem? Parent = null, Func<bool>? selfShowCondition = null)
+    internal BetterOptionItem Create(int id, GameOptionsMenu gameOptionsMenu, string name, string[] strings, int DefaultValue = 0, BetterOptionItem? Parent = null, Func<bool>? selfShowCondition = null)
     {
         Id = id;
         Values = strings;
@@ -112,7 +112,7 @@ public class BetterOptionStringItem : BetterOptionItem
         BetterDataManager.SaveSetting(Id, CurrentValue.ToString());
     }
 
-    public void Increase()
+    internal void Increase()
     {
         if (CurrentValue < Values.Length)
         {
@@ -121,7 +121,7 @@ public class BetterOptionStringItem : BetterOptionItem
         }
     }
 
-    public void Decrease()
+    internal void Decrease()
     {
         if (CurrentValue > 0)
         {
@@ -130,7 +130,7 @@ public class BetterOptionStringItem : BetterOptionItem
         }
     }
 
-    public void Load(int DefaultValue)
+    internal void Load(int DefaultValue)
     {
         if (BetterDataManager.CanLoadSetting(Id))
         {
@@ -150,7 +150,7 @@ public class BetterOptionStringItem : BetterOptionItem
         }
     }
 
-    public override int GetValue()
+    internal override int GetValue()
     {
         if (BetterDataManager.CanLoadSetting(Id))
         {
@@ -162,7 +162,7 @@ public class BetterOptionStringItem : BetterOptionItem
         }
     }
 
-    public override void SetData(OptionBehaviour optionBehaviour)
+    internal override void SetData(OptionBehaviour optionBehaviour)
     {
         optionBehaviour.data = new BaseGameSetting
         {
@@ -171,7 +171,7 @@ public class BetterOptionStringItem : BetterOptionItem
         };
     }
 
-    public override void ValueChanged(int id, OptionBehaviour optionBehaviour)
+    internal override void ValueChanged(int id, OptionBehaviour optionBehaviour)
     {
         if (IsParent || IsChild)
         {

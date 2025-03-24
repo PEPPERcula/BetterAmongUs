@@ -3,7 +3,7 @@ using BetterAmongUs.Items.Attributes;
 namespace BetterAmongUs.Modules.AntiCheat;
 
 [RegisterRPCHandler]
-public sealed class SnapToHandler : RPCHandler
+internal sealed class SnapToHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.SnapTo;
+    internal override byte CallId => (byte)RpcCalls.SnapTo;
 }

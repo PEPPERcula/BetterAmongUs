@@ -8,11 +8,11 @@ using InnerNet;
 namespace BetterAmongUs.Modules.AntiCheat;
 
 [RegisterRPCHandler]
-public sealed class KillNetworkHandler : RPCHandler
+internal sealed class KillNetworkHandler : RPCHandler
 {
-    public override byte CallId => unchecked((byte)CustomRPC.KillNetwork);
+    internal override byte CallId => unchecked((byte)CustomRPC.KillNetwork);
 
-    public override void HandleAntiCheatCheck(PlayerControl? sender, MessageReader reader)
+    internal override void HandleAntiCheatCheck(PlayerControl? sender, MessageReader reader)
     {
         if (Main.AntiCheat.Value && BetterGameSettings.DetectCheatClients.GetBool())
         {

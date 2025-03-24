@@ -6,11 +6,11 @@ using Hazel;
 namespace BetterAmongUs.Modules.AntiCheat;
 
 [RegisterRPCHandler]
-public sealed class CheckAppearHandler : RPCHandler
+internal sealed class CheckAppearHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.CheckAppear;
+    internal override byte CallId => (byte)RpcCalls.CheckAppear;
 
-    public override bool BetterHandle(PlayerControl? sender, MessageReader reader)
+    internal override bool BetterHandle(PlayerControl? sender, MessageReader reader)
     {
         bool flag = reader.ReadBoolean();
 
@@ -35,7 +35,7 @@ public sealed class CheckAppearHandler : RPCHandler
         return false;
     }
 
-    public override bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader)
+    internal override bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader)
     {
         if (!GameState.IsHost)
         {

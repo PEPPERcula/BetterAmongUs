@@ -8,10 +8,10 @@ using UnityEngine;
 
 namespace BetterAmongUs.Helpers;
 
-public class ExtendedPlayerInfo : MonoBehaviour
+internal class ExtendedPlayerInfo : MonoBehaviour
 {
     private bool hasSet = false;
-    public void SetInfo(NetworkedPlayerInfo data)
+    internal void SetInfo(NetworkedPlayerInfo data)
     {
         if (hasSet) return;
         MyUserData = UserData.GetPlayerUserData(data);
@@ -21,7 +21,7 @@ public class ExtendedPlayerInfo : MonoBehaviour
     }
 
     private float timeAccumulator = 0f;
-    public void Update()
+    internal void Update()
     {
         var time = Time.deltaTime;
 
@@ -49,7 +49,7 @@ public class ExtendedPlayerInfo : MonoBehaviour
         }
     }
 
-    public void LateUpdate()
+    internal void LateUpdate()
     {
         if (gameObject == null) return;
 
@@ -59,71 +59,71 @@ public class ExtendedPlayerInfo : MonoBehaviour
         }
     }
 
-    public UserData? MyUserData { get; private set; } = UserData.AllUsers.First();
-    public byte _PlayerId { get; private set; }
-    public NetworkedPlayerInfo? _Data { get; private set; }
-    public string? RealName { get; private set; }
-    public bool IsDirtyInfo { get; set; } = true;
-    public Dictionary<byte, string> LastNameSetFor { get; set; } = [];
-    public bool IsBetterUser { get; set; } = false;
-    public bool IsVerifiedBetterUser { get; set; } = false;
-    public bool IsTOHEHost { get; set; } = false;
-    public bool HasShowDcMsg { get; set; } = false;
-    public DisconnectReasons DisconnectReason { get; set; } = DisconnectReasons.Unknown;
-    public ExtendedRoleInfo? RoleInfo { get; } = new();
-    public ExtendedAntiCheatInfo? AntiCheatInfo { get; } = new();
+    internal UserData? MyUserData { get; private set; } = UserData.AllUsers.First();
+    internal byte _PlayerId { get; private set; }
+    internal NetworkedPlayerInfo? _Data { get; private set; }
+    internal string? RealName { get; private set; }
+    internal bool IsDirtyInfo { get; set; } = true;
+    internal Dictionary<byte, string> LastNameSetFor { get; set; } = [];
+    internal bool IsBetterUser { get; set; } = false;
+    internal bool IsVerifiedBetterUser { get; set; } = false;
+    internal bool IsTOHEHost { get; set; } = false;
+    internal bool HasShowDcMsg { get; set; } = false;
+    internal DisconnectReasons DisconnectReason { get; set; } = DisconnectReasons.Unknown;
+    internal ExtendedRoleInfo? RoleInfo { get; } = new();
+    internal ExtendedAntiCheatInfo? AntiCheatInfo { get; } = new();
 }
 
-public class ExtendedAntiCheatInfo
+internal class ExtendedAntiCheatInfo
 {
-    public bool BannedByAntiCheat { get; set; } = false;
-    public List<string> AUMChats { get; set; } = [];
-    public static int MaxRPCSent => 35;
-    public int RPCSentPS { get; set; } = 0;
-    public int TimesAttemptedKilled { get; set; } = 0;
-    public int OpenSabotageNum { get; set; } = 0;
-    public bool IsFixingPanelSabotage => OpenSabotageNum != 0;
-    public float TimeSinceLastTask { get; set; } = 5f;
-    public uint LastTaskId { get; set; } = 999;
-    public bool HasSetName { get; set; }
-    public bool HasSetLevel { get; set; }
+    internal bool BannedByAntiCheat { get; set; } = false;
+    internal List<string> AUMChats { get; set; } = [];
+    internal static int MaxRPCSent => 35;
+    internal int RPCSentPS { get; set; } = 0;
+    internal int TimesAttemptedKilled { get; set; } = 0;
+    internal int OpenSabotageNum { get; set; } = 0;
+    internal bool IsFixingPanelSabotage => OpenSabotageNum != 0;
+    internal float TimeSinceLastTask { get; set; } = 5f;
+    internal uint LastTaskId { get; set; } = 999;
+    internal bool HasSetName { get; set; }
+    internal bool HasSetLevel { get; set; }
 }
 
-public class ExtendedRoleInfo
+internal class ExtendedRoleInfo
 {
-    public int Kills { get; set; } = 0;
-    public bool HasNoisemakerNotify { get; set; } = false;
-    public RoleTypes DeadDisplayRole { get; set; }
+    internal int Kills { get; set; } = 0;
+    internal bool HasNoisemakerNotify { get; set; } = false;
+    internal RoleTypes DeadDisplayRole { get; set; }
 }
 
-public static class PlayerControlDataExtension
+internal static class PlayerControlDataExtension
 {
     [HarmonyPatch(typeof(NetworkedPlayerInfo))]
     class NetworkedPlayerInfoPatch
     {
         [HarmonyPatch(nameof(NetworkedPlayerInfo.Init))]
         [HarmonyPostfix]
-        public static void Init_Postfix(NetworkedPlayerInfo __instance)
+        internal static void Init_Postfix(NetworkedPlayerInfo __instance)
         {
             TryCreateExtendedData(__instance);
         }
 
         [HarmonyPatch(nameof(NetworkedPlayerInfo.Serialize))]
         [HarmonyPostfix]
-        public static void Serialize_Postfix(NetworkedPlayerInfo __instance)
+        internal static void Serialize_Postfix(NetworkedPlayerInfo __instance)
         {
             __instance.DirtyNameDelay();
         }
 
         [HarmonyPatch(nameof(NetworkedPlayerInfo.Deserialize))]
         [HarmonyPostfix]
-        public static void Deserialize_Postfix(NetworkedPlayerInfo __instance)
+        internal static void Deserialize_Postfix(NetworkedPlayerInfo __instance)
         {
             TryCreateExtendedData(__instance);
             __instance.DirtyNameDelay();
         }
 
-        public static void TryCreateExtendedData(NetworkedPlayerInfo data)
+        internal static void TryCreateExtendedData(NetworkedPlayerInfo data)
         {
             if (data.BetterData() == null)
             {
@@ -135,19 +135,19 @@ public static class PlayerControlDataExtension
     }
 
     // Get BetterData from PlayerControl
-    public static ExtendedPlayerInfo? BetterData(this PlayerControl player)
+    internal static ExtendedPlayerInfo? BetterData(this PlayerControl player)
     {
         return player?.Data?.GetComponent<ExtendedPlayerInfo>();
     }
 
     // Get BetterData from NetworkedPlayerInfo
-    public static ExtendedPlayerInfo? BetterData(this NetworkedPlayerInfo data)
+    internal static ExtendedPlayerInfo? BetterData(this NetworkedPlayerInfo data)
     {
         return data?.GetComponent<ExtendedPlayerInfo>();
     }
 
     // Get BetterData from ClientData
-    public static ExtendedPlayerInfo? BetterData(this ClientData data)
+    internal static ExtendedPlayerInfo? BetterData(this ClientData data)
     {
         var player = Utils.PlayerFromClientId(data.Id);
         return player?.Data?.GetComponent<ExtendedPlayerInfo>();

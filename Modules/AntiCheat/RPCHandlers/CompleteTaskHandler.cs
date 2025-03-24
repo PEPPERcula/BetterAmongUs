@@ -6,16 +6,16 @@ using Hazel;
 namespace BetterAmongUs.Modules.AntiCheat;
 
 [RegisterRPCHandler]
-public sealed class CompleteTaskHandler : RPCHandler
+internal sealed class CompleteTaskHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.CompleteTask;
+    internal override byte CallId => (byte)RpcCalls.CompleteTask;
 
-    public override void Handle(PlayerControl? sender, MessageReader reader)
+    internal override void Handle(PlayerControl? sender, MessageReader reader)
     {
         sender.DirtyName();
     }
 
-    public override void HandleAntiCheat(PlayerControl? sender, MessageReader reader)
+    internal override void HandleAntiCheat(PlayerControl? sender, MessageReader reader)
     {
         var taskId = reader.ReadPackedUInt32();
 

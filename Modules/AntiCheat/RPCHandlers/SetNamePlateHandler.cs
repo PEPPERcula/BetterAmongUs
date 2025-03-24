@@ -3,7 +3,7 @@ using BetterAmongUs.Items.Attributes;
 namespace BetterAmongUs.Modules.AntiCheat;
 
 [RegisterRPCHandler]
-public sealed class SetNamePlateHandler : RPCHandler
+internal sealed class SetNamePlateHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.SetNamePlate;
+    internal override byte CallId => (byte)RpcCalls.SetNamePlate;
 }

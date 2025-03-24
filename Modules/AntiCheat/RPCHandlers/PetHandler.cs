@@ -5,10 +5,10 @@ using Hazel;
 namespace BetterAmongUs.Modules.AntiCheat;
 
 [RegisterRPCHandler]
-public sealed class PetHandler : RPCHandler
+internal sealed class PetHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.Pet;
-    public override void HandleAntiCheat(PlayerControl? sender, MessageReader reader)
+    internal override byte CallId => (byte)RpcCalls.Pet;
+    internal override void HandleAntiCheat(PlayerControl? sender, MessageReader reader)
     {
         if (sender?.CurrentOutfit?.PetId == "pet_EmptyPet")
         {

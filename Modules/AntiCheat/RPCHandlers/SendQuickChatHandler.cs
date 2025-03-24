@@ -6,11 +6,11 @@ using Hazel;
 namespace BetterAmongUs.Modules.AntiCheat;
 
 [RegisterRPCHandler]
-public sealed class SendQuickChatHandler : RPCHandler
+internal sealed class SendQuickChatHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.SendQuickChat;
+    internal override byte CallId => (byte)RpcCalls.SendQuickChat;
 
-    public override void HandleAntiCheat(PlayerControl? sender, MessageReader reader)
+    internal override void HandleAntiCheat(PlayerControl? sender, MessageReader reader)
     {
         if (sender.IsAlive() && GameState.IsInGamePlay && !GameState.IsMeeting && !GameState.IsExilling || reader.BytesRemaining == 0)
         {

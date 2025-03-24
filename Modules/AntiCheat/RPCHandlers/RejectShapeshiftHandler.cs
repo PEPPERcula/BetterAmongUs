@@ -3,7 +3,7 @@ using BetterAmongUs.Items.Attributes;
 namespace BetterAmongUs.Modules.AntiCheat;
 
 [RegisterRPCHandler]
-public sealed class RejectShapeshiftHandler : RPCHandler
+internal sealed class RejectShapeshiftHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.RejectShapeshift;
+    internal override byte CallId => (byte)RpcCalls.RejectShapeshift;
 }

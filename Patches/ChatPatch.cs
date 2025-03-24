@@ -16,10 +16,10 @@ namespace BetterAmongUs.Patches;
 
 class ChatPatch
 {
-    public static List<string> ChatHistory = [];
-    public static int CurrentHistorySelection = -1;
+    internal static List<string> ChatHistory = [];
+    internal static int CurrentHistorySelection = -1;
 
-    public static void ClearChat()
+    internal static void ClearChat()
     {
         HudManager.Instance.Chat.chatBubblePool.ReclaimAll();
     }
@@ -27,7 +27,7 @@ class ChatPatch
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSendChat))]
     class RpcSendChatPatch
     {
-        public static bool Prefix(PlayerControl __instance, string chatText, ref bool __result)
+        internal static bool Prefix(PlayerControl __instance, string chatText, ref bool __result)
         {
             if (string.IsNullOrWhiteSpace(chatText))
             {
@@ -58,11 +58,11 @@ class ChatPatch
     }
 
     [HarmonyPatch(typeof(ChatController))]
-    public class ChatControllerPatch
+    internal class ChatControllerPatch
     {
         [HarmonyPatch(nameof(ChatController.Toggle))]
         [HarmonyPostfix]
-        public static void Toggle_Postfix(/*ChatController __instance*/)
+        internal static void Toggle_Postfix(/*ChatController __instance*/)
         {
             SetChatTheme();
         }
@@ -70,7 +70,7 @@ class ChatPatch
         [HarmonyPatch(nameof(ChatController.Update))]
         [HarmonyPrefix]
         [HarmonyPriority(Priority.First)]
-        public static void Update_Prefix(ChatController __instance)
+        internal static void Update_Prefix(ChatController __instance)
         {
             if (Main.ChatDarkMode.Value)
             {
@@ -111,7 +111,7 @@ class ChatPatch
         // Add extra information to chat bubble
         [HarmonyPatch(nameof(ChatController.AddChat))]
         [HarmonyPostfix]
-        public static void AddChat_Postfix(ChatController __instance, [HarmonyArgument(0)] PlayerControl sourcePlayer, [HarmonyArgument(1)] string chatText)
+        internal static void AddChat_Postfix(ChatController __instance, [HarmonyArgument(0)] PlayerControl sourcePlayer, [HarmonyArgument(1)] string chatText)
         {
             ChatBubble? chatBubble = SetChatPoolTheme();
             if (chatBubble == null) return;
@@ -195,19 +195,19 @@ class ChatPatch
 
         [HarmonyPatch(nameof(ChatController.AddChatNote))]
         [HarmonyPostfix]
-        public static void AddChatNote_Postfix(ChatController __instance)
+        internal static void AddChatNote_Postfix(ChatController __instance)
         {
             SetChatPoolTheme();
         }
 
         [HarmonyPatch(nameof(ChatController.AddChatWarning))]
         [HarmonyPostfix]
-        public static void AddChatWarning_Postfix(ChatController __instance)
+        internal static void AddChatWarning_Postfix(ChatController __instance)
         {
             SetChatPoolTheme();
         }
 
-        public static void SetChatTheme()
+        internal static void SetChatTheme()
         {
             var chat = HudManager.Instance.Chat;
 
@@ -239,7 +239,7 @@ class ChatPatch
         }
 
         // Set chat theme
-        public static ChatBubble? SetChatPoolTheme(ChatBubble? asChatBubble = null)
+        internal static ChatBubble? SetChatPoolTheme(ChatBubble? asChatBubble = null)
         {
             ChatBubble Get() => HudManager.Instance.Chat.chatBubblePool.activeChildren.ToArray()
                 .Select(c => c.GetComponent<ChatBubble>())
@@ -285,7 +285,7 @@ class ChatPatch
     {
         [HarmonyPatch(nameof(FreeChatInputField.Awake))]
         [HarmonyPostfix]
-        public static void Awake_Postfix(FreeChatInputField __instance)
+        internal static void Awake_Postfix(FreeChatInputField __instance)
         {
             __instance.textArea.allowAllCharacters = true;
             __instance.textArea.AllowSymbols = true;
@@ -296,7 +296,7 @@ class ChatPatch
         }
         [HarmonyPatch(nameof(FreeChatInputField.UpdateCharCount))]
         [HarmonyPostfix]
-        public static void UpdateCharCount_Postfix(FreeChatInputField __instance)
+        internal static void UpdateCharCount_Postfix(FreeChatInputField __instance)
         {
             int length = __instance.textArea.text.Length;
             __instance.charCountText.text = string.Format("{0}/118", length);

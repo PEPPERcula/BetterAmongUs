@@ -21,7 +21,7 @@ internal class MainMenuPatch
     private static SpriteRenderer? sprite;
     [HarmonyPatch(nameof(MainMenuManager.LateUpdate))]
     [HarmonyPostfix]
-    public static void LateUpdate_Postfix(MainMenuManager __instance)
+    internal static void LateUpdate_Postfix(MainMenuManager __instance)
     {
         if (BannedUserData.IsBanned || FileChecker.HasUnauthorizedFileOrMod)
         {
@@ -58,7 +58,7 @@ internal class MainMenuPatch
     // Replace AU logo with BAU logo
     [HarmonyPatch(nameof(MainMenuManager.Start))]
     [HarmonyPostfix]
-    public static void Postfix(MainMenuManager __instance)
+    internal static void Postfix(MainMenuManager __instance)
     {
         GameObject logo = GameObject.Find("LeftPanel/Sizer/LOGO-AU");
         GameObject sizer = logo.transform.parent.gameObject;
@@ -110,7 +110,7 @@ internal class MainMenuPatch
         }
     }
 
-    public static PassiveButton CreateButton(string name, Color32 normalColor, Color32 hoverColor, Action action, string label, Vector2? scale = null)
+    internal static PassiveButton CreateButton(string name, Color32 normalColor, Color32 hoverColor, Action action, string label, Vector2? scale = null)
     {
         var button = UnityEngine.Object.Instantiate(template);
         buttons.Add(button);

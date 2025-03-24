@@ -7,10 +7,10 @@ using Hazel;
 namespace BetterAmongUs.Patches;
 
 [HarmonyPatch(typeof(RoleManager))]
-public class RoleManagerPatch
+internal class RoleManagerPatch
 {
-    public static Dictionary<PlayerControl, RoleTypes> SetPlayerRole = []; // Player, Role
-    public static Dictionary<string, int> ImpostorMultiplier = []; // HashPuid, Multiplier
+    internal static Dictionary<PlayerControl, RoleTypes> SetPlayerRole = []; // Player, Role
+    internal static Dictionary<string, int> ImpostorMultiplier = []; // HashPuid, Multiplier
     private static Random random = new Random();
 
     static readonly Func<InnerNet.ClientData, bool> clientCheck = (clientData) =>
@@ -21,7 +21,7 @@ public class RoleManagerPatch
     // Better role algorithm
     [HarmonyPatch(nameof(RoleManager.SelectRoles))]
     [HarmonyPrefix]
-    public static bool RoleManager_Prefix(/*RoleManager __instance*/)
+    internal static bool RoleManager_Prefix(/*RoleManager __instance*/)
     {
         if (!GameState.IsHideNSeek)
         {
@@ -35,7 +35,7 @@ public class RoleManagerPatch
         return false;
     }
 
-    public static void RegularBetterRoleAssignment()
+    internal static void RegularBetterRoleAssignment()
     {
         Logger.LogHeader($"Better Role Assignment Has Started", "RoleManager");
 
@@ -264,7 +264,7 @@ public class RoleManagerPatch
         Logger.LogHeader($"Better Role Assignment Has Finished", "RoleManager");
     }
 
-    public static void HideAndSeekBetterRoleAssignment()
+    internal static void HideAndSeekBetterRoleAssignment()
     {
         Logger.LogHeader($"Better Role Assignment Has Started", "RoleManager");
 
@@ -381,7 +381,7 @@ public class RoleManagerPatch
 
     [HarmonyPatch(nameof(RoleManager.AssignRoleOnDeath))]
     [HarmonyPrefix]
-    public static bool AssignRoleOnDeath_Prefix(/*RoleManager __instance*/ [HarmonyArgument(0)] PlayerControl player)
+    internal static bool AssignRoleOnDeath_Prefix(/*RoleManager __instance*/ [HarmonyArgument(0)] PlayerControl player)
     {
         Dictionary<RoleTypes, int> GhostRoles = new() // Role, Amount
         {
@@ -459,7 +459,7 @@ public class RoleManagerPatch
         return shuffledDictionary;
     }
 
-    public static int RNG()
+    internal static int RNG()
     {
         switch (BetterGameSettings.RoleRandomizer.GetValue())
         {

@@ -10,13 +10,13 @@ namespace BetterAmongUs.Modules.AntiCheat;
 
 class BAUAntiCheat
 {
-    public static Dictionary<string, string> PlayerData = []; // HashPuid, FriendCode
-    public static Dictionary<string, string> SickoData = []; // HashPuid, FriendCode
-    public static Dictionary<string, string> AUMData = []; // HashPuid, FriendCode
-    public static Dictionary<string, string> KNData = []; // HashPuid, FriendCode
-    public static bool IsEnabled => PlayerControl.LocalPlayer?.Data?.IsIncomplete == false;
+    internal static Dictionary<string, string> PlayerData = []; // HashPuid, FriendCode
+    internal static Dictionary<string, string> SickoData = []; // HashPuid, FriendCode
+    internal static Dictionary<string, string> AUMData = []; // HashPuid, FriendCode
+    internal static Dictionary<string, string> KNData = []; // HashPuid, FriendCode
+    internal static bool IsEnabled => PlayerControl.LocalPlayer?.Data?.IsIncomplete == false;
 
-    public static string[] GatherAllData()
+    internal static string[] GatherAllData()
     {
         return PlayerData.Keys
             .Concat(PlayerData.Values)
@@ -30,7 +30,7 @@ class BAUAntiCheat
             .ToArray();
     }
 
-    public static void Update()
+    internal static void Update()
     {
         if (GameState.IsHost && GameState.IsInGame)
         {
@@ -71,7 +71,7 @@ class BAUAntiCheat
     {
         [HarmonyPatch(nameof(PlatformSpecificData.Deserialize))]
         [HarmonyPostfix]
-        public static void Deserialize_Postfix(PlatformSpecificData __instance)
+        internal static void Deserialize_Postfix(PlatformSpecificData __instance)
         {
             if (!Main.AntiCheat.Value || !GameState.IsVanillaServer) return;
 
@@ -128,7 +128,7 @@ class BAUAntiCheat
     }
 
     // Handle RPC before anti cheat detection
-    public static void HandleCheatRPCBeforeCheck(PlayerControl player, byte callId, MessageReader oldReader)
+    internal static void HandleCheatRPCBeforeCheck(PlayerControl player, byte callId, MessageReader oldReader)
     {
         MessageReader reader = MessageReader.Get(oldReader);
 
@@ -138,7 +138,7 @@ class BAUAntiCheat
     }
 
     // Check and notify for invalid rpcs
-    public static void CheckRPC(PlayerControl player, byte callId, MessageReader oldReader)
+    internal static void CheckRPC(PlayerControl player, byte callId, MessageReader oldReader)
     {
         MessageReader reader = MessageReader.Get(oldReader);
 
@@ -149,7 +149,7 @@ class BAUAntiCheat
     }
 
     // Check notify and cancel out request for invalid rpcs
-    public static bool CheckCancelRPC(PlayerControl player, byte callId, MessageReader oldReader)
+    internal static bool CheckCancelRPC(PlayerControl player, byte callId, MessageReader oldReader)
     {
         try
         {
@@ -243,7 +243,7 @@ class BAUAntiCheat
     }
 
     // Check game states when sabotaging
-    public static bool RpcUpdateSystemCheck(PlayerControl player, SystemTypes systemType, MessageReader oldReader)
+    internal static bool RpcUpdateSystemCheck(PlayerControl player, SystemTypes systemType, MessageReader oldReader)
     {
         MessageReader reader = MessageReader.Get(oldReader);
 

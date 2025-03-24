@@ -10,37 +10,37 @@ namespace BetterAmongUs.Patches;
 
 class BetterGameSettings
 {
-    public static BetterOptionItem? WhenCheating;
-    public static BetterOptionItem? InvalidFriendCode;
-    public static BetterOptionItem? UseBanPlayerList;
-    public static BetterOptionItem? UseBanNameList;
-    public static BetterOptionItem? UseBanWordList;
-    public static BetterOptionItem? HideAndSeekImpNum;
-    public static BetterOptionItem? DetectedLevelAbove;
-    public static BetterOptionItem? DetectCheatClients;
-    public static BetterOptionItem? DetectInvalidRPCs;
-    public static BetterOptionItem? RoleRandomizer;
-    public static BetterOptionItem? DesyncRoles;
-    public static BetterOptionItem? CancelInvalidSabotage;
-    public static BetterOptionItem? CensorDetectionReason;
+    internal static BetterOptionItem? WhenCheating;
+    internal static BetterOptionItem? InvalidFriendCode;
+    internal static BetterOptionItem? UseBanPlayerList;
+    internal static BetterOptionItem? UseBanNameList;
+    internal static BetterOptionItem? UseBanWordList;
+    internal static BetterOptionItem? HideAndSeekImpNum;
+    internal static BetterOptionItem? DetectedLevelAbove;
+    internal static BetterOptionItem? DetectCheatClients;
+    internal static BetterOptionItem? DetectInvalidRPCs;
+    internal static BetterOptionItem? RoleRandomizer;
+    internal static BetterOptionItem? DesyncRoles;
+    internal static BetterOptionItem? CancelInvalidSabotage;
+    internal static BetterOptionItem? CensorDetectionReason;
 }
 
 class BetterGameSettingsTemp
 {
-    public static BetterOptionItem? HideAndSeekImp2;
-    public static BetterOptionItem? HideAndSeekImp3;
-    public static BetterOptionItem? HideAndSeekImp4;
-    public static BetterOptionItem? HideAndSeekImp5;
+    internal static BetterOptionItem? HideAndSeekImp2;
+    internal static BetterOptionItem? HideAndSeekImp3;
+    internal static BetterOptionItem? HideAndSeekImp4;
+    internal static BetterOptionItem? HideAndSeekImp5;
 }
 
 [HarmonyPatch(typeof(GameSettingMenu))]
 static class GameSettingMenuPatch
 {
     private static PassiveButton BetterSettingsButton;
-    public static GameOptionsMenu BetterSettingsTab;
+    internal static GameOptionsMenu BetterSettingsTab;
     private static List<BetterOptionItem> TitleList = [];
 
-    public static void SetupSettings(bool IsPreload = false)
+    internal static void SetupSettings(bool IsPreload = false)
     {
         BetterOptionItem.BetterOptionItems.Clear();
         BetterOptionItem.TempPlayerOptionDataNum = 0;
@@ -158,7 +158,7 @@ static class GameSettingMenuPatch
 
     [HarmonyPatch(nameof(GameSettingMenu.Update))]
     [HarmonyPostfix]
-    public static void Update_Postfix(GameSettingMenu __instance)
+    internal static void Update_Postfix(GameSettingMenu __instance)
     {
         if (BetterSettingsButton != null)
         {
@@ -181,7 +181,7 @@ static class GameSettingMenuPatch
 
     [HarmonyPatch(nameof(GameSettingMenu.Start))]
     [HarmonyPostfix]
-    public static void Start_Postfix(GameSettingMenu __instance)
+    internal static void Start_Postfix(GameSettingMenu __instance)
     {
         __instance.gameObject.transform.SetLocalY(-0.1f);
         GameObject PanelSprite = __instance.gameObject.transform.Find("PanelSprite").gameObject;
@@ -245,7 +245,7 @@ static class GameSettingMenuPatch
 
     [HarmonyPatch(nameof(GameSettingMenu.ChangeTab))]
     [HarmonyPrefix]
-    public static void ChangeTab_Prefix(GameSettingMenu __instance, [HarmonyArgument(0)] int tabNum, [HarmonyArgument(1)] bool previewOnly)
+    internal static void ChangeTab_Prefix(GameSettingMenu __instance, [HarmonyArgument(0)] int tabNum, [HarmonyArgument(1)] bool previewOnly)
     {
         if (BetterSettingsTab == null || BetterSettingsButton == null) return;
 
@@ -265,7 +265,7 @@ static class GameSettingMenuPatch
 
     [HarmonyPatch(nameof(GameSettingMenu.ChangeTab))]
     [HarmonyPostfix]
-    public static void ChangeTab_Postfix(GameSettingMenu __instance, [HarmonyArgument(0)] int tabNum)
+    internal static void ChangeTab_Postfix(GameSettingMenu __instance, [HarmonyArgument(0)] int tabNum)
     {
         if (BetterSettingsTab == null || BetterSettingsButton == null) return;
 
@@ -286,7 +286,7 @@ static class GameOptionsMenuPatch
 {
     [HarmonyPatch(nameof(GameOptionsMenu.CreateSettings))]
     [HarmonyPrefix]
-    public static bool CreateSettings_Prefix(GameOptionsMenu __instance)
+    internal static bool CreateSettings_Prefix(GameOptionsMenu __instance)
     {
         if (__instance == GameSettingMenuPatch.BetterSettingsTab)
         {
@@ -302,7 +302,7 @@ static class OptionsConsolePatch
 {
     [HarmonyPatch(nameof(OptionsConsole.CanUse))]
     [HarmonyPrefix]
-    public static void CanUse_Prefix(OptionsConsole __instance)
+    internal static void CanUse_Prefix(OptionsConsole __instance)
     {
         __instance.HostOnly = false;
     }
@@ -314,7 +314,7 @@ static class NumberOptionPatch
 {
     [HarmonyPatch(nameof(NumberOption.Increase))]
     [HarmonyPrefix]
-    public static bool Increase_Prefix(NumberOption __instance)
+    internal static bool Increase_Prefix(NumberOption __instance)
     {
         int times = 1;
         if (Input.GetKey(KeyCode.LeftShift))
@@ -338,7 +338,7 @@ static class NumberOptionPatch
 
     [HarmonyPatch(nameof(NumberOption.Decrease))]
     [HarmonyPrefix]
-    public static bool Decrease_Prefix(NumberOption __instance)
+    internal static bool Decrease_Prefix(NumberOption __instance)
     {
         int times = 1;
         if (Input.GetKey(KeyCode.LeftShift))

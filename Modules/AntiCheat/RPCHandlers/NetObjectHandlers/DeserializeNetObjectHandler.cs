@@ -4,11 +4,11 @@ using InnerNet;
 
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class DeserializeNetObjectHandler : RPCHandler
+internal class DeserializeNetObjectHandler : RPCHandler
 {
-    public override byte GameDataTag => (byte)HandleGameDataTags.NetObjectDeserialize;
+    internal override byte GameDataTag => (byte)HandleGameDataTags.NetObjectDeserialize;
 
-    public override void HandleGameData(MessageReader reader)
+    internal override void HandleGameData(MessageReader reader)
     {
         uint netId = reader.ReadPackedUInt32();
         var innerNetObject = innerNetClient.FindObjectByNetId<InnerNetObject>(netId);

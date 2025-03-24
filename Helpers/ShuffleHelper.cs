@@ -1,6 +1,6 @@
 ﻿namespace BetterAmongUs.Helpers;
 
-public static class ShuffleListExtension
+internal static class ShuffleListExtension
 {
     /// <summary>
     /// Shuffles all elements in a collection randomly
@@ -9,7 +9,7 @@ public static class ShuffleListExtension
     /// <param name="collection">The collection to be shuffled</param>
     /// <param name="random">An instance of a randomizer algorithm</param>
     /// <returns>The shuffled collection</returns>
-    public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> collection, Random random)
+    internal static IEnumerable<T> Shuffle<T>(this IEnumerable<T> collection, Random random)
     {
         var list = collection.ToList();
         int n = list.Count;

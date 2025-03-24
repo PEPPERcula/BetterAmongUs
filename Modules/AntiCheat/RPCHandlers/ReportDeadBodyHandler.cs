@@ -6,11 +6,11 @@ using Hazel;
 namespace BetterAmongUs.Modules.AntiCheat;
 
 [RegisterRPCHandler]
-public sealed class ReportDeadBodyHandler : RPCHandler
+internal sealed class ReportDeadBodyHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.ReportDeadBody;
+    internal override byte CallId => (byte)RpcCalls.ReportDeadBody;
 
-    public override bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader)
+    internal override bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader)
     {
         if (!GameState.IsInGamePlay || !Main.AllPlayerControls.All(pc => pc.roleAssigned))
         {

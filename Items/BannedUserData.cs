@@ -4,26 +4,26 @@ using System.Text.Json.Serialization;
 namespace BetterAmongUs.Items;
 
 [method: JsonConstructor]
-public class BannedUserData(string name = "", string puid = "", string friendCode = "", string reason = "")
+internal class BannedUserData(string name = "", string puid = "", string friendCode = "", string reason = "")
 {
-    public static List<BannedUserData> AllBannedUsers = [new BannedUserData("Default")];
+    internal static List<BannedUserData> AllBannedUsers = [new BannedUserData("Default")];
 
-    public bool IsLocalBan { get; private set; }
+    internal bool IsLocalBan { get; private set; }
 
     [JsonPropertyName("name")]
-    public string Name { get; } = name;
+    internal string Name { get; } = name;
 
     [JsonPropertyName("puid")]
-    public string Puid { get; } = puid;
+    internal string Puid { get; } = puid;
 
     [JsonPropertyName("friendcode")]
-    public string FriendCode { get; } = friendCode;
+    internal string FriendCode { get; } = friendCode;
 
     [JsonPropertyName("reason")]
-    public string Reason { get; } = reason;
+    internal string Reason { get; } = reason;
 
-    public static bool IsBanned = false;
-    public static bool CheckLocalBan(out BannedUserData? bannedData)
+    internal static bool IsBanned = false;
+    internal static bool CheckLocalBan(out BannedUserData? bannedData)
     {
         bannedData = null;
         if (IsBanned) return true;
@@ -42,7 +42,7 @@ public class BannedUserData(string name = "", string puid = "", string friendCod
 
         return false;
     }
-    public static bool CheckPlayerBan(NetworkedPlayerInfo data) => AllBannedUsers?.FirstOrDefault(user => user.Puid == data.GetHashPuid() || user.FriendCode == data.GetHashFriendcode()) != null;
-    public static bool CheckPuidBan(string puid) => AllBannedUsers?.FirstOrDefault(user => user.Puid == Utils.GetHashStr(puid)) != null;
-    public static bool CheckFriendCodeBan(string friendcode) => AllBannedUsers?.FirstOrDefault(user => user.FriendCode == Utils.GetHashStr(friendcode)) != null;
+    internal static bool CheckPlayerBan(NetworkedPlayerInfo data) => AllBannedUsers?.FirstOrDefault(user => user.Puid == data.GetHashPuid() || user.FriendCode == data.GetHashFriendcode()) != null;
+    internal static bool CheckPuidBan(string puid) => AllBannedUsers?.FirstOrDefault(user => user.Puid == Utils.GetHashStr(puid)) != null;
+    internal static bool CheckFriendCodeBan(string friendcode) => AllBannedUsers?.FirstOrDefault(user => user.FriendCode == Utils.GetHashStr(friendcode)) != null;
 }

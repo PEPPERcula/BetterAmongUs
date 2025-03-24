@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace BetterAmongUs.Helpers;
 
-public class GamePrefabHelper
+internal class GamePrefabHelper
 {
-    public static UnityEngine.Object? GetPrefabByName(string objectName)
+    internal static UnityEngine.Object? GetPrefabByName(string objectName)
     {
         UnityEngine.Object[] allObjects = UnityEngine.Resources.FindObjectsOfTypeAll(Il2CppType.Of<UnityEngine.Object>());
 

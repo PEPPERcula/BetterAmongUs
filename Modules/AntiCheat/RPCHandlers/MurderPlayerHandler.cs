@@ -8,17 +8,17 @@ using InnerNet;
 namespace BetterAmongUs.Modules.AntiCheat;
 
 [RegisterRPCHandler]
-public sealed class MurderPlayerHandler : RPCHandler
+internal sealed class MurderPlayerHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.MurderPlayer;
+    internal override byte CallId => (byte)RpcCalls.MurderPlayer;
 
-    public override void Handle(PlayerControl? sender, MessageReader reader)
+    internal override void Handle(PlayerControl? sender, MessageReader reader)
     {
         Utils.DirtyAllNames();
     }
 
     // Prevent ban exploit
-    public override bool HandleAntiCheatCancel(PlayerControl? player, MessageReader reader)
+    internal override bool HandleAntiCheatCancel(PlayerControl? player, MessageReader reader)
     {
         PlayerControl target = reader.ReadNetObject<PlayerControl>();
 
@@ -46,7 +46,7 @@ public sealed class MurderPlayerHandler : RPCHandler
         return true;
     }
 
-    public override void HandleAntiCheat(PlayerControl? sender, MessageReader reader)
+    internal override void HandleAntiCheat(PlayerControl? sender, MessageReader reader)
     {
         PlayerControl target = reader.ReadNetObject<PlayerControl>();
 

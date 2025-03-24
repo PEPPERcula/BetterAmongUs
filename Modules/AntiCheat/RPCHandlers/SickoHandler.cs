@@ -8,11 +8,11 @@ using InnerNet;
 namespace BetterAmongUs.Modules.AntiCheat;
 
 [RegisterRPCHandler]
-public sealed class SickoHandler : RPCHandler
+internal sealed class SickoHandler : RPCHandler
 {
-    public override byte CallId => unchecked((byte)CustomRPC.Sicko);
+    internal override byte CallId => unchecked((byte)CustomRPC.Sicko);
 
-    public override void HandleAntiCheatCheck(PlayerControl? sender, MessageReader reader)
+    internal override void HandleAntiCheatCheck(PlayerControl? sender, MessageReader reader)
     {
         if (Main.AntiCheat.Value && BetterGameSettings.DetectCheatClients.GetBool())
         {

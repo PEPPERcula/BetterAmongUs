@@ -10,19 +10,19 @@ using System.Reflection;
 
 namespace BetterAmongUs.Modules;
 
-public class UserDataLoader : MonoBehaviour
+internal class UserDataLoader : MonoBehaviour
 {
     private bool isRunning;
 
     private const string ApiUrl = "https://api.weareten.ca";
     private string apiToken = string.Empty;
 
-    public void Start()
+    internal void Start()
     {
         FetchData();
     }
 
-    public void FetchData()
+    internal void FetchData()
     {
         if (isRunning) return;
 

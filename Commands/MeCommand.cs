@@ -5,12 +5,12 @@ using System.Text;
 namespace BetterAmongUs.Commands;
 
 [RegisterCommand]
-public class MeCommand : BaseCommand
+internal class MeCommand : BaseCommand
 {
-    public override string Name => "me";
-    public override string Description => "Get information about your user data";
+    internal override string Name => "me";
+    internal override string Description => "Get information about your user data";
 
-    public override void Run()
+    internal override void Run()
     {
         StringBuilder sb = new();
         var format1 = "┌ •";

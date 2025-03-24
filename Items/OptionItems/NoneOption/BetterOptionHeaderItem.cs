@@ -2,9 +2,9 @@
 
 namespace BetterAmongUs.Items.OptionItems;
 
-public class BetterOptionHeaderItem : BetterOptionItem
+internal class BetterOptionHeaderItem : BetterOptionItem
 {
-    public BetterOptionItem Create(GameOptionsMenu gameOptionsMenu, string name)
+    internal BetterOptionItem Create(GameOptionsMenu gameOptionsMenu, string name)
     {
         if (gameOptionsMenu == null)
         {

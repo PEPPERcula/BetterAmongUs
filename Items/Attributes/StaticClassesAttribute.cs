@@ -4,9 +4,9 @@ using System.Reflection;
 
 namespace BetterAmongUs.Items.Attributes;
 
-public abstract class InstanceAttribute : Attribute
+internal abstract class InstanceAttribute : Attribute
 {
-    public static void RegisterAll()
+    internal static void RegisterAll()
     {
         var assembly = Assembly.GetExecutingAssembly();
 
@@ -28,11 +28,11 @@ public abstract class InstanceAttribute : Attribute
 }
 
 [AttributeUsage(AttributeTargets.Class)]
-public abstract class StaticInstanceAttribute<T> : InstanceAttribute where T : class
+internal abstract class StaticInstanceAttribute<T> : InstanceAttribute where T : class
 {
     private static readonly List<T> _instances = [];
-    public static IReadOnlyList<T> Instances => _instances.AsReadOnly();
-    public static J? GetClassInstance<J>() where J : class => _instances.FirstOrDefault(instance => instance.GetType() == typeof(J)) as J;
+    internal static IReadOnlyList<T> Instances => _instances.AsReadOnly();
+    internal static J? GetClassInstance<J>() where J : class => _instances.FirstOrDefault(instance => instance.GetType() == typeof(J)) as J;
 
     protected override void RegisterInstances()
     {
@@ -45,8 +45,8 @@ public abstract class StaticInstanceAttribute<T> : InstanceAttribute where T : c
         {
             if (typeof(T).IsAssignableFrom(type))
             {
-                var instance = Activator.CreateInstance(type) as T;
-                if (instance != null)
+                var constructor = type.GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null, Type.EmptyTypes, null);
+                if (constructor != null && constructor.Invoke(null) is T instance)
                 {
                     _instances.Add(instance);
                 }
@@ -56,10 +56,10 @@ public abstract class StaticInstanceAttribute<T> : InstanceAttribute where T : c
 }
 
 // Class instances
-public sealed class RegisterCommandAttribute : StaticInstanceAttribute<BaseCommand>
+internal sealed class RegisterCommandAttribute : StaticInstanceAttribute<BaseCommand>
 {
 }
 
-public sealed class RegisterRPCHandlerAttribute : StaticInstanceAttribute<RPCHandler>
+internal sealed class RegisterRPCHandlerAttribute : StaticInstanceAttribute<RPCHandler>
 {
 }

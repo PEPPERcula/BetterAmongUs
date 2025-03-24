@@ -6,17 +6,17 @@ using System.Text.RegularExpressions;
 
 namespace BetterAmongUs.Modules;
 
-public static class Translator
+internal static class Translator
 {
-    public static Dictionary<string, Dictionary<int, string>> translateMaps;
-    public const string LANGUAGE_FOLDER_NAME = "Language";
-    public static void Init()
+    internal static Dictionary<string, Dictionary<int, string>> translateMaps;
+    internal const string LANGUAGE_FOLDER_NAME = "Language";
+    internal static void Init()
     {
         Logger.Log("Loading language files...", "Translator");
         LoadLangs();
         Logger.Log("Language file loaded successfully", "Translator");
     }
-    public static void LoadLangs()
+    internal static void LoadLangs()
     {
         try
         {
@@ -101,7 +101,7 @@ public static class Translator
         return resourceNames.Where(resourceName => resourceName.StartsWith(directoryName) && resourceName.EndsWith(".json")).ToArray();
     }
 
-    public static string GetString(string s, Dictionary<string, string> replacementDic = null, bool console = false, bool showInvalid = true, bool vanilla = false)
+    internal static string GetString(string s, Dictionary<string, string> replacementDic = null, bool console = false, bool showInvalid = true, bool vanilla = false)
     {
         if (vanilla)
         {
@@ -127,7 +127,7 @@ public static class Translator
         return str;
     }
 
-    public static string GetString(string str, SupportedLangs langId, bool showInvalid = true)
+    internal static string GetString(string str, SupportedLangs langId, bool showInvalid = true)
     {
         var res = showInvalid ? $"<INVALID:{str}>" : str;
         try
@@ -151,9 +151,9 @@ public static class Translator
         }
         return res;
     }
-    public static string GetString(StringNames stringName)
+    internal static string GetString(StringNames stringName)
         => DestroyableSingleton<TranslationController>.Instance.GetString(stringName, new Il2CppReferenceArray<Il2CppSystem.Object>(0));
-    public static SupportedLangs GetUserTrueLang()
+    internal static SupportedLangs GetUserTrueLang()
     {
         try
         {

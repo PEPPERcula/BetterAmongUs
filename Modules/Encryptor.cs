@@ -8,7 +8,7 @@ class Encryptor
     private static readonly byte[] Key = Encoding.UTF8.GetBytes("0123456789ABCDEF0123456789ABCDEF");
     private static readonly byte[] IV = Encoding.UTF8.GetBytes("ABCDEF0123456789");
 
-    public static string Encrypt(string input)
+    internal static string Encrypt(string input)
     {
         using (Aes aes = Aes.Create())
         {
@@ -25,7 +25,7 @@ class Encryptor
         }
     }
 
-    public static string Decrypt(string input)
+    internal static string Decrypt(string input)
     {
         using Aes aes = Aes.Create();
         aes.Key = Key;

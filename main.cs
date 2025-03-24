@@ -17,7 +17,7 @@ using UnityEngine;
 
 namespace BetterAmongUs;
 
-public enum ReleaseTypes : int
+internal enum ReleaseTypes : int
 {
     Release,
     Beta,
@@ -26,20 +26,20 @@ public enum ReleaseTypes : int
 
 [BepInPlugin(PluginGuid, "BetterAmongUs", PluginVersion)]
 [BepInProcess("Among Us.exe")]
-public class Main : BasePlugin
+internal class Main : BasePlugin
 {
-    public static readonly ReleaseTypes ReleaseBuildType = ReleaseTypes.Release;
-    public const string BetaNum = "0";
-    public const string HotfixNum = "0";
-    public const bool IsHotFix = false;
-    public const string PluginGuid = "com.ten.betteramongus";
-    public const string PluginVersion = "1.1.6";
-    public const string ReleaseDate = "3.25.2025"; // mm/dd/yyyy
-    public const string Github = "https://github.com/EnhancedNetwork/BetterAmongUs-Public";
-    public const string Discord = "https://discord.gg/ten";
-    public static UserData MyData = UserData.AllUsers.First();
+    internal static readonly ReleaseTypes ReleaseBuildType = ReleaseTypes.Release;
+    internal const string BetaNum = "0";
+    internal const string HotfixNum = "0";
+    internal const bool IsHotFix = false;
+    internal const string PluginGuid = "com.ten.betteramongus";
+    internal const string PluginVersion = "1.1.6";
+    internal const string ReleaseDate = "3.25.2025"; // mm/dd/yyyy
+    internal const string Github = "https://github.com/EnhancedNetwork/BetterAmongUs-Public";
+    internal const string Discord = "https://discord.gg/ten";
+    internal static UserData MyData = UserData.AllUsers.First();
 
-    public static string modSignature
+    internal static string modSignature
     {
         get
         {
@@ -68,7 +68,7 @@ public class Main : BasePlugin
         }
     }
 
-    public static string GetVersionText(bool newLine = false)
+    internal static string GetVersionText(bool newLine = false)
     {
         string text = string.Empty;
 
@@ -94,14 +94,14 @@ public class Main : BasePlugin
 
         return text;
     }
-    public Harmony Harmony { get; } = new Harmony(PluginGuid);
+    internal Harmony Harmony { get; } = new Harmony(PluginGuid);
 
-    public static string BetterAmongUsVersion => PluginVersion;
-    public static string AmongUsVersion => Application.version;
+    internal static string BetterAmongUsVersion => PluginVersion;
+    internal static string AmongUsVersion => Application.version;
 
-    public static PlatformSpecificData PlatformData => Constants.GetPlatformData();
+    internal static PlatformSpecificData PlatformData => Constants.GetPlatformData();
 
-    public static List<string> SupportedAmongUsVersions =
+    internal static List<string> SupportedAmongUsVersions =
     [
         "2024.11.26",
         "2024.10.29",
@@ -110,12 +110,12 @@ public class Main : BasePlugin
         "2024.6.18",
     ];
 
-    public static List<PlayerControl> AllPlayerControls = [];
-    public static List<PlayerControl> AllAlivePlayerControls => AllPlayerControls.Where(pc => pc.IsAlive()).ToList();
-    public static DeadBody[] AllDeadBodys => UnityEngine.Object.FindObjectsOfType<DeadBody>().ToArray();
-    public static Vent[] AllVents => UnityEngine.Object.FindObjectsOfType<Vent>();
+    internal static List<PlayerControl> AllPlayerControls = [];
+    internal static List<PlayerControl> AllAlivePlayerControls => AllPlayerControls.Where(pc => pc.IsAlive()).ToList();
+    internal static DeadBody[] AllDeadBodys => UnityEngine.Object.FindObjectsOfType<DeadBody>().ToArray();
+    internal static Vent[] AllVents => UnityEngine.Object.FindObjectsOfType<Vent>();
 
-    public static Dictionary<int, string> GetRoleName()
+    internal static Dictionary<int, string> GetRoleName()
     {
         return new Dictionary<int, string>
         {
@@ -134,7 +134,7 @@ public class Main : BasePlugin
     }
 
 
-    public static Dictionary<int, string> GetRoleColor => new Dictionary<int, string>
+    internal static Dictionary<int, string> GetRoleColor => new Dictionary<int, string>
     {
         { 0, "#8cffff" },
         { 1, "#f00202" },
@@ -149,8 +149,7 @@ public class Main : BasePlugin
        { 10, "#59f002" }
     };
 
-    public static ManualLogSource Logger;
-    public static DebugMenu debugmenu { get; set; } = null;
+    internal static ManualLogSource? Logger;
 
     public override void Load()
     {
@@ -199,13 +198,6 @@ public class Main : BasePlugin
             File.WriteAllText(Path.Combine(BetterDataManager.filePathFolder, "better-log.txt"), "");
             BetterAmongUs.Logger.Log("Better Among Us successfully loaded!");
 
-#if DEBUG
-            ClassInjector.RegisterTypeInIl2Cpp<DebugMenu>();
-            ClassInjector.RegisterTypeInIl2Cpp<Resources.Coroutines.Component>();
-            debugmenu = AddComponent<DebugMenu>();
-            AddComponent<Resources.Coroutines.Component>();
-#endif
-
             string SupportedVersions = string.Empty;
             foreach (string text in SupportedAmongUsVersions.ToArray())
                 SupportedVersions += $"{text} ";
@@ -217,7 +209,7 @@ public class Main : BasePlugin
         }
     }
 
-    public static void RegisterAllMonoBehavioursInAssembly()
+    internal static void RegisterAllMonoBehavioursInAssembly()
     {
         var assembly = Assembly.GetExecutingAssembly();
 
@@ -238,16 +230,16 @@ public class Main : BasePlugin
         }
     }
 
-    public static ConfigEntry<bool>? AntiCheat { get; private set; }
-    public static ConfigEntry<bool>? BetterNotifications { get; private set; }
-    public static ConfigEntry<bool>? ForceOwnLanguage { get; private set; }
-    public static ConfigEntry<bool>? ChatDarkMode { get; private set; }
-    public static ConfigEntry<bool>? ChatInGameplay { get; private set; }
-    public static ConfigEntry<bool>? LobbyPlayerInfo { get; private set; }
-    public static ConfigEntry<bool>? DisableLobbyTheme { get; private set; }
-    public static ConfigEntry<bool>? UnlockFPS { get; private set; }
-    public static ConfigEntry<bool>? ShowFPS { get; private set; }
-    public static ConfigEntry<string>? CommandPrefix { get; set; }
+    internal static ConfigEntry<bool>? AntiCheat { get; private set; }
+    internal static ConfigEntry<bool>? BetterNotifications { get; private set; }
+    internal static ConfigEntry<bool>? ForceOwnLanguage { get; private set; }
+    internal static ConfigEntry<bool>? ChatDarkMode { get; private set; }
+    internal static ConfigEntry<bool>? ChatInGameplay { get; private set; }
+    internal static ConfigEntry<bool>? LobbyPlayerInfo { get; private set; }
+    internal static ConfigEntry<bool>? DisableLobbyTheme { get; private set; }
+    internal static ConfigEntry<bool>? UnlockFPS { get; private set; }
+    internal static ConfigEntry<bool>? ShowFPS { get; private set; }
+    internal static ConfigEntry<string>? CommandPrefix { get; set; }
     private void LoadOptions()
     {
         AntiCheat = Config.Bind("Better Options", "AntiCheat", true);
@@ -262,6 +254,6 @@ public class Main : BasePlugin
         CommandPrefix = Config.Bind("Client Options", "CommandPrefix", "/");
     }
 
-    public static string GetDataPathToAmongUs() => Application.persistentDataPath;
-    public static string GetGamePathToAmongUs() => Path.GetDirectoryName(Application.dataPath) ?? Application.dataPath;
+    internal static string GetDataPathToAmongUs() => Application.persistentDataPath;
+    internal static string GetGamePathToAmongUs() => Path.GetDirectoryName(Application.dataPath) ?? Application.dataPath;
 }

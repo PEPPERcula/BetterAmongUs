@@ -5,12 +5,12 @@ using System.Text;
 namespace BetterAmongUs.Commands;
 
 [RegisterCommand]
-public class PlayersInfoCommand : BaseCommand
+internal class PlayersInfoCommand : BaseCommand
 {
-    public override string Name => "players";
-    public override string Description => "Get all Player information";
+    internal override string Name => "players";
+    internal override string Description => "Get all Player information";
 
-    public override void Run()
+    internal override void Run()
     {
         StringBuilder sb = new();
         foreach (PlayerControl player in Main.AllPlayerControls.Where(player => !player.isDummy))

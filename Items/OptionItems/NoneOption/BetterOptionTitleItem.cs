@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace BetterAmongUs.Items.OptionItems;
 
-public class BetterOptionTitleItem : BetterOptionItem
+internal class BetterOptionTitleItem : BetterOptionItem
 {
-    public BetterOptionItem Create(GameOptionsMenu gameOptionsMenu, string name)
+    internal BetterOptionItem Create(GameOptionsMenu gameOptionsMenu, string name)
     {
         if (gameOptionsMenu == null)
         {
@@ -45,7 +45,7 @@ public class BetterOptionTitleItem : BetterOptionItem
         return this;
     }
 
-    public override void SetData(OptionBehaviour optionBehaviour)
+    internal override void SetData(OptionBehaviour optionBehaviour)
     {
         optionBehaviour.data = new BaseGameSetting
         {

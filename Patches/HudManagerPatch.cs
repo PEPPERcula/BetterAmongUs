@@ -9,9 +9,9 @@ using UnityEngine;
 namespace BetterAmongUs.Patches;
 
 [HarmonyPatch(typeof(HudManager))]
-public class HudManagerPatch
+internal class HudManagerPatch
 {
-    public static string WelcomeMessage = $"<b><color=#00b530><size=125%><align=\"center\">{string.Format(Translator.GetString("WelcomeMsg.WelcomeToBAU"), Translator.GetString("BetterAmongUs"))}\n{Main.GetVersionText()}</size>\n" +
+    internal static string WelcomeMessage = $"<b><color=#00b530><size=125%><align=\"center\">{string.Format(Translator.GetString("WelcomeMsg.WelcomeToBAU"), Translator.GetString("BetterAmongUs"))}\n{Main.GetVersionText()}</size>\n" +
         $"{Translator.GetString("WelcomeMsg.ThanksForDownloading")}</align></color></b>\n<size=120%> </size>\n" +
         string.Format(Translator.GetString("WelcomeMsg.BAUDescription1"), Translator.GetString("bau"), Translator.GetString("BetterOption.AntiCheat")) + "\n\n" +
         string.Format(Translator.GetString("WelcomeMsg.BAUDescription2"), Translator.GetString("bau"), Translator.GetString("BetterOption"), Translator.GetString("BetterOption.BetterHost"));
@@ -19,7 +19,7 @@ public class HudManagerPatch
     private static bool HasBeenWelcomed = false;
     [HarmonyPatch(nameof(HudManager.Start))]
     [HarmonyPostfix]
-    public static void Start_Postfix(HudManager __instance)
+    internal static void Start_Postfix(HudManager __instance)
     {
         if (BetterNotificationManager.BAUNotificationManagerObj == null)
         {
@@ -60,7 +60,7 @@ public class HudManagerPatch
     }
     [HarmonyPatch(nameof(HudManager.Update))]
     [HarmonyPostfix]
-    public static void Update_Postfix(HudManager __instance)
+    internal static void Update_Postfix(HudManager __instance)
     {
         try
         {
@@ -97,11 +97,11 @@ public class HudManagerPatch
 }
 
 [HarmonyPatch(typeof(KillOverlay))]
-public class KillOverlayPatch
+internal class KillOverlayPatch
 {
     [HarmonyPatch(nameof(KillOverlay.ShowKillAnimation), new Type[] { typeof(OverlayKillAnimation), typeof(NetworkedPlayerInfo), typeof(NetworkedPlayerInfo) })]
     [HarmonyPrefix]
-    public static bool ShowKillAnimation_Prefix()
+    internal static bool ShowKillAnimation_Prefix()
     {
         if (!PlayerControl.LocalPlayer.IsAlive())
         {

@@ -8,11 +8,11 @@ using static BetterAmongUs.Patches.GamePlayManager;
 namespace BetterAmongUs.Patches;
 
 [HarmonyPatch(typeof(PingTracker))]
-public class PingTrackerPatch
+internal class PingTrackerPatch
 {
     [HarmonyPatch(nameof(PingTracker.Update))]
     [HarmonyPrefix]
-    public static bool Prefix(PingTracker __instance)
+    internal static bool Prefix(PingTracker __instance)
     {
         try
         {

@@ -1,19 +1,19 @@
 namespace BetterAmongUs.Helpers;
 
-public static class EnumHelper
+internal static class EnumHelper
 {
     /// <summary>
     /// Get all values of enum
     /// </summary>
     /// <typeparam name="T">Type of enum to be obtained</typeparam>
     /// <returns>All values of T</returns>
-    public static T[] GetAllValues<T>() where T : Enum => Enum.GetValues(typeof(T)) as T[];
+    internal static T[] GetAllValues<T>() where T : Enum => Enum.GetValues(typeof(T)) as T[];
     /// <summary>
     /// Get all names in enum
     /// </summary>
     /// <typeparam name="T">Type of enum to be obtained</typeparam>
     /// <returns>All values of T</returns>
-    public static string[] GetAllNames<T>() where T : Enum => Enum.GetNames(typeof(T));
+    internal static string[] GetAllNames<T>() where T : Enum => Enum.GetNames(typeof(T));
 
 
     /// <summary>
@@ -22,7 +22,7 @@ public static class EnumHelper
     /// <typeparam name="TEnum">Type of enum to be obtained</typeparam>
     /// <param name="chunkSize">The number of elements each chunk should contain. </param>
     /// <returns>A list of arrays, each containing up to <paramref name="chunkSize"/> elements of the enum type.</returns>
-    public static List<TEnum[]> Achunk<TEnum>(int chunkSize, bool shuffle = false, Func<TEnum, bool> exclude = null) where TEnum : Enum
+    internal static List<TEnum[]> Achunk<TEnum>(int chunkSize, bool shuffle = false, Func<TEnum, bool> exclude = null) where TEnum : Enum
     {
         List<TEnum[]> chunkedList = [];
         TEnum[] allValues = GetAllValues<TEnum>();

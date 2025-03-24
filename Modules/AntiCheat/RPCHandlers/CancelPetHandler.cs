@@ -3,7 +3,7 @@ using BetterAmongUs.Items.Attributes;
 namespace BetterAmongUs.Modules.AntiCheat;
 
 [RegisterRPCHandler]
-public sealed class CancelPetHandler : RPCHandler
+internal sealed class CancelPetHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.CancelPet;
+    internal override byte CallId => (byte)RpcCalls.CancelPet;
 }

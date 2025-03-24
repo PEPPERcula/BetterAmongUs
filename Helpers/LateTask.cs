@@ -2,12 +2,12 @@ namespace BetterAmongUs.Helpers;
 
 class LateTask
 {
-    public string name;
-    public float timer;
-    public bool shouldLog;
-    public Action action;
-    public static List<LateTask> Tasks = [];
-    public bool Run(float deltaTime)
+    internal string name;
+    internal float timer;
+    internal bool shouldLog;
+    internal Action action;
+    internal static List<LateTask> Tasks = [];
+    internal bool Run(float deltaTime)
     {
         timer -= deltaTime;
         if (timer <= 0)
@@ -28,7 +28,8 @@ class LateTask
         this.shouldLog = shouldLog;
         Tasks.Add(this);
     }
-    public static void Update(float deltaTime)
+
+    internal static void Update(float deltaTime)
     {
         var TasksToRemove = new List<LateTask>();
         foreach (var task in Tasks.ToArray())

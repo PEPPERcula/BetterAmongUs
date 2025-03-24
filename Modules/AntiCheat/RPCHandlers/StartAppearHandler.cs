@@ -6,11 +6,11 @@ using Hazel;
 namespace BetterAmongUs.Modules.AntiCheat;
 
 [RegisterRPCHandler]
-public sealed class StartAppearHandler : RPCHandler
+internal sealed class StartAppearHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.StartAppear;
+    internal override byte CallId => (byte)RpcCalls.StartAppear;
 
-    public override bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader)
+    internal override bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader)
     {
         bool shouldAnimate = reader.ReadBoolean();
         if (RegisterRPCHandlerAttribute.GetClassInstance<StartVanishHandler>().RoleCheck(sender) == false)

@@ -3,11 +3,11 @@
 namespace BetterAmongUs.Commands;
 
 [RegisterCommand]
-public class HelpCommand : BaseCommand
+internal class HelpCommand : BaseCommand
 {
-    public override string Name => "help";
-    public override string Description => "Get help with commands";
-    public override void Run()
+    internal override string Name => "help";
+    internal override string Description => "Get help with commands";
+    internal override void Run()
     {
         CommandResultText("Welcome to <color=#0dff00>♻BetterAmongUs♻</color> This mod enhances your gameplay experience with a variety of exciting features.\n" +
                     "Explore the pause menu to access more options and better settings tailored to your needs.\n" +

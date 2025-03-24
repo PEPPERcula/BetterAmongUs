@@ -35,7 +35,7 @@ enum HandleGameDataTags : byte
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.HandleRpc))]
 internal class PlayerControlRPCHandlerPatch
 {
-    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
+    internal static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
         __instance.BetterData().AntiCheatInfo.RPCSentPS++;
         if (__instance.BetterData().AntiCheatInfo.RPCSentPS >= ExtendedAntiCheatInfo.MaxRPCSent)
@@ -56,7 +56,7 @@ internal class PlayerControlRPCHandlerPatch
 
         return true;
     }
-    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
+    internal static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
         RPC.HandleCustomRPC(__instance, callId, reader);
     }
@@ -65,7 +65,7 @@ internal class PlayerControlRPCHandlerPatch
 [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.HandleRpc))]
 internal class PlayerPhysicsRPCHandlerPatch
 {
-    public static bool Prefix(PlayerPhysics __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
+    internal static bool Prefix(PlayerPhysics __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
         __instance.myPlayer.BetterData().AntiCheatInfo.RPCSentPS++;
         if (__instance.myPlayer.BetterData().AntiCheatInfo.RPCSentPS >= ExtendedAntiCheatInfo.MaxRPCSent)
@@ -86,9 +86,9 @@ internal class PlayerPhysicsRPCHandlerPatch
 }
 
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.UpdateSystem), typeof(SystemTypes), typeof(PlayerControl), typeof(MessageReader))]
-public static class MessageReaderUpdateSystemPatch
+internal static class MessageReaderUpdateSystemPatch
 {
-    public static bool Prefix(/*ShipStatus __instance,*/ [HarmonyArgument(0)] SystemTypes systemType, [HarmonyArgument(1)] PlayerControl player, [HarmonyArgument(2)] MessageReader reader)
+    internal static bool Prefix(/*ShipStatus __instance,*/ [HarmonyArgument(0)] SystemTypes systemType, [HarmonyArgument(1)] PlayerControl player, [HarmonyArgument(2)] MessageReader reader)
     {
         player.BetterData().AntiCheatInfo.RPCSentPS++;
         if (player.BetterData().AntiCheatInfo.RPCSentPS >= ExtendedAntiCheatInfo.MaxRPCSent)
@@ -108,7 +108,7 @@ public static class MessageReaderUpdateSystemPatch
 
 internal static class RPC
 {
-    public static void RpcSyncSettings()
+    internal static void RpcSyncSettings()
     {
         if (!AmongUsClient.Instance.AmHost)
         {
@@ -124,7 +124,7 @@ internal static class RPC
         }
     }
 
-    public static void SendBetterCheck()
+    internal static void SendBetterCheck()
     {
         MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.BetterCheck, SendOption.None, -1);
         messageWriter.Write(true);
@@ -133,7 +133,7 @@ internal static class RPC
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
     }
 
-    public static void SetNamePrivate(PlayerControl player, string name, PlayerControl target)
+    internal static void SetNamePrivate(PlayerControl player, string name, PlayerControl target)
     {
         if (!GameState.IsHost || !GameState.IsVanillaServer)
         {
@@ -146,14 +146,14 @@ internal static class RPC
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
-    public static void ExileAsync(PlayerControl player)
+    internal static void ExileAsync(PlayerControl player)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.Reliable, -1);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         player.Exiled();
     }
 
-    public static void HandleCustomRPC(PlayerControl player, byte callId, MessageReader oldReader)
+    internal static void HandleCustomRPC(PlayerControl player, byte callId, MessageReader oldReader)
     {
         if (player == null || player.IsLocalPlayer() || player.Data == null || Enum.IsDefined(typeof(RpcCalls), callId)) return;
 
@@ -220,7 +220,7 @@ internal static class RPC
         }
     }
 
-    public static void HandleRPC(PlayerControl player, byte callId, MessageReader oldReader)
+    internal static void HandleRPC(PlayerControl player, byte callId, MessageReader oldReader)
     {
         if (player == null || player.IsLocalPlayer() || player.Data == null) return;
 

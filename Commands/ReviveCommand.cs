@@ -5,13 +5,13 @@ using BetterAmongUs.Modules;
 namespace BetterAmongUs.Commands;
 
 [RegisterCommand]
-public class ReviveCommand : BaseCommand
+internal class ReviveCommand : BaseCommand
 {
-    public override CommandType Type => CommandType.Debug;
-    public override string Name => "revive";
-    public override string Description => "Set self as alive";
-    public override bool ShowCommand() => GameState.IsFreePlay;
-    public override void Run()
+    internal override CommandType Type => CommandType.Debug;
+    internal override string Name => "revive";
+    internal override string Description => "Set self as alive";
+    internal override bool ShowCommand() => GameState.IsFreePlay;
+    internal override void Run()
     {
         PlayerControl.LocalPlayer.Revive();
     }

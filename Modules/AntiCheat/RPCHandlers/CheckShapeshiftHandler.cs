@@ -7,11 +7,11 @@ using InnerNet;
 namespace BetterAmongUs.Modules.AntiCheat;
 
 [RegisterRPCHandler]
-public sealed class CheckShapeshiftHandler : RPCHandler
+internal sealed class CheckShapeshiftHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.CheckShapeshift;
+    internal override byte CallId => (byte)RpcCalls.CheckShapeshift;
 
-    public override bool BetterHandle(PlayerControl? sender, MessageReader reader)
+    internal override bool BetterHandle(PlayerControl? sender, MessageReader reader)
     {
         PlayerControl target = reader.ReadNetObject<PlayerControl>();
         bool flag = reader.ReadBoolean();
@@ -38,7 +38,7 @@ public sealed class CheckShapeshiftHandler : RPCHandler
         return false;
     }
 
-    public override bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader)
+    internal override bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader)
     {
         if (!GameState.IsHost)
         {

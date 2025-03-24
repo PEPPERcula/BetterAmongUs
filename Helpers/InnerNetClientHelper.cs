@@ -10,7 +10,7 @@ static class InnerNetClientHelper
     /// Writes an array of boolean values to a MessageWriter in a packed format to save space.
     /// Each byte stores up to 8 boolean values as bits.
     /// </summary>
-    public static void WriteBooleans(this MessageWriter writer, IEnumerable<bool> boolsEnumerable)
+    internal static void WriteBooleans(this MessageWriter writer, IEnumerable<bool> boolsEnumerable)
     {
         bool[] bools = boolsEnumerable.ToArray();
 
@@ -39,7 +39,7 @@ static class InnerNetClientHelper
     /// <summary>
     /// Reads an array of boolean values from a MessageReader that were previously packed using WriteBooleans.
     /// </summary>
-    public static bool[] ReadBooleans(this MessageReader reader)
+    internal static bool[] ReadBooleans(this MessageReader reader)
     {
         int length = reader.ReadInt32();
         bool[] bools = new bool[length];
@@ -65,7 +65,7 @@ static class InnerNetClientHelper
     /// <summary>
     /// Writes an array of bytes to a MessageWriter in a packed format, combining two bytes into one to save space.
     /// </summary>
-    public static void WritePackedBytes(this MessageWriter writer, IEnumerable<byte> bytesEnumerable)
+    internal static void WritePackedBytes(this MessageWriter writer, IEnumerable<byte> bytesEnumerable)
     {
         byte[] bytes = bytesEnumerable.ToArray();
 
@@ -83,7 +83,7 @@ static class InnerNetClientHelper
     /// <summary>
     /// Reads an array of bytes from a MessageReader that were previously packed using WritePackedBytes.
     /// </summary>
-    public static byte[] ReadPackedBytes(this MessageReader reader)
+    internal static byte[] ReadPackedBytes(this MessageReader reader)
     {
         int count = reader.ReadByte();
         List<byte> bytes = [];
@@ -103,7 +103,7 @@ static class InnerNetClientHelper
     /// Writes a floating-point value to a MessageWriter in a packed format to save space.
     /// Handles negative values, integers, and decimal numbers efficiently.
     /// </summary>
-    public static void WritePacked(this MessageWriter writer, float value)
+    internal static void WritePacked(this MessageWriter writer, float value)
     {
         bool isNegative = value < 0;
         float absValue = Math.Abs(value);
@@ -181,7 +181,7 @@ static class InnerNetClientHelper
     /// Reads a floating-point value from a MessageReader that was previously packed using WritePacked.
     /// Handles negative values, integers, and decimal numbers efficiently.
     /// </summary>
-    public static float ReadPackedSingle(this MessageReader reader)
+    internal static float ReadPackedSingle(this MessageReader reader)
     {
         var flags = reader.ReadBooleans();
         bool isNegative = flags[0];
@@ -218,28 +218,28 @@ static class InnerNetClientHelper
         }
     }
 
-    public static void WritePlayerId(this MessageWriter writer, PlayerControl player) => writer.Write(player?.PlayerId ?? 255);
+    internal static void WritePlayerId(this MessageWriter writer, PlayerControl player) => writer.Write(player?.PlayerId ?? 255);
 
-    public static PlayerControl? ReadPlayerId(this MessageReader reader) => Utils.PlayerFromPlayerId(reader.ReadByte());
+    internal static PlayerControl? ReadPlayerId(this MessageReader reader) => Utils.PlayerFromPlayerId(reader.ReadByte());
 
-    public static void WritePlayerDataId(this MessageWriter writer, NetworkedPlayerInfo data) => writer.Write(data?.PlayerId ?? 255);
+    internal static void WritePlayerDataId(this MessageWriter writer, NetworkedPlayerInfo data) => writer.Write(data?.PlayerId ?? 255);
 
-    public static NetworkedPlayerInfo? ReadPlayerDataId(this MessageReader reader) => Utils.PlayerDataFromPlayerId(reader.ReadByte());
+    internal static NetworkedPlayerInfo? ReadPlayerDataId(this MessageReader reader) => Utils.PlayerDataFromPlayerId(reader.ReadByte());
 
-    public static void WriteDeadBodyId(this MessageWriter writer, DeadBody body) => writer.Write(body?.ParentId ?? 255);
+    internal static void WriteDeadBodyId(this MessageWriter writer, DeadBody body) => writer.Write(body?.ParentId ?? 255);
 
-    public static DeadBody? ReadDeadBodyId(this MessageReader reader) => Main.AllDeadBodys.FirstOrDefault(deadbody => deadbody.ParentId == reader.ReadByte());
+    internal static DeadBody? ReadDeadBodyId(this MessageReader reader) => Main.AllDeadBodys.FirstOrDefault(deadbody => deadbody.ParentId == reader.ReadByte());
 
-    public static void WriteVentId(this MessageWriter writer, Vent vent) => writer.Write(vent?.Id ?? -1);
+    internal static void WriteVentId(this MessageWriter writer, Vent vent) => writer.Write(vent?.Id ?? -1);
 
-    public static Vent? ReadVentId(this MessageReader reader) => Main.AllVents.FirstOrDefault(vent => vent.Id == reader.ReadInt32());
+    internal static Vent? ReadVentId(this MessageReader reader) => Main.AllVents.FirstOrDefault(vent => vent.Id == reader.ReadInt32());
 
     /// <summary>
     /// Converts a MessageWriter to a MessageReader.
     /// </summary>
-    public static MessageReader ToReader(this MessageWriter writer) => MessageReader.Get(writer.ToByteArray(false));
+    internal static MessageReader ToReader(this MessageWriter writer) => MessageReader.Get(writer.ToByteArray(false));
 
-    public static MessageReader[] ToReaders(this MessageWriter writer)
+    internal static MessageReader[] ToReaders(this MessageWriter writer)
     {
         var reader = writer.ToReader();
         List<MessageReader> readers = [];
@@ -252,7 +252,7 @@ static class InnerNetClientHelper
         return [.. readers];
     }
 
-    public static MessageReader[] ToReaders(this MessageReader reader)
+    internal static MessageReader[] ToReaders(this MessageReader reader)
     {
         List<MessageReader> readers = [];
 
@@ -264,7 +264,7 @@ static class InnerNetClientHelper
         return [.. readers];
     }
 
-    public static MessageReader[] ToReadersNewBuffer(this MessageReader reader)
+    internal static MessageReader[] ToReadersNewBuffer(this MessageReader reader)
     {
         List<MessageReader> readers = [];
 
@@ -276,7 +276,7 @@ static class InnerNetClientHelper
         return [.. readers];
     }
 
-    public static MessageWriter WriteReaders(this MessageWriter writer, IEnumerable<MessageReader> readers, bool clear = false)
+    internal static MessageWriter WriteReaders(this MessageWriter writer, IEnumerable<MessageReader> readers, bool clear = false)
     {
         if (clear) writer.Clear(writer.SendOption);
 
@@ -290,7 +290,7 @@ static class InnerNetClientHelper
         return writer;
     }
 
-    public static MessageWriter Copy(this MessageWriter writer)
+    internal static MessageWriter Copy(this MessageWriter writer)
     {
         var newWriter = MessageWriter.Get(writer.SendOption);
         newWriter.Write(writer.ToByteArray(false));
@@ -318,7 +318,7 @@ static class InnerNetClientHelper
             messageWriter.ForEach(mW => mW.Write("RPC TEST"));
             AmongUsClient.Instance.FinishRpcDesync(messageWriter);
     */
-    public static List<MessageWriter> StartRpcDesync(this InnerNetClient client, uint playerNetId, byte callId, SendOption option, int ignoreClientId = -1, Func<ClientData, bool> clientCheck = null)
+    internal static List<MessageWriter> StartRpcDesync(this InnerNetClient client, uint playerNetId, byte callId, SendOption option, int ignoreClientId = -1, Func<ClientData, bool> clientCheck = null)
     {
         List<MessageWriter> messageWriters = new List<MessageWriter>();
 
@@ -342,7 +342,7 @@ static class InnerNetClientHelper
 
 
 
-    public static void FinishRpcDesync(this InnerNetClient client, List<MessageWriter> messageWriters)
+    internal static void FinishRpcDesync(this InnerNetClient client, List<MessageWriter> messageWriters)
     {
         foreach (var msg in messageWriters)
         {

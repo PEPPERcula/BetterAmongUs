@@ -6,11 +6,11 @@ using UnityEngine;
 namespace BetterAmongUs.Modules;
 
 [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
-public static class Zoom
+internal static class Zoom
 {
     private static bool resetButtons = false;
 
-    public static void Postfix()
+    internal static void Postfix()
     {
         if (GameState.IsCanMove && !PlayerControl.LocalPlayer.Is(RoleTypes.GuardianAngel) && (!GameState.IsInGamePlay || !PlayerControl.LocalPlayer.IsAlive()))
         {
@@ -62,16 +62,16 @@ public static class Zoom
         }
     }
 
-    public static void OnFixedUpdate() =>
+    internal static void OnFixedUpdate() =>
         DestroyableSingleton<HudManager>.Instance?.ShadowQuad?.gameObject?.SetActive(Camera.main.orthographicSize == 3.0f && PlayerControl.LocalPlayer.IsAlive());
 }
 
-public static class Flag
+internal static class Flag
 {
     private static readonly List<string> oneTimeList = new();
     private static readonly List<string> firstRunList = new();
 
-    public static void Run(Action action, string type, bool firstrun = false)
+    internal static void Run(Action action, string type, bool firstrun = false)
     {
         if (oneTimeList.Contains(type) || firstrun && !firstRunList.Contains(type))
         {
@@ -83,13 +83,13 @@ public static class Flag
         }
     }
 
-    public static void NewFlag(string type)
+    internal static void NewFlag(string type)
     {
         if (!oneTimeList.Contains(type))
             oneTimeList.Add(type);
     }
 
-    public static void DeleteFlag(string type)
+    internal static void DeleteFlag(string type)
     {
         oneTimeList.Remove(type);
     }

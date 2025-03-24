@@ -4,11 +4,11 @@ using InnerNet;
 
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class DespawnNetObjectHandler : RPCHandler
+internal class DespawnNetObjectHandler : RPCHandler
 {
-    public override byte GameDataTag => (byte)HandleGameDataTags.NetObjectDespawn;
+    internal override byte GameDataTag => (byte)HandleGameDataTags.NetObjectDespawn;
 
-    public override void HandleGameData(MessageReader reader)
+    internal override void HandleGameData(MessageReader reader)
     {
         // if (!GameState.IsHost) return;
 
