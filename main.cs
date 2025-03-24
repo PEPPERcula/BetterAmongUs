@@ -230,6 +230,7 @@ internal class Main : BasePlugin
         }
     }
 
+    internal static ConfigEntry<bool>? PrivateOnlyLobby { get; private set; }
     internal static ConfigEntry<bool>? AntiCheat { get; private set; }
     internal static ConfigEntry<bool>? BetterNotifications { get; private set; }
     internal static ConfigEntry<bool>? ForceOwnLanguage { get; private set; }
@@ -242,6 +243,7 @@ internal class Main : BasePlugin
     internal static ConfigEntry<string>? CommandPrefix { get; set; }
     private void LoadOptions()
     {
+        PrivateOnlyLobby = Config.Bind("Mod", "PrivateOnlyLobby", false);
         AntiCheat = Config.Bind("Better Options", "AntiCheat", true);
         BetterNotifications = Config.Bind("Better Options", "BetterNotifications", true);
         ForceOwnLanguage = Config.Bind("Better Options", "ForceOwnLanguage", false);
