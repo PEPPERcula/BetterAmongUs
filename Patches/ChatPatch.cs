@@ -1,12 +1,9 @@
 ﻿using AmongUs.GameOptions;
-using Assets.CoreScripts;
 using BetterAmongUs.Helpers;
 using BetterAmongUs.Modules;
 using BetterAmongUs.Modules.AntiCheat;
 using HarmonyLib;
-using Hazel;
 using System.Text;
-using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 
@@ -22,39 +19,6 @@ class ChatPatch
     internal static void ClearChat()
     {
         HudManager.Instance.Chat.chatBubblePool.ReclaimAll();
-    }
-
-    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSendChat))]
-    class RpcSendChatPatch
-    {
-        internal static bool Prefix(PlayerControl __instance, string chatText, ref bool __result)
-        {
-            if (string.IsNullOrWhiteSpace(chatText))
-            {
-                __result = false;
-                return false;
-            }
-            if (!GameState.IsBetterHostLobby)
-            {
-                __result = false;
-                return true;
-            }
-            chatText = Regex.Replace(chatText, "<.*?>", string.Empty);
-            if (AmongUsClient.Instance.AmClient && DestroyableSingleton<HudManager>.Instance)
-            {
-                DestroyableSingleton<HudManager>.Instance.Chat.AddChat(__instance, chatText, true);
-            }
-            if (chatText.IndexOf("who", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                DestroyableSingleton<UnityTelemetry>.Instance.SendWho();
-            }
-            chatText = "\n" + chatText;
-            MessageWriter messageWriter = AmongUsClient.Instance.StartRpc(__instance.NetId, 13, SendOption.Reliable);
-            messageWriter.Write(chatText);
-            messageWriter.EndMessage();
-            __result = true;
-            return false;
-        }
     }
 
     [HarmonyPatch(typeof(ChatController))]
