@@ -24,6 +24,8 @@ class BetterGameSettings
     internal static BetterOptionItem? DesyncRoles;
     internal static BetterOptionItem? CancelInvalidSabotage;
     internal static BetterOptionItem? CensorDetectionReason;
+    internal static BetterOptionItem? RemovePetOnDeath;
+    internal static BetterOptionItem? DisableSabotages;
 }
 
 class BetterGameSettingsTemp
@@ -47,7 +49,7 @@ static class GameSettingMenuPatch
         BetterOptionItem.TempPlayerOptionDataNum = 0;
         TitleList.Clear();
 
-        // Use 1500 next ID
+        // Use 1700 next ID
 
         // Anti-Cheat Settings
         {
@@ -91,11 +93,13 @@ static class GameSettingMenuPatch
 
         // Gameplay Settings
         {
-            if (IsPreload || GameState.IsHost)
+            if (IsPreload || GameState.IsHost && GameState.IsPrivateOnlyLobby)
             {
                 if (IsPreload || !GameState.IsHideNSeek)
                 {
                     new BetterOptionHeaderItem().Create(BetterSettingsTab, Translator.GetString("BetterSetting.MainHeader.Gameplay"));
+                    BetterGameSettings.DisableSabotages = new BetterOptionCheckboxItem().Create(1500, BetterSettingsTab, Translator.GetString("BetterSetting.Setting.DisableSabotages"), false);
+                    BetterGameSettings.RemovePetOnDeath = new BetterOptionCheckboxItem().Create(1600, BetterSettingsTab, Translator.GetString("BetterSetting.Setting.RemovePetOnDeath"), false);
                 }
                 else if (IsPreload || GameState.IsHideNSeek)
                 {

@@ -245,10 +245,20 @@ class BAUAntiCheat
     // Check game states when sabotaging
     internal static bool RpcUpdateSystemCheck(PlayerControl player, SystemTypes systemType, MessageReader oldReader)
     {
+        if (Utils.SystemTypeIsSabotage(systemType) || systemType is SystemTypes.Doors)
+        {
+            if (GameState.IsPrivateOnlyLobby && BetterGameSettings.DisableSabotages.GetBool()) return false;
+        }
+
         MessageReader reader = MessageReader.Get(oldReader);
 
         RegisterRPCHandlerAttribute.GetClassInstance<UpdateSystemHandler>().CatchedSystemType = systemType;
-        return RPCHandler.HandleRPC((byte)RpcCalls.UpdateSystem, player, reader, HandlerFlag.AntiCheatCancel);
+        bool notCanceled = RPCHandler.HandleRPC((byte)RpcCalls.UpdateSystem, player, reader, HandlerFlag.AntiCheatCancel);
+        if (!notCanceled)
+        {
+            Logger.LogCheat($"RPC canceled by Anti-Cheat: {Enum.GetName(typeof(SystemTypes), (int)systemType)} - {MessageReader.Get(reader).ReadByte()}");
+        }
+        return notCanceled;
     }
 
     // Check if RPC is known

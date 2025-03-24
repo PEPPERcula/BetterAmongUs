@@ -308,11 +308,7 @@ internal class NetworkManager
                 return false;
             }
 
-            if (BAUAntiCheat.RpcUpdateSystemCheck(player, systemType, reader) != true)
-            {
-                Logger.LogCheat($"RPC canceled by Anti-Cheat: {Enum.GetName(typeof(SystemTypes), (int)systemType)} - {MessageReader.Get(reader).ReadByte()}");
-                return false;
-            }
+            if (BAUAntiCheat.RpcUpdateSystemCheck(player, systemType, reader) != true) return false;
 
             return true;
         }
