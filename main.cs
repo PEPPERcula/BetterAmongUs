@@ -87,11 +87,7 @@ internal class Main : BasePlugin
 
     internal static List<string> SupportedAmongUsVersions =
     [
-        "2024.11.26",
-        "2024.10.29",
-        "2024.9.4",
-        "2024.8.13",
-        "2024.6.18",
+        "2025.3.25",
     ];
 
     internal static List<PlayerControl> AllPlayerControls = [];
