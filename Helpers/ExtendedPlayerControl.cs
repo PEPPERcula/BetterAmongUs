@@ -4,22 +4,22 @@ using UnityEngine;
 
 namespace BetterAmongUs.Helpers;
 
-public class BetterPlayerControl(IntPtr intPtr) : MonoBehaviour(intPtr)
+internal class BetterPlayerControl(IntPtr intPtr) : MonoBehaviour(intPtr)
 {
-    public PlayerControl? _Player { get; set; }
-    public TextMeshPro? InfoTextInfo { get; set; }
-    public TextMeshPro? InfoTextTop { get; set; }
-    public TextMeshPro? InfoTextBottom { get; set; }
+    internal PlayerControl? _Player { get; set; }
+    internal TextMeshPro? InfoTextInfo { get; set; }
+    internal TextMeshPro? InfoTextTop { get; set; }
+    internal TextMeshPro? InfoTextBottom { get; set; }
 }
 
-public static class PlayerControlExtension
+internal static class PlayerControlExtension
 {
     [HarmonyPatch(typeof(PlayerControl))]
     class PlayerControlPatch
     {
         [HarmonyPatch(nameof(PlayerControl.Awake))]
         [HarmonyPrefix]
-        public static void Awake_Prefix(PlayerControl __instance)
+        internal static void Awake_Prefix(PlayerControl __instance)
         {
             var nameTextTransform = __instance.gameObject.transform.Find("Names/NameText_TMP");
             var nameText = nameTextTransform?.GetComponent<TextMeshPro>();
@@ -46,7 +46,7 @@ public static class PlayerControlExtension
             TryCreateExtendedPlayerControl(__instance, text1, text2, text3);
         }
 
-        public static void TryCreateExtendedPlayerControl(PlayerControl pc, TextMeshPro InfoText_Info_TMP, TextMeshPro InfoText_T_TMP, TextMeshPro InfoText_B_TMP)
+        internal static void TryCreateExtendedPlayerControl(PlayerControl pc, TextMeshPro InfoText_Info_TMP, TextMeshPro InfoText_T_TMP, TextMeshPro InfoText_B_TMP)
         {
             if (pc.BetterPlayerControl() == null)
             {
@@ -59,12 +59,12 @@ public static class PlayerControlExtension
         }
     }
 
-    public static BetterPlayerControl? BetterPlayerControl(this PlayerControl player)
+    internal static BetterPlayerControl? BetterPlayerControl(this PlayerControl player)
     {
         return player?.GetComponent<BetterPlayerControl>();
     }
 
-    public static BetterPlayerControl? BetterPlayerControl(this PlayerPhysics playerPhysics)
+    internal static BetterPlayerControl? BetterPlayerControl(this PlayerPhysics playerPhysics)
     {
         return playerPhysics?.GetComponent<BetterPlayerControl>();
     }

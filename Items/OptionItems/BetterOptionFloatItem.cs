@@ -3,20 +3,20 @@ using UnityEngine;
 
 namespace BetterAmongUs.Items.OptionItems;
 
-public class BetterOptionFloatItem : BetterOptionItem
+internal class BetterOptionFloatItem : BetterOptionItem
 {
     private NumberOption? ThisOption;
-    public float CurrentValue;
-    public FloatRange floatRange = new(0f, 180f);
-    public float Increment = 2.5f;
+    internal float CurrentValue;
+    internal FloatRange floatRange = new(0f, 180f);
+    internal float Increment = 2.5f;
     private string? PostFix;
     private string? PreFix;
 
-    public override bool ShowChildrenCondition() => CurrentValue > floatRange.min;
-    public override bool SelfShowCondition() => ShowCondition != null ? ShowCondition() : base.SelfShowCondition();
-    public Func<bool>? ShowCondition = null;
+    internal override bool ShowChildrenCondition() => CurrentValue > floatRange.min;
+    internal override bool SelfShowCondition() => ShowCondition != null ? ShowCondition() : base.SelfShowCondition();
+    internal Func<bool>? ShowCondition = null;
 
-    public BetterOptionItem Create(int id, GameOptionsMenu gameOptionsMenu, string name, float[] values, float DefaultValue, string preFix = "", string postFix = "", BetterOptionItem? Parent = null, Func<bool>? selfShowCondition = null)
+    internal BetterOptionItem Create(int id, GameOptionsMenu gameOptionsMenu, string name, float[] values, float DefaultValue, string preFix = "", string postFix = "", BetterOptionItem? Parent = null, Func<bool>? selfShowCondition = null)
     {
         Id = id;
         floatRange = new(values[0], values[1]);
@@ -117,7 +117,7 @@ public class BetterOptionFloatItem : BetterOptionItem
         BetterDataManager.SaveSetting(Id, CurrentValue.ToString());
     }
 
-    public void Increase()
+    internal void Increase()
     {
         int times = 1;
         if (Input.GetKey(KeyCode.LeftShift))
@@ -137,7 +137,7 @@ public class BetterOptionFloatItem : BetterOptionItem
         AdjustButtonsActiveState();
     }
 
-    public void Decrease()
+    internal void Decrease()
     {
         int times = 1;
         if (Input.GetKey(KeyCode.LeftShift))
@@ -157,7 +157,7 @@ public class BetterOptionFloatItem : BetterOptionItem
         AdjustButtonsActiveState();
     }
 
-    public void Load(float DefaultValue)
+    internal void Load(float DefaultValue)
     {
         if (BetterDataManager.CanLoadSetting(Id))
         {
@@ -177,7 +177,7 @@ public class BetterOptionFloatItem : BetterOptionItem
         }
     }
 
-    public override float GetFloat()
+    internal override float GetFloat()
     {
         if (BetterDataManager.CanLoadSetting(Id))
         {
@@ -189,7 +189,7 @@ public class BetterOptionFloatItem : BetterOptionItem
         }
     }
 
-    public override int GetInt()
+    internal override int GetInt()
     {
         if (BetterDataManager.CanLoadSetting(Id))
         {
@@ -201,7 +201,7 @@ public class BetterOptionFloatItem : BetterOptionItem
         }
     }
 
-    public override void SetData(OptionBehaviour optionBehaviour)
+    internal override void SetData(OptionBehaviour optionBehaviour)
     {
         optionBehaviour.data = new BaseGameSetting
         {
@@ -210,7 +210,7 @@ public class BetterOptionFloatItem : BetterOptionItem
         };
     }
 
-    public override void ValueChanged(int id, OptionBehaviour optionBehaviour)
+    internal override void ValueChanged(int id, OptionBehaviour optionBehaviour)
     {
         if (IsParent || IsChild)
         {

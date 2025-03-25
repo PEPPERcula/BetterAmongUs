@@ -11,7 +11,7 @@ namespace BetterAmongUs;
 
 class Logger
 {
-    public static void Log(string info, string tag = "Log", bool logConsole = true, ConsoleColor color = ConsoleColor.White, bool hostOnly = false)
+    internal static void Log(string info, string tag = "Log", bool logConsole = true, ConsoleColor color = ConsoleColor.White, bool hostOnly = false)
     {
         try
         {
@@ -30,7 +30,7 @@ class Logger
         }
         catch { }
     }
-    public static void LogMethod(
+    internal static void LogMethod(
         string info = "",
         Type? runtimeType = null,
         bool hostOnly = false,
@@ -52,7 +52,7 @@ class Logger
         Log(logMessage, "MethodLog", hostOnly);
     }
 
-    public static void LogMethodPrivate(
+    internal static void LogMethodPrivate(
     string info = "",
     Type? runtimeType = null,
     bool hostOnly = false,
@@ -74,18 +74,18 @@ class Logger
         LogPrivate(logMessage, "MethodLog", hostOnly);
     }
 
-    public static void LogHeader(string info, string tag = "LogHeader", bool hostOnly = false, bool logConsole = true) => Log($"   >-------------- {info} --------------<", tag, hostOnly: hostOnly, logConsole: logConsole);
-    public static void LogCheat(string info, string tag = "AntiCheat", bool hostOnly = false, bool logConsole = true) => Log(info, tag, color: ConsoleColor.Green, hostOnly: hostOnly, logConsole: logConsole);
-    public static void Error(string info, string tag = "Error", bool hostOnly = false, bool logConsole = true) => Log(info, tag, color: ConsoleColor.Red, hostOnly: hostOnly, logConsole: logConsole);
-    public static void Error(Exception ex, string tag = "Error", bool hostOnly = false, bool logConsole = true) => Log(ex.ToString(), tag, color: ConsoleColor.Red, hostOnly: hostOnly, logConsole: logConsole);
-    public static void Warning(string info, string tag = "Warning", bool hostOnly = false, bool logConsole = true) => Log(info, tag, color: ConsoleColor.Yellow, hostOnly: hostOnly, logConsole: logConsole);
-    public static void Test()
+    internal static void LogHeader(string info, string tag = "LogHeader", bool hostOnly = false, bool logConsole = true) => Log($"   >-------------- {info} --------------<", tag, hostOnly: hostOnly, logConsole: logConsole);
+    internal static void LogCheat(string info, string tag = "AntiCheat", bool hostOnly = false, bool logConsole = true) => Log(info, tag, color: ConsoleColor.Green, hostOnly: hostOnly, logConsole: logConsole);
+    internal static void Error(string info, string tag = "Error", bool hostOnly = false, bool logConsole = true) => Log(info, tag, color: ConsoleColor.Red, hostOnly: hostOnly, logConsole: logConsole);
+    internal static void Error(Exception ex, string tag = "Error", bool hostOnly = false, bool logConsole = true) => Log(ex.ToString(), tag, color: ConsoleColor.Red, hostOnly: hostOnly, logConsole: logConsole);
+    internal static void Warning(string info, string tag = "Warning", bool hostOnly = false, bool logConsole = true) => Log(info, tag, color: ConsoleColor.Yellow, hostOnly: hostOnly, logConsole: logConsole);
+    internal static void Test()
     {
         Log("------------------> TEST <------------------", "TEST");
         InGame("TEST");
     }
     // Log in game join msg
-    public static void InGame(string info, bool hostOnly = false)
+    internal static void InGame(string info, bool hostOnly = false)
     {
         if (hostOnly && !GameState.IsHost) return;
 
@@ -96,7 +96,7 @@ class Logger
     // ------------- Private Log -------------
     // Logs that can only be accessed when dumped
 
-    public static void LogPrivate(string info, string tag = "Log", bool hostOnly = false)
+    internal static void LogPrivate(string info, string tag = "Log", bool hostOnly = false)
     {
         try
         {
@@ -119,7 +119,7 @@ class Logger
     }
 }
 
-public class CustomLogListener : ILogListener
+internal class CustomLogListener : ILogListener
 {
     public LogLevel LogLevelFilter { get; set; } = LogLevel.Info | LogLevel.Warning | LogLevel.Error;
     public void LogEvent(object sender, LogEventArgs eventArgs)

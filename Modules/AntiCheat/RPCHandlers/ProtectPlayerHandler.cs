@@ -1,15 +1,17 @@
 using AmongUs.GameOptions;
 using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Managers;
 using Hazel;
 
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class ProtectPlayerHandler : RPCHandler
+[RegisterRPCHandler]
+internal sealed class ProtectPlayerHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.ProtectPlayer;
+    internal override byte CallId => (byte)RpcCalls.ProtectPlayer;
 
-    public override void HandleAntiCheat(PlayerControl? sender, MessageReader reader)
+    internal override void HandleAntiCheat(PlayerControl? sender, MessageReader reader)
     {
         if (!sender.Is(RoleTypes.GuardianAngel))
         {

@@ -1,11 +1,14 @@
-﻿namespace BetterAmongUs.Commands;
+﻿using BetterAmongUs.Items.Attributes;
 
-public class AllCommandsCommand : BaseCommand
+namespace BetterAmongUs.Commands;
+
+[RegisterCommand]
+internal class AllCommandsCommand : BaseCommand
 {
-    public override string Name => "commands";
-    public override string Description => "Get information about all commands";
+    internal override string Name => "commands";
+    internal override string Description => "Get information about all commands";
 
-    public override void Run()
+    internal override void Run()
     {
         BaseCommand?[] allNormalCommands = allCommands.Where(cmd => cmd.Type == CommandType.Normal && cmd.ShowCommand()).ToArray();
         BaseCommand?[] allSponsorCommands = allCommands.Where(cmd => cmd.Type == CommandType.Sponsor && cmd.ShowCommand()).ToArray();

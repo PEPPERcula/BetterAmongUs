@@ -1,13 +1,15 @@
 using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Attributes;
 using Hazel;
 
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class SetRoleHandler : RPCHandler
+[RegisterRPCHandler]
+internal sealed class SetRoleHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.SetRole;
+    internal override byte CallId => (byte)RpcCalls.SetRole;
 
-    public override void Handle(PlayerControl? sender, MessageReader reader)
+    internal override void Handle(PlayerControl? sender, MessageReader reader)
     {
         sender.DirtyName();
     }

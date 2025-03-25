@@ -1,6 +1,9 @@
+using BetterAmongUs.Items.Attributes;
+
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class StartMeetingHandler : RPCHandler
+[RegisterRPCHandler]
+internal sealed class StartMeetingHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.StartMeeting;
+    internal override byte CallId => (byte)RpcCalls.StartMeeting;
 }

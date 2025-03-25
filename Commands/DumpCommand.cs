@@ -1,15 +1,17 @@
-﻿using BetterAmongUs.Managers;
+﻿using BetterAmongUs.Items.Attributes;
+using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
 
 namespace BetterAmongUs.Commands;
 
-public class DumpCommand : BaseCommand
+[RegisterCommand]
+internal class DumpCommand : BaseCommand
 {
-    public override string Name => "dump";
-    public override string Description => "Dump the entire log to the user's desktop";
-    public override bool ShowCommand() => !GameState.IsInGamePlay || GameState.IsDev;
+    internal override string Name => "dump";
+    internal override string Description => "Dump the entire log to the user's desktop";
+    internal override bool ShowCommand() => !GameState.IsInGamePlay || GameState.IsDev;
 
-    public override void Run()
+    internal override void Run()
     {
         if (GameState.IsInGamePlay && !GameState.IsDev) return;
 

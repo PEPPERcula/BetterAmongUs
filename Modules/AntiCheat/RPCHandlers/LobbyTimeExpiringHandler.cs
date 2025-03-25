@@ -1,6 +1,9 @@
+using BetterAmongUs.Items.Attributes;
+
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class LobbyTimeExpiringHandler : RPCHandler
+[RegisterRPCHandler]
+internal sealed class LobbyTimeExpiringHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.LobbyTimeExpiring;
+    internal override byte CallId => (byte)RpcCalls.LobbyTimeExpiring;
 }

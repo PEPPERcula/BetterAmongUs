@@ -1,11 +1,14 @@
-﻿namespace BetterAmongUs.Commands;
+﻿using BetterAmongUs.Items.Attributes;
 
-public class SetPrefixCommand : BaseCommand
+namespace BetterAmongUs.Commands;
+
+[RegisterCommand]
+internal class SetPrefixCommand : BaseCommand
 {
-    public override string Name => "setprefix";
-    public override string Description => "Set command prefix";
+    internal override string Name => "setprefix";
+    internal override string Description => "Set command prefix";
 
-    public SetPrefixCommand()
+    internal SetPrefixCommand()
     {
         _arguments = new Lazy<BaseArgument[]>(() => new BaseArgument[]
         {
@@ -13,11 +16,11 @@ public class SetPrefixCommand : BaseCommand
         });
     }
     private readonly Lazy<BaseArgument[]> _arguments;
-    public override BaseArgument[]? Arguments => _arguments.Value;
+    internal override BaseArgument[]? Arguments => _arguments.Value;
 
     private StringArgument? prefixArgument => (StringArgument)Arguments[0];
 
-    public override void Run()
+    internal override void Run()
     {
         var oldPrefix = Main.CommandPrefix.Value;
         var prefix = prefixArgument.Arg.ToCharArray().First().ToString();

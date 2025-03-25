@@ -1,6 +1,9 @@
+using BetterAmongUs.Items.Attributes;
+
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class SetStartCounterHandler : RPCHandler
+[RegisterRPCHandler]
+internal sealed class SetStartCounterHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.SetStartCounter;
+    internal override byte CallId => (byte)RpcCalls.SetStartCounter;
 }

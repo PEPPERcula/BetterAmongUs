@@ -1,13 +1,15 @@
-﻿using BetterAmongUs.Modules;
+﻿using BetterAmongUs.Items.Attributes;
+using BetterAmongUs.Modules;
 
 namespace BetterAmongUs.Commands;
 
-public class EndGameCommand : BaseCommand
+[RegisterCommand]
+internal class EndGameCommand : BaseCommand
 {
-    public override string Name => "endgame";
-    public override string Description => "Force end the game";
-    public override bool ShowCommand() => GameState.IsHost && !GameState.IsLobby && !GameState.IsFreePlay;
-    public override void Run()
+    internal override string Name => "endgame";
+    internal override string Description => "Force end the game";
+    internal override bool ShowCommand() => GameState.IsHost && !GameState.IsLobby && !GameState.IsFreePlay;
+    internal override void Run()
     {
         GameManager.Instance.RpcEndGame(GameOverReason.ImpostorDisconnect, false);
     }

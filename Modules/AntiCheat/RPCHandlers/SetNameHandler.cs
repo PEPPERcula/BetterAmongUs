@@ -1,19 +1,21 @@
 using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Managers;
 using Hazel;
 
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class SetNameHandler : RPCHandler
+[RegisterRPCHandler]
+internal sealed class SetNameHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.SetName;
+    internal override byte CallId => (byte)RpcCalls.SetName;
 
-    public override void Handle(PlayerControl? sender, MessageReader reader)
+    internal override void Handle(PlayerControl? sender, MessageReader reader)
     {
         Utils.DirtyAllNames();
     }
 
-    public override bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader)
+    internal override bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader)
     {
         if (GameState.IsHost) return false;
 

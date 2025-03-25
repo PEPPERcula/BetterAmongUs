@@ -1,6 +1,9 @@
+using BetterAmongUs.Items.Attributes;
+
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class UsePlatformHandler : RPCHandler
+[RegisterRPCHandler]
+internal sealed class UsePlatformHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.UsePlatform;
+    internal override byte CallId => (byte)RpcCalls.UsePlatform;
 }

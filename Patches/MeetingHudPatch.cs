@@ -15,7 +15,7 @@ class MeetingHudPatch
 {
     [HarmonyPatch(nameof(MeetingHud.Start))]
     [HarmonyPostfix]
-    public static void Start_Postfix(MeetingHud __instance)
+    internal static void Start_Postfix(MeetingHud __instance)
     {
         TopText.Clear();
         InfoText.Clear();
@@ -61,19 +61,19 @@ class MeetingHudPatch
 
     [HarmonyPatch(nameof(MeetingHud.SetMasksEnabled))]
     [HarmonyPostfix]
-    public static void SetMasksEnabled_Postfix(/*MeetingHud __instance*/)
+    internal static void SetMasksEnabled_Postfix(/*MeetingHud __instance*/)
     {
         Utils.DirtyAllNames();
     }
 
-    public static Dictionary<byte, TextMeshPro?> TopText = [];
-    public static Dictionary<byte, TextMeshPro?> InfoText = [];
-    public static float timeOpen = 0f;
+    internal static Dictionary<byte, TextMeshPro?> TopText = [];
+    internal static Dictionary<byte, TextMeshPro?> InfoText = [];
+    internal static float timeOpen = 0f;
 
     // Set player meeting info
     [HarmonyPatch(nameof(MeetingHud.Update))]
     [HarmonyPostfix]
-    public static void Update_Postfix(MeetingHud __instance)
+    internal static void Update_Postfix(MeetingHud __instance)
     {
         timeOpen += Time.deltaTime;
 
@@ -169,10 +169,7 @@ class MeetingHudPatch
                 {
                     if ((PlayerControl.LocalPlayer.IsAlive() || PlayerControl.LocalPlayer.Is(RoleTypes.GuardianAngel)) && !target.IsLocalPlayer())
                     {
-                        if (!DebugMenu.RevealRoles)
-                        {
-                            Role = "";
-                        }
+                        Role = "";
                     }
                 }
 
@@ -217,7 +214,7 @@ class MeetingHudPatch
 
     [HarmonyPatch(nameof(MeetingHud.Close))]
     [HarmonyPostfix]
-    public static void Close_Postfix()
+    internal static void Close_Postfix()
     {
         timeOpen = 0f;
         Logger.LogHeader("Meeting Has Ended");

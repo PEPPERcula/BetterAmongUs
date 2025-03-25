@@ -2,7 +2,6 @@
 using BetterAmongUs.Items;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
-using BetterAmongUs.Modules.AntiCheat;
 using HarmonyLib;
 using Hazel;
 using InnerNet;
@@ -11,15 +10,15 @@ using UnityEngine.SceneManagement;
 
 namespace BetterAmongUs.Patches;
 
-public class ClientPatch
+internal class ClientPatch
 {
     // Show warning message for newer and older versions of among us
     [HarmonyPatch(typeof(EOSManager))]
-    public class EOSManagerPatch
+    internal class EOSManagerPatch
     {
         [HarmonyPatch(nameof(EOSManager.EndFinalPartsOfLoginFlow))]
         [HarmonyPostfix]
-        public static void EndFinalPartsOfLoginFlow_Postfix()
+        internal static void EndFinalPartsOfLoginFlow_Postfix()
         {
             UserData.TrySetLocalData();
 
@@ -57,11 +56,11 @@ public class ClientPatch
 
     // If developer set account status color to Blue
     [HarmonyPatch(typeof(SignInStatusComponent))]
-    public class SignInStatusComponentPatch
+    internal class SignInStatusComponentPatch
     {
         [HarmonyPatch(nameof(SignInStatusComponent.SetOnline))]
         [HarmonyPrefix]
-        public static bool SetOnline_Prefix(SignInStatusComponent __instance)
+        internal static bool SetOnline_Prefix(SignInStatusComponent __instance)
         {
             var lines = "<color=#ebbd34>----------------------------------------------------------------------------------------------</color>";
             if (!FileChecker.HasShownWarning && FileChecker.HasUnauthorizedFileOrMod)
@@ -101,18 +100,18 @@ public class ClientPatch
 
     // Log game exit
     [HarmonyPatch(typeof(AmongUsClient))]
-    public class AmongUsClientPatch
+    internal class AmongUsClientPatch
     {
         [HarmonyPatch(nameof(AmongUsClient.ExitGame))]
         [HarmonyPostfix]
-        public static void ExitGame_Postfix([HarmonyArgument(0)] DisconnectReasons reason)
+        internal static void ExitGame_Postfix([HarmonyArgument(0)] DisconnectReasons reason)
         {
             Logger.Log($"Client has left game for: {Enum.GetName(reason)}", "AmongUsClientPatch");
         }
 
         [HarmonyPatch(nameof(AmongUsClient.OnGameEnd))]
         [HarmonyPrefix]
-        public static void OnGameEnd_Prefix()
+        internal static void OnGameEnd_Prefix()
         {
             foreach (var data in GameData.Instance.AllPlayers)
             {
@@ -129,37 +128,35 @@ public class ClientPatch
         }
     }
     [HarmonyPatch(typeof(InnerNetClient))]
-    public class InnerNetClientPatch
+    internal class InnerNetClientPatch
     {
         [HarmonyPatch(nameof(InnerNetClient.HandleGameData))]
         [HarmonyPrefix]
-        public static void HandleGameDataInner_Prefix(/*InnerNetClient __instance,*/ [HarmonyArgument(0)] MessageReader oldReader)
+        internal static bool HandleGameDataInner_Prefix([HarmonyArgument(0)] MessageReader oldReader)
         {
-            var parentReader = MessageReader.Get(oldReader);
-            while (parentReader.Position < parentReader.Length)
-            {
-                MessageReader messageReader = parentReader.ReadMessageAsNewBuffer();
-                MessageReader reader = messageReader;
-                RPCHandler.HandleRPC(reader.Tag, null, MessageReader.Get(reader), HandlerFlag.HandleGameDataTag);
-            }
+            NetworkManager.HandleGameData(oldReader);
+            return false;
         }
+
         [HarmonyPatch(nameof(InnerNetClient.CanBan))]
         [HarmonyPrefix]
-        public static bool CanBan_Prefix(ref bool __result)
+        internal static bool CanBan_Prefix(ref bool __result)
         {
             __result = GameState.IsHost;
             return false;
         }
+
         [HarmonyPatch(nameof(InnerNetClient.CanKick))]
         [HarmonyPrefix]
-        public static bool CanKick_Prefix(ref bool __result)
+        internal static bool CanKick_Prefix(ref bool __result)
         {
             __result = GameState.IsHost || (GameState.IsInGamePlay && (GameState.IsMeeting || GameState.IsExilling));
             return false;
         }
+
         [HarmonyPatch(nameof(InnerNetClient.KickPlayer))]
         [HarmonyPrefix]
-        public static void KickPlayer_Prefix(ref int clientId, ref bool ban)
+        internal static void KickPlayer_Prefix(ref int clientId, ref bool ban)
         {
             if (ban && BetterGameSettings.UseBanPlayerList.GetBool())
             {
@@ -170,11 +167,11 @@ public class ClientPatch
     }
     // Set text color
     [HarmonyPatch(typeof(CosmeticsLayer))]
-    public class CosmeticsLayerPatch
+    internal class CosmeticsLayerPatch
     {
         [HarmonyPatch(nameof(CosmeticsLayer.GetColorBlindText))]
         [HarmonyPrefix]
-        public static bool GetColorBlindText_Prefix(CosmeticsLayer __instance, ref string __result)
+        internal static bool GetColorBlindText_Prefix(CosmeticsLayer __instance, ref string __result)
         {
             if (__instance.bodyMatProperties.ColorId > Palette.PlayerColors.Length) return true;
 
@@ -194,11 +191,11 @@ public class ClientPatch
     }
     // Clean up menu
     [HarmonyPatch(typeof(RegionMenu))]
-    public class RegionMenuPatch
+    internal class RegionMenuPatch
     {
         [HarmonyPatch(nameof(RegionMenu.OnEnable))]
         [HarmonyPostfix]
-        public static void AdjustButtonPositions_Postfix(RegionMenu __instance)
+        internal static void AdjustButtonPositions_Postfix(RegionMenu __instance)
         {
             const int maxColumns = 4;
             int buttonsPerColumn = 6;
@@ -234,7 +231,7 @@ public class ClientPatch
     {
         [HarmonyPatch(nameof(ReportReasonScreen.Show))]
         [HarmonyPrefix]
-        public static void Show_Prefix(ref string playerName)
+        internal static void Show_Prefix(ref string playerName)
         {
             if (Utils.IsHtmlText(playerName))
             {

@@ -1,7 +1,6 @@
 ﻿using BetterAmongUs.Helpers;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Modules.AntiCheat;
-using HarmonyLib;
 using Hazel;
 
 namespace BetterAmongUs.Modules;
@@ -32,63 +31,9 @@ enum HandleGameDataTags : byte
     ClientDataReady = 7,
 }
 
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.HandleRpc))]
-internal class PlayerControlRPCHandlerPatch
-{
-    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
-    {
-        BAUAntiCheat.HandleCheatRPCBeforeCheck(__instance, callId, reader);
-
-        if (BAUAntiCheat.CheckCancelRPC(__instance, callId, reader) != true)
-        {
-            Logger.LogCheat($"RPC canceled by Anti-Cheat: {Enum.GetName((RpcCalls)callId)}{Enum.GetName((CustomRPC)callId)} - {callId}");
-            return false;
-        }
-
-        BAUAntiCheat.CheckRPC(__instance, callId, reader);
-        RPC.HandleRPC(__instance, callId, reader);
-
-        return true;
-    }
-    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
-    {
-        RPC.HandleCustomRPC(__instance, callId, reader);
-    }
-}
-
-[HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.HandleRpc))]
-internal class PlayerPhysicsRPCHandlerPatch
-{
-    public static void Prefix(PlayerPhysics __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
-    {
-        if (BAUAntiCheat.CheckCancelRPC(__instance.myPlayer, callId, reader) != true)
-        {
-            Logger.LogCheat($"RPC canceled by Anti-Cheat: {Enum.GetName((RpcCalls)callId)}{Enum.GetName((CustomRPC)callId)} - {callId}");
-        }
-
-        BAUAntiCheat.CheckRPC(__instance.myPlayer, callId, reader);
-        RPC.HandleRPC(__instance.myPlayer, callId, reader);
-    }
-}
-
-[HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.UpdateSystem), typeof(SystemTypes), typeof(PlayerControl), typeof(MessageReader))]
-public static class MessageReaderUpdateSystemPatch
-{
-    public static bool Prefix(/*ShipStatus __instance,*/ [HarmonyArgument(0)] SystemTypes systemType, [HarmonyArgument(1)] PlayerControl player, [HarmonyArgument(2)] MessageReader reader)
-    {
-        if (BAUAntiCheat.RpcUpdateSystemCheck(player, systemType, reader) != true)
-        {
-            Logger.LogCheat($"RPC canceled by Anti-Cheat: {Enum.GetName(typeof(SystemTypes), (int)systemType)} - {MessageReader.Get(reader).ReadByte()}");
-            return false;
-        }
-
-        return true;
-    }
-}
-
 internal static class RPC
 {
-    public static void RpcSyncSettings()
+    internal static void RpcSyncSettings()
     {
         if (!AmongUsClient.Instance.AmHost)
         {
@@ -104,16 +49,18 @@ internal static class RPC
         }
     }
 
-    public static void SendBetterCheck()
+    internal static void RpcBetterCheck()
     {
+        if (!Main.SendBetterRpc.Value) return;
+
         MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.BetterCheck, SendOption.None, -1);
         messageWriter.Write(true);
-        messageWriter.Write(Main.modSignature);
+        messageWriter.Write(Main.ModSignature.ToString());
         messageWriter.Write(Main.GetVersionText().Replace(" ", ""));
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
     }
 
-    public static void SetNamePrivate(PlayerControl player, string name, PlayerControl target)
+    internal static void RpcSetNamePrivate(PlayerControl player, string name, PlayerControl target)
     {
         if (!GameState.IsHost || !GameState.IsVanillaServer)
         {
@@ -126,14 +73,14 @@ internal static class RPC
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
-    public static void ExileAsync(PlayerControl player)
+    internal static void RpcExile(PlayerControl player)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.Reliable, -1);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         player.Exiled();
     }
 
-    public static void HandleCustomRPC(PlayerControl player, byte callId, MessageReader oldReader)
+    internal static void HandleCustomRPC(PlayerControl player, byte callId, MessageReader oldReader)
     {
         if (player == null || player.IsLocalPlayer() || player.Data == null || Enum.IsDefined(typeof(RpcCalls), callId)) return;
 
@@ -148,7 +95,7 @@ internal static class RPC
                         var SetBetterUser = reader.ReadBoolean();
                         var Signature = reader.ReadString();
                         var Version = reader.ReadString();
-                        var IsVerified = Signature == Main.modSignature;
+                        var IsVerified = Signature == Main.ModSignature.ToString();
 
                         if (string.IsNullOrEmpty(Signature) || string.IsNullOrEmpty(Version))
                         {
@@ -200,7 +147,7 @@ internal static class RPC
         }
     }
 
-    public static void HandleRPC(PlayerControl player, byte callId, MessageReader oldReader)
+    internal static void HandleRPC(PlayerControl player, byte callId, MessageReader oldReader)
     {
         if (player == null || player.IsLocalPlayer() || player.Data == null) return;
 

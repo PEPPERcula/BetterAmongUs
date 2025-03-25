@@ -10,15 +10,15 @@ namespace BetterAmongUs.Managers;
 
 class BetterNotificationManager
 {
-    public static GameObject? BAUNotificationManagerObj;
-    public static TextMeshPro? NameText;
-    public static TextMeshPro? TextArea => BAUNotificationManagerObj.transform.Find("Sizer/ChatText (TMP)").GetComponent<TextMeshPro>();
-    public static Dictionary<string, float> NotifyQueue = [];
-    public static float showTime = 0f;
+    internal static GameObject? BAUNotificationManagerObj;
+    internal static TextMeshPro? NameText;
+    internal static TextMeshPro? TextArea => BAUNotificationManagerObj.transform.Find("Sizer/ChatText (TMP)").GetComponent<TextMeshPro>();
+    internal static Dictionary<string, float> NotifyQueue = [];
+    internal static float showTime = 0f;
     private static Camera? localCamera;
-    public static bool Notifying = false;
+    internal static bool Notifying = false;
 
-    public static void Notify(string text, float Time = 5f)
+    internal static void Notify(string text, float Time = 5f)
     {
         if (!Main.BetterNotifications.Value) return;
 
@@ -41,7 +41,7 @@ class BetterNotificationManager
         }
     }
 
-    public static void NotifyCheat(PlayerControl player, string reason, string newText = "", bool kickPlayer = true, bool forceBan = false)
+    internal static void NotifyCheat(PlayerControl player, string reason, string newText = "", bool kickPlayer = true, bool forceBan = false)
     {
         if (player?.Data == null) return;
 
@@ -86,7 +86,7 @@ class BetterNotificationManager
     }
 
 
-    public static void Update()
+    internal static void Update()
     {
         if (BAUNotificationManagerObj != null)
         {

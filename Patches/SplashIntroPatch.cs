@@ -6,8 +6,8 @@ namespace BetterAmongUs.Patches;
 
 class SplashIntroPatch
 {
-    public static bool BetterIntro = false;
-    public static bool IsReallyDoneLoading = false;
+    internal static bool BetterIntro = false;
+    internal static bool IsReallyDoneLoading = false;
     private static GameObject BetterLogo;
 
     [HarmonyPatch(typeof(SplashManager))]
@@ -15,14 +15,14 @@ class SplashIntroPatch
     {
         [HarmonyPatch(nameof(SplashManager.Start))]
         [HarmonyPrefix]
-        public static void Start_Prefix(SplashManager __instance)
+        internal static void Start_Prefix(SplashManager __instance)
         {
             __instance.logoAnimFinish.transform.Find("BlackOverlay").transform.SetLocalY(100f);
         }
 
         [HarmonyPatch(nameof(SplashManager.Update))]
         [HarmonyPrefix]
-        public static bool Update_Prefix(SplashManager __instance)
+        internal static bool Update_Prefix(SplashManager __instance)
         {
             if (Time.time - __instance.startTime > 2f && BetterIntro)
             {

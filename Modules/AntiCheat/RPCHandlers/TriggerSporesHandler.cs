@@ -1,6 +1,9 @@
+using BetterAmongUs.Items.Attributes;
+
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class TriggerSporesHandler : RPCHandler
+[RegisterRPCHandler]
+internal sealed class TriggerSporesHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.TriggerSpores;
+    internal override byte CallId => (byte)RpcCalls.TriggerSpores;
 }

@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace BetterAmongUs.Patches;
 
-public enum NewsTypes
+internal enum NewsTypes
 {
     None,
     BAU,
@@ -19,17 +19,17 @@ public enum NewsTypes
 }
 
 [HarmonyPatch]
-public class ModNews
+internal class ModNews
 {
-    public NewsTypes NewsType;
-    public int Number;
-    public string Title;
-    public string SubTitle;
-    public string ShortTitle;
-    public string Text;
-    public string Date;
+    internal NewsTypes NewsType;
+    internal int Number;
+    internal string Title;
+    internal string SubTitle;
+    internal string ShortTitle;
+    internal string Text;
+    internal string Date;
 
-    public Announcement ToAnnouncement()
+    internal Announcement ToAnnouncement()
     {
         var result = new Announcement
         {
@@ -46,7 +46,7 @@ public class ModNews
         return result;
     }
 
-    public static List<ModNews> AllModNews = new List<ModNews>();
+    internal static List<ModNews> AllModNews = new List<ModNews>();
 
     public ModNews(NewsTypes type, int number, string title, string subTitle, string shortTitle, string text, string date)
     {
@@ -129,7 +129,7 @@ public class ModNews
     }
 
     [HarmonyPatch(typeof(AnnouncementPopUp), nameof(AnnouncementPopUp.Init)), HarmonyPostfix]
-    public static void Initialize(ref Il2CppSystem.Collections.IEnumerator __result)
+    internal static void Initialize(ref Il2CppSystem.Collections.IEnumerator __result)
     {
         static IEnumerator FetchBlacklist()
         {
@@ -140,7 +140,7 @@ public class ModNews
     }
 
     [HarmonyPatch(typeof(PlayerAnnouncementData), nameof(PlayerAnnouncementData.SetAnnouncements)), HarmonyPrefix]
-    public static bool SetModAnnouncements(PlayerAnnouncementData __instance, [HarmonyArgument(0)] ref Il2CppReferenceArray<Announcement> aRange)
+    internal static bool SetModAnnouncements(PlayerAnnouncementData __instance, [HarmonyArgument(0)] ref Il2CppReferenceArray<Announcement> aRange)
     {
         AllModNews.Sort((a1, a2) => DateTime.Compare(DateTime.Parse(a2.Date), DateTime.Parse(a1.Date)));
 
@@ -161,7 +161,7 @@ public class ModNews
     }
 
     [HarmonyPatch(typeof(AnnouncementPanel), nameof(AnnouncementPanel.SetUp)), HarmonyPostfix]
-    public static void SetUpPanel(AnnouncementPanel __instance, [HarmonyArgument(0)] Announcement announcement)
+    internal static void SetUpPanel(AnnouncementPanel __instance, [HarmonyArgument(0)] Announcement announcement)
     {
         if (announcement.Number < 100000) return;
         var obj = new GameObject("ModLabel");

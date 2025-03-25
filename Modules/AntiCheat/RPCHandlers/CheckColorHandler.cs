@@ -1,12 +1,14 @@
+using BetterAmongUs.Items.Attributes;
 using Hazel;
 
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class CheckColorHandler : RPCHandler
+[RegisterRPCHandler]
+internal sealed class CheckColorHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.CheckColor;
+    internal override byte CallId => (byte)RpcCalls.CheckColor;
 
-    public override bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader)
+    internal override bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader)
     {
         if (!GameState.IsHost)
         {

@@ -4,20 +4,19 @@ using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
 using BetterAmongUs.Helpers;
 using BetterAmongUs.Items;
+using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
 using BetterAmongUs.Patches;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
-using Innersloth.IO;
 using System.Reflection;
 using System.Security.Cryptography;
-using System.Text;
 using UnityEngine;
 
 namespace BetterAmongUs;
 
-public enum ReleaseTypes : int
+internal enum ReleaseTypes : int
 {
     Release,
     Beta,
@@ -26,49 +25,34 @@ public enum ReleaseTypes : int
 
 [BepInPlugin(PluginGuid, "BetterAmongUs", PluginVersion)]
 [BepInProcess("Among Us.exe")]
-public class Main : BasePlugin
+internal class Main : BasePlugin
 {
-    public static readonly ReleaseTypes ReleaseBuildType = ReleaseTypes.Release;
-    public const string BetaNum = "0";
-    public const string HotfixNum = "1";
-    public const bool IsHotFix = true;
-    public const string PluginGuid = "com.ten.betteramongus";
-    public const string PluginVersion = "1.1.5";
-    public const string ReleaseDate = "11.3.2024"; // mm/dd/yyyy
-    public const string Github = "https://github.com/EnhancedNetwork/BetterAmongUs-Public";
-    public const string Discord = "https://discord.gg/ten";
-    public static UserData MyData = UserData.AllUsers.First();
+    internal static readonly ReleaseTypes ReleaseBuildType = ReleaseTypes.Release;
+    internal const string BetaNum = "0";
+    internal const string HotfixNum = "0";
+    internal const bool IsHotFix = false;
+    internal const string PluginGuid = "com.ten.betteramongus";
+    internal const string PluginVersion = "1.1.6";
+    internal const string ReleaseDate = "3.25.2025"; // mm/dd/yyyy
+    internal const string Github = "https://github.com/EnhancedNetwork/BetterAmongUs-Public";
+    internal const string Discord = "https://discord.gg/ten";
+    internal static UserData MyData = UserData.AllUsers.First();
 
-    public static string modSignature
+    internal static uint ModSignature => modSignature.Value;
+    private static readonly Lazy<uint> modSignature = new(() =>
     {
-        get
-        {
-            string GetHash(string puid)
-            {
-                using SHA256 sha256 = SHA256.Create();
-                byte[] sha256Bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(puid));
-                string sha256Hash = BitConverter.ToString(sha256Bytes).Replace("-", "").ToLower();
-                return sha256Hash.Substring(0, 16) + sha256Hash.Substring(sha256Hash.Length - 8);
-            }
+        string dllPath = Assembly.GetExecutingAssembly().Location;
+        if (!File.Exists(dllPath))
+            return 0;
 
-            var versionData = new StringBuilder()
-                .Append(Enum.GetName(typeof(ReleaseTypes), ReleaseBuildType))
-                .Append(BetaNum)
-                .Append(HotfixNum)
-                .Append(PluginGuid)
-                .Append(GetVersionText().Replace(" ", "."))
-                .Append(ReleaseDate)
-                .Append(Github)
-                .Append(Discord)
-                .Append(string.Join(".", Enum.GetNames(typeof(CustomRPC))))
-                .Append(string.Join(".", GetRoleColor.Values))
-                .ToString();
+        using FileStream stream = File.OpenRead(dllPath);
+        using SHA256 sha256 = SHA256.Create();
+        byte[] hashBytes = sha256.ComputeHash(stream);
+        string hashSubstring = BitConverter.ToString(hashBytes).Replace("-", "").ToLower()[..8];
+        return Convert.ToUInt32(hashSubstring, 16);
+    });
 
-            return GetHash(versionData);
-        }
-    }
-
-    public static string GetVersionText(bool newLine = false)
+    internal static string GetVersionText(bool newLine = false)
     {
         string text = string.Empty;
 
@@ -94,14 +78,14 @@ public class Main : BasePlugin
 
         return text;
     }
-    public Harmony Harmony { get; } = new Harmony(PluginGuid);
+    internal Harmony Harmony { get; } = new Harmony(PluginGuid);
 
-    public static string BetterAmongUsVersion => PluginVersion;
-    public static string AmongUsVersion => Application.version;
+    internal static string BetterAmongUsVersion => PluginVersion;
+    internal static string AmongUsVersion => Application.version;
 
-    public static PlatformSpecificData PlatformData => Constants.GetPlatformData();
+    internal static PlatformSpecificData PlatformData => Constants.GetPlatformData();
 
-    public static List<string> SupportedAmongUsVersions =
+    internal static List<string> SupportedAmongUsVersions =
     [
         "2024.11.26",
         "2024.10.29",
@@ -110,12 +94,12 @@ public class Main : BasePlugin
         "2024.6.18",
     ];
 
-    public static PlayerControl[] AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(pc => pc != null).ToArray();
-    public static PlayerControl[] AllAlivePlayerControls => AllPlayerControls.ToArray().Where(pc => pc.IsAlive()).ToArray();
-    public static DeadBody[] AllDeadBodys => UnityEngine.Object.FindObjectsOfType<DeadBody>().ToArray();
-    public static Vent[] AllVents => UnityEngine.Object.FindObjectsOfType<Vent>();
+    internal static List<PlayerControl> AllPlayerControls = [];
+    internal static List<PlayerControl> AllAlivePlayerControls => AllPlayerControls.Where(pc => pc.IsAlive()).ToList();
+    internal static DeadBody[] AllDeadBodys => UnityEngine.Object.FindObjectsOfType<DeadBody>().ToArray();
+    internal static Vent[] AllVents => UnityEngine.Object.FindObjectsOfType<Vent>();
 
-    public static Dictionary<int, string> GetRoleName()
+    internal static Dictionary<int, string> GetRoleName()
     {
         return new Dictionary<int, string>
         {
@@ -134,7 +118,7 @@ public class Main : BasePlugin
     }
 
 
-    public static Dictionary<int, string> GetRoleColor => new Dictionary<int, string>
+    internal static Dictionary<int, string> GetRoleColor => new Dictionary<int, string>
     {
         { 0, "#8cffff" },
         { 1, "#f00202" },
@@ -149,8 +133,7 @@ public class Main : BasePlugin
        { 10, "#59f002" }
     };
 
-    public static ManualLogSource Logger;
-    public static DebugMenu debugmenu { get; set; } = null;
+    internal static ManualLogSource? Logger;
 
     public override void Load()
     {
@@ -188,6 +171,7 @@ public class Main : BasePlugin
             Harmony.PatchAll();
             GameSettingMenuPatch.SetupSettings(true);
             FileChecker.Initialize();
+            InstanceAttribute.RegisterAll();
 
             if (PlatformData.Platform == Platforms.StandaloneSteamPC)
                 File.WriteAllText(Path.Combine(Environment.CurrentDirectory, "steam_appid.txt"), "945360");
@@ -197,13 +181,6 @@ public class Main : BasePlugin
 
             File.WriteAllText(Path.Combine(BetterDataManager.filePathFolder, "better-log.txt"), "");
             BetterAmongUs.Logger.Log("Better Among Us successfully loaded!");
-
-#if DEBUG
-            ClassInjector.RegisterTypeInIl2Cpp<DebugMenu>();
-            ClassInjector.RegisterTypeInIl2Cpp<Resources.Coroutines.Component>();
-            debugmenu = AddComponent<DebugMenu>();
-            AddComponent<Resources.Coroutines.Component>();
-#endif
 
             string SupportedVersions = string.Empty;
             foreach (string text in SupportedAmongUsVersions.ToArray())
@@ -216,7 +193,7 @@ public class Main : BasePlugin
         }
     }
 
-    public static void RegisterAllMonoBehavioursInAssembly()
+    internal static void RegisterAllMonoBehavioursInAssembly()
     {
         var assembly = Assembly.GetExecutingAssembly();
 
@@ -237,19 +214,23 @@ public class Main : BasePlugin
         }
     }
 
-    public static ConfigEntry<bool>? AntiCheat { get; private set; }
-    public static ConfigEntry<bool>? BetterNotifications { get; private set; }
-    public static ConfigEntry<bool>? ForceOwnLanguage { get; private set; }
-    public static ConfigEntry<bool>? ChatDarkMode { get; private set; }
-    public static ConfigEntry<bool>? ChatInGameplay { get; private set; }
-    public static ConfigEntry<bool>? LobbyPlayerInfo { get; private set; }
-    public static ConfigEntry<bool>? DisableLobbyTheme { get; private set; }
-    public static ConfigEntry<bool>? UnlockFPS { get; private set; }
-    public static ConfigEntry<bool>? ShowFPS { get; private set; }
-    public static ConfigEntry<string>? CommandPrefix { get; set; }
+    internal static ConfigEntry<bool>? PrivateOnlyLobby { get; private set; }
+    internal static ConfigEntry<bool>? AntiCheat { get; private set; }
+    internal static ConfigEntry<bool>? SendBetterRpc { get; private set; }
+    internal static ConfigEntry<bool>? BetterNotifications { get; private set; }
+    internal static ConfigEntry<bool>? ForceOwnLanguage { get; private set; }
+    internal static ConfigEntry<bool>? ChatDarkMode { get; private set; }
+    internal static ConfigEntry<bool>? ChatInGameplay { get; private set; }
+    internal static ConfigEntry<bool>? LobbyPlayerInfo { get; private set; }
+    internal static ConfigEntry<bool>? DisableLobbyTheme { get; private set; }
+    internal static ConfigEntry<bool>? UnlockFPS { get; private set; }
+    internal static ConfigEntry<bool>? ShowFPS { get; private set; }
+    internal static ConfigEntry<string>? CommandPrefix { get; set; }
     private void LoadOptions()
     {
+        PrivateOnlyLobby = Config.Bind("Mod", "PrivateOnlyLobby", false);
         AntiCheat = Config.Bind("Better Options", "AntiCheat", true);
+        SendBetterRpc = Config.Bind("Better Options", "SendBetterRpc", true);
         BetterNotifications = Config.Bind("Better Options", "BetterNotifications", true);
         ForceOwnLanguage = Config.Bind("Better Options", "ForceOwnLanguage", false);
         ChatDarkMode = Config.Bind("Better Options", "ChatDarkMode", true);
@@ -261,6 +242,6 @@ public class Main : BasePlugin
         CommandPrefix = Config.Bind("Client Options", "CommandPrefix", "/");
     }
 
-    public static string GetDataPathToAmongUs() => FileIO.GetRootDataPath();
-    public static string GetGamePathToAmongUs() => Environment.CurrentDirectory;
+    internal static string GetDataPathToAmongUs() => Application.persistentDataPath;
+    internal static string GetGamePathToAmongUs() => Path.GetDirectoryName(Application.dataPath) ?? Application.dataPath;
 }

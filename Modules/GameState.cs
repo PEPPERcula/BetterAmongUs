@@ -3,21 +3,21 @@ using BetterAmongUs.Helpers;
 
 namespace BetterAmongUs.Modules;
 
-public static class GameState
+internal static class GameState
 {
     /**********Check Game Status***********/
-    public static bool IsDev => Main.MyData.IsDev();
-    public static bool InGame => Main.AllPlayerControls.Any();
-    public static bool IsNormalGame => GameOptionsManager.Instance.CurrentGameOptions.GameMode is GameModes.Normal or GameModes.NormalFools;
-    public static bool IsHideNSeek => GameOptionsManager.Instance != null && GameOptionsManager.Instance.CurrentGameOptions.GameMode is GameModes.HideNSeek or GameModes.SeekFools;
-    public static bool SkeldIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Skeld;
-    public static bool MiraHQIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Mira;
-    public static bool PolusIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Polus;
-    public static bool DleksIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Dleks;
-    public static bool AirshipIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Airship;
-    public static bool FungleIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Fungle;
-    public static byte GetActiveMapId => GameOptionsManager.Instance.CurrentGameOptions.MapId;
-    public static bool IsSystemActive(SystemTypes type)
+    internal static bool IsDev => Main.MyData.IsDev();
+    internal static bool InGame => Main.AllPlayerControls.Any();
+    internal static bool IsNormalGame => GameOptionsManager.Instance.CurrentGameOptions.GameMode is GameModes.Normal or GameModes.NormalFools;
+    internal static bool IsHideNSeek => GameOptionsManager.Instance != null && GameOptionsManager.Instance.CurrentGameOptions.GameMode is GameModes.HideNSeek or GameModes.SeekFools;
+    internal static bool SkeldIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Skeld;
+    internal static bool MiraHQIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Mira;
+    internal static bool PolusIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Polus;
+    internal static bool DleksIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Dleks;
+    internal static bool AirshipIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Airship;
+    internal static bool FungleIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Fungle;
+    internal static byte GetActiveMapId => GameOptionsManager.Instance.CurrentGameOptions.MapId;
+    internal static bool IsSystemActive(SystemTypes type)
     {
         if (IsHideNSeek || !ShipStatus.Instance.Systems.TryGetValue(type, out var system))
         {
@@ -39,7 +39,7 @@ public static class GameState
             _ => false
         };
     }
-    public static bool IsCriticalSabotageActive()
+    internal static bool IsCriticalSabotageActive()
     {
         var deathSabotages = new[]
         {
@@ -51,7 +51,7 @@ public static class GameState
 
         return deathSabotages.Any(IsSystemActive);
     }
-    public static bool IsNoneCriticalSabotageActive()
+    internal static bool IsNoneCriticalSabotageActive()
     {
         var noneDeathSabotages = new[]
         {
@@ -62,7 +62,7 @@ public static class GameState
 
         return noneDeathSabotages.Any(IsSystemActive);
     }
-    public static bool IsAnySabotageActive()
+    internal static bool IsAnySabotageActive()
     {
         var allSabotages = new[]
         {
@@ -77,14 +77,14 @@ public static class GameState
 
         return allSabotages.Any(IsSystemActive);
     }
-    public static bool IsInGame => InGame;
-    public static bool IsLobby => AmongUsClient.Instance?.GameState == InnerNet.InnerNetClient.GameStates.Joined;
-    public static bool IsInIntro => IntroCutscene.Instance != null;
-    public static bool IsInGamePlay => InGame && IsShip && !IsLobby && !IsInIntro || IsFreePlay;
-    public static bool IsEnded => AmongUsClient.Instance?.GameState == InnerNet.InnerNetClient.GameStates.Ended;
-    public static bool IsNotJoined => AmongUsClient.Instance?.GameState == InnerNet.InnerNetClient.GameStates.NotJoined;
-    public static bool IsOnlineGame => AmongUsClient.Instance?.NetworkMode == NetworkModes.OnlineGame;
-    public static bool IsVanillaServer
+    internal static bool IsInGame => InGame;
+    internal static bool IsLobby => AmongUsClient.Instance?.GameState == InnerNet.InnerNetClient.GameStates.Joined;
+    internal static bool IsInIntro => IntroCutscene.Instance != null;
+    internal static bool IsInGamePlay => InGame && IsShip && !IsLobby && !IsInIntro || IsFreePlay;
+    internal static bool IsEnded => AmongUsClient.Instance?.GameState == InnerNet.InnerNetClient.GameStates.Ended;
+    internal static bool IsNotJoined => AmongUsClient.Instance?.GameState == InnerNet.InnerNetClient.GameStates.NotJoined;
+    internal static bool IsOnlineGame => AmongUsClient.Instance?.NetworkMode == NetworkModes.OnlineGame;
+    internal static bool IsVanillaServer
     {
         get
         {
@@ -94,18 +94,19 @@ public static class GameState
             return region == "North America" || region == "Europe" || region == "Asia";
         }
     }
-    public static bool IsLocalGame => AmongUsClient.Instance?.NetworkMode == NetworkModes.LocalGame;
-    public static bool IsFreePlay => AmongUsClient.Instance?.NetworkMode == NetworkModes.FreePlay;
-    public static bool IsInTask => InGame && MeetingHud.Instance == null;
-    public static bool IsMeeting => InGame && MeetingHud.Instance != null;
-    public static bool IsVoting => IsMeeting && MeetingHud.Instance?.state is MeetingHud.VoteStates.Voted or MeetingHud.VoteStates.NotVoted;
-    public static bool IsProceeding => IsMeeting && MeetingHud.Instance?.state is MeetingHud.VoteStates.Proceeding;
-    public static bool IsExilling => ExileController.Instance != null && !(AirshipIsActive && Minigame.Instance != null && Minigame.Instance.isActiveAndEnabled);
-    public static bool IsCountDown => GameStartManager.InstanceExists && GameStartManager.Instance.startState == GameStartManager.StartingStates.Countdown;
-    public static bool IsShip => ShipStatus.Instance != null;
-    public static bool IsHost => AmongUsClient.Instance != null && AmongUsClient.Instance.AmHost;
-    public static bool IsBetterHostLobby => PlayerControl.LocalPlayer.IsHost() || Main.AllPlayerControls.Any(pc => pc.IsHost() && pc.BetterData().IsBetterUser);
-    public static bool IsTOHEHostLobby => Main.AllPlayerControls.Any(pc => pc.IsHost() && pc.BetterData().IsTOHEHost);
-    public static bool IsCanMove => PlayerControl.LocalPlayer?.CanMove is true;
-    public static bool IsDead => PlayerControl.LocalPlayer?.Data?.IsDead is true;
+    internal static bool IsLocalGame => AmongUsClient.Instance?.NetworkMode == NetworkModes.LocalGame;
+    internal static bool IsFreePlay => AmongUsClient.Instance?.NetworkMode == NetworkModes.FreePlay;
+    internal static bool IsInTask => InGame && MeetingHud.Instance == null;
+    internal static bool IsMeeting => InGame && MeetingHud.Instance != null;
+    internal static bool IsVoting => IsMeeting && MeetingHud.Instance?.state is MeetingHud.VoteStates.Voted or MeetingHud.VoteStates.NotVoted;
+    internal static bool IsProceeding => IsMeeting && MeetingHud.Instance?.state is MeetingHud.VoteStates.Proceeding;
+    internal static bool IsExilling => ExileController.Instance != null && !(AirshipIsActive && Minigame.Instance != null && Minigame.Instance.isActiveAndEnabled);
+    internal static bool IsCountDown => GameStartManager.InstanceExists && GameStartManager.Instance.startState == GameStartManager.StartingStates.Countdown;
+    internal static bool IsShip => ShipStatus.Instance != null;
+    internal static bool IsHost => AmongUsClient.Instance != null && AmongUsClient.Instance.AmHost;
+    internal static bool IsPrivateOnlyLobby => (Main.PrivateOnlyLobby.Value || AmongUsClient.Instance.AmLocalHost) && IsHost;
+    internal static bool IsBetterHostLobby => PlayerControl.LocalPlayer.IsHost() || Main.AllPlayerControls.Any(pc => pc.IsHost() && pc.BetterData().IsBetterUser);
+    internal static bool IsTOHEHostLobby => Main.AllPlayerControls.Any(pc => pc.IsHost() && pc.BetterData().IsTOHEHost);
+    internal static bool IsCanMove => PlayerControl.LocalPlayer?.CanMove is true;
+    internal static bool IsDead => PlayerControl.LocalPlayer?.Data?.IsDead is true;
 }

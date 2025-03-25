@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace BetterAmongUs.Items.OptionItems;
 
-public class BetterOptionDividerItem : BetterOptionItem
+internal class BetterOptionDividerItem : BetterOptionItem
 {
-    public BetterOptionItem Create(GameOptionsMenu gameOptionsMenu)
+    internal BetterOptionItem Create(GameOptionsMenu gameOptionsMenu)
     {
         if (gameOptionsMenu == null)
         {

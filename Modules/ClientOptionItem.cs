@@ -4,15 +4,15 @@ using Object = UnityEngine.Object;
 
 namespace BetterAmongUs.Modules;
 
-public class ClientOptionItem
+internal class ClientOptionItem
 {
-    public ConfigEntry<bool> Config;
-    public ToggleButtonBehaviour ToggleButton;
+    internal ConfigEntry<bool> Config;
+    internal ToggleButtonBehaviour ToggleButton;
 
-    public static SpriteRenderer CustomBackground;
+    internal static SpriteRenderer CustomBackground;
     private static int numOptions = 0;
 
-    private ClientOptionItem(
+    public ClientOptionItem(
         string name,
         ConfigEntry<bool> config,
         OptionsMenuBehaviour optionsMenuBehaviour,
@@ -129,7 +129,7 @@ public class ClientOptionItem
         finally { numOptions++; }
     }
 
-    public static ClientOptionItem Create(
+    internal static ClientOptionItem Create(
         string name,
         ConfigEntry<bool> config,
         OptionsMenuBehaviour optionsMenuBehaviour,
@@ -142,7 +142,7 @@ public class ClientOptionItem
         return new ClientOptionItem(name, config, optionsMenuBehaviour, additionalOnClickAction, toggleCheck, IsToggle);
     }
 
-    public void UpdateToggle()
+    internal void UpdateToggle()
     {
         if (ToggleButton == null) return;
 

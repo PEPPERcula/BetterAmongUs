@@ -1,9 +1,9 @@
 ﻿namespace BetterAmongUs.Commands;
 
-public class BoolArgument(BaseCommand? command, string argInfo = "{bool}") : BaseArgument(command, argInfo)
+internal class BoolArgument(BaseCommand? command, string argInfo = "{bool}") : BaseArgument(command, argInfo)
 {
     protected override string[] ArgSuggestions => ["true", "false"];
-    public bool? GetBool()
+    internal bool? GetBool()
     {
         if (Arg.ToLower() is "true")
         {

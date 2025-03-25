@@ -1,6 +1,9 @@
+using BetterAmongUs.Items.Attributes;
+
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class UseZiplineHandler : RPCHandler
+[RegisterRPCHandler]
+internal sealed class UseZiplineHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.UseZipline;
+    internal override byte CallId => (byte)RpcCalls.UseZipline;
 }

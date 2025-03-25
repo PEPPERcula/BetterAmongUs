@@ -1,14 +1,16 @@
 using AmongUs.GameOptions;
 using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Attributes;
 using Hazel;
 
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class CheckAppearHandler : RPCHandler
+[RegisterRPCHandler]
+internal sealed class CheckAppearHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.CheckAppear;
+    internal override byte CallId => (byte)RpcCalls.CheckAppear;
 
-    public override bool BetterHandle(PlayerControl? sender, MessageReader reader)
+    internal override bool BetterHandle(PlayerControl? sender, MessageReader reader)
     {
         bool flag = reader.ReadBoolean();
 
@@ -33,7 +35,7 @@ public class CheckAppearHandler : RPCHandler
         return false;
     }
 
-    public override bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader)
+    internal override bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader)
     {
         if (!GameState.IsHost)
         {

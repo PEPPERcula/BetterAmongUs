@@ -1,10 +1,12 @@
+using BetterAmongUs.Items.Attributes;
 using Hazel;
 
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class ExitVentHandler : RPCHandler
+[RegisterRPCHandler]
+internal sealed class ExitVentHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.ExitVent;
+    internal override byte CallId => (byte)RpcCalls.ExitVent;
 
-    public override void HandleAntiCheat(PlayerControl? sender, MessageReader reader) => GetHandlerInstance<EnterVentHandler>().HandleAntiCheat(sender, reader);
+    internal override void HandleAntiCheat(PlayerControl? sender, MessageReader reader) => RegisterRPCHandlerAttribute.GetClassInstance<EnterVentHandler>().HandleAntiCheat(sender, reader);
 }

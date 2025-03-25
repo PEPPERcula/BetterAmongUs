@@ -1,15 +1,17 @@
 ﻿#if DEBUG
+using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Modules;
 
 namespace BetterAmongUs.Commands;
 
-public class ExileCommand : BaseCommand
+[RegisterCommand]
+internal class ExileCommand : BaseCommand
 {
-    public override CommandType Type => CommandType.Debug;
-    public override string Name => "exile";
-    public override string Description => "Set self as dead";
-    public override bool ShowCommand() => GameState.IsFreePlay;
-    public override void Run()
+    internal override CommandType Type => CommandType.Debug;
+    internal override string Name => "exile";
+    internal override string Description => "Set self as dead";
+    internal override bool ShowCommand() => GameState.IsFreePlay;
+    internal override void Run()
     {
         PlayerControl.LocalPlayer.Exiled();
     }

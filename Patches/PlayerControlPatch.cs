@@ -14,16 +14,30 @@ namespace BetterAmongUs.Patches;
 [HarmonyPatch(typeof(PlayerControl))]
 class PlayerControlPatch
 {
+    [HarmonyPatch(nameof(PlayerControl.Start))]
+    [HarmonyPostfix]
+    internal static void Start_Postfix(PlayerControl __instance)
+    {
+        Main.AllPlayerControls.Add(__instance);
+    }
+
+    [HarmonyPatch(nameof(PlayerControl.OnDestroy))]
+    [HarmonyPostfix]
+    internal static void OnDestroy_Postfix(PlayerControl __instance)
+    {
+        Main.AllPlayerControls.Remove(__instance);
+    }
+
     [HarmonyPatch(nameof(PlayerControl.FixedUpdate))]
     [HarmonyPrefix]
-    public static void FixedUpdate_Prefix(PlayerControl __instance)
+    internal static void FixedUpdate_Prefix(PlayerControl __instance)
     {
         SetPlayerInfo(__instance);
         SetPlayerHighlight(__instance);
         __instance.UpdateColorBlindTextPosition();
     }
 
-    public static void SetPlayerHighlight(PlayerControl player)
+    internal static void SetPlayerHighlight(PlayerControl player)
     {
         string hashPuid = Utils.GetHashPuid(player);
         string friendCode = player.Data.FriendCode;
@@ -31,7 +45,7 @@ class PlayerControlPatch
         SetPlayerOutline(player, hashPuid, friendCode, new());
     }
 
-    public static void SetPlayerInfo(PlayerControl player)
+    internal static void SetPlayerInfo(PlayerControl player)
     {
         if (player?.Data == null || player?.BetterData()?.IsDirtyInfo != true) return;
         player.BetterData().IsDirtyInfo = false;
@@ -125,7 +139,7 @@ class PlayerControlPatch
             || !Regex.IsMatch(friendCode, hashtagPattern)
             || friendCode.Contains(' ')) ? "#00f7ff" : "#ff0000";
 
-        if (string.IsNullOrEmpty(friendCode) || friendCode == "")
+        if (string.IsNullOrEmpty(friendCode))
         {
             friendCode = Translator.GetString("Player.NoFriendCode");
             color = "#ff0000";
@@ -195,7 +209,7 @@ class PlayerControlPatch
 
     private static void SetInGameInfo(PlayerControl player, StringBuilder sbTagTop)
     {
-        if (player.IsImpostorTeammate() || player.IsLocalPlayer() || (!PlayerControl.LocalPlayer.IsAlive() && !PlayerControl.LocalPlayer.Is(RoleTypes.GuardianAngel)) || DebugMenu.RevealRoles)
+        if (player.IsImpostorTeammate() || player.IsLocalPlayer() || (!PlayerControl.LocalPlayer.IsAlive() && !PlayerControl.LocalPlayer.Is(RoleTypes.GuardianAngel)))
         {
             string roleInfo = $"<color={player.GetTeamHexColor()}>{player.GetRoleName()}</color>";
             if (!player.IsImpostorTeam() && player.myTasks.Count > 0)
@@ -224,7 +238,7 @@ class PlayerControlPatch
 
     [HarmonyPatch(nameof(PlayerControl.RpcSetName))]
     [HarmonyPrefix]
-    public static bool RpcSetName_Prefix(PlayerControl __instance, [HarmonyArgument(0)] string name)
+    internal static bool RpcSetName_Prefix(PlayerControl __instance, [HarmonyArgument(0)] string name)
     {
 
         Utils.DirtyAllNames();
@@ -234,28 +248,28 @@ class PlayerControlPatch
 
     [HarmonyPatch(nameof(PlayerControl.CompleteTask))]
     [HarmonyPostfix]
-    public static void CompleteTask_Postfix(PlayerControl __instance)
+    internal static void CompleteTask_Postfix(PlayerControl __instance)
     {
         __instance.DirtyName();
     }
 
     [HarmonyPatch(nameof(PlayerControl.CoSetRole))]
     [HarmonyPostfix]
-    public static void CoSetRole_Postfix(PlayerControl __instance)
+    internal static void CoSetRole_Postfix(PlayerControl __instance)
     {
         __instance.DirtyName();
     }
 
     [HarmonyPatch(nameof(PlayerControl.Revive))]
     [HarmonyPostfix]
-    public static void Revive_Postfix(PlayerControl __instance)
+    internal static void Revive_Postfix(PlayerControl __instance)
     {
         Utils.DirtyAllNames();
     }
 
     [HarmonyPatch(nameof(PlayerControl.MurderPlayer))]
     [HarmonyPostfix]
-    public static void MurderPlayer_Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
+    internal static void MurderPlayer_Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
     {
         if (target == null) return;
 
@@ -267,7 +281,7 @@ class PlayerControlPatch
     }
     [HarmonyPatch(nameof(PlayerControl.Shapeshift))]
     [HarmonyPostfix]
-    public static void Shapeshift_Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] bool animate)
+    internal static void Shapeshift_Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] bool animate)
     {
         if (target == null) return;
 
@@ -278,7 +292,7 @@ class PlayerControlPatch
     }
     [HarmonyPatch(nameof(PlayerControl.SetRoleInvisibility))]
     [HarmonyPostfix]
-    public static void SetRoleInvisibility_Postfix(PlayerControl __instance, [HarmonyArgument(0)] bool isActive, [HarmonyArgument(1)] bool animate)
+    internal static void SetRoleInvisibility_Postfix(PlayerControl __instance, [HarmonyArgument(0)] bool isActive, [HarmonyArgument(1)] bool animate)
     {
 
         if (isActive)
@@ -289,7 +303,7 @@ class PlayerControlPatch
 }
 
 [HarmonyPatch(typeof(PlayerPhysics))]
-public class PlayerPhysicsPatch
+internal class PlayerPhysicsPatch
 {
     [HarmonyPatch(nameof(PlayerPhysics.BootFromVent))]
     [HarmonyPostfix]

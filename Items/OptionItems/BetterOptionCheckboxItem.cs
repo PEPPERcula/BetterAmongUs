@@ -3,16 +3,16 @@ using UnityEngine;
 
 namespace BetterAmongUs.Items.OptionItems;
 
-public class BetterOptionCheckboxItem : BetterOptionItem
+internal class BetterOptionCheckboxItem : BetterOptionItem
 {
     private ToggleOption? ThisOption;
     private bool? IsChecked;
 
-    public override bool ShowChildrenCondition() => IsChecked == true;
-    public override bool SelfShowCondition() => ShowCondition != null ? ShowCondition() : base.SelfShowCondition();
-    public Func<bool>? ShowCondition = null;
+    internal override bool ShowChildrenCondition() => IsChecked == true;
+    internal override bool SelfShowCondition() => ShowCondition != null ? ShowCondition() : base.SelfShowCondition();
+    internal Func<bool>? ShowCondition = null;
 
-    public BetterOptionItem Create(int id, GameOptionsMenu gameOptionsMenu, string name, bool DefaultValue = true, BetterOptionItem? Parent = null, Func<bool>? selfShowCondition = null)
+    internal BetterOptionItem Create(int id, GameOptionsMenu gameOptionsMenu, string name, bool DefaultValue = true, BetterOptionItem? Parent = null, Func<bool>? selfShowCondition = null)
     {
         Id = id;
         Tab = gameOptionsMenu;
@@ -73,7 +73,7 @@ public class BetterOptionCheckboxItem : BetterOptionItem
         return this;
     }
 
-    public void Load(bool DefaultValue)
+    internal void Load(bool DefaultValue)
     {
         if (BetterDataManager.CanLoadSetting(Id))
         {
@@ -89,7 +89,7 @@ public class BetterOptionCheckboxItem : BetterOptionItem
         }
     }
 
-    public override bool GetBool()
+    internal override bool GetBool()
     {
         if (BetterDataManager.CanLoadSetting(Id))
         {
@@ -101,7 +101,7 @@ public class BetterOptionCheckboxItem : BetterOptionItem
         }
     }
 
-    public override void SetData(OptionBehaviour optionBehaviour)
+    internal override void SetData(OptionBehaviour optionBehaviour)
     {
         optionBehaviour.data = new BaseGameSetting
         {
@@ -110,7 +110,7 @@ public class BetterOptionCheckboxItem : BetterOptionItem
         };
     }
 
-    public override void ValueChanged(int id, OptionBehaviour optionBehaviour)
+    internal override void ValueChanged(int id, OptionBehaviour optionBehaviour)
     {
         IsChecked = !IsChecked;
         BetterDataManager.SaveSetting(Id, IsChecked.ToString());

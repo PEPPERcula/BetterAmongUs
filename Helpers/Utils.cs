@@ -12,9 +12,9 @@ using UnityEngine.Networking;
 
 namespace BetterAmongUs.Helpers;
 
-public static class Utils
+internal static class Utils
 {
-    public static bool IsInternetAvailable()
+    internal static bool IsInternetAvailable()
     {
         if (Application.internetReachability == NetworkReachability.NotReachable)
             return false;
@@ -37,21 +37,21 @@ public static class Utils
         }
     }
     // Get player by client id
-    public static ClientData? ClientFromClientId(int clientId) => AmongUsClient.Instance.allClients.ToArray().FirstOrDefault(cd => cd.Id == clientId) ?? null;
+    internal static ClientData? ClientFromClientId(int clientId) => AmongUsClient.Instance.allClients.ToArray().FirstOrDefault(cd => cd.Id == clientId) ?? null;
     // Get player data from player id
-    public static NetworkedPlayerInfo? PlayerDataFromPlayerId(int playerId) => GameData.Instance.AllPlayers.ToArray().FirstOrDefault(data => data.PlayerId == playerId);
+    internal static NetworkedPlayerInfo? PlayerDataFromPlayerId(int playerId) => GameData.Instance.AllPlayers.ToArray().FirstOrDefault(data => data.PlayerId == playerId);
     // Get player data from client id
-    public static NetworkedPlayerInfo? PlayerDataFromClientId(int clientId) => GameData.Instance.AllPlayers.ToArray().FirstOrDefault(data => data.ClientId == clientId);
+    internal static NetworkedPlayerInfo? PlayerDataFromClientId(int clientId) => GameData.Instance.AllPlayers.ToArray().FirstOrDefault(data => data.ClientId == clientId);
     // Get player data from friend code
-    public static NetworkedPlayerInfo? PlayerDataFromFriendCode(string friendCode) => GameData.Instance.AllPlayers.ToArray().FirstOrDefault(data => data.FriendCode == friendCode);
+    internal static NetworkedPlayerInfo? PlayerDataFromFriendCode(string friendCode) => GameData.Instance.AllPlayers.ToArray().FirstOrDefault(data => data.FriendCode == friendCode);
     // Get player from player id
-    public static PlayerControl? PlayerFromPlayerId(int playerId) => Main.AllPlayerControls.FirstOrDefault(player => player.PlayerId == playerId) ?? null;
+    internal static PlayerControl? PlayerFromPlayerId(int playerId) => Main.AllPlayerControls.FirstOrDefault(player => player.PlayerId == playerId) ?? null;
     // Get player from client id
-    public static PlayerControl? PlayerFromClientId(int clientId) => Main.AllPlayerControls.FirstOrDefault(player => player.GetClientId() == clientId) ?? null;
+    internal static PlayerControl? PlayerFromClientId(int clientId) => Main.AllPlayerControls.FirstOrDefault(player => player.GetClientId() == clientId) ?? null;
     // Get player from net id
-    public static PlayerControl? PlayerFromNetId(uint netId) => Main.AllPlayerControls.FirstOrDefault(player => player.NetId == netId) ?? null;
+    internal static PlayerControl? PlayerFromNetId(uint netId) => Main.AllPlayerControls.FirstOrDefault(player => player.NetId == netId) ?? null;
     // Add msg to chat
-    public static void AddChatPrivate(string text, string overrideName = "", bool setRight = false)
+    internal static void AddChatPrivate(string text, string overrideName = "", bool setRight = false)
     {
         ChatController chat = HudManager.Instance.Chat;
         NetworkedPlayerInfo data = PlayerControl.LocalPlayer.Data;
@@ -95,14 +95,14 @@ public static class Utils
             throw;
         }
     }
-    public static bool SystemTypeIsSabotage(SystemTypes type) => type is SystemTypes.Reactor
+    internal static bool SystemTypeIsSabotage(SystemTypes type) => type is SystemTypes.Reactor
                     or SystemTypes.Laboratory
                     or SystemTypes.Comms
                     or SystemTypes.LifeSupp
                     or SystemTypes.MushroomMixupSabotage
                     or SystemTypes.HeliSabotage
                     or SystemTypes.Electrical;
-    public static bool SystemTypeIsSabotage(int typeNum) => (SystemTypes)typeNum is SystemTypes.Reactor
+    internal static bool SystemTypeIsSabotage(int typeNum) => (SystemTypes)typeNum is SystemTypes.Reactor
                 or SystemTypes.Laboratory
                 or SystemTypes.Comms
                 or SystemTypes.LifeSupp
@@ -110,13 +110,13 @@ public static class Utils
                 or SystemTypes.HeliSabotage
                 or SystemTypes.Electrical;
     // Get players HashPuid
-    public static string GetHashPuid(PlayerControl player)
+    internal static string GetHashPuid(PlayerControl player)
     {
         if (player?.Data?.Puid == null) return "";
         return GetHashStr(player.Data.Puid);
     }
     // Get HashPuid from puid
-    public static string GetHashStr(string str)
+    internal static string GetHashStr(this string str)
     {
         if (string.IsNullOrEmpty(str)) return "";
 
@@ -125,16 +125,16 @@ public static class Utils
         string sha256Hash = BitConverter.ToString(sha256Bytes).Replace("-", "").ToLower();
         return sha256Hash.Substring(0, 5) + sha256Hash.Substring(sha256Hash.Length - 4);
     }
-    public static ushort GetHashUInt16(string input)
+    internal static ushort GetHashUInt16(string input)
     {
         if (string.IsNullOrEmpty(input)) return 0;
 
         return (ushort)(BitConverter.ToUInt16(SHA256.HashData(Encoding.UTF8.GetBytes(input)), 0) % 65536);
     }
     // Remove Html Tags Template
-    public static string RemoveHtmlTagsTemplate(string str) => Regex.Replace(str, "", "");
+    internal static string RemoveHtmlTagsTemplate(string str) => Regex.Replace(str, "", "");
     // Get raw text
-    public static string RemoveHtmlText(string text)
+    internal static string RemoveHtmlText(string text)
     {
         text = Regex.Replace(text, "<[^>]*>", "");
         text = Regex.Replace(text, "{[^}]*}", "");
@@ -144,10 +144,10 @@ public static class Utils
         return text;
     }
 
-    public static string ToColor(this string str, string hexColor) => $"<{hexColor}>{str}</color>";
-    public static string ToColor(this string str, Color color) => $"<{Color32ToHex(color)}>{str}</color>";
+    internal static string ToColor(this string str, string hexColor) => $"<{hexColor}>{str}</color>";
+    internal static string ToColor(this string str, Color color) => $"<{Color32ToHex(color)}>{str}</color>";
 
-    public static bool IsHtmlText(string text)
+    internal static bool IsHtmlText(string text)
     {
         if (Regex.IsMatch(text, "<[^>]*>"))
         {
@@ -165,20 +165,21 @@ public static class Utils
         return false;
     }
 
-    public static void DirtyAllNames()
+    internal static void DirtyAllNames()
     {
         foreach (var player in Main.AllPlayerControls)
         {
+            if (player == null) return;
             player.DirtyName();
         }
     }
 
     // Get name for role
-    public static string GetRoleName(RoleTypes role) => Main.GetRoleName()[(int)role];
+    internal static string GetRoleName(RoleTypes role) => Main.GetRoleName()[(int)role];
     // Get color for role
-    public static string GetRoleColor(RoleTypes role) => Main.GetRoleColor[(int)role];
+    internal static string GetRoleColor(RoleTypes role) => Main.GetRoleColor[(int)role];
     // Get hex color for team
-    public static string GetTeamHexColor(RoleTeamTypes team)
+    internal static string GetTeamHexColor(RoleTeamTypes team)
     {
         if (team == RoleTeamTypes.Impostor)
         {
@@ -189,9 +190,9 @@ public static class Utils
             return "#8cffff";
         }
     }
-    public static string Color32ToHex(Color32 color) => $"#{color.r:X2}{color.g:X2}{color.b:X2}{255:X2}";
+    internal static string Color32ToHex(Color32 color) => $"#{color.r:X2}{color.g:X2}{color.b:X2}{255:X2}";
 
-    public static Color HexToColor32(string hex)
+    internal static Color HexToColor32(string hex)
     {
         if (hex.StartsWith("#"))
         {
@@ -205,7 +206,7 @@ public static class Utils
         return new Color32(r, g, b, 255);
     }
 
-    public static void DisconnectAccountFromOnline(bool apiError = false)
+    internal static void DisconnectAccountFromOnline(bool apiError = false)
     {
         if (GameState.IsInGame)
         {
@@ -221,7 +222,7 @@ public static class Utils
     }
 
     // Disconnect client
-    public static void DisconnectSelf(string reason, bool showReason = true)
+    internal static void DisconnectSelf(string reason, bool showReason = true)
     {
         AmongUsClient.Instance.ExitGame(0);
         _ = new LateTask(() =>
@@ -238,16 +239,16 @@ public static class Utils
         }, 0.2f, "DisconnectSelf 1");
     }
     // Show dc pop up with text
-    public static void ShowPopUp(string text, bool enableWordWrapping = false)
+    internal static void ShowPopUp(string text, bool enableWordWrapping = false)
     {
         DisconnectPopup.Instance.gameObject.SetActive(true);
         DisconnectPopup.Instance._textArea.enableWordWrapping = enableWordWrapping;
         DisconnectPopup.Instance._textArea.text = text;
     }
 
-    public static Dictionary<string, Sprite> CachedSprites = [];
+    internal static Dictionary<string, Sprite> CachedSprites = [];
 
-    public static Sprite? LoadSprite(string path, float pixelsPerUnit = 1f)
+    internal static Sprite? LoadSprite(string path, float pixelsPerUnit = 1f)
     {
         try
         {
@@ -271,7 +272,7 @@ public static class Utils
         }
     }
 
-    public static Texture2D? LoadTextureFromResources(string path)
+    internal static Texture2D? LoadTextureFromResources(string path)
     {
         try
         {
@@ -298,7 +299,7 @@ public static class Utils
     }
 
     // Get platform name
-    public static string GetPlatformName(PlayerControl player, bool useTag = false)
+    internal static string GetPlatformName(PlayerControl player, bool useTag = false)
     {
         if (player == null) return string.Empty;
         if (player.GetClient() == null) return string.Empty;
@@ -367,7 +368,7 @@ public static class Utils
         return $"{Tag}: {PlatformName}";
     }
 
-    public static string GetPlatformName(Platforms platform, bool useTag = false)
+    internal static string GetPlatformName(Platforms platform, bool useTag = false)
     {
         string Tag = string.Empty;
 

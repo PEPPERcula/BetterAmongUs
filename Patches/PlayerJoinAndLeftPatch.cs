@@ -1,7 +1,6 @@
 using BetterAmongUs.Helpers;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
-using BetterAmongUs.Modules.AntiCheat;
 using BetterAmongUs.Patches;
 using HarmonyLib;
 using InnerNet;
@@ -11,12 +10,10 @@ namespace BetterAmongUs;
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnGameJoined))]
 class OnGameJoinedPatch
 {
-    public static void Postfix(/*AmongUsClient __instance*/)
+    internal static void Postfix(/*AmongUsClient __instance*/)
     {
         try
         {
-            BAUAntiCheat.PauseAntiCheat();
-
             // Fix host icon in lobby on modded servers
             if (!GameState.IsVanillaServer)
             {
@@ -31,9 +28,9 @@ class OnGameJoinedPatch
     }
 }
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnPlayerJoined))]
-public static class OnPlayerJoinedPatch
+internal static class OnPlayerJoinedPatch
 {
-    public static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData client)
+    internal static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData client)
     {
         _ = new LateTask(() =>
         {
@@ -42,64 +39,28 @@ public static class OnPlayerJoinedPatch
                 var player = Utils.PlayerFromClientId(client.Id);
 
                 // Send Better Among Us Check RPC
-                RPC.SendBetterCheck();
+                RPC.RpcBetterCheck();
 
                 // Auto ban player on ban list
                 if (BetterGameSettings.UseBanPlayerList.GetBool())
                 {
                     if (player != null)
                     {
-                        try
+                        if (TextFileHandler.CompareStringMatch(BetterDataManager.banPlayerListFile,
+                            Main.AllPlayerControls.Select(player => player.Data.FriendCode)
+                            .Concat(Main.AllPlayerControls.Select(player => player.GetHashPuid())).ToArray()))
                         {
-                            string banPlayerListContent = File.ReadAllText(BetterDataManager.banPlayerListFile);
-
-                            string[] listPlayerArray = banPlayerListContent.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
-
-                            foreach (string text in listPlayerArray)
-                            {
-                                if (!string.IsNullOrEmpty(player.Data.FriendCode) && text.Contains(player.Data.FriendCode)
-                                    || !string.IsNullOrEmpty(Utils.GetHashPuid(player)) && text.Contains(Utils.GetHashPuid(player)))
-                                {
-                                    player.Kick(true, Translator.GetString("AntiCheat.BanPlayerListMessage"), bypassDataCheck: true);
-                                    break;
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.Error(ex);
+                            player.Kick(true, Translator.GetString("AntiCheat.BanPlayerListMessage"), bypassDataCheck: true);
                         }
                     }
                 }
 
                 if (BetterGameSettings.UseBanNameList.GetBool())
                 {
-                    try
+                    if (TextFileHandler.CompareStringFilters(BetterDataManager.banNameListFile, [player.Data.PlayerName]))
                     {
-                        // Normalize and remove spaces and special characters from names
-                        Func<string, string> normalizeName = name => new string(name.Where(c => char.IsLetterOrDigit(c)).ToArray()).ToLower();
-
-                        // Read all banned names into a HashSet with normalized names
-                        HashSet<string> bannedNames = new HashSet<string>(
-                            File.ReadLines(BetterDataManager.banNameListFile)
-                                .Where(line => !line.TrimStart().StartsWith("//"))
-                                .Select(normalizeName)
-                                .Where(name => !string.IsNullOrWhiteSpace(name))
-                        );
-
-                        string normalizedPlayerName = normalizeName(player.Data.PlayerName);
-
-                        // Check if any banned name is a prefix of the player's normalized name
-                        bool isNameBanned = bannedNames.Any(bannedName =>
-                            normalizedPlayerName.StartsWith(bannedName)
-                        );
-
-                        if (!string.IsNullOrEmpty(normalizedPlayerName) && isNameBanned)
-                        {
-                            player.Kick(false, Translator.GetString("AntiCheat.BanNameListMessage"), bypassDataCheck: true);
-                        }
+                        player.Kick(true, Translator.GetString("AntiCheat.BanPlayerListMessage"), bypassDataCheck: true);
                     }
-                    catch { }
                 }
             }
         }, 2.5f, "OnPlayerJoinedPatch", false);
@@ -108,7 +69,7 @@ public static class OnPlayerJoinedPatch
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnPlayerLeft))]
 class OnPlayerLeftPatch
 {
-    public static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData data, [HarmonyArgument(1)] DisconnectReasons reason)
+    internal static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData data, [HarmonyArgument(1)] DisconnectReasons reason)
     {
     }
 }
@@ -119,7 +80,7 @@ class OnPlayerLeftPatch
 [HarmonyPatch(new Type[] { typeof(PlayerControl), typeof(DisconnectReasons) })]
 class GameDataHandleDisconnectPatch
 {
-    public static void Prefix(/*GameData __instance,*/ [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] DisconnectReasons reason)
+    internal static void Prefix(/*GameData __instance,*/ [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] DisconnectReasons reason)
     {
         if (player.BetterData() != null)
         {
@@ -134,7 +95,7 @@ class GameDataHandleDisconnectPatch
 [HarmonyPatch(typeof(GameData), nameof(GameData.ShowNotification))]
 class GameDataShowNotificationPatch
 {
-    public static void BetterShowNotification(NetworkedPlayerInfo playerData, DisconnectReasons reason = DisconnectReasons.Unknown, string forceReasonText = "")
+    internal static void BetterShowNotification(NetworkedPlayerInfo playerData, DisconnectReasons reason = DisconnectReasons.Unknown, string forceReasonText = "")
     {
         if (playerData.BetterData().AntiCheatInfo.BannedByAntiCheat || playerData.BetterData().HasShowDcMsg) return;
         playerData.BetterData().HasShowDcMsg = true;
@@ -187,7 +148,7 @@ class GameDataShowNotificationPatch
         }
     }
 
-    public static bool Prefix()
+    internal static bool Prefix()
     {
         return false;
     }

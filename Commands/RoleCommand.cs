@@ -1,17 +1,19 @@
 ﻿#if DEBUG
 using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Modules;
 using BetterAmongUs.Patches;
 
 namespace BetterAmongUs.Commands;
 
-public class RoleCommand : BaseCommand
+[RegisterCommand]
+internal class RoleCommand : BaseCommand
 {
-    public override CommandType Type => CommandType.Debug;
-    public override string Name => "role";
-    public override string Description => "Set your role for the next game";
+    internal override CommandType Type => CommandType.Debug;
+    internal override string Name => "role";
+    internal override string Description => "Set your role for the next game";
 
-    public RoleCommand()
+    internal RoleCommand()
     {
         _arguments = new Lazy<BaseArgument[]>(() => new BaseArgument[]
         {
@@ -19,14 +21,15 @@ public class RoleCommand : BaseCommand
         });
         roleArgument.GetArgSuggestions = () => { return RoleManager.Instance.AllRoles.Select(role => role.NiceName.ToLower()).ToArray(); };
     }
+
     private readonly Lazy<BaseArgument[]> _arguments;
-    public override BaseArgument[]? Arguments => _arguments.Value;
+    internal override BaseArgument[]? Arguments => _arguments.Value;
 
     private StringArgument? roleArgument => (StringArgument)Arguments[0];
 
-    public override bool ShowCommand() => GameState.IsHost && Main.MyData.HasAll() && Main.MyData.IsVerified();
+    internal override bool ShowCommand() => GameState.IsHost && Main.MyData.HasAll() && Main.MyData.IsVerified();
 
-    public override void Run()
+    internal override void Run()
     {
         var role = RoleManager.Instance.AllRoles.FirstOrDefault(r => r.NiceName.StartsWith(roleArgument.Arg));
         if (role != null)

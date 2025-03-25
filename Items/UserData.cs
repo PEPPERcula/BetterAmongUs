@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 namespace BetterAmongUs.Items;
 
 [Flags]
-public enum MultiPermissionFlags : ushort
+internal enum MultiPermissionFlags : ushort
 {
     Contributor_1 = 1 << 0,
     Contributor_2 = 1 << 1,
@@ -16,32 +16,32 @@ public enum MultiPermissionFlags : ushort
 }
 
 [method: JsonConstructor]
-public class UserData(string name = "", string puid = "", string friendCode = "", string overheadTag = "", string overheadColor = "", ushort permissions = 0)
+internal class UserData(string name = "", string puid = "", string friendCode = "", string overheadTag = "", string overheadColor = "", ushort permissions = 0)
 {
-    public static List<UserData> AllUsers = [new UserData("Default")];
+    internal static List<UserData> AllUsers = [new UserData("Default")];
 
-    public bool IsLocalData { get; private set; }
+    internal bool IsLocalData { get; private set; }
 
     [JsonPropertyName("name")]
-    public string Name { get; } = name;
+    internal string Name { get; } = name;
 
     [JsonPropertyName("puid")]
-    public string Puid { get; } = puid;
+    internal string Puid { get; } = puid;
 
     [JsonPropertyName("friendcode")]
-    public string FriendCode { get; } = friendCode;
+    internal string FriendCode { get; } = friendCode;
 
     [JsonPropertyName("overheadtag")]
-    public string OverheadTag { get; } = overheadTag;
+    internal string OverheadTag { get; } = overheadTag;
 
     [JsonPropertyName("overheadColor")]
-    public string OverheadColor { get; } = overheadColor;
+    internal string OverheadColor { get; } = overheadColor;
 
     [JsonPropertyName("permissions")]
-    public ushort Permissions { get; } = permissions;
+    internal ushort Permissions { get; } = permissions;
 
     private static bool HasLocalData = false;
-    public static void TrySetLocalData()
+    internal static void TrySetLocalData()
     {
         if (!HasLocalData)
         {
@@ -61,9 +61,9 @@ public class UserData(string name = "", string puid = "", string friendCode = ""
             }
         }
     }
-    public static UserData? GetPlayerUserData(NetworkedPlayerInfo data) => AllUsers?.FirstOrDefault(user => user.Puid == data.GetHashPuid() || user.FriendCode == data.GetHashFriendcode()) ?? AllUsers.First();
-    public static UserData? GetPlayerUserDataFromPuid(string puid) => AllUsers?.FirstOrDefault(user => user.Puid == Utils.GetHashStr(puid)) ?? AllUsers.First();
-    public static UserData? GetPlayerUserDataFromFriendCode(string friendcode) => AllUsers?.FirstOrDefault(user => user.FriendCode == Utils.GetHashStr(friendcode)) ?? AllUsers.First();
+    internal static UserData? GetPlayerUserData(NetworkedPlayerInfo data) => AllUsers?.FirstOrDefault(user => user.Puid == data.GetHashPuid() || user.FriendCode == data.GetHashFriendcode()) ?? AllUsers.First();
+    internal static UserData? GetPlayerUserDataFromPuid(string puid) => AllUsers?.FirstOrDefault(user => user.Puid == Utils.GetHashStr(puid)) ?? AllUsers.First();
+    internal static UserData? GetPlayerUserDataFromFriendCode(string friendcode) => AllUsers?.FirstOrDefault(user => user.FriendCode == Utils.GetHashStr(friendcode)) ?? AllUsers.First();
 
     private bool HasPermission(MultiPermissionFlags permissionFlags)
     {
@@ -75,14 +75,14 @@ public class UserData(string name = "", string puid = "", string friendCode = ""
         return (Permissions & (ushort)permissionFlags) == (ushort)permissionFlags;
     }
 
-    public bool IsDev() => HasPermission(MultiPermissionFlags.Dev);
-    public bool IsTester() => HasPermission(MultiPermissionFlags.Tester);
-    public bool IsSponsorTier3() => HasPermission(MultiPermissionFlags.Contributor_3);
-    public bool IsSponsorTier2() => HasPermission(MultiPermissionFlags.Contributor_2 | MultiPermissionFlags.Contributor_3);
-    public bool IsSponsorTier1() => IsSponsor();
-    public bool IsSponsor() => HasPermission(MultiPermissionFlags.Contributor_1 | MultiPermissionFlags.Contributor_2 | MultiPermissionFlags.Contributor_3 | MultiPermissionFlags.Dev);
-    public bool HasAll() => (Permissions & (ushort)MultiPermissionFlags.All) == (ushort)MultiPermissionFlags.All;
-    public bool IsVerified() => Puid == Utils.GetHashStr(EOSManager.Instance.ProductUserId) && FriendCode == Utils.GetHashStr(EOSManager.Instance.FriendCode);
-    public bool IsVerified(NetworkedPlayerInfo data) => Puid == Utils.GetHashStr(data?.Puid ?? string.Empty) && FriendCode == Utils.GetHashStr(data?.FriendCode ?? string.Empty);
-    public bool IsVerified(PlayerControl player) => Puid == Utils.GetHashStr(player?.Data?.Puid ?? string.Empty) && FriendCode == Utils.GetHashStr(player?.Data?.FriendCode ?? string.Empty);
+    internal bool IsDev() => HasPermission(MultiPermissionFlags.Dev);
+    internal bool IsTester() => HasPermission(MultiPermissionFlags.Tester);
+    internal bool IsSponsorTier3() => HasPermission(MultiPermissionFlags.Contributor_3);
+    internal bool IsSponsorTier2() => HasPermission(MultiPermissionFlags.Contributor_2 | MultiPermissionFlags.Contributor_3);
+    internal bool IsSponsorTier1() => IsSponsor();
+    internal bool IsSponsor() => HasPermission(MultiPermissionFlags.Contributor_1 | MultiPermissionFlags.Contributor_2 | MultiPermissionFlags.Contributor_3 | MultiPermissionFlags.Dev);
+    internal bool HasAll() => (Permissions & (ushort)MultiPermissionFlags.All) == (ushort)MultiPermissionFlags.All;
+    internal bool IsVerified() => Puid == Utils.GetHashStr(EOSManager.Instance.ProductUserId) && FriendCode == Utils.GetHashStr(EOSManager.Instance.FriendCode);
+    internal bool IsVerified(NetworkedPlayerInfo data) => Puid == Utils.GetHashStr(data?.Puid ?? string.Empty) && FriendCode == Utils.GetHashStr(data?.FriendCode ?? string.Empty);
+    internal bool IsVerified(PlayerControl player) => Puid == Utils.GetHashStr(player?.Data?.Puid ?? string.Empty) && FriendCode == Utils.GetHashStr(player?.Data?.FriendCode ?? string.Empty);
 }

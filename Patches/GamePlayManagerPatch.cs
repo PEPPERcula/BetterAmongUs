@@ -1,6 +1,5 @@
 ﻿using BetterAmongUs.Helpers;
 using BetterAmongUs.Modules;
-using BetterAmongUs.Modules.AntiCheat;
 using HarmonyLib;
 using System.Text;
 using TMPro;
@@ -11,17 +10,8 @@ namespace BetterAmongUs.Patches;
 class GamePlayManager
 {
     [HarmonyPatch(typeof(LobbyBehaviour))]
-    public class LobbyBehaviourPatch
+    internal class LobbyBehaviourPatch
     {
-        [HarmonyPatch(nameof(LobbyBehaviour.OnDestroy))]
-        [HarmonyPrefix]
-        private static void OnDestroy_Prefix(/*LobbyBehaviour __instance*/)
-        {
-            if (GameState.IsInGame)
-            {
-                BAUAntiCheat.PauseAntiCheat();
-            }
-        }
         [HarmonyPatch(nameof(LobbyBehaviour.Start))]
         [HarmonyPostfix]
         private static void Start_Postfix(/*LobbyBehaviour __instance*/)
@@ -30,7 +20,7 @@ class GamePlayManager
             {
                 if (GameState.IsInGame)
                 {
-                    RPC.SendBetterCheck();
+                    RPC.RpcBetterCheck();
                 }
             }, 1.5f, "LobbyBehaviourPatch SyncAllNames");
         }
@@ -38,7 +28,7 @@ class GamePlayManager
         // Disabled annoying music
         [HarmonyPatch(nameof(LobbyBehaviour.Update))]
         [HarmonyPostfix]
-        public static void Update_Postfix(/*LobbyBehaviour __instance*/)
+        internal static void Update_Postfix(/*LobbyBehaviour __instance*/)
         {
             if (Main.DisableLobbyTheme.Value)
                 SoundManager.instance.StopSound(LobbyBehaviour.Instance.MapTheme);
@@ -53,7 +43,7 @@ class GamePlayManager
     }
 
     [HarmonyPatch(typeof(IntroCutscene))]
-    public class IntroCutscenePatch
+    internal class IntroCutscenePatch
     {
         [HarmonyPatch(nameof(IntroCutscene.ShowRole))]
         [HarmonyPostfix]
@@ -80,7 +70,7 @@ class GamePlayManager
     }
 
     [HarmonyPatch(typeof(GameManager))]
-    public class GameManagerPatch
+    internal class GameManagerPatch
     {
         [HarmonyPatch(nameof(GameManager.EndGame))]
         [HarmonyPostfix]
@@ -97,10 +87,10 @@ class GamePlayManager
     }
 
     [HarmonyPatch(typeof(GameStartManager))]
-    public class GameStartManagerPatch
+    internal class GameStartManagerPatch
     {
-        public static float lobbyTimer = 600f;
-        public static string lobbyTimerDisplay = "";
+        internal static float lobbyTimer = 600f;
+        internal static string lobbyTimerDisplay = "";
         [HarmonyPatch(nameof(GameStartManager.Start))]
         [HarmonyPostfix]
         private static void Start_Postfix(/*GameStartManager __instance*/)
@@ -168,7 +158,7 @@ class GamePlayManager
         }
     }
     [HarmonyPatch(typeof(EndGameManager))]
-    public class EndGameManagerPatch
+    internal class EndGameManagerPatch
     {
         [HarmonyPatch(nameof(EndGameManager.SetEverythingUp))]
         [HarmonyPostfix]

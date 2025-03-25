@@ -1,14 +1,16 @@
 ﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Attributes;
 using System.Text;
 
 namespace BetterAmongUs.Commands;
 
-public class MeCommand : BaseCommand
+[RegisterCommand]
+internal class MeCommand : BaseCommand
 {
-    public override string Name => "me";
-    public override string Description => "Get information about your user data";
+    internal override string Name => "me";
+    internal override string Description => "Get information about your user data";
 
-    public override void Run()
+    internal override void Run()
     {
         StringBuilder sb = new();
         var format1 = "┌ •";

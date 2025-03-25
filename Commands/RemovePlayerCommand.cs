@@ -1,13 +1,15 @@
 ﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Modules.AntiCheat;
 
 namespace BetterAmongUs.Commands;
 
-public class RemovePlayerCommand : BaseCommand
+[RegisterCommand]
+internal class RemovePlayerCommand : BaseCommand
 {
-    public override string Name => "removeplayer";
-    public override string Description => "Remove player from local <color=#4f92ff>Anti-Cheat</color> data";
+    internal override string Name => "removeplayer";
+    internal override string Description => "Remove player from local <color=#4f92ff>Anti-Cheat</color> data";
 
     public RemovePlayerCommand()
     {
@@ -18,10 +20,10 @@ public class RemovePlayerCommand : BaseCommand
         identifierArgument.GetArgSuggestions = BAUAntiCheat.GatherAllData;
     }
     private readonly Lazy<BaseArgument[]> _arguments;
-    public override BaseArgument[]? Arguments => _arguments.Value;
+    internal override BaseArgument[]? Arguments => _arguments.Value;
 
     private StringArgument? identifierArgument => (StringArgument)Arguments[0];
-    public override void Run()
+    internal override void Run()
     {
         if (BetterDataManager.RemovePlayer(identifierArgument.Arg) == true)
         {

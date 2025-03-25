@@ -1,4 +1,5 @@
 using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Patches;
 using Hazel;
@@ -6,11 +7,12 @@ using InnerNet;
 
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class AUMHandler : RPCHandler
+[RegisterRPCHandler]
+internal sealed class AUMHandler : RPCHandler
 {
-    public override byte CallId => unchecked((byte)CustomRPC.AUM);
+    internal override byte CallId => unchecked((byte)CustomRPC.AUM);
 
-    public override void HandleAntiCheatCheck(PlayerControl? sender, MessageReader reader)
+    internal override void HandleAntiCheatCheck(PlayerControl? sender, MessageReader reader)
     {
         if (Main.AntiCheat.Value && BetterGameSettings.DetectCheatClients.GetBool())
         {

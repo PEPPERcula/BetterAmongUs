@@ -7,20 +7,20 @@ namespace BetterAmongUs.Managers;
 class BetterDataManager
 {
     private static string filePath = GetFilePath("BetterData");
-    public static string filePathFolder = Path.Combine(Main.GetGamePathToAmongUs(), $"Better_Data");
-    public static string filePathFolderSaveInfo = Path.Combine(filePathFolder, $"SaveInfo");
-    public static string filePathFolderSettings = Path.Combine(filePathFolder, $"Settings");
-    public static string SettingsFile = Path.Combine(filePathFolderSettings, "Preset.json");
-    public static string banPlayerListFile = Path.Combine(filePathFolderSaveInfo, "BanPlayerList.txt");
-    public static string banNameListFile = Path.Combine(filePathFolderSaveInfo, "BanNameList.txt");
-    public static string banWordListFile = Path.Combine(filePathFolderSaveInfo, "BanWordList.txt");
+    internal static string filePathFolder = Path.Combine(Main.GetGamePathToAmongUs(), $"Better_Data");
+    internal static string filePathFolderSaveInfo = Path.Combine(filePathFolder, $"SaveInfo");
+    internal static string filePathFolderSettings = Path.Combine(filePathFolder, $"Settings");
+    internal static string SettingsFile = Path.Combine(filePathFolderSettings, "Preset.json");
+    internal static string banPlayerListFile = Path.Combine(filePathFolderSaveInfo, "BanPlayerList.txt");
+    internal static string banNameListFile = Path.Combine(filePathFolderSaveInfo, "BanNameList.txt");
+    internal static string banWordListFile = Path.Combine(filePathFolderSaveInfo, "BanWordList.txt");
 
-    public static string GetFilePath(string name)
+    internal static string GetFilePath(string name)
     {
         return Path.Combine(Main.GetDataPathToAmongUs(), $"{name}.json");
     }
 
-    public static void SetUp()
+    internal static void SetUp()
     {
         if (!Directory.Exists(filePathFolder))
         {
@@ -44,12 +44,12 @@ class BetterDataManager
 
         if (!File.Exists(banNameListFile))
         {
-            File.WriteAllText(banNameListFile, "// Example\nBanName1\nBanName2");
+            File.WriteAllText(banNameListFile, "// Example\n// Use \"BanThisName\" to check if the Banned Name completely matches the Player Name.\n// Use \"BanThisName**\" to check if the Banned Name is a prefix of a Player Name.\n// Use \"**BanThisName\" to check if the Banned Name is a postfix of a Player Name.\n// Use \"**BanThisName**\" to check if the Player Name contains any pattern of the Banned Name.\n");
         }
 
         if (!File.Exists(banWordListFile))
         {
-            File.WriteAllText(banWordListFile, "// Example\nStart");
+            File.WriteAllText(banWordListFile, "// Example\n// Use \"BanWord\" to check if the Banned Word completely matches the Message.\n// Use \"BanWord**\" to check if the Banned Word is a prefix of a word in the Message.\n// Use \"**BanWord\" to check if the Banned Word is a postfix of a word in the Message.\n// Use \"**BanWord**\" to check if the Message contains any pattern of the Banned Word.\n");
         }
 
         if (!File.Exists(SettingsFile))
@@ -122,7 +122,7 @@ class BetterDataManager
         }
     }
 
-    public static void Save(string name, string dataToSave, string category = "Data")
+    internal static void Save(string name, string dataToSave, string category = "Data")
     {
         string filePath = GetFilePath("BetterData");
 
@@ -140,7 +140,7 @@ class BetterDataManager
         File.WriteAllText(filePath, json);
     }
 
-    public static string Load(string name, string category = "Data")
+    internal static string Load(string name, string category = "Data")
     {
         try
         {
@@ -162,7 +162,7 @@ class BetterDataManager
         return string.Empty;
     }
 
-    public static void SaveSetting(int id, string input)
+    internal static void SaveSetting(int id, string input)
     {
         string filePath = SettingsFile;
 
@@ -174,7 +174,7 @@ class BetterDataManager
         File.WriteAllText(filePath, json);
     }
 
-    public static bool CanLoadSetting(int id)
+    internal static bool CanLoadSetting(int id)
     {
         string filePath = SettingsFile;
         string json = File.ReadAllText(filePath);
@@ -191,7 +191,7 @@ class BetterDataManager
         return false;
     }
 
-    public static bool LoadBoolSetting(int id, bool Default = false)
+    internal static bool LoadBoolSetting(int id, bool Default = false)
     {
         string filePath = SettingsFile;
         string json = File.ReadAllText(filePath);
@@ -212,7 +212,7 @@ class BetterDataManager
         return Default;
     }
 
-    public static float LoadFloatSetting(int id, float Default = 0f)
+    internal static float LoadFloatSetting(int id, float Default = 0f)
     {
         string filePath = SettingsFile;
         string json = File.ReadAllText(filePath);
@@ -233,7 +233,7 @@ class BetterDataManager
         return Default;
     }
 
-    public static int LoadIntSetting(int id, int Default = 0)
+    internal static int LoadIntSetting(int id, int Default = 0)
     {
         string filePath = SettingsFile;
         string json = File.ReadAllText(filePath);
@@ -254,7 +254,7 @@ class BetterDataManager
         return Default;
     }
 
-    public static void SaveBanList(string friendCode = "", string hashPUID = "")
+    internal static void SaveBanList(string friendCode = "", string hashPUID = "")
     {
         if (!string.IsNullOrEmpty(friendCode) || !string.IsNullOrEmpty(hashPUID))
         {
@@ -284,7 +284,7 @@ class BetterDataManager
         }
     }
 
-    public static void SaveCheatData(string puid, string friendCode, string name, string category = "cheatData", string reason = "None")
+    internal static void SaveCheatData(string puid, string friendCode, string name, string category = "cheatData", string reason = "None")
     {
         string filePath = GetFilePath("BetterData");
 
@@ -309,7 +309,7 @@ class BetterDataManager
         File.WriteAllText(filePath, json);
     }
 
-    public static bool RemovePlayer(string identifier)
+    internal static bool RemovePlayer(string identifier)
     {
         bool successful = false;
         string filePath = GetFilePath("BetterData");
@@ -417,7 +417,7 @@ class BetterDataManager
         }
     }
 
-    public static void ClearCheatData()
+    internal static void ClearCheatData()
     {
         string filePath = GetFilePath("BetterData");
         string json = File.ReadAllText(filePath);
@@ -460,12 +460,12 @@ class BetterDataManager
         Logger.LogCheat("Cleared cheat memory and data");
     }
 
-    public static void LoadData()
+    internal static void LoadData()
     {
         LoadCheatData();
     }
 
-    public static void LoadCheatData()
+    internal static void LoadCheatData()
     {
         try
         {

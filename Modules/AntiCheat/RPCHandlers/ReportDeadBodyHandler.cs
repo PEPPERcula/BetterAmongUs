@@ -1,14 +1,16 @@
 using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Managers;
 using Hazel;
 
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class ReportDeadBodyHandler : RPCHandler
+[RegisterRPCHandler]
+internal sealed class ReportDeadBodyHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.ReportDeadBody;
+    internal override byte CallId => (byte)RpcCalls.ReportDeadBody;
 
-    public override bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader)
+    internal override bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader)
     {
         if (!GameState.IsInGamePlay || !Main.AllPlayerControls.All(pc => pc.roleAssigned))
         {
@@ -18,7 +20,7 @@ public class ReportDeadBodyHandler : RPCHandler
             return CancelAsHost;
         }
 
-        if (GameState.IsMeeting && MeetingHudPatch.timeOpen > 2f || GameState.IsHideNSeek || sender.IsInVent() || sender.shapeshifting
+        if (GameState.IsMeeting && MeetingHudPatch.timeOpen > 5f || GameState.IsHideNSeek || sender.IsInVent() || sender.shapeshifting
             || sender.inMovingPlat || sender.onLadder || sender.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
         {
             BetterNotificationManager.NotifyCheat(sender, string.Format(Translator.GetString("AntiCheat.InvalidActionRPC"), Enum.GetName((RpcCalls)CallId)));

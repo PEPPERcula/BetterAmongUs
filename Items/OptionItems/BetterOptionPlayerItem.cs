@@ -3,16 +3,16 @@ using UnityEngine;
 
 namespace BetterAmongUs.Items.OptionItems;
 
-public class BetterOptionPlayerItem : BetterOptionItem
+internal class BetterOptionPlayerItem : BetterOptionItem
 {
     private NumberOption? ThisOption;
-    public int CurrentIndex = -1;
+    internal int CurrentIndex = -1;
 
-    public override bool ShowChildrenCondition() => CurrentIndex > -1;
-    public override bool SelfShowCondition() => ShowCondition != null ? ShowCondition() : base.SelfShowCondition();
-    public Func<bool>? ShowCondition = null;
+    internal override bool ShowChildrenCondition() => CurrentIndex > -1;
+    internal override bool SelfShowCondition() => ShowCondition != null ? ShowCondition() : base.SelfShowCondition();
+    internal Func<bool>? ShowCondition = null;
 
-    public BetterOptionItem Create(GameOptionsMenu gameOptionsMenu, string name, BetterOptionItem? Parent = null, Func<bool>? selfShowCondition = null)
+    internal BetterOptionItem Create(GameOptionsMenu gameOptionsMenu, string name, BetterOptionItem? Parent = null, Func<bool>? selfShowCondition = null)
     {
         Id = TempPlayerOptionDataNum + 1;
         Tab = gameOptionsMenu;
@@ -91,7 +91,7 @@ public class BetterOptionPlayerItem : BetterOptionItem
             ThisOption.ValueText.text = "<color=#ababab>Random</color>";
         }
 
-        if (CurrentIndex >= Main.AllPlayerControls.Length - 1)
+        if (CurrentIndex >= Main.AllPlayerControls.Count - 1)
         {
             ThisOption.PlusBtn.SetInteractable(false);
             ThisOption.MinusBtn.SetInteractable(true);
@@ -110,16 +110,16 @@ public class BetterOptionPlayerItem : BetterOptionItem
         TempPlayerOptionData[Id] = CurrentIndex;
     }
 
-    public void Increase()
+    internal void Increase()
     {
-        if (CurrentIndex < Main.AllPlayerControls.Length)
+        if (CurrentIndex < Main.AllPlayerControls.Count)
         {
             CurrentIndex++;
             AdjustButtonsActiveState();
         }
     }
 
-    public void Decrease()
+    internal void Decrease()
     {
         if (CurrentIndex > -1)
         {
@@ -128,14 +128,14 @@ public class BetterOptionPlayerItem : BetterOptionItem
         }
     }
 
-    public int Load()
+    internal int Load()
     {
         if (TempPlayerOptionData.ContainsKey(Id))
         {
             var saveindex = TempPlayerOptionData[Id];
 
             if (saveindex != -1 && Utils.PlayerFromPlayerId(saveindex) == null)
-                saveindex = Main.AllPlayerControls.Length - 1;
+                saveindex = Main.AllPlayerControls.Count - 1;
 
             CurrentIndex = saveindex;
         }
@@ -150,7 +150,7 @@ public class BetterOptionPlayerItem : BetterOptionItem
         return CurrentIndex;
     }
 
-    public override int GetValue()
+    internal override int GetValue()
     {
         if (SelfShowCondition())
         {
@@ -162,7 +162,7 @@ public class BetterOptionPlayerItem : BetterOptionItem
         }
     }
 
-    public override void SetData(OptionBehaviour optionBehaviour)
+    internal override void SetData(OptionBehaviour optionBehaviour)
     {
         optionBehaviour.data = new BaseGameSetting
         {
@@ -171,7 +171,7 @@ public class BetterOptionPlayerItem : BetterOptionItem
         };
     }
 
-    public override void ValueChanged(int id, OptionBehaviour optionBehaviour)
+    internal override void ValueChanged(int id, OptionBehaviour optionBehaviour)
     {
         if (IsParent || IsChild)
         {

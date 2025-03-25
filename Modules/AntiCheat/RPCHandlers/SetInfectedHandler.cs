@@ -1,6 +1,9 @@
+using BetterAmongUs.Items.Attributes;
+
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class SetInfectedHandler : RPCHandler
+[RegisterRPCHandler]
+internal sealed class SetInfectedHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.SetInfected;
+    internal override byte CallId => (byte)RpcCalls.SetInfected;
 }

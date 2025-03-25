@@ -5,31 +5,31 @@ using UnityEngine;
 
 namespace BetterAmongUs.Items.OptionItems;
 
-public class BetterOptionItem
+internal class BetterOptionItem
 {
-    public float StaticSpacingNum => 1f;
-    public float StaticSpacingNumPlus => 0.45f;
-    public static Dictionary<int, int> TempPlayerOptionData = [];
-    public static int TempPlayerOptionDataNum = 0;
-    public static List<BetterOptionItem> BetterOptionItems = [];
-    public static float SpacingNum = 0;
+    internal float StaticSpacingNum => 1f;
+    internal float StaticSpacingNumPlus => 0.45f;
+    internal static Dictionary<int, int> TempPlayerOptionData = [];
+    internal static int TempPlayerOptionDataNum = 0;
+    internal static List<BetterOptionItem> BetterOptionItems = [];
+    internal static float SpacingNum = 0;
 
-    public int maskLayer = 20;
-    public int Id = 0;
-    public GameOptionsMenu? Tab;
-    public OptionBehaviour? Option;
-    public string? Name = "None";
-    public TextMeshPro? TitleText;
-    public GameObject? obj;
+    internal int maskLayer = 20;
+    internal int Id = 0;
+    internal GameOptionsMenu? Tab;
+    internal OptionBehaviour? Option;
+    internal string? Name = "None";
+    internal TextMeshPro? TitleText;
+    internal GameObject? obj;
 
-    public BetterOptionItem? ThisParent;
-    public bool IsChild = false;
-    public bool IsParent => ChildrenList.Count > 0;
-    public List<BetterOptionItem> ChildrenList = [];
-    public virtual bool ShowChildrenCondition() => false;
-    public virtual bool SelfShowCondition() => true;
+    internal BetterOptionItem? ThisParent;
+    internal bool IsChild = false;
+    internal bool IsParent => ChildrenList.Count > 0;
+    internal List<BetterOptionItem> ChildrenList = [];
+    internal virtual bool ShowChildrenCondition() => false;
+    internal virtual bool SelfShowCondition() => true;
 
-    public static void UpdatePositions()
+    internal static void UpdatePositions()
     {
         SpacingNum = 0f;
 
@@ -78,7 +78,7 @@ public class BetterOptionItem
         GameSettingMenuPatch.BetterSettingsTab.scrollBar.ScrollRelative(new(0f, 0f));
     }
 
-    public void SetUp(OptionBehaviour optionBehaviour)
+    internal void SetUp(OptionBehaviour optionBehaviour)
     {
         SpriteRenderer[] componentsInChildren = optionBehaviour.GetComponentsInChildren<SpriteRenderer>(true);
         for (int i = 0; i < componentsInChildren.Length; i++)
@@ -92,32 +92,32 @@ public class BetterOptionItem
         }
     }
 
-    public virtual bool GetBool()
+    internal virtual bool GetBool()
     {
         throw new NotImplementedException();
     }
 
-    public virtual float GetFloat()
+    internal virtual float GetFloat()
     {
         throw new NotImplementedException();
     }
 
-    public virtual int GetInt()
+    internal virtual int GetInt()
     {
         throw new NotImplementedException();
     }
 
-    public virtual int GetValue()
+    internal virtual int GetValue()
     {
         throw new NotImplementedException();
     }
 
-    public virtual void SetData(OptionBehaviour optionBehaviour)
+    internal virtual void SetData(OptionBehaviour optionBehaviour)
     {
         throw new NotImplementedException();
     }
 
-    public virtual void ValueChanged(int id, OptionBehaviour optionBehaviour)
+    internal virtual void ValueChanged(int id, OptionBehaviour optionBehaviour)
     {
         throw new NotImplementedException();
     }

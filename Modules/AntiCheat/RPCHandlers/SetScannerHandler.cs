@@ -1,6 +1,9 @@
+using BetterAmongUs.Items.Attributes;
+
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class SetScannerHandler : RPCHandler
+[RegisterRPCHandler]
+internal sealed class SetScannerHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.SetScanner;
+    internal override byte CallId => (byte)RpcCalls.SetScanner;
 }

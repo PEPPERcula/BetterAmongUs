@@ -1,6 +1,9 @@
+using BetterAmongUs.Items.Attributes;
+
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class SendChatNoteHandler : RPCHandler
+[RegisterRPCHandler]
+internal sealed class SendChatNoteHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.SendChatNote;
+    internal override byte CallId => (byte)RpcCalls.SendChatNote;
 }

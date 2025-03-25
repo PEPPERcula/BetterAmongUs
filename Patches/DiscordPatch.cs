@@ -7,12 +7,12 @@ namespace BetterAmongUs.Patches;
 
 
 [HarmonyPatch(typeof(ActivityManager), nameof(ActivityManager.UpdateActivity))]
-public class DiscordRPC
+internal class DiscordRPC
 {
     private static string lobbycode = "";
     private static string region = "";
 
-    public static void Prefix([HarmonyArgument(0)] Activity activity)
+    internal static void Prefix([HarmonyArgument(0)] Activity activity)
     {
         if (activity == null) return;
 

@@ -1,15 +1,17 @@
 using AmongUs.GameOptions;
 using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Attributes;
 using Hazel;
 using InnerNet;
 
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class CheckShapeshiftHandler : RPCHandler
+[RegisterRPCHandler]
+internal sealed class CheckShapeshiftHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.CheckShapeshift;
+    internal override byte CallId => (byte)RpcCalls.CheckShapeshift;
 
-    public override bool BetterHandle(PlayerControl? sender, MessageReader reader)
+    internal override bool BetterHandle(PlayerControl? sender, MessageReader reader)
     {
         PlayerControl target = reader.ReadNetObject<PlayerControl>();
         bool flag = reader.ReadBoolean();
@@ -36,7 +38,7 @@ public class CheckShapeshiftHandler : RPCHandler
         return false;
     }
 
-    public override bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader)
+    internal override bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader)
     {
         if (!GameState.IsHost)
         {

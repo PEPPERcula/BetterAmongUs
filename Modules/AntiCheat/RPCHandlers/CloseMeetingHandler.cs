@@ -1,6 +1,9 @@
+using BetterAmongUs.Items.Attributes;
+
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class CloseMeetingHandler : RPCHandler
+[RegisterRPCHandler]
+internal sealed class CloseMeetingHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.CloseMeeting;
+    internal override byte CallId => (byte)RpcCalls.CloseMeeting;
 }

@@ -1,6 +1,9 @@
+using BetterAmongUs.Items.Attributes;
+
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class SetSkinHandler : RPCHandler
+[RegisterRPCHandler]
+internal sealed class SetSkinHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.SetSkin;
+    internal override byte CallId => (byte)RpcCalls.SetSkin;
 }

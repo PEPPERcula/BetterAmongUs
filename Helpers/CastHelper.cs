@@ -1,10 +1,10 @@
 ﻿namespace BetterAmongUs.Helpers;
 
-public static class CastHelper
+internal static class CastHelper
 {
-    public static bool TryCast<T>(this object obj) => obj is T;
+    internal static bool TryCast<T>(this object obj) => obj is T;
 
-    public static bool TryCast<T>(this object obj, out T? item) where T : class
+    internal static bool TryCast<T>(this object obj, out T? item) where T : class
     {
         if (obj != null && obj is T casted)
         {

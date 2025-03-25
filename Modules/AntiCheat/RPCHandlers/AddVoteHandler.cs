@@ -1,6 +1,9 @@
+using BetterAmongUs.Items.Attributes;
+
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class AddVoteHandler : RPCHandler
+[RegisterRPCHandler]
+internal sealed class AddVoteHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.AddVote;
+    internal override byte CallId => (byte)RpcCalls.AddVote;
 }

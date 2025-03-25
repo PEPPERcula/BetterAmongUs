@@ -1,14 +1,16 @@
 using AmongUs.GameOptions;
 using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Attributes;
 using Hazel;
 
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class CheckVanishHandler : RPCHandler
+[RegisterRPCHandler]
+internal sealed class CheckVanishHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.CheckVanish;
+    internal override byte CallId => (byte)RpcCalls.CheckVanish;
 
-    public override bool BetterHandle(PlayerControl? player, MessageReader reader)
+    internal override bool BetterHandle(PlayerControl? player, MessageReader reader)
     {
         if (player.Is(RoleTypes.Phantom)
             && player.IsAlive()
@@ -29,7 +31,7 @@ public class CheckVanishHandler : RPCHandler
         return false;
     }
 
-    public override bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader)
+    internal override bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader)
     {
         if (!GameState.IsHost)
         {

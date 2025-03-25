@@ -1,6 +1,9 @@
+using BetterAmongUs.Items.Attributes;
+
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class SyncSettingsHandler : RPCHandler
+[RegisterRPCHandler]
+internal sealed class SyncSettingsHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.SyncSettings;
+    internal override byte CallId => (byte)RpcCalls.SyncSettings;
 }

@@ -1,12 +1,14 @@
 ﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Modules;
 
 namespace BetterAmongUs.Commands;
 
-public class KickCommand : BaseCommand
+[RegisterCommand]
+internal class KickCommand : BaseCommand
 {
-    public override string Name => "kick";
-    public override string Description => "Kick a player from the game";
+    internal override string Name => "kick";
+    internal override string Description => "Kick a player from the game";
     public KickCommand()
     {
         _arguments = new Lazy<BaseArgument[]>(() => new BaseArgument[]
@@ -16,12 +18,12 @@ public class KickCommand : BaseCommand
         });
     }
     private readonly Lazy<BaseArgument[]> _arguments;
-    public override BaseArgument[]? Arguments => _arguments.Value;
+    internal override BaseArgument[]? Arguments => _arguments.Value;
 
     private PlayerArgument? playerArgument => (PlayerArgument)Arguments[0];
     private BoolArgument? boolArgument => (BoolArgument)Arguments[1];
-    public override bool ShowCommand() => GameState.IsHost;
-    public override void Run()
+    internal override bool ShowCommand() => GameState.IsHost;
+    internal override void Run()
     {
         var player = playerArgument.TryGetTarget();
         var isBan = boolArgument.GetBool();

@@ -5,13 +5,12 @@ namespace BetterAmongUs.Modules;
 
 class FileChecker
 {
-    private static bool check = false;
     private static bool enabled = false;
     private static FileSystemWatcher? fileWatcher;
     private static bool hasUnauthorizedFileOrMod = false;
-    public static string WarningMsg { get; private set; } = string.Empty;
-    public static bool HasShownWarning { get; set; } = false;
-    public static bool HasUnauthorizedFileOrMod => hasUnauthorizedFileOrMod && (!Main.MyData.IsDev() || !Main.MyData.IsVerified());
+    internal static string WarningMsg { get; private set; } = string.Empty;
+    internal static bool HasShownWarning { get; set; } = false;
+    internal static bool HasUnauthorizedFileOrMod => hasUnauthorizedFileOrMod && (!Main.MyData.IsDev() || !Main.MyData.IsVerified());
 
     private static readonly ReadOnlyCollection<string> TrustedNamespaces = new(new List<string>
     {
@@ -19,7 +18,7 @@ class FileChecker
         "MonoMod", "netstandard", "mscorlib", "AssetRipper", "Cpp2IL", "AsmResolver", "Iced",
         "SemanticVersioning", "Mono.Cecil", "Assembly-CSharp", "StableNameDotNet",
         "Disarm", "Gee.External.Capstone", "Rewired_Core", "AddressablesPlayAssetDelivery",
-        "Assembly-CSharp-firstpass", "BetterAmongUs", "MCI", "CrowdedMod", "Mini.RegionInstall", "Unlock", "Skin"
+        "Assembly-CSharp-firstpass", "Sentry", "BetterAmongUs", "MCI", "CrowdedMod", "Mini.RegionInstall", "Unlock", "Skin"
     });
 
     private static readonly ReadOnlyCollection<string> UntrustedNamespaces = new(new List<string>
@@ -44,10 +43,9 @@ class FileChecker
         "aum-prev-log.txt"
     ];
 
-    public static void Initialize()
+    internal static void Initialize()
     {
-        if (enabled || !check) return;
-
+        if (enabled) return;
         enabled = true;
 
         fileWatcher = new FileSystemWatcher(Environment.CurrentDirectory)

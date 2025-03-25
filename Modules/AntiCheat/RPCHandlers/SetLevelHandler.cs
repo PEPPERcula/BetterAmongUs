@@ -1,15 +1,17 @@
 using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Patches;
 using Hazel;
 
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class SetLevelHandler : RPCHandler
+[RegisterRPCHandler]
+internal sealed class SetLevelHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.SetLevel;
+    internal override byte CallId => (byte)RpcCalls.SetLevel;
 
-    public override bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader)
+    internal override bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader)
     {
         if (sender.DataIsCollected() == true && sender.BetterData().AntiCheatInfo.HasSetLevel && !GameState.IsLocalGame && GameState.IsVanillaServer)
         {
@@ -24,7 +26,7 @@ public class SetLevelHandler : RPCHandler
         return true;
     }
 
-    public override void HandleAntiCheat(PlayerControl? sender, MessageReader reader)
+    internal override void HandleAntiCheat(PlayerControl? sender, MessageReader reader)
     {
         uint level = reader.ReadPackedUInt32();
 

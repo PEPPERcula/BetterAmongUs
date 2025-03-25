@@ -1,20 +1,22 @@
 using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Attributes;
 using Hazel;
 using UnityEngine;
 
 namespace BetterAmongUs.Modules.AntiCheat;
 
-public class UpdateSystemHandler : RPCHandler
+[RegisterRPCHandler]
+internal sealed class UpdateSystemHandler : RPCHandler
 {
-    public override byte CallId => (byte)RpcCalls.UpdateSystem;
+    internal override byte CallId => (byte)RpcCalls.UpdateSystem;
 
-    public SystemTypes CatchedSystemType;
+    internal SystemTypes CatchedSystemType;
 
     private readonly Dictionary<uint, Func<PlayerControl?, ISystemType, MessageReader, byte, bool>> systemHandlers;
 
     private static SabotageSystemType SabotageSystem => ShipStatus.Instance.Systems[SystemTypes.Sabotage].Cast<SabotageSystemType>();
 
-    public UpdateSystemHandler()
+    internal UpdateSystemHandler()
     {
         systemHandlers = new Dictionary<uint, Func<PlayerControl?, ISystemType, MessageReader, byte, bool>>
         {
@@ -31,7 +33,7 @@ public class UpdateSystemHandler : RPCHandler
         };
     }
 
-    public static bool CheckConsoleDistance<T>(PlayerControl? player, float distance = 2f) where T : PlayerTask, new()
+    internal static bool CheckConsoleDistance<T>(PlayerControl? player, float distance = 2f) where T : PlayerTask, new()
     {
         bool isClose = false;
         Vector2[] consolesPos = new T().FindConsolesPos().ToArray();
@@ -47,7 +49,7 @@ public class UpdateSystemHandler : RPCHandler
         return isClose;
     }
 
-    public override bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader)
+    internal override bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader)
     {
         if (GameState.IsHost && sender.IsHost()) return true;
 
@@ -204,7 +206,7 @@ public class UpdateSystemHandler : RPCHandler
 
     private static bool HandleReactorSystem(PlayerControl? sender, ReactorSystemType reactorSystem, byte count)
     {
-        if (count == 128) // Direct sabotage call from client, which is not possible, only the host should have this count when HandleSabotageSystem it's called
+        if (count == 128 || count == 16) // Direct sabotage call from client, which is not possible, only the host should have this count when HandleSabotageSystem it's called
         {
             return false;
         }
@@ -214,12 +216,6 @@ public class UpdateSystemHandler : RPCHandler
             return false;
         }
 
-        if (!CheckConsoleDistance<ReactorTask>(sender))
-        {
-            return false;
-        }
-
-        /*
         if (count.HasAnyBit(64))
         {
             foreach (var tuple in reactorSystem.UserConsolePairs)
@@ -230,7 +226,13 @@ public class UpdateSystemHandler : RPCHandler
                 }
             }
         }
-        */
+
+        /*
+          if (!CheckConsoleDistance<ReactorTask>(sender))
+          {
+              return false;
+          }
+         */
 
         return true;
     }
