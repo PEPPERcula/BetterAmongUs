@@ -49,16 +49,18 @@ internal static class RPC
         }
     }
 
-    internal static void SendBetterCheck()
+    internal static void RpcBetterCheck()
     {
+        if (!Main.SendBetterRpc.Value) return;
+
         MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.BetterCheck, SendOption.None, -1);
         messageWriter.Write(true);
-        messageWriter.Write(Main.modSignature);
+        messageWriter.Write(Main.ModSignature.ToString());
         messageWriter.Write(Main.GetVersionText().Replace(" ", ""));
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
     }
 
-    internal static void SetNamePrivate(PlayerControl player, string name, PlayerControl target)
+    internal static void RpcSetNamePrivate(PlayerControl player, string name, PlayerControl target)
     {
         if (!GameState.IsHost || !GameState.IsVanillaServer)
         {
@@ -71,7 +73,7 @@ internal static class RPC
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
-    internal static void ExileAsync(PlayerControl player)
+    internal static void RpcExile(PlayerControl player)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.Reliable, -1);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -93,7 +95,7 @@ internal static class RPC
                         var SetBetterUser = reader.ReadBoolean();
                         var Signature = reader.ReadString();
                         var Version = reader.ReadString();
-                        var IsVerified = Signature == Main.modSignature;
+                        var IsVerified = Signature == Main.ModSignature.ToString();
 
                         if (string.IsNullOrEmpty(Signature) || string.IsNullOrEmpty(Version))
                         {

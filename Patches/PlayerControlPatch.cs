@@ -139,7 +139,7 @@ class PlayerControlPatch
             || !Regex.IsMatch(friendCode, hashtagPattern)
             || friendCode.Contains(' ')) ? "#00f7ff" : "#ff0000";
 
-        if (string.IsNullOrEmpty(friendCode) || friendCode == "")
+        if (string.IsNullOrEmpty(friendCode))
         {
             friendCode = Translator.GetString("Player.NoFriendCode");
             color = "#ff0000";

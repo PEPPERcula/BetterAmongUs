@@ -39,7 +39,7 @@ internal static class OnPlayerJoinedPatch
                 var player = Utils.PlayerFromClientId(client.Id);
 
                 // Send Better Among Us Check RPC
-                RPC.SendBetterCheck();
+                RPC.RpcBetterCheck();
 
                 // Auto ban player on ban list
                 if (BetterGameSettings.UseBanPlayerList.GetBool())

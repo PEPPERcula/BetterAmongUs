@@ -12,7 +12,6 @@ using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using System.Reflection;
 using System.Security.Cryptography;
-using System.Text;
 using UnityEngine;
 
 namespace BetterAmongUs;
@@ -39,34 +38,19 @@ internal class Main : BasePlugin
     internal const string Discord = "https://discord.gg/ten";
     internal static UserData MyData = UserData.AllUsers.First();
 
-    internal static string modSignature
+    internal static uint ModSignature => modSignature.Value;
+    private static readonly Lazy<uint> modSignature = new(() =>
     {
-        get
-        {
-            string GetHash(string puid)
-            {
-                using SHA256 sha256 = SHA256.Create();
-                byte[] sha256Bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(puid));
-                string sha256Hash = BitConverter.ToString(sha256Bytes).Replace("-", "").ToLower();
-                return sha256Hash.Substring(0, 16) + sha256Hash.Substring(sha256Hash.Length - 8);
-            }
+        string dllPath = Assembly.GetExecutingAssembly().Location;
+        if (!File.Exists(dllPath))
+            return 0;
 
-            var versionData = new StringBuilder()
-                .Append(Enum.GetName(typeof(ReleaseTypes), ReleaseBuildType))
-                .Append(BetaNum)
-                .Append(HotfixNum)
-                .Append(PluginGuid)
-                .Append(GetVersionText().Replace(" ", "."))
-                .Append(ReleaseDate)
-                .Append(Github)
-                .Append(Discord)
-                .Append(string.Join(".", Enum.GetNames(typeof(CustomRPC))))
-                .Append(string.Join(".", GetRoleColor.Values))
-                .ToString();
-
-            return GetHash(versionData);
-        }
-    }
+        using FileStream stream = File.OpenRead(dllPath);
+        using SHA256 sha256 = SHA256.Create();
+        byte[] hashBytes = sha256.ComputeHash(stream);
+        string hashSubstring = BitConverter.ToString(hashBytes).Replace("-", "").ToLower()[..8];
+        return Convert.ToUInt32(hashSubstring, 16);
+    });
 
     internal static string GetVersionText(bool newLine = false)
     {
@@ -232,6 +216,7 @@ internal class Main : BasePlugin
 
     internal static ConfigEntry<bool>? PrivateOnlyLobby { get; private set; }
     internal static ConfigEntry<bool>? AntiCheat { get; private set; }
+    internal static ConfigEntry<bool>? SendBetterRpc { get; private set; }
     internal static ConfigEntry<bool>? BetterNotifications { get; private set; }
     internal static ConfigEntry<bool>? ForceOwnLanguage { get; private set; }
     internal static ConfigEntry<bool>? ChatDarkMode { get; private set; }
@@ -245,6 +230,7 @@ internal class Main : BasePlugin
     {
         PrivateOnlyLobby = Config.Bind("Mod", "PrivateOnlyLobby", false);
         AntiCheat = Config.Bind("Better Options", "AntiCheat", true);
+        SendBetterRpc = Config.Bind("Better Options", "SendBetterRpc", true);
         BetterNotifications = Config.Bind("Better Options", "BetterNotifications", true);
         ForceOwnLanguage = Config.Bind("Better Options", "ForceOwnLanguage", false);
         ChatDarkMode = Config.Bind("Better Options", "ChatDarkMode", true);

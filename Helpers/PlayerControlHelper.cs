@@ -183,13 +183,13 @@ static class PlayerControlHelper
     internal static void RpcSetNamePrivate(this PlayerControl player, string name, PlayerControl target)
     {
         if (player == null || target == null) return;
-        RPC.SetNamePrivate(player, name, target);
+        RPC.RpcSetNamePrivate(player, name, target);
     }
     // Exile player
     internal static void RpcExile(this PlayerControl player)
     {
         if (player == null) return;
-        RPC.ExileAsync(player);
+        RPC.RpcExile(player);
     }
     // Check if player is selecting room to spawn in, for Airship
     internal static bool IsInRoomSelect(this PlayerControl player)

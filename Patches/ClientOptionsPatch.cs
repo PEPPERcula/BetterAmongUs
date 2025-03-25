@@ -13,6 +13,7 @@ namespace BetterAmongUs.Patches;
 internal static class OptionsMenuBehaviourPatch
 {
     private static ClientOptionItem? AntiCheat;
+    private static ClientOptionItem? SendBetterRpc;
     private static ClientOptionItem? BetterNotifications;
     private static ClientOptionItem? ForceOwnLanguage;
     private static ClientOptionItem? ChatDarkMode;
@@ -51,6 +52,12 @@ internal static class OptionsMenuBehaviourPatch
         {
             string title = Translator.GetString("BetterOption.AntiCheat");
             AntiCheat = ClientOptionItem.Create(title, Main.AntiCheat, __instance);
+        }
+
+        if (SendBetterRpc == null || SendBetterRpc.ToggleButton == null)
+        {
+            string title = Translator.GetString("BetterOption.SendBetterRpc");
+            AntiCheat = ClientOptionItem.Create(title, Main.SendBetterRpc, __instance);
         }
 
         if (BetterNotifications == null || BetterNotifications.ToggleButton == null)
