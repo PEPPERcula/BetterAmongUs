@@ -57,7 +57,15 @@ internal static class OptionsMenuBehaviourPatch
         if (SendBetterRpc == null || SendBetterRpc.ToggleButton == null)
         {
             string title = Translator.GetString("BetterOption.SendBetterRpc");
-            AntiCheat = ClientOptionItem.Create(title, Main.SendBetterRpc, __instance);
+            SendBetterRpc = ClientOptionItem.Create(title, Main.SendBetterRpc, __instance, SendBetterRpcToggle);
+
+            static void SendBetterRpcToggle()
+            {
+                if (GameState.IsInGame)
+                {
+                    RPC.RpcBetterCheck();
+                }
+            }
         }
 
         if (BetterNotifications == null || BetterNotifications.ToggleButton == null)
