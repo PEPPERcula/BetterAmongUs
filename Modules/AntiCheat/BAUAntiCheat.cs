@@ -185,11 +185,11 @@ class BAUAntiCheat
             if (GameState.IsInGamePlay)
             {
                 if (callId is (byte)RpcCalls.SetColor
-                    or (byte)RpcCalls.SetHat
-                    or (byte)RpcCalls.SetSkin
-                    or (byte)RpcCalls.SetVisor
-                    or (byte)RpcCalls.SetPet
-                    or (byte)RpcCalls.SetNamePlate)
+                    or (byte)RpcCalls.SetHat_Deprecated
+                    or (byte)RpcCalls.SetSkin_Deprecated
+                    or (byte)RpcCalls.SetVisor_Deprecated
+                    or (byte)RpcCalls.SetPet_Deprecated
+                    or (byte)RpcCalls.SetNamePlate_Deprecated)
                 {
                     BetterNotificationManager.NotifyCheat(player, string.Format(Translator.GetString("AntiCheat.InvalidSetRPC"), Enum.GetName((RpcCalls)callId)));
                     Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {GameState.IsInGamePlay}");

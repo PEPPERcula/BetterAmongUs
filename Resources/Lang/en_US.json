@@ -46,7 +46,6 @@
   "WelcomeMsg.WelcomeToBAU": "Welcome To {0}",
   "WelcomeMsg.ThanksForDownloading": "Thanks for downloading!",
   "WelcomeMsg.BAUDescription1": "<color=#0dff00>{0}</color> Is a mod for improving the vanilla Among Us experience with a built-in {1} and other futures, <color=#0dff00>{0}</color> is a client-sided mod so it can be used with other vanilla Among Us players.",
-  "WelcomeMsg.BAUDescription2": "<color=#0dff00>{0}</color> Also has a option in <color=#2b7500>{1}</color> on the pause menu called {2}, {2} is designed to enhance the vanilla experience for other players without having <color=#0dff00>{0}</color> installed!",
 
   "BetterOption": "Better Options",
   "BetterOption.AntiCheat": "<color=#4f92ff>Anti-Cheat</color>",

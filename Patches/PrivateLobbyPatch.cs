@@ -9,7 +9,8 @@ namespace BetterAmongUs.Patches;
 [HarmonyPatch]
 internal class PrivateLobbyPatch
 {
-    private static AprilFoolsModeToggleButton? toggle;
+    private static GameObject? toggle;
+    private static List<PassiveButton>? buttons = [];
     private static TextMeshPro? toggleText;
 
     [HarmonyPatch(typeof(CreateGameOptions))]
@@ -18,81 +19,66 @@ internal class PrivateLobbyPatch
     internal static void CreateGameOptionsShow_Postfix(CreateGameOptions __instance)
     {
         if (toggle != null) return;
+        buttons.Clear();
 
-        toggle = UnityEngine.Object.Instantiate(__instance.AprilFoolsToggle, __instance.transform);
+        toggle = UnityEngine.Object.Instantiate(__instance.AprilFoolsToggle, __instance.contentObjects.First().transform.parent);
         if (toggle != null)
         {
+            toggle.name = "PrivateOnlyLobby";
+            buttons.Add(toggle.transform.Find("AprilOn").GetComponent<PassiveButton>());
+            buttons.Add(toggle.transform.Find("AprilOff").GetComponent<PassiveButton>());
+            if (buttons.Count < 2) return;
+
             toggle.gameObject.SetActive(true);
-            var onButton = toggle.onButton.GetComponent<PassiveButton>();
+            var onButton = buttons[0];
             if (onButton != null)
             {
+                onButton.gameObject.SetActive(false);
                 onButton.OnClick = new();
                 onButton.OnClick.AddListener((Action)(() => TogglePrivateOnlyLobby(true)));
             }
-            var offButton = toggle.offButton.GetComponent<PassiveButton>();
+            var offButton = buttons[1];
             if (offButton != null)
             {
+                offButton.gameObject.SetActive(false);
                 offButton.OnClick = new();
                 offButton.OnClick.AddListener((Action)(() => TogglePrivateOnlyLobby(false)));
             }
             var aspect = toggle.gameObject.AddComponent<AspectPosition>();
             aspect.Alignment = AspectPosition.EdgeAlignments.Top;
-            aspect.DistanceFromEdge = new UnityEngine.Vector3(0, 1.7f, 0);
+            aspect.DistanceFromEdge = new UnityEngine.Vector3(0.4f, 1.62f, 0);
             aspect.AdjustPosition();
 
-            var text = toggle.transform.Find("AprilFoolsModeText")?.GetComponent<TextMeshPro>();
+            var text = toggle.transform.Find("BlackSquare/ModeText")?.GetComponent<TextMeshPro>();
             if (text != null)
             {
                 text.DestroyTextTranslator();
                 text.text = "Private Only Lobby";
                 toggleText = text;
             }
-
-            var banner = toggle.transform.Find("Banner")?.GetComponent<SpriteRenderer>();
-            if (banner != null)
-            {
-                banner.color = new(1, 1, 1, 0.25f);
-            }
         }
+
+        TogglePrivateOnlyLobby(Main.PrivateOnlyLobby.Value);
     }
 
     private static void TogglePrivateOnlyLobby(bool modeOn)
     {
-        Main.PrivateOnlyLobby.Value = modeOn;
-    }
+        if (buttons.Count < 2) return;
 
-    [HarmonyPatch(typeof(AprilFoolsModeToggleButton))]
-    [HarmonyPatch(nameof(AprilFoolsModeToggleButton.Update))]
-    [HarmonyPrefix]
-    internal static bool AprilFoolsModeToggleButtonUpdate_Prefix(AprilFoolsModeToggleButton __instance)
-    {
-        if (__instance == toggle)
+        buttons[0].gameObject.SetActive(true);
+        buttons[1].gameObject.SetActive(true);
+        buttons[0].SelectButton(false);
+        buttons[1].SelectButton(false);
+
+        if (modeOn)
         {
-            if (Main.PrivateOnlyLobby.Value)
-            {
-                __instance.offButton.OutColor = Color.grey;
-                __instance.offText.color = Color.grey;
-                __instance.offButtonSprite.color = Color.grey;
-                __instance.onButton.OutColor = Color.white;
-                __instance.onText.color = Color.white;
-                __instance.onButtonSprite.color = Color.green;
-                if (toggleText != null) toggleText.color = new(1, 1, 1, 1);
-            }
-            else
-            {
-                __instance.onButton.OutColor = Color.grey;
-                __instance.onText.color = Color.grey;
-                __instance.onButtonSprite.color = Color.grey;
-                __instance.offButton.OutColor = Color.white;
-                __instance.offText.color = Color.white;
-                __instance.offButtonSprite.color = Color.green;
-                if (toggleText != null) toggleText.color = new(1, 1, 1, 0.5f);
-            }
-
-            return false;
+            buttons[0].SelectButton(true);
         }
-
-        return true;
+        else
+        {
+            buttons[1].SelectButton(true);
+        }
+        Main.PrivateOnlyLobby.Value = modeOn;
     }
 
     [HarmonyPatch(typeof(LobbyInfoPane))]
