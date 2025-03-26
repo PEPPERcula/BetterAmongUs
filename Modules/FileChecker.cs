@@ -17,7 +17,7 @@ class FileChecker
         "System", "Unity", "Harmony", "BepInEx", "Microsoft", "Il2Cpp", "Hazel",
         "MonoMod", "netstandard", "mscorlib", "AssetRipper", "Cpp2IL", "AsmResolver", "Iced",
         "SemanticVersioning", "Mono.Cecil", "Assembly-CSharp", "StableNameDotNet",
-        "Disarm", "Gee.External.Capstone", "Rewired_Core", "AddressablesPlayAssetDelivery",
+        "Disarm", "Gee.External.Capstone", "Rewired_Core", "AddressablesPlayAssetDelivery", "Newtonsoft.Json",
         "Assembly-CSharp-firstpass", "Sentry", "BetterAmongUs", "MCI", "CrowdedMod", "Mini.RegionInstall", "Unlock", "Skin"
     });
 

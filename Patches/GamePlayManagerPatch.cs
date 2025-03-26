@@ -205,12 +205,12 @@ class GamePlayManager
 
                 switch (EndGameResult.CachedGameOverReason)
                 {
-                    case GameOverReason.HumansByTask:
+                    case GameOverReason.CrewmatesByTask:
                         winTeam = Translator.GetString(StringNames.Crewmates);
                         winTag = Translator.GetString("Game.Summary.Result.TasksCompletion");
                         winColor = "#8cffff";
                         break;
-                    case GameOverReason.HumansByVote:
+                    case GameOverReason.CrewmatesByVote:
                         winTeam = Translator.GetString(StringNames.Crewmates);
                         winTag = Translator.GetString("Game.Summary.Result.ImpostersVotedOut");
                         winColor = "#8cffff";
@@ -220,33 +220,33 @@ class GamePlayManager
                         winTag = Translator.GetString("Game.Summary.Result.ImpostorsDisconnected");
                         winColor = "#8cffff";
                         break;
-                    case GameOverReason.ImpostorByKill:
+                    case GameOverReason.ImpostorsByKill:
                         winTeam = Translator.GetString(StringNames.ImpostorsCategory);
                         winTag = Translator.GetString("Game.Summary.Result.CrewOutnumbered");
                         winColor = "#f00202";
                         break;
-                    case GameOverReason.ImpostorBySabotage:
+                    case GameOverReason.ImpostorsBySabotage:
                         winTeam = Translator.GetString(StringNames.ImpostorsCategory);
                         winTag = Translator.GetString("Game.Summary.Result.Sabotage");
                         winColor = "#f00202";
                         break;
-                    case GameOverReason.ImpostorByVote:
+                    case GameOverReason.ImpostorsByVote:
                         winTeam = Translator.GetString(StringNames.ImpostorsCategory);
                         winTag = Translator.GetString("Game.Summary.Result.CrewOutnumbered");
                         winColor = "#f00202";
                         break;
-                    case GameOverReason.HumansDisconnect:
+                    case GameOverReason.CrewmateDisconnect:
                         winTeam = Translator.GetString(StringNames.ImpostorsCategory);
                         winTag = Translator.GetString("Game.Summary.Result.CrematesDisconnected");
                         winColor = "#f00202";
                         break;
 
-                    case GameOverReason.HideAndSeek_ByTimer:
+                    case GameOverReason.HideAndSeek_CrewmatesByTimer:
                         winTeam = Translator.GetString("Game.Summary.Hiders");
                         winTag = Translator.GetString("Game.Summary.Result.TimeOut");
                         winColor = "#8cffff";
                         break;
-                    case GameOverReason.HideAndSeek_ByKills:
+                    case GameOverReason.HideAndSeek_ImpostorsByKills:
                         winTeam = Translator.GetString("Game.Summary.Seekers");
                         winTag = Translator.GetString("Game.Summary.Result.NoSurvivors");
                         winColor = "#f00202";

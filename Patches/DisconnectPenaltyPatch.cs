@@ -1,11 +1,12 @@
-﻿using HarmonyLib;
+﻿using AmongUs.Data.Player;
+using HarmonyLib;
 
 namespace BetterAmongUs.Patches;
 
-[HarmonyPatch(typeof(StatsManager), nameof(StatsManager.BanMinutesLeft), MethodType.Getter)]
+[HarmonyPatch(typeof(PlayerBanData), nameof(PlayerBanData.BanMinutesLeft), MethodType.Getter)]
 internal static class DisconnectPenaltyPatch
 {
-    internal static bool Prefix(StatsManager __instance, ref int __result)
+    internal static bool Prefix(PlayerBanData __instance, ref int __result)
     {
         if (__instance.BanPoints != 0f)
         {
