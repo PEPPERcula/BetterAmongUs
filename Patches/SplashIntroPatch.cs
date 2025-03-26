@@ -6,9 +6,10 @@ namespace BetterAmongUs.Patches;
 
 class SplashIntroPatch
 {
+    internal static bool Skip = false;
     internal static bool BetterIntro = false;
     internal static bool IsReallyDoneLoading = false;
-    private static GameObject BetterLogo;
+    private static GameObject? BetterLogo;
 
     [HarmonyPatch(typeof(SplashManager))]
     class SplashManagerPatch
@@ -17,6 +18,9 @@ class SplashIntroPatch
         [HarmonyPrefix]
         internal static void Start_Prefix(SplashManager __instance)
         {
+            Skip = false;
+            BetterIntro = false;
+            IsReallyDoneLoading = false;
             __instance.logoAnimFinish.transform.Find("BlackOverlay").transform.SetLocalY(100f);
         }
 
@@ -24,6 +28,12 @@ class SplashIntroPatch
         [HarmonyPrefix]
         internal static bool Update_Prefix(SplashManager __instance)
         {
+            if (Skip)
+            {
+                CheckIfDone(__instance);
+                return false;
+            }
+
             if (Time.time - __instance.startTime > 2f && BetterIntro)
             {
                 UnityEngine.Object.Destroy(__instance.logoAnimFinish.GetComponent<AudioSource>());
@@ -31,11 +41,10 @@ class SplashIntroPatch
 
             if (Input.GetKeyDown(KeyCode.Mouse0) || Input.GetKeyDown(KeyCode.Mouse1))
             {
-                if (Time.time - __instance.startTime > 2f || BetterIntro)
+                if (CheckIfDone(__instance, true))
                 {
-                    IsReallyDoneLoading = true;
-                    __instance.sceneChanger.AllowFinishLoadingScene();
-                    __instance.startedSceneLoad = true;
+                    Skip = true;
+                    return false;
                 }
             }
 
@@ -52,21 +61,26 @@ class SplashIntroPatch
                     BetterLogo.name = "BetterLogo";
                     BetterLogo.GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("BetterAmongUs.Resources.Images.BetterAmongUs-By-The-Enhanced-Network-Logo.png", 150f);
                     __instance.logoAnimFinish.transform.Find("BlackOverlay").transform.SetLocalY(0f);
-                    __instance.loadingObject.SetActive(false);
 
-                    __instance.startedSceneLoad = false;
                     BetterIntro = true;
                     return false;
                 }
 
-                __instance.startedSceneLoad = true;
+                CheckIfDone(__instance);
+            }
 
-                if (__instance.startedSceneLoad && BetterIntro)
-                {
-                    IsReallyDoneLoading = true;
-                    __instance.sceneChanger.AllowFinishLoadingScene();
-                    __instance.startedSceneLoad = true;
-                }
+            return false;
+        }
+
+        internal static bool CheckIfDone(SplashManager __instance, bool isSkip = false)
+        {
+            if ((Time.time - __instance.startTime > 2f && BetterIntro) || (isSkip && BetterIntro))
+            {
+                IsReallyDoneLoading = true;
+                __instance.sceneChanger.AllowFinishLoadingScene();
+                __instance.startedSceneLoad = true;
+                __instance.loadingObject.SetActive(true);
+                return true;
             }
 
             return false;
