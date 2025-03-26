@@ -13,8 +13,7 @@ internal class HudManagerPatch
 {
     internal static string WelcomeMessage = $"<b><color=#00b530><size=125%><align=\"center\">{string.Format(Translator.GetString("WelcomeMsg.WelcomeToBAU"), Translator.GetString("BetterAmongUs"))}\n{Main.GetVersionText()}</size>\n" +
         $"{Translator.GetString("WelcomeMsg.ThanksForDownloading")}</align></color></b>\n<size=120%> </size>\n" +
-        string.Format(Translator.GetString("WelcomeMsg.BAUDescription1"), Translator.GetString("bau"), Translator.GetString("BetterOption.AntiCheat")) + "\n\n" +
-        string.Format(Translator.GetString("WelcomeMsg.BAUDescription2"), Translator.GetString("bau"), Translator.GetString("BetterOption"), Translator.GetString("BetterOption.BetterHost"));
+        string.Format(Translator.GetString("WelcomeMsg.BAUDescription1"), Translator.GetString("bau"), Translator.GetString("BetterOption.AntiCheat"));
 
     private static bool HasBeenWelcomed = false;
     [HarmonyPatch(nameof(HudManager.Start))]
