@@ -1,0 +1,79 @@
+﻿using HarmonyLib;
+using UnityEngine;
+
+namespace BetterAmongUs.Patches;
+
+[HarmonyPatch(typeof(FindAGameManager))]
+internal class FindAGameManagerPatch
+{
+    public static Scroller? Scroller;
+
+    [HarmonyPatch(nameof(FindAGameManager.Start))]
+    [HarmonyPrefix]
+    internal static void Start_Prefix(FindAGameManager __instance)
+    {
+        var prefab = __instance.gameContainers[4];
+        var list = new GameObject("GameListScroller");
+        list.transform.SetParent(prefab.transform.parent);
+
+        Scroller = list.AddComponent<Scroller>();
+        Scroller.Inner = list.transform;
+        Scroller.MouseMustBeOverToScroll = true;
+        var box = prefab.transform.parent.gameObject.AddComponent<BoxCollider2D>();
+        box.size = new Vector2(100f, 100f);
+        Scroller.ClickMask = box;
+        Scroller.ScrollWheelSpeed = 0.3f;
+        Scroller.SetYBoundsMin(0f);
+        Scroller.SetYBoundsMax(3.5f);
+        Scroller.allowY = true;
+
+        foreach (var con in __instance.gameContainers)
+        {
+            con.transform.SetParent(list.transform);
+            var oldPos = con.transform.position;
+            con.transform.position = new Vector3(oldPos.x, oldPos.y, 25);
+        }
+
+        var oldGameContainers = __instance.gameContainers.ToList();
+
+        for (int i = 0; i < 5; i++)
+        {
+            var GameContainer = UnityEngine.Object.Instantiate(prefab, list.transform);
+            var oldPos = GameContainer.transform.position;
+            GameContainer.transform.position = new Vector3(oldPos.x, oldPos.y - 0.75f * (i + 1), 25);
+            oldGameContainers.Add(GameContainer);
+        }
+
+        __instance.gameContainers = oldGameContainers.ToArray();
+
+        var cutOffTop = CreateBlackSquareSprite();
+        cutOffTop.transform.SetParent(list.transform.parent);
+        cutOffTop.transform.localPosition = new Vector3(0, 3, 1);
+        cutOffTop.transform.localScale = new Vector3(1500, 200, 100);
+    }
+
+    [HarmonyPatch(nameof(FindAGameManager.RefreshList))]
+    [HarmonyPostfix]
+    internal static void RefreshList_Postfix()
+    {
+        Scroller?.ScrollRelative(new(0f, -100f));
+    }
+
+    private static SpriteRenderer CreateBlackSquareSprite()
+    {
+        var square = new GameObject("CutOffTop");
+        var renderer = square.AddComponent<SpriteRenderer>();
+        Texture2D texture = new(100, 100);
+        Color[] pixels = texture.GetPixels();
+        for (int i = 0; i < pixels.Length; i++)
+        {
+            pixels[i] = Color.black;
+        }
+        texture.SetPixels(pixels);
+        texture.Apply();
+        Sprite sprite = Sprite.Create(texture, new Rect(0, 0, 1, 1), Vector2.one * 0.5f);
+        renderer.sprite = sprite;
+        square.transform.localScale = new Vector3(100, 100, 1);
+        return renderer;
+    }
+}

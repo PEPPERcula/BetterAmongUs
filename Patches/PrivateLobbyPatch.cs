@@ -24,6 +24,7 @@ internal class PrivateLobbyPatch
         toggle = UnityEngine.Object.Instantiate(__instance.AprilFoolsToggle, __instance.contentObjects.First().transform.parent);
         if (toggle != null)
         {
+            toggle.name = "PrivateOnlyLobby";
             buttons.Add(toggle.transform.Find("AprilOn").GetComponent<PassiveButton>());
             buttons.Add(toggle.transform.Find("AprilOff").GetComponent<PassiveButton>());
             if (buttons.Count < 2) return;
@@ -45,7 +46,7 @@ internal class PrivateLobbyPatch
             }
             var aspect = toggle.gameObject.AddComponent<AspectPosition>();
             aspect.Alignment = AspectPosition.EdgeAlignments.Top;
-            aspect.DistanceFromEdge = new UnityEngine.Vector3(0, 1.62f, 0);
+            aspect.DistanceFromEdge = new UnityEngine.Vector3(0.4f, 1.62f, 0);
             aspect.AdjustPosition();
 
             var text = toggle.transform.Find("BlackSquare/ModeText")?.GetComponent<TextMeshPro>();
