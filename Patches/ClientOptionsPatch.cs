@@ -107,7 +107,15 @@ internal static class OptionsMenuBehaviourPatch
         if (LobbyPlayerInfo == null || LobbyPlayerInfo.ToggleButton == null)
         {
             string title = Translator.GetString("BetterOption.LobbyInfo");
-            LobbyPlayerInfo = ClientOptionItem.Create(title, Main.LobbyPlayerInfo, __instance);
+            LobbyPlayerInfo = ClientOptionItem.Create(title, Main.LobbyPlayerInfo, __instance, LobbyPlayerInfoToggle);
+
+            static void LobbyPlayerInfoToggle()
+            {
+                if (GameState.IsInGame)
+                {
+                    Utils.DirtyAllNames();
+                }
+            }
         }
 
         if (DisableLobbyTheme == null || DisableLobbyTheme.ToggleButton == null)
@@ -166,6 +174,8 @@ internal static class OptionsMenuBehaviourPatch
                 ConsoleManager.DetachConsole();
                 BetterNotificationManager.BAUNotificationManagerObj.DestroyObj();
                 Harmony.UnpatchAll();
+                ModManager.Instance.ModStamp.gameObject.SetActive(false);
+                SceneChanger.ChangeScene("MainMenu");
             }
         }
     }

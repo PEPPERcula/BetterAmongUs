@@ -78,7 +78,8 @@ internal class Main : BasePlugin
 
         return text;
     }
-    internal Harmony Harmony { get; } = new Harmony(PluginGuid);
+
+    internal static Harmony Harmony { get; } = new Harmony(PluginGuid);
 
     internal static string BetterAmongUsVersion => PluginVersion;
     internal static string AmongUsVersion => Application.version;
@@ -168,6 +169,7 @@ internal class Main : BasePlugin
             GameSettingMenuPatch.SetupSettings(true);
             FileChecker.Initialize();
             InstanceAttribute.RegisterAll();
+            MethodPatchAttribute.PatchAllMethods(Harmony);
 
             if (PlatformData.Platform == Platforms.StandaloneSteamPC)
                 File.WriteAllText(Path.Combine(Environment.CurrentDirectory, "steam_appid.txt"), "945360");

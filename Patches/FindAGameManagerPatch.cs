@@ -1,4 +1,7 @@
-﻿using HarmonyLib;
+﻿using BetterAmongUs.Helpers;
+using HarmonyLib;
+using InnerNet;
+using TMPro;
 using UnityEngine;
 
 namespace BetterAmongUs.Patches;
@@ -54,9 +57,41 @@ internal class FindAGameManagerPatch
 
     [HarmonyPatch(nameof(FindAGameManager.RefreshList))]
     [HarmonyPostfix]
-    internal static void RefreshList_Postfix()
+    internal static void RefreshList_Postfix(FindAGameManager __instance)
     {
         Scroller?.ScrollRelative(new(0f, -100f));
+    }
+
+    [HarmonyPatch(nameof(FindAGameManager.HandleList))]
+    [HarmonyPostfix]
+    internal static void HandleList_Postfix(FindAGameManager __instance)
+    {
+        foreach (var container in __instance.gameContainers)
+        {
+            Transform child = container.transform.Find("Container");
+            Transform tmproObject = child.Find("TrueHostName_TMP");
+
+            TMP_Text tmpro = tmproObject != null
+                ? tmproObject.GetComponent<TextMeshPro>()
+                : CreateNewTextMeshPro(child);
+
+            tmpro.font = container.capacity.font;
+            tmpro.fontSize = 3f;
+            tmpro.text = FormatGameInfoText(container.gameListing);
+        }
+    }
+
+    private static TMP_Text CreateNewTextMeshPro(Transform parent)
+    {
+        var tmproObject = new GameObject("TrueHostName_TMP").transform;
+        tmproObject.SetParent(parent, true);
+        tmproObject.localPosition = new Vector3(7.77f, -2.20f, -1f);
+        return tmproObject.gameObject.AddComponent<TextMeshPro>();
+    }
+
+    private static string FormatGameInfoText(GameListing listing)
+    {
+        return @$"{listing.HostName}{Environment.NewLine}<size=65%>{Utils.GetPlatformName(listing.Platform)} ({GameCode.IntToGameName(listing.GameId)})";
     }
 
     private static SpriteRenderer CreateBlackSquareSprite()
