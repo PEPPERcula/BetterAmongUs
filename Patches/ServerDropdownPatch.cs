@@ -9,14 +9,15 @@ internal class ServerDropdownPatch
 {
     [HarmonyPatch(typeof(ServerDropdown))]
     [HarmonyPatch(nameof(ServerDropdown.FillServerOptions))]
-    internal static bool Prefix(ServerDropdown __instance)
+    [HarmonyPrefix]
+    internal static bool FillServerOptions_Prefix(ServerDropdown __instance)
     {
         __instance.background.size = new Vector2(5, 1);
 
         int num = 0;
         int column = 0;
         const int maxPerColumn = 6;
-        const float columnWidth = 2.8f;
+        const float columnWidth = 3.5f;
         const float buttonSpacing = 0.5f;
 
         // Get all available regions except current one
@@ -45,6 +46,7 @@ internal class ServerDropdownPatch
 
             serverListButton.transform.localPosition = new Vector3(xPos, yPos, -1f);
             serverListButton.transform.localScale = Vector3.one;
+            serverListButton.Text.enableAutoSizing = true;
             serverListButton.Text.text = DestroyableSingleton<TranslationController>.Instance.GetStringWithDefault(
                 regionInfo.TranslateName,
                 regionInfo.Name,
