@@ -91,7 +91,8 @@ internal class FindAGameManagerPatch
 
     private static string FormatGameInfoText(GameListing listing)
     {
-        return @$"{listing.HostName}{Environment.NewLine}<size=65%>{Utils.GetPlatformName(listing.Platform)} ({GameCode.IntToGameName(listing.GameId)})";
+        var hostStr = !string.IsNullOrEmpty(listing.TrueHostName) ? listing.TrueHostName : listing.HostName;
+        return @$"{hostStr}{Environment.NewLine}<size=65%>{Utils.GetPlatformName(listing.Platform)} ({GameCode.IntToGameName(listing.GameId)})";
     }
 
     private static SpriteRenderer CreateBlackSquareSprite()
