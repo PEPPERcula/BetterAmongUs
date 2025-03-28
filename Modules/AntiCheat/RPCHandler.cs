@@ -62,9 +62,8 @@ internal abstract class RPCHandler
                     else if (handlerFlag == HandlerFlag.BetterHost) cancel = !handler.BetterHandle(sender, MessageReader.Get(reader));
                     if (!(cancel)) break;
                 }
-                catch (Exception ex)
+                catch
                 {
-                    Logger.Error(ex);
                 }
             }
             else if (calledId == handler.GameDataTag && handlerFlag == HandlerFlag.HandleGameDataTag)

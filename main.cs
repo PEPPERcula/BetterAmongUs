@@ -169,7 +169,6 @@ internal class Main : BasePlugin
             GameSettingMenuPatch.SetupSettings(true);
             FileChecker.Initialize();
             InstanceAttribute.RegisterAll();
-            MethodPatchAttribute.PatchAllMethods(Harmony);
 
             if (PlatformData.Platform == Platforms.StandaloneSteamPC)
                 File.WriteAllText(Path.Combine(Environment.CurrentDirectory, "steam_appid.txt"), "945360");

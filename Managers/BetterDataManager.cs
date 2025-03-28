@@ -367,51 +367,51 @@ class BetterDataManager
 
         if (successful)
         {
-            foreach (var data in BAUAntiCheat.PlayerData)
+            foreach (var data in BetterAntiCheat.PlayerData)
             {
                 if (data.Value != identifier)
                 {
-                    BAUAntiCheat.PlayerData.Remove(identifier);
+                    BetterAntiCheat.PlayerData.Remove(identifier);
                 }
                 else
                 {
-                    BAUAntiCheat.PlayerData.Remove(data.Key);
+                    BetterAntiCheat.PlayerData.Remove(data.Key);
                 }
             }
 
-            foreach (var data in BAUAntiCheat.SickoData)
+            foreach (var data in BetterAntiCheat.SickoData)
             {
                 if (data.Value != identifier)
                 {
-                    BAUAntiCheat.SickoData.Remove(identifier);
+                    BetterAntiCheat.SickoData.Remove(identifier);
                 }
                 else
                 {
-                    BAUAntiCheat.SickoData.Remove(data.Key);
+                    BetterAntiCheat.SickoData.Remove(data.Key);
                 }
             }
 
-            foreach (var data in BAUAntiCheat.AUMData)
+            foreach (var data in BetterAntiCheat.AUMData)
             {
                 if (data.Value != identifier)
                 {
-                    BAUAntiCheat.AUMData.Remove(identifier);
+                    BetterAntiCheat.AUMData.Remove(identifier);
                 }
                 else
                 {
-                    BAUAntiCheat.AUMData.Remove(data.Key);
+                    BetterAntiCheat.AUMData.Remove(data.Key);
                 }
             }
 
-            foreach (var data in BAUAntiCheat.KNData)
+            foreach (var data in BetterAntiCheat.KNData)
             {
                 if (data.Value != identifier)
                 {
-                    BAUAntiCheat.KNData.Remove(identifier);
+                    BetterAntiCheat.KNData.Remove(identifier);
                 }
                 else
                 {
-                    BAUAntiCheat.KNData.Remove(data.Key);
+                    BetterAntiCheat.KNData.Remove(data.Key);
                 }
             }
         }
@@ -452,10 +452,10 @@ class BetterDataManager
         }
 
         // Clear in-memory data
-        BAUAntiCheat.PlayerData.Clear();
-        BAUAntiCheat.SickoData.Clear();
-        BAUAntiCheat.AUMData.Clear();
-        BAUAntiCheat.KNData.Clear();
+        BetterAntiCheat.PlayerData.Clear();
+        BetterAntiCheat.SickoData.Clear();
+        BetterAntiCheat.AUMData.Clear();
+        BetterAntiCheat.KNData.Clear();
 
         Logger.LogCheat("Cleared cheat memory and data");
     }
@@ -479,7 +479,7 @@ class BetterDataManager
                 {
                     foreach (var item in jsonData["cheatData"])
                     {
-                        BAUAntiCheat.PlayerData[item.Value["HashPUID"]] = item.Value["FriendCode"];
+                        BetterAntiCheat.PlayerData[item.Value["HashPUID"]] = item.Value["FriendCode"];
                     }
                 }
 
@@ -487,7 +487,7 @@ class BetterDataManager
                 {
                     foreach (var item in jsonData["sickoData"])
                     {
-                        BAUAntiCheat.SickoData[item.Value["HashPUID"]] = item.Value["FriendCode"];
+                        BetterAntiCheat.SickoData[item.Value["HashPUID"]] = item.Value["FriendCode"];
                     }
                 }
 
@@ -495,7 +495,7 @@ class BetterDataManager
                 {
                     foreach (var item in jsonData["aumData"])
                     {
-                        BAUAntiCheat.AUMData[item.Value["HashPUID"]] = item.Value["FriendCode"];
+                        BetterAntiCheat.AUMData[item.Value["HashPUID"]] = item.Value["FriendCode"];
                     }
                 }
 
@@ -503,7 +503,7 @@ class BetterDataManager
                 {
                     foreach (var item in jsonData["knData"])
                     {
-                        BAUAntiCheat.KNData[item.Value["HashPUID"]] = item.Value["FriendCode"];
+                        BetterAntiCheat.KNData[item.Value["HashPUID"]] = item.Value["FriendCode"];
                     }
                 }
             }

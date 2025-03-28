@@ -8,7 +8,7 @@ using InnerNet;
 
 namespace BetterAmongUs.Modules.AntiCheat;
 
-class BAUAntiCheat
+class BetterAntiCheat
 {
     internal static Dictionary<string, string> PlayerData = []; // HashPuid, FriendCode
     internal static Dictionary<string, string> SickoData = []; // HashPuid, FriendCode
@@ -132,7 +132,7 @@ class BAUAntiCheat
     {
         MessageReader reader = MessageReader.Get(oldReader);
 
-        if (player.IsLocalPlayer() || player == null || !IsEnabled) return;
+        if (!IsEnabled) return;
 
         RPCHandler.HandleRPC(callId, player, reader, HandlerFlag.AntiCheatCheck);
     }
@@ -142,8 +142,9 @@ class BAUAntiCheat
     {
         MessageReader reader = MessageReader.Get(oldReader);
 
-        if (player == null || player.IsLocalPlayer() || (player.IsHost() && player.BetterData().IsBetterUser) || reader == null || !IsEnabled || !Main.AntiCheat.Value
-            || GameState.IsBetterHostLobby && !GameState.IsHost || !BetterGameSettings.DetectInvalidRPCs.GetBool()) return;
+        if (player == null || player?.Data == null || reader == null) return;
+        if (!IsEnabled || !Main.AntiCheat.Value || (GameState.IsBetterHostLobby && !GameState.IsHost) || !BetterGameSettings.DetectInvalidRPCs.GetBool()) return;
+        if (player.IsLocalPlayer() && player.IsHost()) return;
 
         RPCHandler.HandleRPC(callId, player, reader, HandlerFlag.AntiCheat);
     }
@@ -155,9 +156,9 @@ class BAUAntiCheat
         {
             MessageReader reader = MessageReader.Get(oldReader);
 
-            if (PlayerControl.LocalPlayer == null || player == null || player.IsLocalPlayer() || (player.IsHost() && player.BetterData().IsBetterUser) || reader == null) return true;
-
-            if (!IsEnabled || !Main.AntiCheat.Value || GameState.IsBetterHostLobby && !GameState.IsHost || !BetterGameSettings.DetectInvalidRPCs.GetBool()) return true;
+            if (player == null || player?.Data == null || reader == null) return true;
+            if (!IsEnabled || !Main.AntiCheat.Value || (GameState.IsBetterHostLobby && !GameState.IsHost) || !BetterGameSettings.DetectInvalidRPCs.GetBool()) return true;
+            if (player.IsLocalPlayer() && player.IsHost()) return true;
 
             if (TrustedRPCs(callId) != true && !player.IsHost())
             {
@@ -240,6 +241,16 @@ class BAUAntiCheat
             Logger.Error(ex);
             return true;
         }
+    }
+
+    // Handle RPC received from players
+    internal static void HandleRPC(PlayerControl player, byte callId, MessageReader oldReader)
+    {
+        if (player == null || player?.Data == null || player.IsLocalPlayer()) return;
+
+        MessageReader reader = MessageReader.Get(oldReader);
+
+        RPCHandler.HandleRPC(callId, player, reader, HandlerFlag.Handle);
     }
 
     // Check game states when sabotaging

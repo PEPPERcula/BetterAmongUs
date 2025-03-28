@@ -43,6 +43,15 @@ class BetterNotificationManager
 
     internal static void NotifyCheat(PlayerControl player, string reason, string newText = "", bool kickPlayer = true, bool forceBan = false)
     {
+        if (player.IsLocalPlayer())
+        {
+            FileChecker.SetHasUnauthorizedFileOrMod();
+            FileChecker.SetWarningMsg("Tampered client detected!");
+            Utils.DisconnectSelf("Tampered client detected!");
+            Utils.DisconnectAccountFromOnline();
+            return;
+        }
+
         if (player?.Data == null) return;
 
         var Reason = reason;
@@ -66,9 +75,9 @@ class BetterNotificationManager
             rawText = $"{playerDetectedLog}: <color=#0097b5>{player?.BetterData().RealName}</color> " + newText + $": <b><color=#fc0000>{reason}</color></b>";
         }
 
-        if (!BAUAntiCheat.PlayerData.ContainsKey(Utils.GetHashPuid(player)))
+        if (!BetterAntiCheat.PlayerData.ContainsKey(Utils.GetHashPuid(player)))
         {
-            BAUAntiCheat.PlayerData[Utils.GetHashPuid(player)] = player.Data.FriendCode;
+            BetterAntiCheat.PlayerData[Utils.GetHashPuid(player)] = player.Data.FriendCode;
             BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player?.BetterData().RealName ?? player.Data.PlayerName, "cheatData", Reason);
             Notify(text, Time: 8f);
         }

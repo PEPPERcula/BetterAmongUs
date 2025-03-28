@@ -130,6 +130,15 @@ internal class ClientPatch
     [HarmonyPatch(typeof(InnerNetClient))]
     internal class InnerNetClientPatch
     {
+        [HarmonyPatch(nameof(InnerNetClient.SendOrDisconnect))]
+        [HarmonyPrefix]
+        public static bool SendOrDisconnect_Prefix(InnerNetClient __instance, MessageWriter msg)
+        {
+            NetworkManager.SendToServer(msg);
+
+            return false;
+        }
+
         [HarmonyPatch(nameof(InnerNetClient.HandleGameData))]
         [HarmonyPrefix]
         internal static bool HandleGameDataInner_Prefix([HarmonyArgument(0)] MessageReader oldReader)

@@ -133,6 +133,19 @@ class FileChecker
         }
     }
 
+    internal static void SetHasUnauthorizedFileOrMod()
+    {
+        hasUnauthorizedFileOrMod = true;
+    }
+
+    internal static void SetWarningMsg(string msg)
+    {
+        if (string.IsNullOrEmpty(WarningMsg))
+        {
+            WarningMsg = msg;
+        }
+    }
+
     private static bool IsSafeLocation(Assembly assembly)
     {
         if (string.IsNullOrEmpty(assembly.Location))

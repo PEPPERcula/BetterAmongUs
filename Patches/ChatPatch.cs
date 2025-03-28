@@ -98,11 +98,11 @@ class ChatPatch
                 if ((sourcePlayer.IsLocalPlayer() || sourcePlayer.BetterData().IsBetterUser))
                     sbTag.AppendFormat("<color=#0dff00>{1}{0}</color>+++", Translator.GetString("Player.BetterUser"), sourcePlayer.BetterData().IsVerifiedBetterUser || sourcePlayer.IsLocalPlayer() ? "✓ " : "");
 
-                if (!string.IsNullOrEmpty(hashPuid) && BAUAntiCheat.SickoData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && BAUAntiCheat.SickoData.ContainsValue(friendCode))
+                if (!string.IsNullOrEmpty(hashPuid) && BetterAntiCheat.SickoData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && BetterAntiCheat.SickoData.ContainsValue(friendCode))
                     sbTag.Append($"<color=#00f583>{Translator.GetString("Player.SickoUser")}</color>+++");
-                else if (!string.IsNullOrEmpty(hashPuid) && BAUAntiCheat.AUMData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && BAUAntiCheat.AUMData.ContainsValue(friendCode))
+                else if (!string.IsNullOrEmpty(hashPuid) && BetterAntiCheat.AUMData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && BetterAntiCheat.AUMData.ContainsValue(friendCode))
                     sbTag.Append($"<color=#4f0000>{Translator.GetString("Player.AUMUser")}</color>+++");
-                else if (!string.IsNullOrEmpty(hashPuid) && BAUAntiCheat.PlayerData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && BAUAntiCheat.PlayerData.ContainsValue(friendCode))
+                else if (!string.IsNullOrEmpty(hashPuid) && BetterAntiCheat.PlayerData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && BetterAntiCheat.PlayerData.ContainsValue(friendCode))
                     sbTag.Append($"<color=#fc0000>{Translator.GetString("Player.KnownCheater")}</color>+++");
             }
 
