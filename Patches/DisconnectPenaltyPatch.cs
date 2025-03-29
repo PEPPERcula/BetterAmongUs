@@ -3,17 +3,17 @@ using HarmonyLib;
 
 namespace BetterAmongUs.Patches;
 
-[HarmonyPatch(typeof(PlayerBanData), nameof(PlayerBanData.BanMinutesLeft), MethodType.Getter)]
+[HarmonyPatch(typeof(PlayerBanData))]
 internal static class DisconnectPenaltyPatch
 {
-    internal static bool Prefix(PlayerBanData __instance, ref int __result)
+    [HarmonyPatch(nameof(PlayerBanData.IsBanned), MethodType.Getter)]
+    [HarmonyPrefix]
+    internal static bool IsBanned_Prefix(PlayerBanData __instance, ref bool __result)
     {
-        if (__instance.BanPoints != 0f)
-        {
-            __instance.BanPoints = 0f;
-            __result = 0;
-            return false;
-        }
-        return true;
+        Logger.InGame("TEST");
+        __instance.BanPoints = 0f;
+        __instance.banPoints = 0f;
+        __result = false;
+        return false;
     }
 }

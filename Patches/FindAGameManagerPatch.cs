@@ -66,6 +66,7 @@ internal class FindAGameManagerPatch
     [HarmonyPostfix]
     internal static void HandleList_Postfix(FindAGameManager __instance, HttpMatchmakerManager.FindGamesListFilteredResponse response)
     {
+        __instance.ResetContainers();
         GameListing[] games = response.Games.ToArray();
 
         games = [.. games.OrderByDescending(game => game.PlayerCount).ThenBy(game => game.TrueHostName)];

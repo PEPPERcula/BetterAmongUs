@@ -140,38 +140,129 @@ internal class ClientPatch
         {
             CustomLoadingBarManager.ToggleLoadingBar(true);
 
-            try
+            if (GameState.IsHost)
             {
-                while (Main.AllPlayerControls.Count > 0 && Main.AllPlayerControls.Any(pc => !pc.roleAssigned))
+                yield return CoLoadingHost();
+            }
+            else
+            {
+                yield return CoLoadingClient();
+            }
+
+            CustomLoadingBarManager.SetLoadingPercent(100f, "Complete");
+            yield return new WaitForSeconds(0.25f);
+            CustomLoadingBarManager.ToggleLoadingBar(false);
+        }
+
+        private static IEnumerator CoLoadingHost()
+        {
+            var client = AmongUsClient.Instance.GetClient(AmongUsClient.Instance.ClientId);
+            var clients = AmongUsClient.Instance.allClients.ToArray();
+
+            while (Main.AllPlayerControls.Count > 0 && Main.AllPlayerControls.Any(pc => !pc.roleAssigned))
+            {
+                if (!GameState.IsInGame)
                 {
-                    if (!GameState.IsInGame)
-                    {
-                        yield break;
-                    }
-
-                    int totalPlayers = Main.AllPlayerControls.Count;
-                    if (totalPlayers == 0) yield break;
-
-                    int playersWithRoles = Main.AllPlayerControls.Count(pc => pc.roleAssigned);
-                    float progress = (float)playersWithRoles / totalPlayers;
-
-                    int percent = Mathf.RoundToInt(progress * 100f);
-
-                    string loadingText = (GameState.IsHost && playersWithRoles > 0)
-                        ? "Assigning Roles"
-                        : "Loading";
-
-                    CustomLoadingBarManager.SetLoadingPercent(progress, loadingText);
-
-                    yield return null;
+                    CustomLoadingBarManager.ToggleLoadingBar(false);
+                    yield break;
                 }
 
-                CustomLoadingBarManager.SetLoadingPercent(100f, "Complete");
-                yield return new WaitForSeconds(0.5f);
+                string loadingText = "Initializing Game";
+                float progress = 0f;
+
+                if (AmongUsClient.Instance.GameState != InnerNetClient.GameStates.Started)
+                {
+                    loadingText = "Starting Game Session";
+                    progress = 0.1f;
+                }
+                else if (LobbyBehaviour.Instance)
+                {
+                    loadingText = "Loading";
+                    progress = 0.2f;
+                }
+                else if (!ShipStatus.Instance || AmongUsClient.Instance.ShipLoadingAsyncHandle.IsValid())
+                {
+                    bool isShipLoading = AmongUsClient.Instance.ShipLoadingAsyncHandle.IsValid();
+
+                    loadingText = isShipLoading ? "Loading Ship Async" : "Spawning Ship";
+                    progress = isShipLoading ? 0.3f : 0.4f;
+                }
+                else if (Main.AllPlayerControls.Any(player => !player.roleAssigned))
+                {
+                    int totalPlayers = Main.AllPlayerControls.Count;
+                    int assignedPlayers = Main.AllPlayerControls.Count(pc => pc.roleAssigned);
+                    float assignmentProgress = (float)assignedPlayers / Mathf.Max(1, totalPlayers);
+
+                    loadingText = $"Assigning Roles ({assignedPlayers}/{totalPlayers})";
+                    progress = 0.4f + (0.3f * assignmentProgress);
+                }
+                else if (!client.IsReady)
+                {
+                    int readyClients = clients.Count(c => c.IsReady);
+                    int totalClients = clients.Length;
+
+                    loadingText = $"Waiting for Players ({readyClients}/{totalClients})";
+                    progress = 0.8f + (0.2f * readyClients / Mathf.Max(1, totalClients));
+                }
+
+                int percent = Mathf.RoundToInt(progress * 100f);
+                CustomLoadingBarManager.SetLoadingPercent(percent, loadingText);
+
+                yield return null;
             }
-            finally
+        }
+
+        private static IEnumerator CoLoadingClient()
+        {
+            var client = AmongUsClient.Instance.GetClient(AmongUsClient.Instance.ClientId);
+            var clients = AmongUsClient.Instance.allClients.ToArray();
+
+            while (Main.AllPlayerControls.Count > 0 && Main.AllPlayerControls.Any(pc => !pc.roleAssigned))
             {
-                CustomLoadingBarManager.ToggleLoadingBar(false);
+                if (!GameState.IsInGame)
+                {
+                    CustomLoadingBarManager.ToggleLoadingBar(false);
+                    yield break;
+                }
+
+                string loadingText = "Initializing Game";
+                float progress = 0;
+
+                if (AmongUsClient.Instance.GameState != InnerNetClient.GameStates.Started)
+                {
+                    loadingText = "Starting Game Session";
+                    progress = 0.1f;
+                }
+                else if (LobbyBehaviour.Instance)
+                {
+                    loadingText = "Loading";
+                    progress = 0.25f;
+                }
+                else if (!ShipStatus.Instance || AmongUsClient.Instance.ShipLoadingAsyncHandle.IsValid())
+                {
+                    bool isShipLoading = AmongUsClient.Instance.ShipLoadingAsyncHandle.IsValid();
+
+                    loadingText = isShipLoading ? "Loading Ship Async" : "Spawning Ship";
+                    progress = isShipLoading ? 0.35f : 0.4f;
+                }
+                else if (!client.IsReady)
+                {
+                    loadingText = "Finalizing Connection";
+                    progress = 0.75f;
+                }
+                else
+                {
+                    int readyClients = clients.Count(c => c.IsReady);
+                    int totalClients = clients.Length;
+
+                    loadingText = $"Waiting for Players ({readyClients}/{totalClients})";
+                    progress = 0.85f + (0.15f * readyClients / Mathf.Max(1, totalClients));
+                }
+
+                int percent = Mathf.RoundToInt(progress * 100f);
+                CustomLoadingBarManager.SetLoadingPercent(percent, loadingText);
+
+                yield return null;
             }
         }
     }
