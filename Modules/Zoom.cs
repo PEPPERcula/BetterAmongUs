@@ -53,7 +53,7 @@ internal static class Zoom
             HudManager.Instance.UICamera.orthographicSize *= size;
         }
 
-        DestroyableSingleton<HudManager>.Instance?.ShadowQuad?.gameObject?.SetActive((reset || Camera.main.orthographicSize == 3.0f) && PlayerControl.LocalPlayer.IsAlive());
+        HudManager.Instance?.ShadowQuad?.gameObject?.SetActive((reset || Camera.main.orthographicSize == 3.0f) && PlayerControl.LocalPlayer.IsAlive());
 
         if (resetButtons)
         {
@@ -62,14 +62,13 @@ internal static class Zoom
         }
     }
 
-    internal static void OnFixedUpdate() =>
-        DestroyableSingleton<HudManager>.Instance?.ShadowQuad?.gameObject?.SetActive(Camera.main.orthographicSize == 3.0f && PlayerControl.LocalPlayer.IsAlive());
+    internal static void OnFixedUpdate() => HudManager.Instance?.ShadowQuad?.gameObject?.SetActive(Camera.main.orthographicSize == 3.0f && PlayerControl.LocalPlayer.IsAlive());
 }
 
 internal static class Flag
 {
-    private static readonly List<string> oneTimeList = new();
-    private static readonly List<string> firstRunList = new();
+    private static readonly List<string> oneTimeList = [];
+    private static readonly List<string> firstRunList = [];
 
     internal static void Run(Action action, string type, bool firstrun = false)
     {

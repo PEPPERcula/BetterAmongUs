@@ -36,7 +36,7 @@ class BetterNotificationManager
             BAUNotificationManagerObj.SetActive(true);
             NameText.text = $"<color=#00ff44>{Translator.GetString("SystemNotification")}</color>";
             TextArea.text = text;
-            SoundManager.Instance.PlaySound(DestroyableSingleton<HudManager>.Instance.TaskCompleteSound, false, 1f);
+            SoundManager.Instance.PlaySound(HudManager.Instance.TaskCompleteSound, false, 1f);
             Notifying = true;
         }
     }
@@ -45,10 +45,12 @@ class BetterNotificationManager
     {
         if (player.IsLocalPlayer())
         {
+            /*
             FileChecker.SetHasUnauthorizedFileOrMod();
             FileChecker.SetWarningMsg("Tampered client detected!");
             Utils.DisconnectSelf("Tampered client detected!");
             Utils.DisconnectAccountFromOnline();
+            */
             return;
         }
 
@@ -101,9 +103,9 @@ class BetterNotificationManager
         {
             if (!localCamera)
             {
-                if (DestroyableSingleton<HudManager>.InstanceExists)
+                if (HudManager.InstanceExists)
                 {
-                    localCamera = DestroyableSingleton<HudManager>.Instance.GetComponentInChildren<Camera>();
+                    localCamera = HudManager.Instance.GetComponentInChildren<Camera>();
                 }
                 else
                 {

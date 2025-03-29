@@ -89,7 +89,7 @@ class Logger
     {
         if (hostOnly && !GameState.IsHost) return;
 
-        if (DestroyableSingleton<HudManager>._instance) DestroyableSingleton<HudManager>.Instance.Notifier.AddDisconnectMessage(info);
+        if (HudManager.InstanceExists) HudManager.Instance.Notifier.AddDisconnectMessage(info);
         Log(info, "InGame", hostOnly: hostOnly);
     }
 

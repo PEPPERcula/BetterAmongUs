@@ -2,16 +2,16 @@
 
 internal class CustomLoadingBarManager
 {
-    internal static AmongUsLoadingBar? LoadingBar => DestroyableSingleton<LoadingBarManager>.Instance?.loadingBar;
+    internal static AmongUsLoadingBar? LoadingBar => LoadingBarManager.Instance?.loadingBar;
 
     internal static void ToggleLoadingBar(bool on)
     {
-        DestroyableSingleton<LoadingBarManager>.Instance.loadingBar.gameObject.SetActive(on);
+        LoadingBarManager.Instance.loadingBar.gameObject.SetActive(on);
     }
 
     internal static void SetLoadingPercent(float percent, string loadText)
     {
-        var loadingBar = DestroyableSingleton<LoadingBarManager>.Instance.loadingBar;
+        var loadingBar = LoadingBarManager.Instance.loadingBar;
         loadingBar.SetLoadingPercent(percent, StringNames.None);
         loadingBar.loadingText.SetText(loadText);
     }

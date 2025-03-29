@@ -108,7 +108,7 @@ internal static class Translator
             string nameToFind = s;
             if (Enum.TryParse(nameToFind, out StringNames text))
             {
-                return DestroyableSingleton<TranslationController>.Instance.GetString(text);
+                return TranslationController.Instance.GetString(text);
             }
             else
             {
@@ -151,8 +151,7 @@ internal static class Translator
         }
         return res;
     }
-    internal static string GetString(StringNames stringName)
-        => DestroyableSingleton<TranslationController>.Instance.GetString(stringName, new Il2CppReferenceArray<Il2CppSystem.Object>(0));
+    internal static string GetString(StringNames stringName) => TranslationController.Instance.GetString(stringName, new Il2CppReferenceArray<Il2CppSystem.Object>(0));
     internal static SupportedLangs GetUserTrueLang()
     {
         try

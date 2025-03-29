@@ -27,7 +27,7 @@ internal abstract class RPCHandler
         .Select(t => (RPCHandler?)Activator.CreateInstance(t))
         .ToArray();
 
-    internal InnerNetClient innerNetClient => DestroyableSingleton<InnerNetClient>.Instance;
+    internal InnerNetClient innerNetClient => AmongUsClient.Instance;
     internal virtual byte CallId => byte.MaxValue;
     internal virtual byte GameDataTag => byte.MaxValue;
     internal virtual bool LocalHandling { get; set; }

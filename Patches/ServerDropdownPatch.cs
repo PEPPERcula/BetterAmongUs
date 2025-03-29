@@ -39,7 +39,7 @@ internal class ServerDropdownPatch
         const float buttonSpacing = 0.5f;
 
         // Get all available regions except current one
-        var regions = DestroyableSingleton<ServerManager>.Instance.AvailableRegions.OrderBy(ServerManager.DefaultRegions.Contains).ToList();
+        var regions = ServerManager.Instance.AvailableRegions.OrderBy(ServerManager.DefaultRegions.Contains).ToList();
 
         // Calculate total columns needed
         int totalColumns = Mathf.Max(1, Mathf.CeilToInt(regions.Count / (float)maxPerColumn));
@@ -48,10 +48,10 @@ internal class ServerDropdownPatch
 
         foreach (IRegionInfo regionInfo in regions)
         {
-            if (DestroyableSingleton<ServerManager>.Instance.CurrentRegion.Name == regionInfo.Name)
+            if (ServerManager.Instance.CurrentRegion.Name == regionInfo.Name)
             {
                 __instance.defaultButtonSelected = __instance.firstOption;
-                __instance.firstOption.ChangeButtonText(DestroyableSingleton<TranslationController>.Instance.GetStringWithDefault(regionInfo.TranslateName, regionInfo.Name, new Il2CppReferenceArray<Il2CppSystem.Object>(0)));
+                __instance.firstOption.ChangeButtonText(TranslationController.Instance.GetStringWithDefault(regionInfo.TranslateName, regionInfo.Name, new Il2CppReferenceArray<Il2CppSystem.Object>(0)));
                 continue;
             }
 
@@ -65,7 +65,7 @@ internal class ServerDropdownPatch
             serverListButton.transform.localPosition = new Vector3(xPos, yPos, -1f);
             serverListButton.transform.localScale = Vector3.one;
             serverListButton.Text.enableAutoSizing = true;
-            serverListButton.Text.text = DestroyableSingleton<TranslationController>.Instance.GetStringWithDefault(
+            serverListButton.Text.text = TranslationController.Instance.GetStringWithDefault(
                 regionInfo.TranslateName,
                 regionInfo.Name,
                 new Il2CppReferenceArray<Il2CppSystem.Object>(0));

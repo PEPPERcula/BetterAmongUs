@@ -83,7 +83,7 @@ internal class Main : BasePlugin
 
     internal static string BetterAmongUsVersion => PluginVersion;
     internal static string AppVersion => Application.version;
-    internal static string AmongUsVersion => DestroyableSingleton<ReferenceDataManager>.Instance.Refdata.userFacingVersion;
+    internal static string AmongUsVersion => ReferenceDataManager.Instance.Refdata.userFacingVersion;
 
     internal static PlatformSpecificData PlatformData => Constants.GetPlatformData();
 

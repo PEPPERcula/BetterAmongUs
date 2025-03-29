@@ -108,7 +108,7 @@ class GameDataShowNotificationPatch
 
             Logger.Log(ReasonText);
 
-            DestroyableSingleton<HudManager>.Instance.Notifier.AddDisconnectMessage(ReasonText);
+            HudManager.Instance.Notifier.AddDisconnectMessage(ReasonText);
         }
         else
         {
@@ -144,7 +144,7 @@ class GameDataShowNotificationPatch
 
             Logger.Log(ReasonText);
 
-            DestroyableSingleton<HudManager>.Instance.Notifier.AddDisconnectMessage(ReasonText);
+            HudManager.Instance.Notifier.AddDisconnectMessage(ReasonText);
         }
     }
 
