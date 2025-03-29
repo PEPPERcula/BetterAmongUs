@@ -198,8 +198,8 @@ internal class ClientPatch
                 }
                 else if (!client.IsReady)
                 {
-                    int readyClients = clients.Count(c => c.IsReady);
-                    int totalClients = clients.Length;
+                    int readyClients = clients.Count(c => c?.Character != null && c.IsReady);
+                    int totalClients = clients.Count(c => c?.Character != null);
 
                     loadingText = $"Waiting for Players ({readyClients}/{totalClients})";
                     progress = 0.8f + (0.2f * readyClients / Mathf.Max(1, totalClients));
@@ -252,8 +252,8 @@ internal class ClientPatch
                 }
                 else
                 {
-                    int readyClients = clients.Count(c => c.IsReady);
-                    int totalClients = clients.Length;
+                    int readyClients = clients.Count(c => c?.Character != null && c.IsReady);
+                    int totalClients = clients.Count(c => c?.Character != null);
 
                     loadingText = $"Waiting for Players ({readyClients}/{totalClients})";
                     progress = 0.85f + (0.15f * readyClients / Mathf.Max(1, totalClients));
