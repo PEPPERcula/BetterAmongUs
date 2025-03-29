@@ -4,12 +4,35 @@ using UnityEngine;
 
 namespace BetterAmongUs.Helpers;
 
-internal class BetterPlayerControl(IntPtr intPtr) : MonoBehaviour(intPtr)
+internal class ExtendedPlayerControl : MonoBehaviour
 {
+    internal static readonly HashSet<(PlayerControl player, ExtendedPlayerControl extendedPlayer)> AllExtendedPlayerControl = [];
+
     internal PlayerControl? _Player { get; set; }
     internal TextMeshPro? InfoTextInfo { get; set; }
     internal TextMeshPro? InfoTextTop { get; set; }
     internal TextMeshPro? InfoTextBottom { get; set; }
+
+    internal void Start()
+    {
+        var player = gameObject.GetComponent<PlayerControl>();
+        if (player != null)
+        {
+            if (!AllExtendedPlayerControl.Any(items => items.extendedPlayer == this))
+            {
+                AllExtendedPlayerControl.Add((player, this));
+            }
+        }
+        else
+        {
+            Destroy(this);
+        }
+    }
+
+    internal void OnDestroy()
+    {
+        AllExtendedPlayerControl.RemoveWhere(items => items.extendedPlayer == this);
+    }
 }
 
 internal static class PlayerControlExtension
@@ -50,7 +73,7 @@ internal static class PlayerControlExtension
         {
             if (pc.BetterPlayerControl() == null)
             {
-                BetterPlayerControl newExtendedPc = pc.gameObject.AddComponent<BetterPlayerControl>();
+                ExtendedPlayerControl newExtendedPc = pc.gameObject.AddComponent<ExtendedPlayerControl>();
                 newExtendedPc._Player = pc;
                 newExtendedPc.InfoTextInfo = InfoText_Info_TMP;
                 newExtendedPc.InfoTextTop = InfoText_T_TMP;
@@ -59,13 +82,13 @@ internal static class PlayerControlExtension
         }
     }
 
-    internal static BetterPlayerControl? BetterPlayerControl(this PlayerControl player)
+    internal static ExtendedPlayerControl? BetterPlayerControl(this PlayerControl player)
     {
-        return player?.GetComponent<BetterPlayerControl>();
+        return ExtendedPlayerControl.AllExtendedPlayerControl.FirstOrDefault(items => items.player == player).extendedPlayer ?? null;
     }
 
-    internal static BetterPlayerControl? BetterPlayerControl(this PlayerPhysics playerPhysics)
+    internal static ExtendedPlayerControl? BetterPlayerControl(this PlayerPhysics playerPhysics)
     {
-        return playerPhysics?.GetComponent<BetterPlayerControl>();
+        return ExtendedPlayerControl.AllExtendedPlayerControl.FirstOrDefault(items => items.player == playerPhysics.myPlayer).extendedPlayer ?? null;
     }
 }

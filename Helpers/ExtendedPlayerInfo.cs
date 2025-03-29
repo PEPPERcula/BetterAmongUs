@@ -10,6 +10,8 @@ namespace BetterAmongUs.Helpers;
 
 internal class ExtendedPlayerInfo : MonoBehaviour
 {
+    internal static readonly HashSet<(NetworkedPlayerInfo data, ExtendedPlayerInfo extendedData)> AllExtendedPlayerInfo = [];
+
     private bool hasSet = false;
     internal void SetInfo(NetworkedPlayerInfo data)
     {
@@ -21,6 +23,28 @@ internal class ExtendedPlayerInfo : MonoBehaviour
     }
 
     private float timeAccumulator = 0f;
+
+    internal void Start()
+    {
+        var data = gameObject.GetComponent<NetworkedPlayerInfo>();
+        if (data != null)
+        {
+            if (!AllExtendedPlayerInfo.Any(items => items.extendedData == this))
+            {
+                AllExtendedPlayerInfo.Add((data, this));
+            }
+        }
+        else
+        {
+            Destroy(this);
+        }
+    }
+
+    internal void OnDestroy()
+    {
+        AllExtendedPlayerInfo.RemoveWhere(items => items.extendedData == this);
+    }
+
     internal void Update()
     {
         var time = Time.deltaTime;
@@ -137,19 +161,19 @@ internal static class PlayerControlDataExtension
     // Get BetterData from PlayerControl
     internal static ExtendedPlayerInfo? BetterData(this PlayerControl player)
     {
-        return player?.Data?.GetComponent<ExtendedPlayerInfo>();
+        return ExtendedPlayerInfo.AllExtendedPlayerInfo.FirstOrDefault(items => items.data == player.Data).extendedData ?? null;
     }
 
     // Get BetterData from NetworkedPlayerInfo
     internal static ExtendedPlayerInfo? BetterData(this NetworkedPlayerInfo data)
     {
-        return data?.GetComponent<ExtendedPlayerInfo>();
+        return ExtendedPlayerInfo.AllExtendedPlayerInfo.FirstOrDefault(items => items.data == data).extendedData ?? null;
     }
 
     // Get BetterData from ClientData
     internal static ExtendedPlayerInfo? BetterData(this ClientData data)
     {
         var player = Utils.PlayerFromClientId(data.Id);
-        return player?.Data?.GetComponent<ExtendedPlayerInfo>();
+        return ExtendedPlayerInfo.AllExtendedPlayerInfo.FirstOrDefault(items => items.data == player.Data).extendedData ?? null;
     }
 }

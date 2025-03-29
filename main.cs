@@ -28,7 +28,7 @@ internal enum ReleaseTypes : int
 internal class Main : BasePlugin
 {
     internal static readonly ReleaseTypes ReleaseBuildType = ReleaseTypes.Beta;
-    internal const string BetaNum = "1";
+    internal const string BetaNum = "2";
     internal const string HotfixNum = "0";
     internal const bool IsHotFix = false;
     internal const string PluginGuid = "com.ten.betteramongus";
