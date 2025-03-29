@@ -24,6 +24,9 @@ dotnet_diagnostic.CS8604.severity = silent
 # CS8602: Dereference of a possibly null reference.
 dotnet_diagnostic.CS8602.severity = none
 
+# IDE0051: Remove unused private members
+dotnet_diagnostic.IDE0051.severity = none
+
 [*.{cs,vb}]
 #### Naming styles ####
 

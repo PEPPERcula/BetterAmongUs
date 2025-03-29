@@ -8,9 +8,10 @@ using UnityEngine;
 
 namespace BetterAmongUs.Helpers;
 
-internal class ExtendedPlayerInfo : MonoBehaviour
+[MonoExtension(typeof(NetworkedPlayerInfo))]
+internal class ExtendedPlayerInfo : MonoBehaviour, IMonoExtension
 {
-    internal static readonly HashSet<(NetworkedPlayerInfo data, ExtendedPlayerInfo extendedData)> AllExtendedPlayerInfo = [];
+    public MonoBehaviour? BaseMono { get; set; }
 
     private bool hasSet = false;
     internal void SetInfo(NetworkedPlayerInfo data)
@@ -24,25 +25,14 @@ internal class ExtendedPlayerInfo : MonoBehaviour
 
     private float timeAccumulator = 0f;
 
-    internal void Start()
+    private void Start()
     {
-        var data = gameObject.GetComponent<NetworkedPlayerInfo>();
-        if (data != null)
-        {
-            if (!AllExtendedPlayerInfo.Any(items => items.extendedData == this))
-            {
-                AllExtendedPlayerInfo.Add((data, this));
-            }
-        }
-        else
-        {
-            Destroy(this);
-        }
+        MonoExtensionManager.RegisterExtension(this);
     }
 
-    internal void OnDestroy()
+    private void OnDestroy()
     {
-        AllExtendedPlayerInfo.RemoveWhere(items => items.extendedData == this);
+        MonoExtensionManager.UnregisterExtension(this);
     }
 
     internal void Update()
@@ -161,19 +151,19 @@ internal static class PlayerControlDataExtension
     // Get BetterData from PlayerControl
     internal static ExtendedPlayerInfo? BetterData(this PlayerControl player)
     {
-        return ExtendedPlayerInfo.AllExtendedPlayerInfo.FirstOrDefault(items => items.data == player.Data).extendedData ?? null;
+        return MonoExtensionManager.Get<ExtendedPlayerInfo>(player.Data);
     }
 
     // Get BetterData from NetworkedPlayerInfo
     internal static ExtendedPlayerInfo? BetterData(this NetworkedPlayerInfo data)
     {
-        return ExtendedPlayerInfo.AllExtendedPlayerInfo.FirstOrDefault(items => items.data == data).extendedData ?? null;
+        return MonoExtensionManager.Get<ExtendedPlayerInfo>(data);
     }
 
     // Get BetterData from ClientData
     internal static ExtendedPlayerInfo? BetterData(this ClientData data)
     {
         var player = Utils.PlayerFromClientId(data.Id);
-        return ExtendedPlayerInfo.AllExtendedPlayerInfo.FirstOrDefault(items => items.data == player.Data).extendedData ?? null;
+        return MonoExtensionManager.Get<ExtendedPlayerInfo>(player.Data);
     }
 }

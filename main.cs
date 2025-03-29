@@ -82,7 +82,8 @@ internal class Main : BasePlugin
     internal static Harmony Harmony { get; } = new Harmony(PluginGuid);
 
     internal static string BetterAmongUsVersion => PluginVersion;
-    internal static string AmongUsVersion => Application.version;
+    internal static string AppVersion => Application.version;
+    internal static string AmongUsVersion => DestroyableSingleton<ReferenceDataManager>.Instance.Refdata.userFacingVersion;
 
     internal static PlatformSpecificData PlatformData => Constants.GetPlatformData();
 
@@ -182,7 +183,7 @@ internal class Main : BasePlugin
             string SupportedVersions = string.Empty;
             foreach (string text in SupportedAmongUsVersions.ToArray())
                 SupportedVersions += $"{text} ";
-            BetterAmongUs.Logger.Log($"BetterAmongUs {BetterAmongUsVersion}-{ReleaseDate} - [{AmongUsVersion} --> {SupportedVersions.Substring(0, SupportedVersions.Length - 1)}] {Utils.GetPlatformName(PlatformData.Platform)}");
+            BetterAmongUs.Logger.Log($"BetterAmongUs {BetterAmongUsVersion}-{ReleaseDate} - [{AppVersion} --> {SupportedVersions.Substring(0, SupportedVersions.Length - 1)}] {Utils.GetPlatformName(PlatformData.Platform)}");
         }
         catch (Exception ex)
         {
