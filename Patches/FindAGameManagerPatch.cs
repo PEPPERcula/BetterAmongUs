@@ -103,7 +103,7 @@ internal class FindAGameManagerPatch
     {
         var tmproObject = new GameObject("TrueHostName_TMP").transform;
         tmproObject.SetParent(parent, true);
-        tmproObject.localPosition = new Vector3(7.77f, -2.20f, -1f);
+        tmproObject.localPosition = new Vector3(7.77f, -2.18f, -1f);
         return tmproObject.gameObject.AddComponent<TextMeshPro>();
     }
 

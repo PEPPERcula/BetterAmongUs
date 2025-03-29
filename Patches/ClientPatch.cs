@@ -133,6 +133,10 @@ internal class ClientPatch
         [HarmonyPostfix]
         internal static void CoStartGame_Postfix(AmongUsClient __instance)
         {
+            if (Main.ChatInGameplay.Value)
+            {
+                ChatPatch.ClearChat();
+            }
             __instance.StartCoroutine(CoLoading());
         }
 
