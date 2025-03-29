@@ -1,10 +1,12 @@
-﻿using BetterAmongUs.Helpers;
+﻿using BepInEx.Unity.IL2CPP.Utils;
+using BetterAmongUs.Helpers;
 using BetterAmongUs.Items;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
 using HarmonyLib;
 using Hazel;
 using InnerNet;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -126,7 +128,54 @@ internal class ClientPatch
                 }
             }, 0.6f, shouldLog: false);
         }
+
+        [HarmonyPatch(nameof(AmongUsClient.CoStartGame))]
+        [HarmonyPostfix]
+        internal static void CoStartGame_Postfix(AmongUsClient __instance)
+        {
+            __instance.StartCoroutine(CoLoading());
+        }
+
+        private static IEnumerator CoLoading()
+        {
+            CustomLoadingBarManager.ToggleLoadingBar(true);
+
+            try
+            {
+                while (Main.AllPlayerControls.Count > 0 && Main.AllPlayerControls.Any(pc => !pc.roleAssigned))
+                {
+                    if (!GameState.IsInGame)
+                    {
+                        yield break;
+                    }
+
+                    int totalPlayers = Main.AllPlayerControls.Count;
+                    if (totalPlayers == 0) yield break;
+
+                    int playersWithRoles = Main.AllPlayerControls.Count(pc => pc.roleAssigned);
+                    float progress = (float)playersWithRoles / totalPlayers;
+
+                    int percent = Mathf.RoundToInt(progress * 100f);
+
+                    string loadingText = (GameState.IsHost && playersWithRoles > 0)
+                        ? "Assigning Roles"
+                        : "Loading";
+
+                    CustomLoadingBarManager.SetLoadingPercent(progress, loadingText);
+
+                    yield return null;
+                }
+
+                CustomLoadingBarManager.SetLoadingPercent(100f, "Complete");
+                yield return new WaitForSeconds(0.5f);
+            }
+            finally
+            {
+                CustomLoadingBarManager.ToggleLoadingBar(false);
+            }
+        }
     }
+
     [HarmonyPatch(typeof(InnerNetClient))]
     internal class InnerNetClientPatch
     {

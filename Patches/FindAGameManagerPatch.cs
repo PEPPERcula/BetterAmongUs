@@ -64,8 +64,25 @@ internal class FindAGameManagerPatch
 
     [HarmonyPatch(nameof(FindAGameManager.HandleList))]
     [HarmonyPostfix]
-    internal static void HandleList_Postfix(FindAGameManager __instance)
+    internal static void HandleList_Postfix(FindAGameManager __instance, HttpMatchmakerManager.FindGamesListFilteredResponse response)
     {
+        GameListing[] games = response.Games.ToArray();
+
+        games = [.. games.OrderByDescending(game => game.PlayerCount).ThenBy(game => game.TrueHostName)];
+        int gameNum = 0;
+        int count = 0;
+        while (count < __instance.gameContainers.Length && count < games.Count())
+        {
+            if (games[count].Options != null)
+            {
+                __instance.gameContainers[gameNum].gameObject.SetActive(true);
+                __instance.gameContainers[gameNum].SetGameListing(games[count]);
+                __instance.gameContainers[gameNum].SetupGameInfo();
+                gameNum++;
+            }
+            count++;
+        }
+
         foreach (var container in __instance.gameContainers)
         {
             Transform child = container.transform.Find("Container");

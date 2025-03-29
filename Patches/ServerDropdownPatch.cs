@@ -1,12 +1,30 @@
 ﻿using HarmonyLib;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace BetterAmongUs.Patches;
 
 [HarmonyPatch]
 internal class ServerDropdownPatch
 {
+    [HarmonyPatch(typeof(FindAGameManager))]
+    [HarmonyPatch(nameof(FindAGameManager.Start))]
+    [HarmonyPrefix]
+    internal static void Start_Prefix(FindAGameManager __instance)
+    {
+        var aspectPosition = __instance.serverDropdown.transform.parent.GetComponent<AspectPosition>();
+        if (aspectPosition != null)
+        {
+            aspectPosition.Alignment = AspectPosition.EdgeAlignments.Top;
+            aspectPosition.anchorPoint = Vector3.zero;
+            aspectPosition.DistanceFromEdge = new Vector3(-1.2f, 0.3f, 0f);
+            aspectPosition.AdjustPosition();
+        }
+
+        __instance.modeText.transform.localPosition -= new Vector3(0.4f, 0f, 0f);
+    }
+
     [HarmonyPatch(typeof(ServerDropdown))]
     [HarmonyPatch(nameof(ServerDropdown.FillServerOptions))]
     [HarmonyPrefix]
@@ -16,7 +34,7 @@ internal class ServerDropdownPatch
 
         int num = 0;
         int column = 0;
-        const int maxPerColumn = 6;
+        int maxPerColumn = SceneManager.GetActiveScene().name == "FindAGame" ? 10 : 6;
         const float columnWidth = 3.5f;
         const float buttonSpacing = 0.5f;
 
