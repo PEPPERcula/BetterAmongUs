@@ -16,12 +16,12 @@ internal sealed class KillNetworkChatHandler : RPCHandler
     {
         if (!Main.AntiCheat.Value || !BetterGameSettings.DetectCheatClients.GetBool()) return;
 
-        var flag = BAUAntiCheat.KNData.ContainsKey(Utils.GetHashPuid(sender));
+        var flag = BetterAntiCheat.KNData.ContainsKey(Utils.GetHashPuid(sender));
 
         if (!flag)
         {
             sender.ReportPlayer(ReportReasons.Cheating_Hacking);
-            BAUAntiCheat.KNData[Utils.GetHashPuid(sender)] = sender.Data.FriendCode;
+            BetterAntiCheat.KNData[Utils.GetHashPuid(sender)] = sender.Data.FriendCode;
             BetterDataManager.SaveCheatData(Utils.GetHashPuid(sender), sender.Data.FriendCode, sender.Data.PlayerName, "knData", "KN RPC");
             BetterNotificationManager.NotifyCheat(sender, Translator.GetString("AntiCheat.Cheat.KNC"), Translator.GetString("AntiCheat.HasBeenDetectedWithCheat2"));
         }

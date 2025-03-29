@@ -1,5 +1,6 @@
 ﻿using BepInEx.Unity.IL2CPP.Utils;
 using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Structs;
 using BetterAmongUs.Modules;
 using BetterAmongUs.Modules.AntiCheat;
 using HarmonyLib;
@@ -14,6 +15,90 @@ internal class NetworkManager
 {
     internal static InnerNetClient? InnerNetClient => AmongUsClient.Instance;
 
+    // Send non-immediate RPC to game server
+    internal static void SendToServer(MessageWriter writer)
+    {
+        try
+        {
+            StreamlineMessage(writer, writer.SendOption);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex);
+        }
+        finally
+        {
+            if (InnerNetClient?.connection != null)
+            {
+                SendErrors sendErrors = InnerNetClient.connection.Send(writer);
+                if (sendErrors != SendErrors.None && !GameState.IsFreePlay)
+                {
+                    InnerNetClient.EnqueueDisconnect(DisconnectReasons.Error, "Failed to send message: " + sendErrors.ToString());
+                }
+            }
+            else
+            {
+                InnerNetClient?.EnqueueDisconnect(DisconnectReasons.Custom, "InnerNetClient.connection is null");
+            }
+        }
+    }
+
+    // Read non-immediate RPC
+    internal static void StreamlineMessage(MessageWriter writer, SendOption sendOption)
+    {
+        if (!InnerNetClient.InOnlineScene)
+        {
+            return;
+        }
+
+        MessageReader[] allReaders = writer.ToReaders();
+
+        foreach (MessageReader reader in allReaders)
+        {
+            if (reader.Tag == 5 || reader.Tag == 6)
+            {
+                ReadData(reader, sendOption);
+                reader.Recycle();
+                continue;
+            }
+        }
+    }
+
+    // Read data from non-immediate RPC
+    internal static void ReadData(MessageReader reader, SendOption sendOption)
+    {
+        var typeFlag = reader.Tag;
+        int GameId = reader.ReadInt32();
+        int ClientId = -1;
+
+        if (typeFlag == 6)
+        {
+            ClientId = reader.ReadPackedInt32();
+        }
+
+        MessageReader[] allDataReaders = reader.ToReadersNewBuffer();
+
+        foreach (MessageReader dataReader in allDataReaders)
+        {
+            if (dataReader.Tag == 2)
+            {
+                var data = ReadRpc(MessageReader.Get(dataReader), typeFlag, ClientId);
+                HandleInnerNetObject(data.Sender, (byte)data.CalledRpc, data.Reader);
+                continue;
+            }
+        }
+    }
+
+    // Read rpc data from non-immediate RPC
+    internal static RPCData ReadRpc(MessageReader reader, byte flag, int targetId)
+    {
+        var netId = reader.ReadPackedUInt32();
+        byte calledId = reader.ReadByte();
+
+        return new RPCData(AmongUsClient.Instance.FindObjectByNetId<InnerNetObject>(netId), (SendOption)flag, targetId, (RpcCalls)calledId, reader);
+    }
+
+    // Handle received rpcs from server
     public static void HandleGameData(MessageReader parentReader)
     {
         try
@@ -32,6 +117,7 @@ internal class NetworkManager
         }
     }
 
+    // Handle rpc data
     private static IEnumerator HandleGameDataInner(MessageReader reader, int msgNum)
     {
         int attemptCount = 0;
@@ -283,16 +369,16 @@ internal class NetworkManager
             return false;
         }
 
-        BAUAntiCheat.HandleCheatRPCBeforeCheck(player, callId, reader);
+        BetterAntiCheat.HandleCheatRPCBeforeCheck(player, callId, reader);
 
-        if (BAUAntiCheat.CheckCancelRPC(player, callId, reader) != true)
+        if (BetterAntiCheat.CheckCancelRPC(player, callId, reader) != true)
         {
-            Logger.LogCheat($"RPC canceled by Anti-Cheat: {Enum.GetName((RpcCalls)callId)}{Enum.GetName((CustomRPC)callId)} - {callId}");
+            if (!player.IsLocalPlayer()) Logger.LogCheat($"RPC canceled by Anti-Cheat: {Enum.GetName((RpcCalls)callId)}{Enum.GetName((CustomRPC)callId)} - {callId}");
             return false;
         }
 
-        BAUAntiCheat.CheckRPC(player, callId, reader);
-        RPC.HandleRPC(player, callId, reader);
+        BetterAntiCheat.CheckRPC(player, callId, reader);
+        BetterAntiCheat.HandleRPC(player, callId, reader);
 
         return true;
     }
@@ -308,7 +394,7 @@ internal class NetworkManager
                 return false;
             }
 
-            if (BAUAntiCheat.RpcUpdateSystemCheck(player, systemType, reader) != true) return false;
+            if (BetterAntiCheat.RpcUpdateSystemCheck(player, systemType, reader) != true) return false;
 
             return true;
         }

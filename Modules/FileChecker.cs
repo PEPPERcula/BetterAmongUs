@@ -14,16 +14,17 @@ class FileChecker
 
     private static readonly ReadOnlyCollection<string> TrustedNamespaces = new(new List<string>
     {
-        "System", "Unity", "Harmony", "BepInEx", "Microsoft", "Il2Cpp", "Hazel",
-        "MonoMod", "netstandard", "mscorlib", "AssetRipper", "Cpp2IL", "AsmResolver", "Iced",
-        "SemanticVersioning", "Mono.Cecil", "Assembly-CSharp", "StableNameDotNet",
+        "System", "Unity", "Harmony", "BepInEx", "Microsoft", "Il2Cpp", "Hazel", "AppleAuth", "QRCoder",
+        "MonoMod", "netstandard", "mscorlib", "AssetRipper", "Cpp2IL", "AsmResolver", "Iced", "CsvHelper",
+        "SemanticVersioning", "Mono.Cecil", "Assembly-CSharp", "StableNameDotNet", "AmongUsCaching",
         "Disarm", "Gee.External.Capstone", "Rewired_Core", "AddressablesPlayAssetDelivery", "Newtonsoft.Json",
-        "Assembly-CSharp-firstpass", "Sentry", "BetterAmongUs", "MCI", "CrowdedMod", "Mini.RegionInstall", "Unlock", "Skin"
+        "Assembly-CSharp-firstpass", "Sentry", "Rewired_Windows",
+        "BetterAmongUs", "MCI", "CrowdedMod", "Mini.RegionInstall", "Unlock", "Skin"
     });
 
     private static readonly ReadOnlyCollection<string> UntrustedNamespaces = new(new List<string>
     {
-        "Sicko", "Malum", "Menu", "Cheat", "Hack", "Exploit", "Bypass", "Crack", "Spoof"
+        "Sicko", "AmongUsMenu", "Malum", "GoatNetClient", "SM", "AUM", "GNC", "MM", "Cheat", "Menu", "Hack", "Exploit", "Bypass", "Crack", "Spoof"
     });
 
     private static readonly string[] TrustedPaths =
@@ -48,6 +49,12 @@ class FileChecker
         if (enabled) return;
         enabled = true;
 
+        AppDomain.CurrentDomain.AssemblyLoad += (sender, args) =>
+        {
+            CheckUnauthorizedAssemblies();
+            CheckUnauthorizedFiles();
+        };
+
         fileWatcher = new FileSystemWatcher(Environment.CurrentDirectory)
         {
             NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite | NotifyFilters.DirectoryName,
@@ -60,7 +67,7 @@ class FileChecker
         fileWatcher.EnableRaisingEvents = true;
 
         CheckUnauthorizedFiles();
-        CheckUnauthorizedMods();
+        CheckUnauthorizedAssemblies();
     }
 
     private static void CheckUnauthorizedFiles()
@@ -83,31 +90,37 @@ class FileChecker
         }
     }
 
-    private static void CheckUnauthorizedMods()
-    {
-        if (hasUnauthorizedFileOrMod) return;
+    private static readonly HashSet<Assembly> _processedAssemblies = [];
 
+    private static void CheckUnauthorizedAssemblies()
+    {
         foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
         {
-            if (assembly.IsDynamic)
+            if (_processedAssemblies.Contains(assembly) || assembly.IsDynamic)
             {
                 continue;
             }
+            _processedAssemblies.Add(assembly);
 
             if (!TrustedNamespaces.Any(ns => assembly.FullName.Contains(ns, StringComparison.OrdinalIgnoreCase)))
             {
                 WarningMsg = "<#D20200>Unregistered Assembly Detected</color>\n<#9D9D9D><size=70%>Look in logs for further information!</size></color>";
                 Logger.Warning($"Unauthorized Assembly: {assembly.FullName} (Unregistered Namespace)");
                 hasUnauthorizedFileOrMod = true;
-                return;
+                continue;
             }
 
             if (UntrustedNamespaces.Any(ns => assembly.FullName.Contains(ns, StringComparison.OrdinalIgnoreCase)))
             {
+                if (TrustedNamespaces.Any(ns => assembly.FullName.Contains(ns, StringComparison.OrdinalIgnoreCase)))
+                {
+                    continue;
+                }
+
                 WarningMsg = "<#D20200>Untrusted Assembly Detected</color>\n<#9D9D9D><size=70%>Look in logs for further information!</size></color>";
                 Logger.Warning($"Unauthorized Assembly: {assembly.FullName} (Untrusted Namespace)");
                 hasUnauthorizedFileOrMod = true;
-                return;
+                continue;
             }
 
             if (!IsSafeLocation(assembly))
@@ -115,8 +128,21 @@ class FileChecker
                 WarningMsg = "<#D20200>Unregistered Assembly Location Detected</color>\n<#9D9D9D><size=70%>Look in logs for further information!</size></color>";
                 Logger.Warning($"Unauthorized Assembly: {assembly.FullName} (Unregistered Location: {assembly.Location})");
                 hasUnauthorizedFileOrMod = true;
-                return;
+                continue;
             }
+        }
+    }
+
+    internal static void SetHasUnauthorizedFileOrMod()
+    {
+        hasUnauthorizedFileOrMod = true;
+    }
+
+    internal static void SetWarningMsg(string msg)
+    {
+        if (string.IsNullOrEmpty(WarningMsg))
+        {
+            WarningMsg = msg;
         }
     }
 

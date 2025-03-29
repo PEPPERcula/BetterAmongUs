@@ -53,8 +53,12 @@ internal static class Utils
     // Add msg to chat
     internal static void AddChatPrivate(string text, string overrideName = "", bool setRight = false)
     {
-        ChatController chat = HudManager.Instance.Chat;
-        NetworkedPlayerInfo data = PlayerControl.LocalPlayer.Data;
+        if (!GameState.IsInGame) return;
+
+        var chat = HudManager.Instance?.Chat;
+        if (chat == null) return;
+        var data = PlayerControl.LocalPlayer?.Data;
+        if (data == null) return;
         ChatBubble pooledBubble = chat.GetPooledBubble();
         string MsgName = $"<color=#ffffff><b>(<color=#00ff44>{Translator.GetString("SystemMessage")}</color>)</b>";
         if (overrideName != "")
@@ -88,11 +92,8 @@ internal static class Utils
             SoundManager.Instance.PlaySound(chat.messageSound, false, 1f, null).pitch = 0.5f + data.PlayerId / 15f;
             ChatPatch.ChatControllerPatch.SetChatPoolTheme(pooledBubble);
         }
-        catch (Exception ex)
+        catch
         {
-            chat.chatBubblePool.Reclaim(pooledBubble);
-            Logger.Error(ex);
-            throw;
         }
     }
     internal static bool SystemTypeIsSabotage(SystemTypes type) => type is SystemTypes.Reactor

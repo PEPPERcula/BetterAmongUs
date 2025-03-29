@@ -17,7 +17,7 @@ internal class RemovePlayerCommand : BaseCommand
         {
             new StringArgument(this, "{identifier}"),
         });
-        identifierArgument.GetArgSuggestions = BAUAntiCheat.GatherAllData;
+        identifierArgument.GetArgSuggestions = BetterAntiCheat.GatherAllData;
     }
     private readonly Lazy<BaseArgument[]> _arguments;
     internal override BaseArgument[]? Arguments => _arguments.Value;

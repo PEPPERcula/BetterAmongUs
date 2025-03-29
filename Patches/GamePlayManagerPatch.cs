@@ -172,9 +172,9 @@ class GamePlayManager
             SummaryObj.name = "SummaryObj (TMP)";
             SummaryObj.transform.SetSiblingIndex(0);
             Camera localCamera;
-            if (DestroyableSingleton<HudManager>.InstanceExists)
+            if (HudManager.InstanceExists)
             {
-                localCamera = DestroyableSingleton<HudManager>.Instance.GetComponentInChildren<Camera>();
+                localCamera = HudManager.Instance.GetComponentInChildren<Camera>();
             }
             else
             {

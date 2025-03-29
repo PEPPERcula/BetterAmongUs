@@ -135,13 +135,13 @@ class MeetingHudPatch
 
                 // Put +++ at the end of each tag
 
-                if (!string.IsNullOrEmpty(hashPuid) && BAUAntiCheat.SickoData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && BAUAntiCheat.SickoData.ContainsValue(friendCode))
+                if (!string.IsNullOrEmpty(hashPuid) && BetterAntiCheat.SickoData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && BetterAntiCheat.SickoData.ContainsValue(friendCode))
                     sbTag.Append($"<color=#00f583>{Translator.GetString("Player.SickoUser")}</color>+++");
-                else if (!string.IsNullOrEmpty(hashPuid) && BAUAntiCheat.AUMData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && BAUAntiCheat.AUMData.ContainsValue(friendCode))
+                else if (!string.IsNullOrEmpty(hashPuid) && BetterAntiCheat.AUMData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && BetterAntiCheat.AUMData.ContainsValue(friendCode))
                     sbTag.Append($"<color=#4f0000>{Translator.GetString("Player.AUMUser")}</color>+++");
-                else if (!string.IsNullOrEmpty(hashPuid) && BAUAntiCheat.KNData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && BAUAntiCheat.KNData.ContainsValue(friendCode))
+                else if (!string.IsNullOrEmpty(hashPuid) && BetterAntiCheat.KNData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && BetterAntiCheat.KNData.ContainsValue(friendCode))
                     sbTag.Append($"<color=#4f0000>{Translator.GetString("Player.KNUser")}</color>+++");
-                else if (!string.IsNullOrEmpty(hashPuid) && BAUAntiCheat.PlayerData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && BAUAntiCheat.PlayerData.ContainsValue(friendCode))
+                else if (!string.IsNullOrEmpty(hashPuid) && BetterAntiCheat.PlayerData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && BetterAntiCheat.PlayerData.ContainsValue(friendCode))
                     sbTag.Append($"<color=#fc0000>{Translator.GetString("Player.KnownCheater")}</color>+++");
 
                 for (int i = 0; i < sbTag.ToString().Split("+++").Length; i++)

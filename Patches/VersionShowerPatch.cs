@@ -13,6 +13,6 @@ internal class VersionShowerPatch
     {
         string mark = Translator.GetString("BAUMark");
         string bau = Translator.GetString("BAU");
-        __instance.text.text = $"<color=#0dff00>{mark}{bau}{mark} {Main.GetVersionText()}</color> <color=#ababab>~</color> {Utils.GetPlatformName(Main.PlatformData.Platform)} v{Main.AmongUsVersion}";
+        __instance.text.text = $"<color=#0dff00>{mark}{bau}{mark} {Main.GetVersionText()}</color> <color=#ababab>~</color> {Utils.GetPlatformName(Main.PlatformData.Platform)} v{Main.AmongUsVersion} ({Main.AppVersion})";
     }
 }

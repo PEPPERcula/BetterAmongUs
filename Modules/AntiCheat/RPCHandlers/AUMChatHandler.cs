@@ -30,12 +30,12 @@ internal sealed class AUMChatHandler : RPCHandler
         if (!Main.AntiCheat.Value || !BetterGameSettings.DetectCheatClients.GetBool()) return;
 
         var flag = string.IsNullOrEmpty(nameString) && string.IsNullOrEmpty(msgString);
-        var flag2 = BAUAntiCheat.AUMData.ContainsKey(Utils.GetHashPuid(sender));
+        var flag2 = BetterAntiCheat.AUMData.ContainsKey(Utils.GetHashPuid(sender));
 
         if (!flag && !flag2)
         {
             sender.ReportPlayer(ReportReasons.Cheating_Hacking);
-            BAUAntiCheat.AUMData[Utils.GetHashPuid(sender)] = sender.Data.FriendCode;
+            BetterAntiCheat.AUMData[Utils.GetHashPuid(sender)] = sender.Data.FriendCode;
             BetterDataManager.SaveCheatData(Utils.GetHashPuid(sender), sender.Data.FriendCode, sender.Data.PlayerName, "aumData", "AUM Chat RPC");
             BetterNotificationManager.NotifyCheat(sender, Translator.GetString("AntiCheat.Cheat.AUM"), Translator.GetString("AntiCheat.HasBeenDetectedWithCheat2"));
         }

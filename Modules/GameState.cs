@@ -105,7 +105,7 @@ internal static class GameState
     internal static bool IsShip => ShipStatus.Instance != null;
     internal static bool IsHost => AmongUsClient.Instance != null && AmongUsClient.Instance.AmHost;
     internal static bool IsPrivateOnlyLobby => (Main.PrivateOnlyLobby.Value || AmongUsClient.Instance.AmLocalHost) && IsHost;
-    internal static bool IsBetterHostLobby => PlayerControl.LocalPlayer.IsHost() || Main.AllPlayerControls.Any(pc => pc.IsHost() && pc.BetterData().IsBetterUser);
+    internal static bool IsBetterHostLobby => PlayerControl.LocalPlayer.IsHost() || Main.AllPlayerControls.Any(pc => pc.IsHost() && pc.BetterData().IsBetterUser && pc.BetterData().IsVerifiedBetterUser);
     internal static bool IsTOHEHostLobby => Main.AllPlayerControls.Any(pc => pc.IsHost() && pc.BetterData().IsTOHEHost);
     internal static bool IsCanMove => PlayerControl.LocalPlayer?.CanMove is true;
     internal static bool IsDead => PlayerControl.LocalPlayer?.Data?.IsDead is true;

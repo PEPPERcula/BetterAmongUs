@@ -286,9 +286,9 @@ static class PlayerControlHelper
         PlayerControl.LocalPlayer.IsImpostorTeam() && player.IsImpostorTeam());
     // Check if player is in the Anti-Cheat list
     internal static bool IsCheater(this PlayerControl player) =>
-        player != null && (BAUAntiCheat.PlayerData.ContainsKey(player.GetHashPuid()) ||
-                           BAUAntiCheat.SickoData.ContainsKey(player.GetHashPuid()) ||
-                           BAUAntiCheat.AUMData.ContainsKey(player.GetHashPuid()));
+        player != null && (BetterAntiCheat.PlayerData.ContainsKey(player.GetHashPuid()) ||
+                           BetterAntiCheat.SickoData.ContainsKey(player.GetHashPuid()) ||
+                           BetterAntiCheat.AUMData.ContainsKey(player.GetHashPuid()));
     // Check if player is the host
     internal static bool IsHost(this PlayerControl player) => player?.Data != null && GameData.Instance?.GetHost() == player.Data;
 

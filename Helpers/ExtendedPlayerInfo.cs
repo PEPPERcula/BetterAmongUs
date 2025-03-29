@@ -8,8 +8,11 @@ using UnityEngine;
 
 namespace BetterAmongUs.Helpers;
 
-internal class ExtendedPlayerInfo : MonoBehaviour
+[MonoExtension(typeof(NetworkedPlayerInfo))]
+internal class ExtendedPlayerInfo : MonoBehaviour, IMonoExtension
 {
+    public MonoBehaviour? BaseMono { get; set; }
+
     private bool hasSet = false;
     internal void SetInfo(NetworkedPlayerInfo data)
     {
@@ -21,6 +24,17 @@ internal class ExtendedPlayerInfo : MonoBehaviour
     }
 
     private float timeAccumulator = 0f;
+
+    private void Start()
+    {
+        MonoExtensionManager.RegisterExtension(this);
+    }
+
+    private void OnDestroy()
+    {
+        MonoExtensionManager.UnregisterExtension(this);
+    }
+
     internal void Update()
     {
         var time = Time.deltaTime;
@@ -137,19 +151,19 @@ internal static class PlayerControlDataExtension
     // Get BetterData from PlayerControl
     internal static ExtendedPlayerInfo? BetterData(this PlayerControl player)
     {
-        return player?.Data?.GetComponent<ExtendedPlayerInfo>();
+        return MonoExtensionManager.Get<ExtendedPlayerInfo>(player.Data);
     }
 
     // Get BetterData from NetworkedPlayerInfo
     internal static ExtendedPlayerInfo? BetterData(this NetworkedPlayerInfo data)
     {
-        return data?.GetComponent<ExtendedPlayerInfo>();
+        return MonoExtensionManager.Get<ExtendedPlayerInfo>(data);
     }
 
     // Get BetterData from ClientData
     internal static ExtendedPlayerInfo? BetterData(this ClientData data)
     {
         var player = Utils.PlayerFromClientId(data.Id);
-        return player?.Data?.GetComponent<ExtendedPlayerInfo>();
+        return MonoExtensionManager.Get<ExtendedPlayerInfo>(player.Data);
     }
 }

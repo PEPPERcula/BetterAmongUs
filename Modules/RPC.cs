@@ -1,6 +1,5 @@
 ﻿using BetterAmongUs.Helpers;
 using BetterAmongUs.Managers;
-using BetterAmongUs.Modules.AntiCheat;
 using Hazel;
 
 namespace BetterAmongUs.Modules;
@@ -145,15 +144,6 @@ internal static class RPC
             }
             catch { }
         }
-    }
-
-    internal static void HandleRPC(PlayerControl player, byte callId, MessageReader oldReader)
-    {
-        if (player == null || player.IsLocalPlayer() || player.Data == null) return;
-
-        MessageReader reader = MessageReader.Get(oldReader);
-
-        RPCHandler.HandleRPC(callId, player, reader, HandlerFlag.Handle);
     }
 }
 

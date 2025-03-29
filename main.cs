@@ -28,12 +28,12 @@ internal enum ReleaseTypes : int
 internal class Main : BasePlugin
 {
     internal static readonly ReleaseTypes ReleaseBuildType = ReleaseTypes.Beta;
-    internal const string BetaNum = "1";
+    internal const string BetaNum = "2";
     internal const string HotfixNum = "0";
     internal const bool IsHotFix = false;
     internal const string PluginGuid = "com.ten.betteramongus";
     internal const string PluginVersion = "1.1.6";
-    internal const string ReleaseDate = "3.25.2025"; // mm/dd/yyyy
+    internal const string ReleaseDate = "3.29.2025"; // mm/dd/yyyy
     internal const string Github = "https://github.com/EnhancedNetwork/BetterAmongUs-Public";
     internal const string Discord = "https://discord.gg/ten";
     internal static UserData MyData = UserData.AllUsers.First();
@@ -78,10 +78,12 @@ internal class Main : BasePlugin
 
         return text;
     }
-    internal Harmony Harmony { get; } = new Harmony(PluginGuid);
+
+    internal static Harmony Harmony { get; } = new Harmony(PluginGuid);
 
     internal static string BetterAmongUsVersion => PluginVersion;
-    internal static string AmongUsVersion => Application.version;
+    internal static string AppVersion => Application.version;
+    internal static string AmongUsVersion => ReferenceDataManager.Instance.Refdata.userFacingVersion;
 
     internal static PlatformSpecificData PlatformData => Constants.GetPlatformData();
 
@@ -181,7 +183,7 @@ internal class Main : BasePlugin
             string SupportedVersions = string.Empty;
             foreach (string text in SupportedAmongUsVersions.ToArray())
                 SupportedVersions += $"{text} ";
-            BetterAmongUs.Logger.Log($"BetterAmongUs {BetterAmongUsVersion}-{ReleaseDate} - [{AmongUsVersion} --> {SupportedVersions.Substring(0, SupportedVersions.Length - 1)}] {Utils.GetPlatformName(PlatformData.Platform)}");
+            BetterAmongUs.Logger.Log($"BetterAmongUs {BetterAmongUsVersion}-{ReleaseDate} - [{AppVersion} --> {SupportedVersions.Substring(0, SupportedVersions.Length - 1)}] {Utils.GetPlatformName(PlatformData.Platform)}");
         }
         catch (Exception ex)
         {

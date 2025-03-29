@@ -36,13 +36,24 @@ class BetterNotificationManager
             BAUNotificationManagerObj.SetActive(true);
             NameText.text = $"<color=#00ff44>{Translator.GetString("SystemNotification")}</color>";
             TextArea.text = text;
-            SoundManager.Instance.PlaySound(DestroyableSingleton<HudManager>.Instance.TaskCompleteSound, false, 1f);
+            SoundManager.Instance.PlaySound(HudManager.Instance.TaskCompleteSound, false, 1f);
             Notifying = true;
         }
     }
 
     internal static void NotifyCheat(PlayerControl player, string reason, string newText = "", bool kickPlayer = true, bool forceBan = false)
     {
+        if (player.IsLocalPlayer())
+        {
+            /*
+            FileChecker.SetHasUnauthorizedFileOrMod();
+            FileChecker.SetWarningMsg("Tampered client detected!");
+            Utils.DisconnectSelf("Tampered client detected!");
+            Utils.DisconnectAccountFromOnline();
+            */
+            return;
+        }
+
         if (player?.Data == null) return;
 
         var Reason = reason;
@@ -66,9 +77,9 @@ class BetterNotificationManager
             rawText = $"{playerDetectedLog}: <color=#0097b5>{player?.BetterData().RealName}</color> " + newText + $": <b><color=#fc0000>{reason}</color></b>";
         }
 
-        if (!BAUAntiCheat.PlayerData.ContainsKey(Utils.GetHashPuid(player)))
+        if (!BetterAntiCheat.PlayerData.ContainsKey(Utils.GetHashPuid(player)))
         {
-            BAUAntiCheat.PlayerData[Utils.GetHashPuid(player)] = player.Data.FriendCode;
+            BetterAntiCheat.PlayerData[Utils.GetHashPuid(player)] = player.Data.FriendCode;
             BetterDataManager.SaveCheatData(Utils.GetHashPuid(player), player.Data.FriendCode, player?.BetterData().RealName ?? player.Data.PlayerName, "cheatData", Reason);
             Notify(text, Time: 8f);
         }
@@ -92,9 +103,9 @@ class BetterNotificationManager
         {
             if (!localCamera)
             {
-                if (DestroyableSingleton<HudManager>.InstanceExists)
+                if (HudManager.InstanceExists)
                 {
-                    localCamera = DestroyableSingleton<HudManager>.Instance.GetComponentInChildren<Camera>();
+                    localCamera = HudManager.Instance.GetComponentInChildren<Camera>();
                 }
                 else
                 {

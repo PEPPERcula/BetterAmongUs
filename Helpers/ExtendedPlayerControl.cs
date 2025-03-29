@@ -1,15 +1,28 @@
-﻿using HarmonyLib;
+﻿using BetterAmongUs.Modules;
+using HarmonyLib;
 using TMPro;
 using UnityEngine;
 
 namespace BetterAmongUs.Helpers;
 
-internal class BetterPlayerControl(IntPtr intPtr) : MonoBehaviour(intPtr)
+[MonoExtension(typeof(PlayerControl))]
+internal class ExtendedPlayerControl : MonoBehaviour, IMonoExtension
 {
+    public MonoBehaviour? BaseMono { get; set; }
     internal PlayerControl? _Player { get; set; }
     internal TextMeshPro? InfoTextInfo { get; set; }
     internal TextMeshPro? InfoTextTop { get; set; }
     internal TextMeshPro? InfoTextBottom { get; set; }
+
+    private void Start()
+    {
+        MonoExtensionManager.RegisterExtension(this);
+    }
+
+    private void OnDestroy()
+    {
+        MonoExtensionManager.UnregisterExtension(this);
+    }
 }
 
 internal static class PlayerControlExtension
@@ -50,7 +63,7 @@ internal static class PlayerControlExtension
         {
             if (pc.BetterPlayerControl() == null)
             {
-                BetterPlayerControl newExtendedPc = pc.gameObject.AddComponent<BetterPlayerControl>();
+                ExtendedPlayerControl newExtendedPc = pc.gameObject.AddComponent<ExtendedPlayerControl>();
                 newExtendedPc._Player = pc;
                 newExtendedPc.InfoTextInfo = InfoText_Info_TMP;
                 newExtendedPc.InfoTextTop = InfoText_T_TMP;
@@ -59,13 +72,13 @@ internal static class PlayerControlExtension
         }
     }
 
-    internal static BetterPlayerControl? BetterPlayerControl(this PlayerControl player)
+    internal static ExtendedPlayerControl? BetterPlayerControl(this PlayerControl player)
     {
-        return player?.GetComponent<BetterPlayerControl>();
+        return MonoExtensionManager.Get<ExtendedPlayerControl>(player);
     }
 
-    internal static BetterPlayerControl? BetterPlayerControl(this PlayerPhysics playerPhysics)
+    internal static ExtendedPlayerControl? BetterPlayerControl(this PlayerPhysics playerPhysics)
     {
-        return playerPhysics?.GetComponent<BetterPlayerControl>();
+        return MonoExtensionManager.Get<ExtendedPlayerControl>(playerPhysics.myPlayer);
     }
 }
