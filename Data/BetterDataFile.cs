@@ -5,7 +5,6 @@ namespace BetterAmongUs.Data;
 
 internal sealed class BetterDataFile : AbstractJsonFile
 {
-    [JsonIgnore]
     internal override string FilePath => BetterDataManager.dataPath;
 
     protected override bool Load()
@@ -40,7 +39,6 @@ internal sealed class BetterDataFile : AbstractJsonFile
         return (false, "");
     }
 
-    [JsonIgnore]
     internal HashSet<UserInfo> AllCheatData { get; set; } = [];
 
     [JsonPropertyName("cheatData")]

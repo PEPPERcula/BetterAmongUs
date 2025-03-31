@@ -5,7 +5,6 @@ namespace BetterAmongUs.Data;
 
 internal sealed class BetterGameSettingsFile : AbstractJsonFile
 {
-    [JsonIgnore]
     internal override string FilePath => BetterDataManager.SettingsFile;
 
     protected override bool Load()

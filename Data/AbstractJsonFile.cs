@@ -52,7 +52,7 @@ internal abstract class AbstractJsonFile
 
             foreach (var property in GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
-                if (property.GetCustomAttribute<JsonIgnoreAttribute>() != null) continue;
+                if (property.GetCustomAttribute<JsonPropertyNameAttribute>() == null) continue;
                 if (property.CanWrite)
                 {
                     var value = property.GetValue(data);
