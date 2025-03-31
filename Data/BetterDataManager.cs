@@ -13,7 +13,7 @@ class BetterDataManager
     internal static string filePathFolderSaveInfo = Path.Combine(filePathFolder, $"SaveInfo");
     internal static string filePathFolderSettings = Path.Combine(filePathFolder, $"Settings");
     internal static string SettingsFileOld = Path.Combine(filePathFolderSettings, "Preset.json");
-    internal static string SettingsFile = Path.Combine(filePathFolderSettings, "Settings.json");
+    internal static string SettingsFile = Path.Combine(filePathFolderSettings, "Settings.dat");
     internal static string banPlayerListFile = Path.Combine(filePathFolderSaveInfo, "BanPlayerList.txt");
     internal static string banNameListFile = Path.Combine(filePathFolderSaveInfo, "BanNameList.txt");
     internal static string banWordListFile = Path.Combine(filePathFolderSaveInfo, "BanWordList.txt");

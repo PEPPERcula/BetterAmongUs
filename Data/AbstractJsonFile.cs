@@ -28,18 +28,21 @@ internal abstract class AbstractJsonFile
             return;
         }
 
-        Load();
-        Save();
+        if (Load())
+        {
+            Save();
+        }
     }
 
     protected virtual bool Load()
     {
         try
         {
-            var content = File.ReadAllText(FilePath);
+            var content = TryReadFromFile();
             if (string.IsNullOrWhiteSpace(content))
             {
-                Logger.Error("File is empty");
+                Save();
+                Load();
                 return false;
             }
 
@@ -74,12 +77,29 @@ internal abstract class AbstractJsonFile
         }
     }
 
+    private string TryReadFromFile()
+    {
+        try
+        {
+            return ReadFromFile();
+        }
+        catch
+        {
+            return string.Empty;
+        }
+    }
+
+    protected virtual string ReadFromFile()
+    {
+        return File.ReadAllText(FilePath);
+    }
+
     internal virtual bool Save()
     {
         try
         {
             var json = JsonSerializer.Serialize(this, GetType(), SerializerOptions);
-            File.WriteAllText(FilePath, json);
+            WriteToFile(json);
         }
         catch (Exception ex)
         {
@@ -88,6 +108,11 @@ internal abstract class AbstractJsonFile
         }
 
         return true;
+    }
+
+    protected virtual void WriteToFile(string json)
+    {
+        File.WriteAllText(FilePath, json);
     }
 
     private bool CheckFile()
@@ -103,7 +128,8 @@ internal abstract class AbstractJsonFile
             return false;
         }
 
-        var content = File.ReadAllText(FilePath);
+        var content = TryReadFromFile();
+        if (string.IsNullOrEmpty(content)) return false;
         var jsonElement = JsonSerializer.Deserialize<JsonElement>(content);
 
         var fileInfo = new FileInfo(FilePath);
