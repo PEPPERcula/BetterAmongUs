@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace BetterAmongUs.Data;
 
-internal abstract class AbstractJsonFile<T> where T : AbstractJsonFile<T>
+internal abstract class AbstractJsonFile
 {
     internal abstract string FilePath { get; }
     private bool _hasInit;
@@ -43,14 +43,14 @@ internal abstract class AbstractJsonFile<T> where T : AbstractJsonFile<T>
                 return false;
             }
 
-            var data = JsonSerializer.Deserialize<T>(content, SerializerOptions);
+            var data = JsonSerializer.Deserialize(content, GetType(), SerializerOptions);
             if (data == null)
             {
                 Logger.Error("Deserialization returned null");
                 return false;
             }
 
-            foreach (var property in typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            foreach (var property in GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
                 if (property.GetCustomAttribute<JsonIgnoreAttribute>() != null) continue;
                 if (property.CanWrite)
@@ -78,7 +78,7 @@ internal abstract class AbstractJsonFile<T> where T : AbstractJsonFile<T>
     {
         try
         {
-            var json = JsonSerializer.Serialize((T)this, SerializerOptions);
+            var json = JsonSerializer.Serialize(this, GetType(), SerializerOptions);
             File.WriteAllText(FilePath, json);
         }
         catch (Exception ex)
@@ -105,7 +105,6 @@ internal abstract class AbstractJsonFile<T> where T : AbstractJsonFile<T>
 
         var content = File.ReadAllText(FilePath);
         var jsonElement = JsonSerializer.Deserialize<JsonElement>(content);
-        var json = JsonSerializer.Deserialize<T>(content);
 
         var fileInfo = new FileInfo(FilePath);
         if (fileInfo.Length == 0)

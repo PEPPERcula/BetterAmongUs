@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace BetterAmongUs.Data;
 
-internal sealed class BetterDataFile : AbstractJsonFile<BetterDataFile>
+internal sealed class BetterDataFile : AbstractJsonFile
 {
     [JsonIgnore]
     internal override string FilePath => BetterDataManager.dataPath;
