@@ -43,33 +43,26 @@ internal sealed class BetterGameSettingsFile : AbstractJsonFile
 
     protected override void WriteToFile(string json)
     {
-        try
+        var jsonDoc = JsonDocument.Parse(json);
+        var settingsDict = jsonDoc.RootElement.GetProperty(nameof(Settings));
+        var sb = new StringBuilder();
+        foreach (var kvp in settingsDict.EnumerateObject())
         {
-            var jsonDoc = JsonDocument.Parse(json);
-            var settingsDict = jsonDoc.RootElement.GetProperty(nameof(Settings));
-            var sb = new StringBuilder();
-            foreach (var kvp in settingsDict.EnumerateObject())
-            {
-                if (sb.Length > 0) sb.Append('|');
-                sb.Append(kvp.Name).Append(',').Append(kvp.Value);
-            }
-            byte[] flattenedData = Encoding.UTF8.GetBytes(sb.ToString());
-            using var ms = new MemoryStream();
-            using (var gzip = new GZipStream(ms, CompressionMode.Compress))
-            {
-                gzip.Write(flattenedData, 0, flattenedData.Length);
-            }
-            File.WriteAllText(FilePath, Convert.ToBase64String(ms.ToArray()));
+            if (sb.Length > 0) sb.Append('|');
+            sb.Append(kvp.Name).Append(',').Append(kvp.Value);
         }
-        catch (Exception ex)
+        byte[] flattenedData = Encoding.UTF8.GetBytes(sb.ToString());
+        using var ms = new MemoryStream();
+        using (var gzip = new GZipStream(ms, CompressionMode.Compress))
         {
-            Logger.Error(ex);
+            gzip.Write(flattenedData, 0, flattenedData.Length);
         }
+        File.WriteAllText(FilePath, Convert.ToBase64String(ms.ToArray()));
     }
 
     protected override string ReadFromFile()
     {
-        byte[] compressedBytes = Convert.FromBase64String(File.ReadAllText(FilePath));
+        byte[] compressedBytes = Convert.FromBase64String(File.ReadAllText(FilePath).Trim());
         using var ms = new MemoryStream(compressedBytes);
         using var gzip = new GZipStream(ms, CompressionMode.Decompress);
         using var resultStream = new MemoryStream();
