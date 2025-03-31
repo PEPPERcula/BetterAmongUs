@@ -1,17 +1,18 @@
 ﻿using BetterAmongUs.Helpers;
-using System.Text.Json;
 
 namespace BetterAmongUs.Data;
 
 class BetterDataManager
 {
     public static BetterDataFile BetterDataFile = new();
+    public static BetterGameSettingsFile BetterGameSettingsFile = new();
 
     private static string filePathOLD = GetFilePath("BetterData");
     internal static string filePathFolder = Path.Combine(Main.GetGamePathToAmongUs(), $"Better_Data");
     internal static string filePathFolderSaveInfo = Path.Combine(filePathFolder, $"SaveInfo");
     internal static string filePathFolderSettings = Path.Combine(filePathFolder, $"Settings");
-    internal static string SettingsFile = Path.Combine(filePathFolderSettings, "Preset.json");
+    internal static string SettingsFileOld = Path.Combine(filePathFolderSettings, "Preset.json");
+    internal static string SettingsFile = Path.Combine(filePathFolderSettings, "Settings.json");
     internal static string banPlayerListFile = Path.Combine(filePathFolderSaveInfo, "BanPlayerList.txt");
     internal static string banNameListFile = Path.Combine(filePathFolderSaveInfo, "BanNameList.txt");
     internal static string banWordListFile = Path.Combine(filePathFolderSaveInfo, "BanWordList.txt");
@@ -24,29 +25,20 @@ class BetterDataManager
     internal static void Init()
     {
         BetterDataFile.Init();
+        BetterGameSettingsFile.Init();
     }
 
-    internal static void SaveSetting(int id, string input)
+    internal static void SaveSetting(int id, object? input)
     {
-        string filePath = SettingsFile;
-
-        string json = File.ReadAllText(filePath);
-        var jsonData = JsonSerializer.Deserialize<Dictionary<string, string>>(json) ?? new Dictionary<string, string>();
-        jsonData[id.ToString()] = input;
-
-        json = JsonSerializer.Serialize(jsonData, new JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(filePath, json);
+        BetterGameSettingsFile.Settings[id] = input;
+        BetterGameSettingsFile.Save();
     }
 
-    internal static bool CanLoadSetting(int id)
+    internal static bool CanLoadSetting<T>(int id)
     {
-        string filePath = SettingsFile;
-        string json = File.ReadAllText(filePath);
-        var jsonData = JsonSerializer.Deserialize<Dictionary<string, string>>(json) ?? new Dictionary<string, string>();
-
-        if (jsonData.ContainsKey(id.ToString()))
+        if (BetterGameSettingsFile.Settings.TryGetValue(id, out var value))
         {
-            if (!string.IsNullOrEmpty(jsonData[id.ToString()]))
+            if (value is T)
             {
                 return true;
             }
@@ -55,66 +47,17 @@ class BetterDataManager
         return false;
     }
 
-    internal static bool LoadBoolSetting(int id, bool Default = false)
+    internal static T? LoadSetting<T>(int id, T? Default = default)
     {
-        string filePath = SettingsFile;
-        string json = File.ReadAllText(filePath);
-        var jsonData = JsonSerializer.Deserialize<Dictionary<string, string>>(json) ?? new Dictionary<string, string>();
-
-        try
+        if (BetterGameSettingsFile.Settings.TryGetValue(id, out var value))
         {
-            if (jsonData.ContainsKey(id.ToString()))
+            if (value is T castValue)
             {
-                return bool.Parse(jsonData[id.ToString()]);
+                return castValue;
             }
         }
-        catch
-        {
-            SaveSetting(id, Default.ToString());
-        }
 
-        return Default;
-    }
-
-    internal static float LoadFloatSetting(int id, float Default = 0f)
-    {
-        string filePath = SettingsFile;
-        string json = File.ReadAllText(filePath);
-        var jsonData = JsonSerializer.Deserialize<Dictionary<string, string>>(json) ?? new Dictionary<string, string>();
-
-        try
-        {
-            if (jsonData.ContainsKey(id.ToString()))
-            {
-                return float.Parse(jsonData[id.ToString()]);
-            }
-        }
-        catch
-        {
-            SaveSetting(id, Default.ToString());
-        }
-
-        return Default;
-    }
-
-    internal static int LoadIntSetting(int id, int Default = 0)
-    {
-        string filePath = SettingsFile;
-        string json = File.ReadAllText(filePath);
-        var jsonData = JsonSerializer.Deserialize<Dictionary<string, string>>(json) ?? new Dictionary<string, string>();
-
-        try
-        {
-            if (jsonData.ContainsKey(id.ToString()))
-            {
-                return int.Parse(jsonData[id.ToString()]);
-            }
-        }
-        catch
-        {
-            SaveSetting(id, Default.ToString());
-        }
-
+        SaveSetting(id, Default);
         return Default;
     }
 

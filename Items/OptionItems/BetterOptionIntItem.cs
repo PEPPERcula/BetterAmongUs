@@ -114,7 +114,7 @@ internal class BetterOptionIntItem : BetterOptionItem
             ThisOption.MinusBtn.SetInteractable(true);
         }
 
-        BetterDataManager.SaveSetting(Id, CurrentValue.ToString());
+        BetterDataManager.SaveSetting(Id, CurrentValue);
     }
 
     internal void Increase()
@@ -159,41 +159,24 @@ internal class BetterOptionIntItem : BetterOptionItem
 
     internal void Load(int DefaultValue)
     {
-        if (BetterDataManager.CanLoadSetting(Id))
-        {
-            var Int = BetterDataManager.LoadIntSetting(Id, DefaultValue);
+        var Int = BetterDataManager.LoadSetting(Id, DefaultValue);
 
-            if (Int > intRange.max || Int < intRange.min)
-            {
-                Int = DefaultValue;
-                BetterDataManager.SaveSetting(Id, DefaultValue.ToString());
-            }
-
-            CurrentValue = Int;
-        }
-        else
+        if (Int > intRange.max || Int < intRange.min)
         {
-            BetterDataManager.SaveSetting(Id, DefaultValue.ToString());
+            Int = DefaultValue;
+            BetterDataManager.SaveSetting(Id, DefaultValue);
         }
+
+        CurrentValue = Int;
     }
 
-    internal override float GetFloat()
-    {
-        if (BetterDataManager.CanLoadSetting(Id))
-        {
-            return BetterDataManager.LoadIntSetting(Id);
-        }
-        else
-        {
-            return CurrentValue;
-        }
-    }
+    internal override float GetFloat() => GetInt();
 
     internal override int GetInt()
     {
-        if (BetterDataManager.CanLoadSetting(Id))
+        if (BetterDataManager.CanLoadSetting<int>(Id))
         {
-            return BetterDataManager.LoadIntSetting(Id);
+            return BetterDataManager.LoadSetting<int>(Id);
         }
         else
         {
