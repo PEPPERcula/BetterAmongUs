@@ -154,11 +154,11 @@ internal static class OptionsMenuBehaviourPatch
             OpenSaveData = ClientOptionItem.Create(title, null, __instance, OpenSaveDataButtonToggle, IsToggle: false);
             static void OpenSaveDataButtonToggle()
             {
-                if (File.Exists(BetterDataManager.GetFilePath("BetterData")))
+                if (File.Exists(BetterDataManager.dataPath))
                 {
                     System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
                     {
-                        FileName = BetterDataManager.GetFilePath("BetterData"),
+                        FileName = BetterDataManager.dataPath,
                         UseShellExecute = true,
                         Verb = "open"
                     });

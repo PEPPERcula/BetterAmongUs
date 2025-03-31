@@ -4,10 +4,11 @@ namespace BetterAmongUs.Data;
 
 class BetterDataManager
 {
-    public static BetterDataFile BetterDataFile = new();
-    public static BetterGameSettingsFile BetterGameSettingsFile = new();
+    internal static BetterDataFile BetterDataFile = new();
+    internal static BetterGameSettingsFile BetterGameSettingsFile = new();
 
-    private static string filePathOLD = GetFilePath("BetterData");
+    internal static string dataPathOLD = GetFilePath("BetterData");
+    internal static string dataPath = GetFilePath("BetterDataV2");
     internal static string filePathFolder = Path.Combine(Main.GetGamePathToAmongUs(), $"Better_Data");
     internal static string filePathFolderSaveInfo = Path.Combine(filePathFolder, $"SaveInfo");
     internal static string filePathFolderSettings = Path.Combine(filePathFolder, $"Settings");

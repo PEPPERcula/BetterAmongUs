@@ -6,7 +6,7 @@ namespace BetterAmongUs.Data;
 internal sealed class BetterDataFile : AbstractJsonFile<BetterDataFile>
 {
     [JsonIgnore]
-    internal override string FilePath => Path.Combine(Main.GetDataPathToAmongUs(), $"BetterDataV2.json");
+    internal override string FilePath => BetterDataManager.dataPath;
 
     protected override bool Load()
     {
