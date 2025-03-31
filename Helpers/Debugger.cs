@@ -1,8 +1,8 @@
 ﻿
 using BepInEx;
 using BepInEx.Logging;
+using BetterAmongUs.Data;
 using BetterAmongUs.Helpers;
-using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;

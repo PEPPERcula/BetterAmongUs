@@ -1,3 +1,4 @@
+using BetterAmongUs.Data;
 using BetterAmongUs.Helpers;
 using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Managers;
@@ -16,13 +17,11 @@ internal sealed class SickoHandler : RPCHandler
     {
         if (Main.AntiCheat.Value && BetterGameSettings.DetectCheatClients.GetBool())
         {
-            var flag = BetterAntiCheat.SickoData.ContainsKey(Utils.GetHashPuid(sender));
-
-            if (reader.BytesRemaining == 0 && !flag)
+            if (reader.BytesRemaining == 0 && !BetterDataManager.BetterDataFile.SickoData.Any(info => info.CheckPlayerData(sender.Data)))
             {
                 sender.ReportPlayer(ReportReasons.Cheating_Hacking);
-                BetterAntiCheat.SickoData[Utils.GetHashPuid(sender)] = sender.Data.FriendCode;
-                BetterDataManager.SaveCheatData(Utils.GetHashPuid(sender), sender.Data.FriendCode, sender.Data.PlayerName, "sickoData", "Sicko Menu RPC");
+                BetterDataManager.BetterDataFile.SickoData.Add(new(sender?.BetterData().RealName ?? sender.Data.PlayerName, sender.GetHashPuid(), sender.Data.FriendCode, "Sicko RPC"));
+                BetterDataManager.BetterDataFile.Save();
                 BetterNotificationManager.NotifyCheat(sender, Translator.GetString("AntiCheat.Cheat.Sicko"), newText: Translator.GetString("AntiCheat.HasBeenDetectedWithCheat2"));
             }
         }

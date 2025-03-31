@@ -320,7 +320,7 @@ static class InnerNetClientHelper
     */
     internal static List<MessageWriter> StartRpcDesync(this InnerNetClient client, uint playerNetId, byte callId, SendOption option, int ignoreClientId = -1, Func<ClientData, bool> clientCheck = null)
     {
-        List<MessageWriter> messageWriters = new List<MessageWriter>();
+        List<MessageWriter> messageWriters = [];
 
         if (ignoreClientId < 0)
         {

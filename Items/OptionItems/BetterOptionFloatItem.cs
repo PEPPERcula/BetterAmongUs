@@ -1,4 +1,4 @@
-﻿using BetterAmongUs.Managers;
+﻿using BetterAmongUs.Data;
 using UnityEngine;
 
 namespace BetterAmongUs.Items.OptionItems;

@@ -1,4 +1,5 @@
 ﻿using BepInEx.Unity.IL2CPP.Utils;
+using BetterAmongUs.Data;
 using BetterAmongUs.Helpers;
 using BetterAmongUs.Items;
 using BetterAmongUs.Managers;
@@ -314,7 +315,7 @@ internal class ClientPatch
             if (ban && BetterGameSettings.UseBanPlayerList.GetBool())
             {
                 NetworkedPlayerInfo info = Utils.PlayerFromClientId(clientId).Data;
-                BetterDataManager.SaveBanList(info.FriendCode, info.Puid);
+                BetterDataManager.AddToBanList(info.FriendCode, info.Puid);
             }
         }
     }

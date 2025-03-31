@@ -10,7 +10,6 @@ internal static class DisconnectPenaltyPatch
     [HarmonyPrefix]
     internal static bool IsBanned_Prefix(PlayerBanData __instance, ref bool __result)
     {
-        Logger.InGame("TEST");
         __instance.BanPoints = 0f;
         __instance.banPoints = 0f;
         __result = false;

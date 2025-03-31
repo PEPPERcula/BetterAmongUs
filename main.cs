@@ -2,10 +2,10 @@
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
+using BetterAmongUs.Data;
 using BetterAmongUs.Helpers;
 using BetterAmongUs.Items;
 using BetterAmongUs.Items.Attributes;
-using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
 using BetterAmongUs.Patches;
 using HarmonyLib;
@@ -162,8 +162,7 @@ internal class Main : BasePlugin
                 // AddComponent<UserDataLoader>();
             }
 
-            BetterDataManager.SetUp();
-            BetterDataManager.LoadData();
+            BetterDataManager.Init();
             LoadOptions();
             Translator.Init();
             Harmony.PatchAll();

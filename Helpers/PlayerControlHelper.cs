@@ -1,6 +1,6 @@
 ﻿using AmongUs.GameOptions;
+using BetterAmongUs.Data;
 using BetterAmongUs.Modules;
-using BetterAmongUs.Modules.AntiCheat;
 using BetterAmongUs.Patches;
 using InnerNet;
 using TMPro;
@@ -285,10 +285,7 @@ static class PlayerControlHelper
         (player.IsLocalPlayer() && PlayerControl.LocalPlayer.IsImpostorTeam() ||
         PlayerControl.LocalPlayer.IsImpostorTeam() && player.IsImpostorTeam());
     // Check if player is in the Anti-Cheat list
-    internal static bool IsCheater(this PlayerControl player) =>
-        player != null && (BetterAntiCheat.PlayerData.ContainsKey(player.GetHashPuid()) ||
-                           BetterAntiCheat.SickoData.ContainsKey(player.GetHashPuid()) ||
-                           BetterAntiCheat.AUMData.ContainsKey(player.GetHashPuid()));
+    internal static bool IsCheater(this PlayerControl player) => BetterDataManager.BetterDataFile.CheckPlayerData(player.Data);
     // Check if player is the host
     internal static bool IsHost(this PlayerControl player) => player?.Data != null && GameData.Instance?.GetHost() == player.Data;
 
