@@ -46,17 +46,20 @@ internal sealed class BetterGameSettingsFile : AbstractJsonFile
         var jsonDoc = JsonDocument.Parse(json);
         var settingsDict = jsonDoc.RootElement.GetProperty(nameof(Settings));
         var sb = new StringBuilder();
+
         foreach (var kvp in settingsDict.EnumerateObject())
         {
             if (sb.Length > 0) sb.Append('|');
-            sb.Append(kvp.Name).Append(',').Append(kvp.Value);
+            sb.Append(kvp.Name).Append('/').Append(kvp.Value.GetRawText());
         }
+
         byte[] flattenedData = Encoding.UTF8.GetBytes(sb.ToString());
         using var ms = new MemoryStream();
-        using (var gzip = new GZipStream(ms, CompressionMode.Compress))
+        using (var gzip = new GZipStream(ms, CompressionMode.Compress, true))
         {
             gzip.Write(flattenedData, 0, flattenedData.Length);
         }
+        ms.Position = 0;
         File.WriteAllText(FilePath, Convert.ToBase64String(ms.ToArray()));
     }
 
@@ -65,17 +68,30 @@ internal sealed class BetterGameSettingsFile : AbstractJsonFile
         byte[] compressedBytes = Convert.FromBase64String(File.ReadAllText(FilePath).Trim());
         using var ms = new MemoryStream(compressedBytes);
         using var gzip = new GZipStream(ms, CompressionMode.Decompress);
-        using var resultStream = new MemoryStream();
-        gzip.CopyTo(resultStream);
-        string flattenedData = Encoding.UTF8.GetString(resultStream.ToArray());
-        var settingsDict = new Dictionary<string, string>();
+        using var reader = new StreamReader(gzip);
+        string flattenedData = reader.ReadToEnd();
+
+        var settingsDict = new Dictionary<string, JsonElement>();
         foreach (var pair in flattenedData.Split('|', StringSplitOptions.RemoveEmptyEntries))
         {
-            var parts = pair.Split(',', 2);
+            var parts = pair.Split('/', 2);
             if (parts.Length == 2)
-                settingsDict[parts[0]] = parts[1];
+            {
+                using var doc = JsonDocument.Parse(parts[1]);
+                settingsDict[parts[0]] = doc.RootElement.Clone();
+            }
         }
-        return $"{{\"Settings\":{JsonSerializer.Serialize(settingsDict)}}}";
+
+        var resultDict = new Dictionary<int, object?>();
+        foreach (var kvp in settingsDict)
+        {
+            if (int.TryParse(kvp.Key, out int key))
+            {
+                resultDict[key] = kvp.Value.Deserialize<object?>();
+            }
+        }
+
+        return JsonSerializer.Serialize(new { Settings = resultDict });
     }
 
     [JsonPropertyName(nameof(Settings))]

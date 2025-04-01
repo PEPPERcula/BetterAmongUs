@@ -22,13 +22,7 @@ internal abstract class AbstractJsonFile
         if (_hasInit) return;
         _hasInit = true;
 
-        if (!CheckFile())
-        {
-            Save();
-            return;
-        }
-
-        if (Load())
+        if (!CheckFile() || !Load())
         {
             Save();
         }
@@ -39,10 +33,8 @@ internal abstract class AbstractJsonFile
         try
         {
             var content = TryReadFromFile();
-            if (string.IsNullOrWhiteSpace(content))
+            if (string.IsNullOrEmpty(content.Trim()))
             {
-                Save();
-                Load();
                 return false;
             }
 
@@ -129,7 +121,7 @@ internal abstract class AbstractJsonFile
         }
 
         var content = TryReadFromFile();
-        if (string.IsNullOrEmpty(content)) return false;
+        if (string.IsNullOrEmpty(content.Trim())) return false;
         var jsonElement = JsonSerializer.Deserialize<JsonElement>(content);
 
         var fileInfo = new FileInfo(FilePath);
