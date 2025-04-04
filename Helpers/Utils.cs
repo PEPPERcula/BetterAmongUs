@@ -239,6 +239,7 @@ internal static class Utils
             }
         }, 0.2f, "DisconnectSelf 1");
     }
+
     // Show dc pop up with text
     internal static void ShowPopUp(string text, bool enableWordWrapping = false)
     {

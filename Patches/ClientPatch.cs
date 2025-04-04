@@ -24,36 +24,6 @@ internal class ClientPatch
         internal static void EndFinalPartsOfLoginFlow_Postfix()
         {
             UserData.TrySetLocalData();
-
-            var varSupportedVersions = Main.SupportedAmongUsVersions;
-            Version currentVersion = new Version(Main.AppVersion);
-            Version firstSupportedVersion = new Version(varSupportedVersions.First());
-            Version lastSupportedVersion = new Version(varSupportedVersions.Last());
-
-            if (currentVersion > firstSupportedVersion)
-            {
-                var verText = $"<b>{varSupportedVersions.First()}</b>";
-                if (firstSupportedVersion != lastSupportedVersion)
-                {
-                    verText = $"<b>{varSupportedVersions.Last()}</b> - <b>{varSupportedVersions.First()}</b>";
-                }
-                Utils.ShowPopUp($"<size=200%>-= <color=#ff2200><b>Warning</b></color> =-</size>\n\n" +
-                    $"<size=125%><color=#0dff00>Better Among Us {Main.GetVersionText()}</color>\nsupports <color=#4f92ff>Among Us {verText}</color>,\n" +
-                    $"<color=#4f92ff>Among Us <b>{Main.AppVersion}</b></color> is above the supported versions!\n" +
-                    $"<color=#ae1700>You may encounter minor to game breaking bugs.</color></size>");
-            }
-            else if (currentVersion < lastSupportedVersion)
-            {
-                var verText = $"<b>{varSupportedVersions.First()}</b>";
-                if (firstSupportedVersion != lastSupportedVersion)
-                {
-                    verText = $"<b>{varSupportedVersions.Last()}</b> - <b>{varSupportedVersions.First()}</b>";
-                }
-                Utils.ShowPopUp($"<size=200%>-= <color=#ff2200><b>Warning</b></color> =-</size>\n\n" +
-                    $"<size=125%><color=#0dff00>Better Among Us {Main.GetVersionText()}</color>\nsupports <color=#4f92ff>Among Us {verText}</color>,\n" +
-                    $"<color=#4f92ff>Among Us <b>{Main.AppVersion}</b></color> is below the supported versions!\n" +
-                    $"<color=#ae1700>You may encounter minor to game breaking bugs.</color></size>");
-            }
         }
     }
 
@@ -95,6 +65,38 @@ internal class ClientPatch
                 __instance.friendsButton.SetActive(true);
 
                 return false;
+            }
+
+            var varSupportedVersions = Main.SupportedAmongUsVersions;
+            Version currentVersion = new(Main.AppVersion);
+            Version firstSupportedVersion = new(varSupportedVersions.First());
+            Version lastSupportedVersion = new(varSupportedVersions.Last());
+
+            if (currentVersion > firstSupportedVersion)
+            {
+                var verText = $"<b>{varSupportedVersions.First()}</b>";
+                if (firstSupportedVersion != lastSupportedVersion)
+                {
+                    verText = $"<b>{varSupportedVersions.Last()}</b> - <b>{varSupportedVersions.First()}</b>";
+                }
+
+                Utils.ShowPopUp($"<size=200%>-= <color=#ff2200><b>Warning</b></color> =-</size>\n\n" +
+                    $"<size=125%><color=#0dff00>Better Among Us {Main.GetVersionText()}</color>\nsupports <color=#4f92ff>Among Us {verText}</color>,\n" +
+                    $"<color=#4f92ff>Among Us <b>{Main.AppVersion}</b></color> is above the supported versions!\n" +
+                    $"<color=#ae1700>You may encounter minor to game breaking bugs.</color></size>");
+            }
+            else if (currentVersion < lastSupportedVersion)
+            {
+                var verText = $"<b>{varSupportedVersions.First()}</b>";
+                if (firstSupportedVersion != lastSupportedVersion)
+                {
+                    verText = $"<b>{varSupportedVersions.Last()}</b> - <b>{varSupportedVersions.First()}</b>";
+                }
+
+                Utils.ShowPopUp($"<size=200%>-= <color=#ff2200><b>Warning</b></color> =-</size>\n\n" +
+                    $"<size=125%><color=#0dff00>Better Among Us {Main.GetVersionText()}</color>\nsupports <color=#4f92ff>Among Us {verText}</color>,\n" +
+                    $"<color=#4f92ff>Among Us <b>{Main.AppVersion}</b></color> is below the supported versions!\n" +
+                    $"<color=#ae1700>You may encounter minor to game breaking bugs.</color></size>");
             }
 
             return true;

@@ -1,4 +1,5 @@
-﻿using BepInEx;
+﻿using AmongUs.Data;
+using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
@@ -27,13 +28,13 @@ internal enum ReleaseTypes : int
 [BepInProcess("Among Us.exe")]
 internal class Main : BasePlugin
 {
-    internal static readonly ReleaseTypes ReleaseBuildType = ReleaseTypes.Beta;
-    internal const string BetaNum = "2";
+    internal static readonly ReleaseTypes ReleaseBuildType = ReleaseTypes.Release;
+    internal const string BetaNum = "0";
     internal const string HotfixNum = "0";
     internal const bool IsHotFix = false;
     internal const string PluginGuid = "com.ten.betteramongus";
     internal const string PluginVersion = "1.1.6";
-    internal const string ReleaseDate = "3.29.2025"; // mm/dd/yyyy
+    internal const string ReleaseDate = "4.4.2025"; // mm/dd/yyyy
     internal const string Github = "https://github.com/EnhancedNetwork/BetterAmongUs-Public";
     internal const string Discord = "https://discord.gg/ten";
     internal static UserData MyData = UserData.AllUsers.First();
@@ -89,7 +90,8 @@ internal class Main : BasePlugin
 
     internal static List<string> SupportedAmongUsVersions =
     [
-        "2025.3.25",
+        "2025.3.31",
+        "2025.3.25"
     ];
 
     internal static List<PlayerControl> AllPlayerControls = [];
@@ -169,6 +171,7 @@ internal class Main : BasePlugin
             GameSettingMenuPatch.SetupSettings(true);
             FileChecker.Initialize();
             InstanceAttribute.RegisterAll();
+            AddActions();
 
             if (PlatformData.Platform == Platforms.StandaloneSteamPC)
                 File.WriteAllText(Path.Combine(Environment.CurrentDirectory, "steam_appid.txt"), "945360");
@@ -190,7 +193,18 @@ internal class Main : BasePlugin
         }
     }
 
-    internal static void RegisterAllMonoBehavioursInAssembly()
+    private static void AddActions()
+    {
+        DataManager.Settings.Gameplay.OnStreamerModeChanged += (Action)(() =>
+        {
+            if (GameState.IsInGame)
+            {
+                Utils.DirtyAllNames();
+            }
+        });
+    }
+
+    private static void RegisterAllMonoBehavioursInAssembly()
     {
         var assembly = Assembly.GetExecutingAssembly();
 
