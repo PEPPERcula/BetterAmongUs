@@ -268,7 +268,7 @@ internal class RoleManagerPatch
     {
         Logger.LogHeader($"Better Role Assignment Has Started", "RoleManager");
 
-        int NumImpostors = BetterGameSettings.HideAndSeekImpNum.GetInt();
+        int NumImpostors = BetterGameSettings.HideAndSeekImpNum?.GetInt() ?? 1;
 
         if (NumImpostors > Main.AllPlayerControls.Count)
             NumImpostors = Main.AllPlayerControls.Count;
@@ -281,10 +281,10 @@ internal class RoleManagerPatch
         int[] betterImpostorSettings =
         [
             GameOptionsManager.Instance.currentHideNSeekGameOptions.ImpostorPlayerID,
-            BetterGameSettingsTemp.HideAndSeekImp2.GetValue(),
-            BetterGameSettingsTemp.HideAndSeekImp3.GetValue(),
-            BetterGameSettingsTemp.HideAndSeekImp4.GetValue(),
-            BetterGameSettingsTemp.HideAndSeekImp5.GetValue()
+            BetterGameSettingsTemp.HideAndSeekImp2?.GetValue() ?? -1,
+            BetterGameSettingsTemp.HideAndSeekImp3?.GetValue() ?? -1,
+            BetterGameSettingsTemp.HideAndSeekImp4?.GetValue() ?? -1,
+            BetterGameSettingsTemp.HideAndSeekImp5?.GetValue() ?? -1
         ];
 
         for (int i = 0; i < NumImpostors; i++)
