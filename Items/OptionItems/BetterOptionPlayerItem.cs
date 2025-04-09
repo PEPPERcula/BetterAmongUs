@@ -25,6 +25,7 @@ internal class BetterOptionPlayerItem : BetterOptionItem
         }
 
         NumberOption optionBehaviour = UnityEngine.Object.Instantiate(gameOptionsMenu.numberOptionOrigin, Vector3.zero, Quaternion.identity, gameOptionsMenu.settingsContainer);
+        optionBehaviour.enabled = false;
         optionBehaviour.transform.localPosition = new Vector3(0.952f, 2f, -2f);
         SetUp(optionBehaviour);
         optionBehaviour.OnValueChanged = new Action<OptionBehaviour>((option) => ValueChanged(0, option));
