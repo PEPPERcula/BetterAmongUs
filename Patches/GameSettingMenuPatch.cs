@@ -223,7 +223,7 @@ static class GameSettingMenuPatch
         __instance.RoleSettingsButton.OnMouseOver.RemoveAllListeners();
 
 
-        BetterSettingsButton.transform.position = BetterSettingsButton.transform.position - new Vector3(0f, 1.265f, 0f);
+        BetterSettingsButton.transform.localPosition = BetterSettingsButton.transform.localPosition - new Vector3(0f, 1.265f, 0f);
         if (!GameState.IsHideNSeek && GameState.IsHost)
         {
             __instance.ChangeTab(1, false);
