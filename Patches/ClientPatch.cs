@@ -111,6 +111,7 @@ internal class ClientPatch
         [HarmonyPostfix]
         internal static void ExitGame_Postfix([HarmonyArgument(0)] DisconnectReasons reason)
         {
+            CustomLoadingBarManager.ToggleLoadingBar(false);
             Logger.Log($"Client has left game for: {Enum.GetName(reason)}", "AmongUsClientPatch");
         }
 
@@ -226,6 +227,13 @@ internal class ClientPatch
 
             while (Main.AllPlayerControls.Count > 0 && Main.AllPlayerControls.Any(pc => !pc.roleAssigned))
             {
+
+                if (GameState.IsHost)
+                {
+                    yield return CoLoadingHost();
+                    yield break;
+                }
+
                 if (!GameState.IsInGame)
                 {
                     CustomLoadingBarManager.ToggleLoadingBar(false);

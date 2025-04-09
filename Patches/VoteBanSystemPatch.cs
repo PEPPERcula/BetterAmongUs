@@ -65,4 +65,33 @@ internal static class VoteBanSystemPatch
         voters.Add((clientId, (clientHash, client.FriendCode)));
         return true;
     }
+
+
+    [HarmonyPatch(nameof(VoteBanSystem.AddVote))]
+    [HarmonyPostfix]
+    private static void AddVote_Postfix(VoteBanSystem __instance, int srcClient, int clientId)
+    {
+        LogVote(__instance, srcClient, clientId);
+    }
+
+    private static void LogVote(VoteBanSystem voteBanSystem, int srcClient, int clientId)
+    {
+        var src = Utils.ClientFromClientId(srcClient);
+        var client = Utils.ClientFromClientId(clientId);
+
+        int currentVotes = 0;
+        int maxVotes = 0;
+
+        if (voteBanSystem.Votes.TryGetValue(clientId, out var votes))
+        {
+            currentVotes = votes.Count(v => v != 0);
+            maxVotes = votes.Length;
+        }
+
+        Logger.InGame(
+            $"{src.Character?.GetPlayerNameAndColor() ?? src.PlayerName} " +
+            $"voted to kick {client.Character?.GetPlayerNameAndColor() ?? client.PlayerName} " +
+            $"<#6F6F6F>(</color><#FFFFFF>{currentVotes}</color><#6F6F6F>/</color><#FFFFFF>{maxVotes}</color><#6F6F6F>)</color>"
+        );
+    }
 }
