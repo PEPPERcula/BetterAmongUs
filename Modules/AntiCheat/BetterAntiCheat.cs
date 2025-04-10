@@ -115,7 +115,7 @@ class BetterAntiCheat
 
         if (!IsEnabled) return;
 
-        RPCHandler.HandleRPC(callId, player, reader, HandlerFlag.AntiCheatCheck);
+        RPCHandler.HandleRPC(callId, player, reader, HandlerFlag.CheatRpcCheck);
     }
 
     // Check and notify for invalid rpcs

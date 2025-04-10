@@ -13,7 +13,7 @@ internal sealed class SickoHandler : RPCHandler
 {
     internal override byte CallId => unchecked((byte)CustomRPC.Sicko);
 
-    internal override void HandleAntiCheatCheck(PlayerControl? sender, MessageReader reader)
+    internal override void HandleCheatRpcCheck(PlayerControl? sender, MessageReader reader)
     {
         if (Main.AntiCheat.Value && BetterGameSettings.DetectCheatClients.GetBool())
         {

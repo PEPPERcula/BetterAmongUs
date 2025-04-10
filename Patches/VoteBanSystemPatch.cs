@@ -10,11 +10,17 @@ internal static class VoteBanSystemPatch
 {
     private static readonly Dictionary<VoteBanSystem, List<(int ClientId, (ushort HashPuid, string FriendCode) Voter)>> _voteData = [];
 
+    private static bool DoLog;
+
     [HarmonyPatch(nameof(VoteBanSystem.AddVote))]
     [HarmonyPrefix]
     private static bool AddVote_Prefix(VoteBanSystem __instance, int srcClient, int clientId)
     {
-        if (!GameState.IsHost) return true;
+        if (!GameState.IsHost)
+        {
+            DoLog = true;
+            return true;
+        }
 
         var client = Utils.ClientFromClientId(srcClient);
         if (client == null) return false;
@@ -42,6 +48,7 @@ internal static class VoteBanSystemPatch
 
         if (string.IsNullOrEmpty(client.ProductUserId) && string.IsNullOrEmpty(client.FriendCode))
         {
+            DoLog = true;
             return true;
         }
 
@@ -63,6 +70,7 @@ internal static class VoteBanSystemPatch
         }
 
         voters.Add((clientId, (clientHash, client.FriendCode)));
+        DoLog = true;
         return true;
     }
 
@@ -71,7 +79,11 @@ internal static class VoteBanSystemPatch
     [HarmonyPostfix]
     private static void AddVote_Postfix(VoteBanSystem __instance, int srcClient, int clientId)
     {
-        LogVote(__instance, srcClient, clientId);
+        if (DoLog)
+        {
+            LogVote(__instance, srcClient, clientId);
+            DoLog = false;
+        }
     }
 
     private static void LogVote(VoteBanSystem voteBanSystem, int srcClient, int clientId)
