@@ -1,8 +1,8 @@
 ﻿using AmongUs.Data;
 using AmongUs.GameOptions;
+using BetterAmongUs.Data;
 using BetterAmongUs.Helpers;
 using BetterAmongUs.Modules;
-using BetterAmongUs.Modules.AntiCheat;
 using HarmonyLib;
 using Il2CppSystem.Linq;
 using System.Text;
@@ -164,26 +164,22 @@ class PlayerControlPatch
     private static void SetPlayerOutline(PlayerControl player, string hashPuid, string friendCode, StringBuilder sbTag)
     {
         var color = player.cosmetics.currentBodySprite.BodySprite.material.GetColor("_OutlineColor");
-        if ((!string.IsNullOrEmpty(hashPuid) && hashPuid.Length > 0 && BetterAntiCheat.SickoData.ContainsKey(hashPuid))
-            || (!string.IsNullOrEmpty(friendCode) && friendCode.Length > 0 && BetterAntiCheat.SickoData.ContainsValue(friendCode)))
+        if (BetterDataManager.BetterDataFile.SickoData.Any(info => info.CheckPlayerData(player.Data)))
         {
             sbTag.Append($"<color=#00f583>{Translator.GetString("Player.SickoUser")}</color>+++");
             player.SetOutlineByHex(true, "#00f583");
         }
-        else if ((!string.IsNullOrEmpty(hashPuid) && hashPuid.Length > 0 && BetterAntiCheat.AUMData.ContainsKey(hashPuid))
-            || (!string.IsNullOrEmpty(friendCode) && friendCode.Length > 0 && BetterAntiCheat.AUMData.ContainsValue(friendCode)))
+        else if (BetterDataManager.BetterDataFile.AUMData.Any(info => info.CheckPlayerData(player.Data)))
         {
             sbTag.Append($"<color=#4f0000>{Translator.GetString("Player.AUMUser")}</color>+++");
             player.SetOutlineByHex(true, "#4f0000");
         }
-        else if ((!string.IsNullOrEmpty(hashPuid) && hashPuid.Length > 0 && BetterAntiCheat.KNData.ContainsKey(hashPuid))
-            || (!string.IsNullOrEmpty(friendCode) && friendCode.Length > 0 && BetterAntiCheat.KNData.ContainsValue(friendCode)))
+        else if (BetterDataManager.BetterDataFile.KNData.Any(info => info.CheckPlayerData(player.Data)))
         {
             sbTag.Append($"<color=#8731e7>{Translator.GetString("Player.KNUser")}</color>+++");
             player.SetOutlineByHex(true, "#8731e7");
         }
-        else if ((!string.IsNullOrEmpty(hashPuid) && hashPuid.Length > 0 && BetterAntiCheat.PlayerData.ContainsKey(hashPuid))
-            || (!string.IsNullOrEmpty(friendCode) && friendCode.Length > 0 && BetterAntiCheat.PlayerData.ContainsValue(friendCode)))
+        else if (BetterDataManager.BetterDataFile.CheatData.Any(info => info.CheckPlayerData(player.Data)))
         {
             sbTag.Append($"<color=#fc0000>{Translator.GetString("Player.KnownCheater")}</color>+++");
             player.SetOutlineByHex(true, "#fc0000");

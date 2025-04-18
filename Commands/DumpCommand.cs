@@ -1,5 +1,5 @@
-﻿using BetterAmongUs.Items.Attributes;
-using BetterAmongUs.Managers;
+﻿using BetterAmongUs.Data;
+using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Modules;
 
 namespace BetterAmongUs.Commands;

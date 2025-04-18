@@ -103,7 +103,11 @@ internal class FindAGameManagerPatch
     {
         var tmproObject = new GameObject("TrueHostName_TMP").transform;
         tmproObject.SetParent(parent, true);
-        tmproObject.localPosition = new Vector3(7.77f, -2.18f, -1f);
+        var aspectPos = tmproObject.gameObject.AddComponent<AspectPosition>();
+        aspectPos.Alignment = AspectPosition.EdgeAlignments.Center;
+        aspectPos.anchorPoint = new Vector2(0.2f, 0.5f);
+        aspectPos.DistanceFromEdge = new Vector3(10.9f, -2.17f, -2f);
+        aspectPos.AdjustPosition();
         return tmproObject.gameObject.AddComponent<TextMeshPro>();
     }
 

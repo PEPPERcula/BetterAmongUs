@@ -16,13 +16,6 @@ class GamePlayManager
         [HarmonyPostfix]
         private static void Start_Postfix(/*LobbyBehaviour __instance*/)
         {
-            _ = new LateTask(() =>
-            {
-                if (GameState.IsInGame)
-                {
-                    RPC.RpcBetterCheck();
-                }
-            }, 1.5f, "LobbyBehaviourPatch SyncAllNames");
         }
 
         // Disabled annoying music

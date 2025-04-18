@@ -10,7 +10,7 @@ namespace BetterAmongUs.Modules.AntiCheat;
 internal enum HandlerFlag
 {
     Handle,
-    AntiCheatCheck,
+    CheatRpcCheck,
     AntiCheatCancel,
     AntiCheat,
     BetterHost,
@@ -36,7 +36,7 @@ internal abstract class RPCHandler
     internal static bool CheckRange(Vector2 pos1, Vector2 pos2, float range) => Vector2.Distance(pos1, pos2) <= range;
     internal virtual void Handle(PlayerControl? sender, MessageReader reader) { }
     internal virtual void HandleGameData(MessageReader reader) { }
-    internal virtual void HandleAntiCheatCheck(PlayerControl? sender, MessageReader reader) { }
+    internal virtual void HandleCheatRpcCheck(PlayerControl? sender, MessageReader reader) { }
     internal virtual bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader) => true;
     internal virtual void HandleAntiCheat(PlayerControl? sender, MessageReader reader) { }
     internal virtual bool BetterHandle(PlayerControl? sender, MessageReader reader) => true;
@@ -56,9 +56,9 @@ internal abstract class RPCHandler
                 try
                 {
                     if (handlerFlag == HandlerFlag.Handle) handler.Handle(sender, MessageReader.Get(reader));
-                    else if (handlerFlag == HandlerFlag.AntiCheatCheck) handler.HandleAntiCheatCheck(sender, MessageReader.Get(reader));
                     else if (handlerFlag == HandlerFlag.AntiCheatCancel) cancel = !handler.HandleAntiCheatCancel(sender, MessageReader.Get(reader));
                     else if (handlerFlag == HandlerFlag.AntiCheat) handler.HandleAntiCheat(sender, MessageReader.Get(reader));
+                    else if (handlerFlag == HandlerFlag.CheatRpcCheck) handler.HandleCheatRpcCheck(sender, MessageReader.Get(reader));
                     else if (handlerFlag == HandlerFlag.BetterHost) cancel = !handler.BetterHandle(sender, MessageReader.Get(reader));
                     if (!(cancel)) break;
                 }

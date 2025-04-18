@@ -1,4 +1,5 @@
-﻿using BetterAmongUs.Helpers;
+﻿using BetterAmongUs.Data;
+using BetterAmongUs.Helpers;
 using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Patches;
@@ -10,25 +11,7 @@ namespace BetterAmongUs.Modules.AntiCheat;
 
 class BetterAntiCheat
 {
-    internal static Dictionary<string, string> PlayerData = []; // HashPuid, FriendCode
-    internal static Dictionary<string, string> SickoData = []; // HashPuid, FriendCode
-    internal static Dictionary<string, string> AUMData = []; // HashPuid, FriendCode
-    internal static Dictionary<string, string> KNData = []; // HashPuid, FriendCode
     internal static bool IsEnabled => PlayerControl.LocalPlayer?.Data?.IsIncomplete == false;
-
-    internal static string[] GatherAllData()
-    {
-        return PlayerData.Keys
-            .Concat(PlayerData.Values)
-            .Concat(SickoData.Values)
-            .Concat(AUMData.Values)
-            .Concat(KNData.Values)
-            .Concat(SickoData.Keys)
-            .Concat(AUMData.Keys)
-            .Concat(KNData.Keys)
-            .ToHashSet()
-            .ToArray();
-    }
 
     internal static void Update()
     {
@@ -36,27 +19,25 @@ class BetterAntiCheat
         {
             foreach (var player in Main.AllPlayerControls)
             {
-                var hashPuid = Utils.GetHashPuid(player);
-
-                if (SickoData.ContainsKey(hashPuid))
+                if (BetterDataManager.BetterDataFile.SickoData.Any(info => info.CheckPlayerData(player.Data)))
                 {
                     string reason = Translator.GetString("AntiCheat.Reason.SickoMenuUser");
                     string kickMessage = string.Format(Translator.GetString("AntiCheat.KickMessage"), Translator.GetString("AntiCheat.ByAntiCheat"), reason);
                     player.Kick(true, kickMessage, true);
                 }
-                else if (AUMData.ContainsKey(hashPuid))
+                else if (BetterDataManager.BetterDataFile.AUMData.Any(info => info.CheckPlayerData(player.Data)))
                 {
                     string reason = Translator.GetString("AntiCheat.Reason.AUMUser");
                     string kickMessage = string.Format(Translator.GetString("AntiCheat.KickMessage"), Translator.GetString("AntiCheat.ByAntiCheat"), reason);
                     player.Kick(true, kickMessage, true);
                 }
-                else if (KNData.ContainsKey(hashPuid))
+                else if (BetterDataManager.BetterDataFile.KNData.Any(info => info.CheckPlayerData(player.Data)))
                 {
                     string reason = Translator.GetString("AntiCheat.Reason.KNUser");
                     string kickMessage = string.Format(Translator.GetString("AntiCheat.KickMessage"), Translator.GetString("AntiCheat.ByAntiCheat"), reason);
                     player.Kick(true, kickMessage, true);
                 }
-                else if (PlayerData.ContainsKey(hashPuid))
+                else if (BetterDataManager.BetterDataFile.CheatData.Any(info => info.CheckPlayerData(player.Data)))
                 {
                     string reason = Translator.GetString("AntiCheat.Reason.KnownCheater");
                     string kickMessage = string.Format(Translator.GetString("AntiCheat.KickMessage"), Translator.GetString("AntiCheat.ByAntiCheat"), reason);
@@ -134,7 +115,7 @@ class BetterAntiCheat
 
         if (!IsEnabled) return;
 
-        RPCHandler.HandleRPC(callId, player, reader, HandlerFlag.AntiCheatCheck);
+        RPCHandler.HandleRPC(callId, player, reader, HandlerFlag.CheatRpcCheck);
     }
 
     // Check and notify for invalid rpcs

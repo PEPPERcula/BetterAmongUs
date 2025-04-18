@@ -363,10 +363,13 @@ internal class NetworkManager
 
     private static bool PlayerRpc(PlayerControl player, byte callId, MessageReader reader)
     {
-        player.BetterData().AntiCheatInfo.RPCSentPS++;
-        if (player.BetterData().AntiCheatInfo.RPCSentPS >= ExtendedAntiCheatInfo.MaxRPCSent)
+        if (player.BetterData() != null)
         {
-            return false;
+            player.BetterData().AntiCheatInfo.RPCSentPS++;
+            if (player.BetterData().AntiCheatInfo.RPCSentPS >= ExtendedAntiCheatInfo.MaxRPCSent)
+            {
+                return false;
+            }
         }
 
         BetterAntiCheat.HandleCheatRPCBeforeCheck(player, callId, reader);

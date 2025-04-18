@@ -1,5 +1,4 @@
 ﻿using BetterAmongUs.Helpers;
-using BetterAmongUs.Managers;
 using Hazel;
 
 namespace BetterAmongUs.Modules;
@@ -18,7 +17,9 @@ enum CustomRPC : int
     RequestRetryVersionCheck = 81,
 
     //Better Among Us
-    BetterCheck = 150,
+    LegacyBetterCheck = 150,
+    SendSecret,
+    CheckSecret,
 }
 
 enum HandleGameDataTags : byte
@@ -46,17 +47,6 @@ internal static class RPC
             messageWriter.WriteBytesAndSize(optionsByteArray);
             AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
         }
-    }
-
-    internal static void RpcBetterCheck()
-    {
-        if (!Main.SendBetterRpc.Value) return;
-
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.BetterCheck, SendOption.None, -1);
-        messageWriter.Write(true);
-        messageWriter.Write(Main.ModSignature.ToString());
-        messageWriter.Write(Main.GetVersionText().Replace(" ", ""));
-        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
     }
 
     internal static void RpcSetNamePrivate(PlayerControl player, string name, PlayerControl target)
@@ -89,25 +79,29 @@ internal static class RPC
 
             switch (callId)
             {
-                case (byte)CustomRPC.BetterCheck:
+                case (byte)CustomRPC.LegacyBetterCheck:
                     {
                         var SetBetterUser = reader.ReadBoolean();
                         var Signature = reader.ReadString();
                         var Version = reader.ReadString();
                         var IsVerified = Signature == Main.ModSignature.ToString();
 
+                        /*
                         if (string.IsNullOrEmpty(Signature) || string.IsNullOrEmpty(Version))
                         {
                             BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((CustomRPC)callId)} called with invalid info");
                             break;
                         }
+                        */
 
                         player.BetterData().IsBetterUser = SetBetterUser;
 
+                        /*
                         if (IsVerified)
                         {
                             player.BetterData().IsVerifiedBetterUser = true;
                         }
+                        */
 
                         Logger.Log($"Received better user RPC from: {player.Data.PlayerName}:{player.Data.FriendCode}:{Utils.GetHashPuid(player)} - " +
                             $"BetterUser: {SetBetterUser} - " +
@@ -116,6 +110,16 @@ internal static class RPC
                             $"Signature: {Signature}");
 
                         Utils.DirtyAllNames();
+                    }
+                    break;
+                case (byte)CustomRPC.SendSecret:
+                    {
+                        player.BetterData().HandshakeHandler.HandleSecretFromSender(reader);
+                    }
+                    break;
+                case (byte)CustomRPC.CheckSecret:
+                    {
+                        player.BetterData().HandshakeHandler.HandleSecretHashFromPlayer(reader);
                     }
                     break;
                     /*

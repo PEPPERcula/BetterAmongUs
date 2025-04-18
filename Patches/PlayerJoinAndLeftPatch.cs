@@ -1,5 +1,5 @@
+using BetterAmongUs.Data;
 using BetterAmongUs.Helpers;
-using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
 using BetterAmongUs.Patches;
 using HarmonyLib;
@@ -37,9 +37,6 @@ internal static class OnPlayerJoinedPatch
             if (GameState.IsInGame)
             {
                 var player = Utils.PlayerFromClientId(client.Id);
-
-                // Send Better Among Us Check RPC
-                RPC.RpcBetterCheck();
 
                 // Auto ban player on ban list
                 if (BetterGameSettings.UseBanPlayerList.GetBool())

@@ -1,4 +1,4 @@
-﻿using BetterAmongUs.Managers;
+﻿using BetterAmongUs.Data;
 using UnityEngine;
 
 namespace BetterAmongUs.Items.OptionItems;
@@ -27,6 +27,7 @@ internal class BetterOptionCheckboxItem : BetterOptionItem
         }
 
         ToggleOption optionBehaviour = UnityEngine.Object.Instantiate(gameOptionsMenu.checkboxOrigin, Vector3.zero, Quaternion.identity, gameOptionsMenu.settingsContainer);
+        optionBehaviour.enabled = false;
         optionBehaviour.transform.localPosition = new Vector3(0.952f, 2f, -2f);
         SetUp(optionBehaviour);
         optionBehaviour.OnValueChanged = new Action<OptionBehaviour>((option) => ValueChanged(id, option));
@@ -75,25 +76,19 @@ internal class BetterOptionCheckboxItem : BetterOptionItem
 
     internal void Load(bool DefaultValue)
     {
-        if (BetterDataManager.CanLoadSetting(Id))
+        var Bool = BetterDataManager.LoadSetting(Id, DefaultValue);
+        if (ThisOption != null)
         {
-            if (ThisOption == null) return;
-
-            var Bool = BetterDataManager.LoadBoolSetting(Id, DefaultValue);
             ThisOption.CheckMark.GetComponent<SpriteRenderer>().enabled = Bool;
-            IsChecked = Bool;
         }
-        else
-        {
-            BetterDataManager.SaveSetting(Id, DefaultValue.ToString());
-        }
+        IsChecked = Bool;
     }
 
     internal override bool GetBool()
     {
-        if (BetterDataManager.CanLoadSetting(Id))
+        if (BetterDataManager.CanLoadSetting<bool>(Id))
         {
-            return BetterDataManager.LoadBoolSetting(Id);
+            return BetterDataManager.LoadSetting<bool>(Id);
         }
         else
         {
@@ -113,7 +108,7 @@ internal class BetterOptionCheckboxItem : BetterOptionItem
     internal override void ValueChanged(int id, OptionBehaviour optionBehaviour)
     {
         IsChecked = !IsChecked;
-        BetterDataManager.SaveSetting(Id, IsChecked.ToString());
+        BetterDataManager.SaveSetting(Id, IsChecked);
 
         if (IsParent || IsChild)
         {

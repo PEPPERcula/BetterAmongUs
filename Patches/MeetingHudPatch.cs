@@ -1,7 +1,7 @@
 using AmongUs.GameOptions;
+using BetterAmongUs.Data;
 using BetterAmongUs.Helpers;
 using BetterAmongUs.Modules;
-using BetterAmongUs.Modules.AntiCheat;
 using BetterAmongUs.Patches;
 using HarmonyLib;
 using System.Text;
@@ -135,13 +135,13 @@ class MeetingHudPatch
 
                 // Put +++ at the end of each tag
 
-                if (!string.IsNullOrEmpty(hashPuid) && BetterAntiCheat.SickoData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && BetterAntiCheat.SickoData.ContainsValue(friendCode))
+                if (BetterDataManager.BetterDataFile.SickoData.Any(info => info.CheckPlayerData(target.Data)))
                     sbTag.Append($"<color=#00f583>{Translator.GetString("Player.SickoUser")}</color>+++");
-                else if (!string.IsNullOrEmpty(hashPuid) && BetterAntiCheat.AUMData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && BetterAntiCheat.AUMData.ContainsValue(friendCode))
+                else if (BetterDataManager.BetterDataFile.AUMData.Any(info => info.CheckPlayerData(target.Data)))
                     sbTag.Append($"<color=#4f0000>{Translator.GetString("Player.AUMUser")}</color>+++");
-                else if (!string.IsNullOrEmpty(hashPuid) && BetterAntiCheat.KNData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && BetterAntiCheat.KNData.ContainsValue(friendCode))
-                    sbTag.Append($"<color=#4f0000>{Translator.GetString("Player.KNUser")}</color>+++");
-                else if (!string.IsNullOrEmpty(hashPuid) && BetterAntiCheat.PlayerData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && BetterAntiCheat.PlayerData.ContainsValue(friendCode))
+                else if (BetterDataManager.BetterDataFile.KNData.Any(info => info.CheckPlayerData(target.Data)))
+                    sbTag.Append($"<color=#8731e7>{Translator.GetString("Player.KNUser")}</color>+++");
+                else if (BetterDataManager.BetterDataFile.CheatData.Any(info => info.CheckPlayerData(target.Data)))
                     sbTag.Append($"<color=#fc0000>{Translator.GetString("Player.KnownCheater")}</color>+++");
 
                 for (int i = 0; i < sbTag.ToString().Split("+++").Length; i++)

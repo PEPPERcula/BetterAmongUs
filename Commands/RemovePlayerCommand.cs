@@ -1,7 +1,6 @@
-﻿using BetterAmongUs.Helpers;
+﻿using BetterAmongUs.Data;
+using BetterAmongUs.Helpers;
 using BetterAmongUs.Items.Attributes;
-using BetterAmongUs.Managers;
-using BetterAmongUs.Modules.AntiCheat;
 
 namespace BetterAmongUs.Commands;
 
@@ -17,7 +16,10 @@ internal class RemovePlayerCommand : BaseCommand
         {
             new StringArgument(this, "{identifier}"),
         });
-        identifierArgument.GetArgSuggestions = BetterAntiCheat.GatherAllData;
+        identifierArgument.GetArgSuggestions = () =>
+            BetterDataManager.BetterDataFile.AllCheatData
+                .SelectMany(info => new[] { info.HashPuid.Replace(' ', '_'), info.FriendCode.Replace(' ', '_'), info.PlayerName.Replace(' ', '_') })
+                .ToArray();
     }
     private readonly Lazy<BaseArgument[]> _arguments;
     internal override BaseArgument[]? Arguments => _arguments.Value;

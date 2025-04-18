@@ -1,4 +1,4 @@
-﻿using BetterAmongUs.Managers;
+﻿using BetterAmongUs.Data;
 using UnityEngine;
 
 namespace BetterAmongUs.Items.OptionItems;
@@ -31,6 +31,7 @@ internal class BetterOptionStringItem : BetterOptionItem
         }
 
         StringOption optionBehaviour = UnityEngine.Object.Instantiate(gameOptionsMenu.stringOptionOrigin, Vector3.zero, Quaternion.identity, gameOptionsMenu.settingsContainer);
+        optionBehaviour.enabled = false;
         optionBehaviour.transform.localPosition = new Vector3(0.952f, 2f, -2f);
         SetUp(optionBehaviour);
         optionBehaviour.OnValueChanged = new Action<OptionBehaviour>((option) => ValueChanged(id, option));
@@ -109,7 +110,7 @@ internal class BetterOptionStringItem : BetterOptionItem
             ThisOption.MinusBtn.SetInteractable(true);
         }
 
-        BetterDataManager.SaveSetting(Id, CurrentValue.ToString());
+        BetterDataManager.SaveSetting(Id, CurrentValue);
     }
 
     internal void Increase()
@@ -132,29 +133,22 @@ internal class BetterOptionStringItem : BetterOptionItem
 
     internal void Load(int DefaultValue)
     {
-        if (BetterDataManager.CanLoadSetting(Id))
-        {
-            var Int = BetterDataManager.LoadIntSetting(Id, DefaultValue);
+        var Int = BetterDataManager.LoadSetting(Id, DefaultValue);
 
-            if (Int > Values.Length - 1 || Int < 0)
-            {
-                Int = DefaultValue;
-                BetterDataManager.SaveSetting(Id, DefaultValue.ToString());
-            }
-
-            CurrentValue = Int;
-        }
-        else
+        if (Int > Values.Length - 1 || Int < 0)
         {
-            BetterDataManager.SaveSetting(Id, DefaultValue.ToString());
+            Int = DefaultValue;
+            BetterDataManager.SaveSetting(Id, DefaultValue);
         }
+
+        CurrentValue = Int;
     }
 
     internal override int GetValue()
     {
-        if (BetterDataManager.CanLoadSetting(Id))
+        if (BetterDataManager.CanLoadSetting<int>(Id))
         {
-            return BetterDataManager.LoadIntSetting(Id);
+            return BetterDataManager.LoadSetting<int>(Id);
         }
         else
         {

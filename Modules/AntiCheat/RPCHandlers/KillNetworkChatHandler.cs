@@ -1,3 +1,4 @@
+using BetterAmongUs.Data;
 using BetterAmongUs.Helpers;
 using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Managers;
@@ -12,17 +13,15 @@ internal sealed class KillNetworkChatHandler : RPCHandler
 {
     internal override byte CallId => unchecked((byte)CustomRPC.KillNetworkChat);
 
-    internal override void HandleAntiCheatCheck(PlayerControl? sender, MessageReader reader)
+    internal override void HandleCheatRpcCheck(PlayerControl? sender, MessageReader reader)
     {
         if (!Main.AntiCheat.Value || !BetterGameSettings.DetectCheatClients.GetBool()) return;
 
-        var flag = BetterAntiCheat.KNData.ContainsKey(Utils.GetHashPuid(sender));
-
-        if (!flag)
+        if (!BetterDataManager.BetterDataFile.KNData.Any(info => info.CheckPlayerData(sender.Data)))
         {
             sender.ReportPlayer(ReportReasons.Cheating_Hacking);
-            BetterAntiCheat.KNData[Utils.GetHashPuid(sender)] = sender.Data.FriendCode;
-            BetterDataManager.SaveCheatData(Utils.GetHashPuid(sender), sender.Data.FriendCode, sender.Data.PlayerName, "knData", "KN RPC");
+            BetterDataManager.BetterDataFile.KNData.Add(new(sender?.BetterData().RealName ?? sender.Data.PlayerName, sender.GetHashPuid(), sender.Data.FriendCode, "KillNetwork Chat RPC"));
+            BetterDataManager.BetterDataFile.Save();
             BetterNotificationManager.NotifyCheat(sender, Translator.GetString("AntiCheat.Cheat.KNC"), Translator.GetString("AntiCheat.HasBeenDetectedWithCheat2"));
         }
     }

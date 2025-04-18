@@ -1,7 +1,7 @@
 ﻿using AmongUs.GameOptions;
+using BetterAmongUs.Data;
 using BetterAmongUs.Helpers;
 using BetterAmongUs.Modules;
-using BetterAmongUs.Modules.AntiCheat;
 using HarmonyLib;
 using System.Text;
 using TMPro;
@@ -98,11 +98,13 @@ class ChatPatch
                 if ((sourcePlayer.IsLocalPlayer() || sourcePlayer.BetterData().IsBetterUser))
                     sbTag.AppendFormat("<color=#0dff00>{1}{0}</color>+++", Translator.GetString("Player.BetterUser"), sourcePlayer.BetterData().IsVerifiedBetterUser || sourcePlayer.IsLocalPlayer() ? "✓ " : "");
 
-                if (!string.IsNullOrEmpty(hashPuid) && BetterAntiCheat.SickoData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && BetterAntiCheat.SickoData.ContainsValue(friendCode))
+                if (BetterDataManager.BetterDataFile.SickoData.Any(info => info.CheckPlayerData(sourcePlayer.Data)))
                     sbTag.Append($"<color=#00f583>{Translator.GetString("Player.SickoUser")}</color>+++");
-                else if (!string.IsNullOrEmpty(hashPuid) && BetterAntiCheat.AUMData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && BetterAntiCheat.AUMData.ContainsValue(friendCode))
+                else if (BetterDataManager.BetterDataFile.AUMData.Any(info => info.CheckPlayerData(sourcePlayer.Data)))
                     sbTag.Append($"<color=#4f0000>{Translator.GetString("Player.AUMUser")}</color>+++");
-                else if (!string.IsNullOrEmpty(hashPuid) && BetterAntiCheat.PlayerData.ContainsKey(hashPuid) || !string.IsNullOrEmpty(friendCode) && BetterAntiCheat.PlayerData.ContainsValue(friendCode))
+                else if (BetterDataManager.BetterDataFile.KNData.Any(info => info.CheckPlayerData(sourcePlayer.Data)))
+                    sbTag.Append($"<color=#8731e7>{Translator.GetString("Player.KNUser")}</color>+++");
+                else if (BetterDataManager.BetterDataFile.CheatData.Any(info => info.CheckPlayerData(sourcePlayer.Data)))
                     sbTag.Append($"<color=#fc0000>{Translator.GetString("Player.KnownCheater")}</color>+++");
             }
 

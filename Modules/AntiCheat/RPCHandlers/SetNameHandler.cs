@@ -17,7 +17,7 @@ internal sealed class SetNameHandler : RPCHandler
 
     internal override bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader)
     {
-        if (GameState.IsHost) return false;
+        if (GameState.IsHost) return true;
 
         _ = reader.ReadUInt32();
         var name = reader.ReadString();

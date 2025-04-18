@@ -1,4 +1,4 @@
-﻿using BetterAmongUs.Managers;
+﻿using BetterAmongUs.Data;
 using UnityEngine;
 
 namespace BetterAmongUs.Items.OptionItems;
@@ -35,6 +35,7 @@ internal class BetterOptionFloatItem : BetterOptionItem
         if (values.Length is < 3 or > 3) return null;
 
         NumberOption optionBehaviour = UnityEngine.Object.Instantiate(gameOptionsMenu.numberOptionOrigin, Vector3.zero, Quaternion.identity, gameOptionsMenu.settingsContainer);
+        optionBehaviour.enabled = false;
         optionBehaviour.transform.localPosition = new Vector3(0.952f, 2f, -2f);
         SetUp(optionBehaviour);
         optionBehaviour.OnValueChanged = new Action<OptionBehaviour>((option) => ValueChanged(id, option));
@@ -114,7 +115,7 @@ internal class BetterOptionFloatItem : BetterOptionItem
             ThisOption.MinusBtn.SetInteractable(true);
         }
 
-        BetterDataManager.SaveSetting(Id, CurrentValue.ToString());
+        BetterDataManager.SaveSetting(Id, CurrentValue);
     }
 
     internal void Increase()
@@ -159,29 +160,22 @@ internal class BetterOptionFloatItem : BetterOptionItem
 
     internal void Load(float DefaultValue)
     {
-        if (BetterDataManager.CanLoadSetting(Id))
-        {
-            var Float = BetterDataManager.LoadFloatSetting(Id, DefaultValue);
+        var Float = BetterDataManager.LoadSetting(Id, DefaultValue);
 
-            if (Float > floatRange.max || Float < floatRange.min)
-            {
-                Float = DefaultValue;
-                BetterDataManager.SaveSetting(Id, DefaultValue.ToString());
-            }
-
-            CurrentValue = Float;
-        }
-        else
+        if (Float > floatRange.max || Float < floatRange.min)
         {
-            BetterDataManager.SaveSetting(Id, DefaultValue.ToString());
+            Float = DefaultValue;
+            BetterDataManager.SaveSetting(Id, DefaultValue);
         }
+
+        CurrentValue = Float;
     }
 
     internal override float GetFloat()
     {
-        if (BetterDataManager.CanLoadSetting(Id))
+        if (BetterDataManager.CanLoadSetting<float>(Id))
         {
-            return BetterDataManager.LoadFloatSetting(Id);
+            return BetterDataManager.LoadSetting<float>(Id);
         }
         else
         {
@@ -189,17 +183,7 @@ internal class BetterOptionFloatItem : BetterOptionItem
         }
     }
 
-    internal override int GetInt()
-    {
-        if (BetterDataManager.CanLoadSetting(Id))
-        {
-            return (int)BetterDataManager.LoadFloatSetting(Id);
-        }
-        else
-        {
-            return (int)CurrentValue;
-        }
-    }
+    internal override int GetInt() => (int)GetFloat();
 
     internal override void SetData(OptionBehaviour optionBehaviour)
     {
