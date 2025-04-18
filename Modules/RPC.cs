@@ -17,9 +17,9 @@ enum CustomRPC : int
     RequestRetryVersionCheck = 81,
 
     //Better Among Us
-    LegacyBetterCheck = 150,
-    SendSecret,
-    CheckSecret,
+    LegacyBetterCheck = 150, // Unused
+    SendSecretToPlayer,
+    CheckSecretHashFromPlayer,
 }
 
 enum HandleGameDataTags : byte
@@ -79,6 +79,7 @@ internal static class RPC
 
             switch (callId)
             {
+                /*
                 case (byte)CustomRPC.LegacyBetterCheck:
                     {
                         var SetBetterUser = reader.ReadBoolean();
@@ -86,22 +87,18 @@ internal static class RPC
                         var Version = reader.ReadString();
                         var IsVerified = Signature == Main.ModSignature.ToString();
 
-                        /*
                         if (string.IsNullOrEmpty(Signature) || string.IsNullOrEmpty(Version))
                         {
                             BetterNotificationManager.NotifyCheat(player, $"Invalid Action RPC: {Enum.GetName((CustomRPC)callId)} called with invalid info");
                             break;
                         }
-                        */
 
                         player.BetterData().IsBetterUser = SetBetterUser;
 
-                        /*
                         if (IsVerified)
                         {
                             player.BetterData().IsVerifiedBetterUser = true;
                         }
-                        */
 
                         Logger.Log($"Received better user RPC from: {player.Data.PlayerName}:{player.Data.FriendCode}:{Utils.GetHashPuid(player)} - " +
                             $"BetterUser: {SetBetterUser} - " +
@@ -112,12 +109,13 @@ internal static class RPC
                         Utils.DirtyAllNames();
                     }
                     break;
-                case (byte)CustomRPC.SendSecret:
+                */
+                case (byte)CustomRPC.SendSecretToPlayer:
                     {
                         player.BetterData().HandshakeHandler.HandleSecretFromSender(reader);
                     }
                     break;
-                case (byte)CustomRPC.CheckSecret:
+                case (byte)CustomRPC.CheckSecretHashFromPlayer:
                     {
                         player.BetterData().HandshakeHandler.HandleSecretHashFromPlayer(reader);
                     }
