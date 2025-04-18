@@ -65,6 +65,27 @@ static class InnerNetClientHelper
     /// <summary>
     /// Writes an array of bytes to a MessageWriter in a packed format, combining two bytes into one to save space.
     /// </summary>
+    internal static void WriteBytes(this MessageWriter writer, IEnumerable<byte> bytesEnumerable)
+    {
+        byte[] bytes = bytesEnumerable.ToArray();
+
+        writer.Write(bytes.Length);
+        writer.Write(bytes);
+    }
+
+    /// <summary>
+    /// Reads an array of bytes from a MessageReader that were previously packed using WritePackedBytes.
+    /// </summary>
+    internal static byte[] ReadBytes(this MessageReader reader)
+    {
+        int count = reader.ReadInt32();
+        var bytes = reader.ReadBytes(count);
+        return [.. bytes];
+    }
+
+    /// <summary>
+    /// Writes an array of bytes to a MessageWriter in a packed format, combining two bytes into one to save space.
+    /// </summary>
     internal static void WritePackedBytes(this MessageWriter writer, IEnumerable<byte> bytesEnumerable)
     {
         byte[] bytes = bytesEnumerable.ToArray();

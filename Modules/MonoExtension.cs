@@ -1,25 +1,22 @@
 ﻿using Il2CppInterop.Runtime;
-using System.Reflection;
 using UnityEngine;
 
 namespace BetterAmongUs.Modules;
 
-[AttributeUsage(AttributeTargets.Class)]
-internal class MonoExtensionAttribute : Attribute
-{
-    internal Type MonoType { get; }
-    internal Il2CppSystem.Type MonoIl2CppType { get; }
-
-    internal MonoExtensionAttribute(Type monoType)
-    {
-        MonoType = monoType;
-        MonoIl2CppType = Il2CppType.From(monoType);
-    }
-}
-
 internal interface IMonoExtension
 {
     MonoBehaviour? BaseMono { get; set; }
+}
+
+internal interface IMonoExtension<T> : IMonoExtension where T : MonoBehaviour
+{
+    new T? BaseMono { get; set; }
+
+    MonoBehaviour? IMonoExtension.BaseMono
+    {
+        get => BaseMono;
+        set => BaseMono = value as T;
+    }
 }
 
 internal static class MonoExtensionManager
@@ -28,6 +25,8 @@ internal static class MonoExtensionManager
 
     internal static T? Get<T>(MonoBehaviour mono) where T : class, IMonoExtension
     {
+        if (mono == null) return null;
+
         if (_extensionsByBaseType.TryGetValue(mono.GetType(), out var extensions))
         {
             foreach (var pair in extensions)
@@ -62,40 +61,55 @@ internal static class MonoExtensionManager
         }
     }
 
-    internal static bool RegisterExtension(IMonoExtension extension)
+    internal static bool RegisterExtension(this IMonoExtension extension)
     {
-        var monoAttribute = extension.GetType().GetCustomAttribute<MonoExtensionAttribute>();
+        // Try to find IMonoExtension<T> implementation
+        Type? genericInterface = extension.GetType()
+            .GetInterfaces()
+            .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IMonoExtension<>));
 
-        if (monoAttribute == null || !monoAttribute.MonoType.IsAssignableTo(typeof(MonoBehaviour)))
+        if (genericInterface == null)
         {
             if (extension is MonoBehaviour mono)
-            {
                 UnityEngine.Object.Destroy(mono);
-            }
+            return false;
+        }
+
+        // Get T from IMonoExtension<T>
+        Type monoType = genericInterface.GetGenericArguments()[0];
+
+        if (!monoType.IsAssignableTo(typeof(MonoBehaviour)))
+        {
+            if (extension is MonoBehaviour mono)
+                UnityEngine.Object.Destroy(mono);
             return false;
         }
 
         var monoBehaviour = extension as MonoBehaviour;
-        if (monoBehaviour == null) return false;
+        if (monoBehaviour == null)
+            return false;
 
-        var baseComponent = monoBehaviour.GetComponent(monoAttribute.MonoIl2CppType) as MonoBehaviour;
+        // Get the base component (including inactive ones)
+        var baseComponent = monoBehaviour.GetComponentInChildren(Il2CppType.From(monoType), true) as MonoBehaviour;
         if (baseComponent == null)
         {
             UnityEngine.Object.Destroy(monoBehaviour);
             return false;
         }
 
-        var existingExtensions = monoBehaviour.GetComponents(Il2CppType.From(extension.GetType()));
+        // Check for duplicate extensions (including inactive ones)
+        var existingExtensions = monoBehaviour.GetComponentsInChildren(Il2CppType.From(extension.GetType()), true);
         if (existingExtensions.Length > 1)
         {
             UnityEngine.Object.Destroy(monoBehaviour);
             return false;
         }
 
-        if (!_extensionsByBaseType.TryGetValue(monoAttribute.MonoType, out var extensions))
+        // Register the extension
+        if (!_extensionsByBaseType.TryGetValue(monoType, out var extensions))
         {
             extensions = [];
-            _extensionsByBaseType[monoAttribute.MonoType] = extensions;
+            _extensionsByBaseType[monoType] = extensions;
         }
 
         extensions.Add(new ExtensionPair { Base = baseComponent, Extension = extension });
@@ -104,7 +118,7 @@ internal static class MonoExtensionManager
         return true;
     }
 
-    internal static void UnregisterExtension(IMonoExtension extension)
+    internal static void UnregisterExtension(this IMonoExtension extension)
     {
         if (extension.BaseMono == null) return;
 
@@ -128,7 +142,7 @@ internal static class MonoExtensionManager
 
     private struct ExtensionPair
     {
-        public MonoBehaviour? Base;
-        public IMonoExtension? Extension;
+        internal MonoBehaviour? Base;
+        internal IMonoExtension? Extension;
     }
 }

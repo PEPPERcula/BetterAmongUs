@@ -1,33 +1,38 @@
 ﻿using AmongUs.GameOptions;
+using BepInEx.Unity.IL2CPP.Utils;
 using BetterAmongUs.Items;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
-using HarmonyLib;
 using InnerNet;
 using UnityEngine;
 
 namespace BetterAmongUs.Helpers;
 
-[MonoExtension(typeof(NetworkedPlayerInfo))]
-internal class ExtendedPlayerInfo : MonoBehaviour, IMonoExtension
+internal class ExtendedPlayerInfo : MonoBehaviour, IMonoExtension<NetworkedPlayerInfo>
 {
-    public MonoBehaviour? BaseMono { get; set; }
+    internal ExtendedPlayerInfo()
+    {
+        HandshakeHandler = new(this);
+    }
+
+    public NetworkedPlayerInfo? BaseMono { get; set; }
+    internal NetworkedPlayerInfo? _Data => BaseMono;
 
     private bool hasSet = false;
     internal void SetInfo(NetworkedPlayerInfo data)
     {
         if (hasSet) return;
         MyUserData = UserData.GetPlayerUserData(data);
-        _Data = data;
         _PlayerId = data.PlayerId;
         hasSet = true;
     }
 
     private float timeAccumulator = 0f;
 
-    private void Start()
+    private void Awake()
     {
-        MonoExtensionManager.RegisterExtension(this);
+        if (!MonoExtensionManager.RegisterExtension(this)) return;
+        this.StartCoroutine(HandshakeHandler.CoSendSecretToPlayer());
     }
 
     private void OnDestroy()
@@ -73,9 +78,9 @@ internal class ExtendedPlayerInfo : MonoBehaviour, IMonoExtension
         }
     }
 
+    internal HandshakeHandler HandshakeHandler { get; }
     internal UserData? MyUserData { get; private set; } = UserData.AllUsers.First();
     internal byte _PlayerId { get; private set; }
-    internal NetworkedPlayerInfo? _Data { get; private set; }
     internal string? RealName { get; private set; }
     internal bool IsDirtyInfo { get; set; } = true;
     internal Dictionary<byte, string> LastNameSetFor { get; set; } = [];
@@ -112,42 +117,6 @@ internal class ExtendedRoleInfo
 
 internal static class PlayerControlDataExtension
 {
-    [HarmonyPatch(typeof(NetworkedPlayerInfo))]
-    class NetworkedPlayerInfoPatch
-    {
-        [HarmonyPatch(nameof(NetworkedPlayerInfo.Init))]
-        [HarmonyPostfix]
-        internal static void Init_Postfix(NetworkedPlayerInfo __instance)
-        {
-            TryCreateExtendedData(__instance);
-        }
-
-        [HarmonyPatch(nameof(NetworkedPlayerInfo.Serialize))]
-        [HarmonyPostfix]
-        internal static void Serialize_Postfix(NetworkedPlayerInfo __instance)
-        {
-            __instance.DirtyNameDelay();
-        }
-
-        [HarmonyPatch(nameof(NetworkedPlayerInfo.Deserialize))]
-        [HarmonyPostfix]
-        internal static void Deserialize_Postfix(NetworkedPlayerInfo __instance)
-        {
-            TryCreateExtendedData(__instance);
-            __instance.DirtyNameDelay();
-        }
-
-        internal static void TryCreateExtendedData(NetworkedPlayerInfo data)
-        {
-            if (data.BetterData() == null)
-            {
-                ExtendedPlayerInfo newBetterData = data.gameObject.AddComponent<ExtendedPlayerInfo>();
-                newBetterData.SetInfo(data);
-                data.DirtyNameDelay(3f);
-            }
-        }
-    }
-
     // Get BetterData from PlayerControl
     internal static ExtendedPlayerInfo? BetterData(this PlayerControl player)
     {

@@ -64,7 +64,11 @@ internal static class OptionsMenuBehaviourPatch
             {
                 if (GameState.IsInGame)
                 {
-                    RPC.RpcBetterCheck();
+                    foreach (var player in Main.AllPlayerControls)
+                    {
+                        if (player.IsLocalPlayer()) continue;
+                        player.BetterData().HandshakeHandler.ResendSecretToPlayer();
+                    }
                 }
             }
         }

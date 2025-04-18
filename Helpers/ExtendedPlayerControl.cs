@@ -1,22 +1,47 @@
-﻿using BetterAmongUs.Modules;
+﻿using BepInEx.Unity.IL2CPP.Utils;
+using BetterAmongUs.Modules;
 using HarmonyLib;
+using Il2CppInterop.Runtime.Attributes;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 
 namespace BetterAmongUs.Helpers;
 
-[MonoExtension(typeof(PlayerControl))]
-internal class ExtendedPlayerControl : MonoBehaviour, IMonoExtension
+internal class ExtendedPlayerControl : MonoBehaviour, IMonoExtension<PlayerControl>
 {
-    public MonoBehaviour? BaseMono { get; set; }
-    internal PlayerControl? _Player { get; set; }
+    public PlayerControl? BaseMono { get; set; }
+    internal PlayerControl? _Player => BaseMono;
     internal TextMeshPro? InfoTextInfo { get; set; }
     internal TextMeshPro? InfoTextTop { get; set; }
     internal TextMeshPro? InfoTextBottom { get; set; }
 
-    private void Start()
+    private void Awake()
     {
-        MonoExtensionManager.RegisterExtension(this);
+        if (!MonoExtensionManager.RegisterExtension(this)) return;
+        this.StartCoroutine(CoAddBetterData());
+    }
+
+    [HideFromIl2Cpp]
+    private IEnumerator CoAddBetterData()
+    {
+        while (_Player?.Data == null)
+        {
+            yield return null;
+        }
+
+        TryCreateExtendedData(_Player.Data);
+        _Player.DirtyNameDelay();
+    }
+
+    internal static void TryCreateExtendedData(NetworkedPlayerInfo data)
+    {
+        if (data.BetterData() == null)
+        {
+            ExtendedPlayerInfo newBetterData = data.gameObject.AddComponent<ExtendedPlayerInfo>();
+            newBetterData.SetInfo(data);
+            data.DirtyNameDelay(3f);
+        }
     }
 
     private void OnDestroy()
@@ -64,7 +89,6 @@ internal static class PlayerControlExtension
             if (pc.BetterPlayerControl() == null)
             {
                 ExtendedPlayerControl newExtendedPc = pc.gameObject.AddComponent<ExtendedPlayerControl>();
-                newExtendedPc._Player = pc;
                 newExtendedPc.InfoTextInfo = InfoText_Info_TMP;
                 newExtendedPc.InfoTextTop = InfoText_T_TMP;
                 newExtendedPc.InfoTextBottom = InfoText_B_TMP;
