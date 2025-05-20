@@ -40,8 +40,21 @@ static class PlayerControlHelper
         }
     }
 
-    internal static void DirtyName(this PlayerControl player) => player.BetterData().IsDirtyInfo = true;
-    internal static void DirtyName(this NetworkedPlayerInfo data) => data.BetterData().IsDirtyInfo = true;
+    internal static void DirtyName(this PlayerControl player)
+    {
+        if (player.BetterData() != null)
+        {
+            player.BetterData().IsDirtyInfo = true;
+        }
+    }
+    internal static void DirtyName(this NetworkedPlayerInfo data)
+    {
+        if (data.BetterData() != null)
+        {
+            data.BetterData().IsDirtyInfo = true;
+        }
+    }
+
     internal static void DirtyNameDelay(this PlayerControl player, float delay = 1f) => player.Data.DirtyNameDelay(delay);
     internal static void DirtyNameDelay(this NetworkedPlayerInfo data, float delay = 1f)
     {

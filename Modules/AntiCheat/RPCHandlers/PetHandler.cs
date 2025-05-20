@@ -12,8 +12,10 @@ internal sealed class PetHandler : RPCHandler
     {
         if (sender?.CurrentOutfit?.PetId == "pet_EmptyPet")
         {
-            BetterNotificationManager.NotifyCheat(sender, GetFormatActionText());
-            LogRpcInfo($"{sender?.CurrentOutfit?.PetId == "pet_EmptyPet"}");
+            if (BetterNotificationManager.NotifyCheat(sender, GetFormatActionText()))
+            {
+                LogRpcInfo($"{sender?.CurrentOutfit?.PetId == "pet_EmptyPet"}");
+            }
         }
     }
 }

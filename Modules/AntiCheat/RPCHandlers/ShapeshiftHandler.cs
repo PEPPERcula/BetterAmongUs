@@ -19,14 +19,18 @@ internal sealed class ShapeshiftHandler : RPCHandler
 
         if (!sender.Is(RoleTypes.Shapeshifter) || !sender.IsAlive())
         {
-            BetterNotificationManager.NotifyCheat(sender, GetFormatActionText());
-            LogRpcInfo($"{!sender.Is(RoleTypes.Shapeshifter)} || {!sender.IsAlive()}");
+            if (BetterNotificationManager.NotifyCheat(sender, GetFormatActionText()))
+            {
+                LogRpcInfo($"{!sender.Is(RoleTypes.Shapeshifter)} || {!sender.IsAlive()}");
+            }
             return false;
         }
         else if (!flag && !GameState.IsMeeting && !GameState.IsExilling && !sender.IsInVent())
         {
-            BetterNotificationManager.NotifyCheat(sender, GetFormatActionText());
-            LogRpcInfo($"{!flag} && {!GameState.IsMeeting} && {!GameState.IsExilling} && {!sender.IsInVent()}");
+            if (BetterNotificationManager.NotifyCheat(sender, GetFormatActionText()))
+            {
+                LogRpcInfo($"{!flag} && {!GameState.IsMeeting} && {!GameState.IsExilling} && {!sender.IsInVent()}");
+            }
             return false;
         }
 

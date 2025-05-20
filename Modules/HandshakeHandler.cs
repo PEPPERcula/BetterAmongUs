@@ -1,4 +1,5 @@
-﻿using BetterAmongUs.Data;
+﻿using BepInEx.Unity.IL2CPP.Utils;
+using BetterAmongUs.Data;
 using BetterAmongUs.Helpers;
 using Hazel;
 using System.Collections;
@@ -10,7 +11,12 @@ internal class HandshakeHandler(ExtendedPlayerInfo extendedPlayerInfo)
 {
     private readonly ExtendedPlayerInfo extendedData = extendedPlayerInfo;
 
-    internal IEnumerator CoSendSecretToPlayer()
+    internal void WaitSendSecretToPlayer()
+    {
+        extendedData.StartCoroutine(CoWaitSendSecretToPlayer());
+    }
+
+    private IEnumerator CoWaitSendSecretToPlayer()
     {
         if (!Main.SendBetterRpc.Value) yield break;
 

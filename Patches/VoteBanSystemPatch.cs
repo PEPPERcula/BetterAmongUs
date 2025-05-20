@@ -25,6 +25,12 @@ internal static class VoteBanSystemPatch
         var client = Utils.ClientFromClientId(srcClient);
         if (client == null) return false;
 
+        // Skip if host client
+        if (client.Id == AmongUsClient.Instance.GetHost().Id)
+        {
+            return true;
+        }
+
         void TryFlagPlayer()
         {
             var player = client.Character;

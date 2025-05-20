@@ -14,8 +14,10 @@ internal sealed class SendQuickChatHandler : RPCHandler
     {
         if (sender.IsAlive() && GameState.IsInGamePlay && !GameState.IsMeeting && !GameState.IsExilling || reader.BytesRemaining == 0)
         {
-            BetterNotificationManager.NotifyCheat(sender, GetFormatActionText(), forceBan: reader.BytesRemaining == 0);
-            LogRpcInfo($"{sender.IsAlive()} && {GameState.IsInGamePlay} && {!GameState.IsMeeting} && {!GameState.IsExilling} || {reader.BytesRemaining == 0}");
+            if (BetterNotificationManager.NotifyCheat(sender, GetFormatActionText(), forceBan: reader.BytesRemaining == 0))
+            {
+                LogRpcInfo($"{sender.IsAlive()} && {GameState.IsInGamePlay} && {!GameState.IsMeeting} && {!GameState.IsExilling} || {reader.BytesRemaining == 0}");
+            }
         }
     }
 }

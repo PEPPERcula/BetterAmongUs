@@ -15,8 +15,10 @@ internal sealed class ProtectPlayerHandler : RPCHandler
     {
         if (!sender.Is(RoleTypes.GuardianAngel))
         {
-            BetterNotificationManager.NotifyCheat(sender, GetFormatActionText());
-            LogRpcInfo($"{!sender.Is(RoleTypes.GuardianAngel)}");
+            if (BetterNotificationManager.NotifyCheat(sender, GetFormatActionText()))
+            {
+                LogRpcInfo($"{!sender.Is(RoleTypes.GuardianAngel)}");
+            }
         }
     }
 }

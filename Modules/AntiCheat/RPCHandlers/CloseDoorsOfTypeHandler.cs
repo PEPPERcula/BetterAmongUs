@@ -13,8 +13,10 @@ internal sealed class CloseDoorsOfTypeHandler : RPCHandler
     {
         if (!sender.IsImpostorTeam())
         {
-            BetterNotificationManager.NotifyCheat(sender, GetFormatActionText());
-            LogRpcInfo($"{!sender.IsImpostorTeam()}");
+            if (BetterNotificationManager.NotifyCheat(sender, GetFormatActionText()))
+            {
+                LogRpcInfo($"{!sender.IsImpostorTeam()}");
+            }
         }
     }
 }

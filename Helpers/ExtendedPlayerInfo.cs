@@ -1,5 +1,4 @@
 ﻿using AmongUs.GameOptions;
-using BepInEx.Unity.IL2CPP.Utils;
 using BetterAmongUs.Items;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
@@ -32,7 +31,7 @@ internal class ExtendedPlayerInfo : MonoBehaviour, IMonoExtension<NetworkedPlaye
     private void Awake()
     {
         if (!MonoExtensionManager.RegisterExtension(this)) return;
-        this.StartCoroutine(HandshakeHandler.CoSendSecretToPlayer());
+        HandshakeHandler.WaitSendSecretToPlayer();
     }
 
     private void OnDestroy()

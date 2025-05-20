@@ -15,8 +15,10 @@ internal sealed class EnterVentHandler : RPCHandler
     {
         if (!sender.IsImpostorTeam() && !sender.Is(RoleTypes.Engineer))
         {
-            BetterNotificationManager.NotifyCheat(sender, GetFormatActionText());
-            LogRpcInfo($"{sender.IsImpostorTeam()} && {!sender.Is(RoleTypes.Engineer)}");
+            if (BetterNotificationManager.NotifyCheat(sender, GetFormatActionText()))
+            {
+                LogRpcInfo($"{sender.IsImpostorTeam()} && {!sender.Is(RoleTypes.Engineer)}");
+            }
         }
     }
 }
