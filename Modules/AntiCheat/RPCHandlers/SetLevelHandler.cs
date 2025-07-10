@@ -15,8 +15,10 @@ internal sealed class SetLevelHandler : RPCHandler
     {
         if (sender.DataIsCollected() == true && sender.BetterData().AntiCheatInfo.HasSetLevel && !GameState.IsLocalGame && GameState.IsVanillaServer)
         {
-            BetterNotificationManager.NotifyCheat(sender, GetFormatSetText());
-            LogRpcInfo($"{sender.DataIsCollected() == true} && {!GameState.IsLocalGame} && {GameState.IsVanillaServer}");
+            if (BetterNotificationManager.NotifyCheat(sender, GetFormatSetText()))
+            {
+                LogRpcInfo($"{sender.DataIsCollected() == true} && {!GameState.IsLocalGame} && {GameState.IsVanillaServer}");
+            }
 
             return false;
         }
@@ -32,8 +34,10 @@ internal sealed class SetLevelHandler : RPCHandler
 
         if (level + 1 > BetterGameSettings.DetectedLevelAbove.GetInt())
         {
-            BetterNotificationManager.NotifyCheat(sender, string.Format(Translator.GetString("AntiCheat.InvalidLevelRPC"), level));
-            LogRpcInfo($"{level > BetterGameSettings.DetectedLevelAbove.GetInt()} - {level} > {BetterGameSettings.DetectedLevelAbove.GetInt()}");
+            if (BetterNotificationManager.NotifyCheat(sender, string.Format(Translator.GetString("AntiCheat.InvalidLevelRPC"), level)))
+            {
+                LogRpcInfo($"{level > BetterGameSettings.DetectedLevelAbove.GetInt()} - {level} > {BetterGameSettings.DetectedLevelAbove.GetInt()}");
+            }
         }
     }
 }

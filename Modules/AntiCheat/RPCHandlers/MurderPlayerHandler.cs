@@ -30,8 +30,10 @@ internal sealed class MurderPlayerHandler : RPCHandler
 
                 if (target.BetterData().AntiCheatInfo.TimesAttemptedKilled >= 5 && !target.IsAlive())
                 {
-                    BetterNotificationManager.NotifyCheat(player, string.Format(Translator.GetString("AntiCheat.InvalidAction"), Translator.GetString("AntiCheat.TryBanExploit")));
-                    LogRpcInfo($"{target.BetterData().AntiCheatInfo.TimesAttemptedKilled >= 5} && {!target.IsAlive()}");
+                    if (BetterNotificationManager.NotifyCheat(player, string.Format(Translator.GetString("AntiCheat.InvalidAction"), Translator.GetString("AntiCheat.TryBanExploit"))))
+                    {
+                        LogRpcInfo($"{target.BetterData().AntiCheatInfo.TimesAttemptedKilled >= 5} && {!target.IsAlive()}");
+                    }
                     return false;
                 }
 
@@ -54,9 +56,11 @@ internal sealed class MurderPlayerHandler : RPCHandler
         {
             if (!sender.IsImpostorTeam() || !sender.IsAlive() || sender.IsInVanish() || target.IsImpostorTeam())
             {
-                BetterNotificationManager.NotifyCheat(sender, GetFormatActionText());
-                LogRpcInfo($"{!sender.IsImpostorTeam()} || {sender.IsInVanish()}" +
-                    $" || {!target.IsAlive()} || {target.IsImpostorTeam()}");
+                if (BetterNotificationManager.NotifyCheat(sender, GetFormatActionText()))
+                {
+                    LogRpcInfo($"{!sender.IsImpostorTeam()} || {sender.IsInVanish()}" +
+                        $" || {!target.IsAlive()} || {target.IsImpostorTeam()}");
+                }
             }
         }
     }

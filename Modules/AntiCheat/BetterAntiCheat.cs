@@ -158,8 +158,10 @@ class BetterAntiCheat
                 or (byte)RpcCalls.ExtendLobbyTimer
                 or (byte)RpcCalls.CloseMeeting)
                 {
-                    BetterNotificationManager.NotifyCheat(player, string.Format(Translator.GetString("AntiCheat.InvalidHostRPC"), Enum.GetName((RpcCalls)callId)));
-                    Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {!player.IsHost()}");
+                    if (BetterNotificationManager.NotifyCheat(player, string.Format(Translator.GetString("AntiCheat.InvalidHostRPC"), Enum.GetName((RpcCalls)callId))))
+                    {
+                        Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {!player.IsHost()}");
+                    }
                     return false;
                 }
             }
@@ -173,8 +175,10 @@ class BetterAntiCheat
                     or (byte)RpcCalls.SetPet_Deprecated
                     or (byte)RpcCalls.SetNamePlate_Deprecated)
                 {
-                    BetterNotificationManager.NotifyCheat(player, string.Format(Translator.GetString("AntiCheat.InvalidSetRPC"), Enum.GetName((RpcCalls)callId)));
-                    Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {GameState.IsInGamePlay}");
+                    if (BetterNotificationManager.NotifyCheat(player, string.Format(Translator.GetString("AntiCheat.InvalidSetRPC"), Enum.GetName((RpcCalls)callId))))
+                    {
+                        Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {GameState.IsInGamePlay}");
+                    }
                     return false;
                 }
             }
@@ -197,20 +201,22 @@ class BetterAntiCheat
                     or (byte)RpcCalls.EnterVent
                     or (byte)RpcCalls.ExitVent
                     or (byte)RpcCalls.CloseDoorsOfType
-                    or (byte)RpcCalls.MurderPlayer
                     or (byte)RpcCalls.CheckMurder
+                    or (byte)RpcCalls.MurderPlayer
+                    or (byte)RpcCalls.CheckShapeshift
                     or (byte)RpcCalls.Shapeshift
                     or (byte)RpcCalls.RejectShapeshift
-                    or (byte)RpcCalls.CheckShapeshift
                     or (byte)RpcCalls.CheckProtect
                     or (byte)RpcCalls.ProtectPlayer
-                    or (byte)RpcCalls.StartAppear
-                    or (byte)RpcCalls.StartVanish
                     or (byte)RpcCalls.CheckAppear
-                    or (byte)RpcCalls.CheckVanish)
+                    or (byte)RpcCalls.StartAppear
+                    or (byte)RpcCalls.CheckVanish
+                    or (byte)RpcCalls.StartVanish)
                 {
-                    BetterNotificationManager.NotifyCheat(player, string.Format(Translator.GetString("AntiCheat.InvalidLobbyRPC"), Enum.GetName((RpcCalls)callId)));
-                    Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {GameState.IsInGame} && {GameState.IsLobby}");
+                    if (BetterNotificationManager.NotifyCheat(player, string.Format(Translator.GetString("AntiCheat.InvalidLobbyRPC"), Enum.GetName((RpcCalls)callId))))
+                    {
+                        Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {GameState.IsInGame} && {GameState.IsLobby}");
+                    }
                     return false;
                 }
             }

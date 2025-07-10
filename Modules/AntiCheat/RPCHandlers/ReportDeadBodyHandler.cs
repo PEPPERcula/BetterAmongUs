@@ -14,8 +14,10 @@ internal sealed class ReportDeadBodyHandler : RPCHandler
     {
         if (!GameState.IsInGamePlay || !Main.AllPlayerControls.All(pc => pc.roleAssigned))
         {
-            BetterNotificationManager.NotifyCheat(sender, string.Format(Translator.GetString("AntiCheat.InvalidActionRPC"), Enum.GetName((RpcCalls)CallId)), forceBan: true);
-            LogRpcInfo($"{!GameState.IsInGamePlay} || {!Main.AllPlayerControls.All(pc => pc.roleAssigned)}");
+            if (BetterNotificationManager.NotifyCheat(sender, string.Format(Translator.GetString("AntiCheat.InvalidActionRPC"), Enum.GetName((RpcCalls)CallId)), forceBan: true))
+            {
+                LogRpcInfo($"{!GameState.IsInGamePlay} || {!Main.AllPlayerControls.All(pc => pc.roleAssigned)}");
+            }
 
             return CancelAsHost;
         }
@@ -23,9 +25,11 @@ internal sealed class ReportDeadBodyHandler : RPCHandler
         if (GameState.IsMeeting && MeetingHudPatch.timeOpen > 5f || GameState.IsHideNSeek || sender.IsInVent() || sender.shapeshifting
             || sender.inMovingPlat || sender.onLadder || sender.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
         {
-            BetterNotificationManager.NotifyCheat(sender, string.Format(Translator.GetString("AntiCheat.InvalidActionRPC"), Enum.GetName((RpcCalls)CallId)));
-            LogRpcInfo($"{GameState.IsMeeting} && {MeetingHudPatch.timeOpen > 0.5f} || {sender.IsInVent()} || {sender.shapeshifting}" +
-                $" || {sender.inMovingPlat} || {sender.onLadder} || {sender.MyPhysics.Animations.IsPlayingAnyLadderAnimation()}");
+            if (BetterNotificationManager.NotifyCheat(sender, string.Format(Translator.GetString("AntiCheat.InvalidActionRPC"), Enum.GetName((RpcCalls)CallId))))
+            {
+                LogRpcInfo($"{GameState.IsMeeting} && {MeetingHudPatch.timeOpen > 0.5f} || {sender.IsInVent()} || {sender.shapeshifting}" +
+                    $" || {sender.inMovingPlat} || {sender.onLadder} || {sender.MyPhysics.Animations.IsPlayingAnyLadderAnimation()}");
+            }
 
             return CancelAsHost;
         }
@@ -37,8 +41,10 @@ internal sealed class ReportDeadBodyHandler : RPCHandler
         {
             if (!deadPlayerInfo.IsDead || deadPlayerInfo == sender.Data)
             {
-                BetterNotificationManager.NotifyCheat(sender, string.Format(Translator.GetString("AntiCheat.InvalidActionRPC"), Enum.GetName((RpcCalls)CallId)));
-                LogRpcInfo($"{!deadPlayerInfo.IsDead} || {deadPlayerInfo == sender.Data}");
+                if (BetterNotificationManager.NotifyCheat(sender, string.Format(Translator.GetString("AntiCheat.InvalidActionRPC"), Enum.GetName((RpcCalls)CallId))))
+                {
+                    LogRpcInfo($"{!deadPlayerInfo.IsDead} || {deadPlayerInfo == sender.Data}");
+                }
 
                 return CancelAsHost;
             }
@@ -47,9 +53,11 @@ internal sealed class ReportDeadBodyHandler : RPCHandler
         {
             if (sender.RemainingEmergencies <= 0)
             {
-                BetterNotificationManager.NotifyCheat(sender, string.Format(Translator.GetString("AntiCheat.InvalidActionRPC"), Enum.GetName((RpcCalls)CallId)));
-                LogRpcInfo($"{sender.RemainingEmergencies} -> {GameOptionsManager.Instance.currentNormalGameOptions.NumEmergencyMeetings}" +
-                    $" - {sender.RemainingEmergencies <= 0}");
+                if (BetterNotificationManager.NotifyCheat(sender, string.Format(Translator.GetString("AntiCheat.InvalidActionRPC"), Enum.GetName((RpcCalls)CallId))))
+                {
+                    LogRpcInfo($"{sender.RemainingEmergencies} -> {GameOptionsManager.Instance.currentNormalGameOptions.NumEmergencyMeetings}" +
+                        $" - {sender.RemainingEmergencies <= 0}");
+                }
 
                 return CancelAsHost;
             }

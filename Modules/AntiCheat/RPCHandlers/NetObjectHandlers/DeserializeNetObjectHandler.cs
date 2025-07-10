@@ -16,8 +16,10 @@ internal class DeserializeNetObjectHandler : RPCHandler
         {
             var player = innerNetObject.Cast<CustomNetworkTransform>()?.myPlayer;
             if (player == null) return;
-            BetterNotificationManager.NotifyCheat(player, "Attempting to move in meeting", forceBan: true);
-            LogRpcInfo($"{innerNetObject.TryCast<CustomNetworkTransform>() is CustomNetworkTransform} && {GameState.IsMeeting} && {MeetingHud.Instance.state != MeetingHud.VoteStates.Animating}", player);
+            if (BetterNotificationManager.NotifyCheat(player, "Attempting to move in meeting", forceBan: true))
+            {
+                LogRpcInfo($"{innerNetObject.TryCast<CustomNetworkTransform>() is CustomNetworkTransform} && {GameState.IsMeeting} && {MeetingHud.Instance.state != MeetingHud.VoteStates.Animating}", player);
+            }
         }
     }
 }

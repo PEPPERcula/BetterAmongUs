@@ -14,6 +14,12 @@ internal class BetterPingTracker : MonoBehaviour
     internal void SetUp(TextMeshPro pingText, AspectPosition pingAspectPosition)
     {
         if (Instance != null) return;
+        if (pingText == null || pingAspectPosition == null)
+        {
+            Logger.Error("BetterPingTracker.SetUp() called with null parameters!");
+            return;
+        }
+
         Instance = this;
         text = pingText;
         aspectPosition = pingAspectPosition;
@@ -21,15 +27,17 @@ internal class BetterPingTracker : MonoBehaviour
 
     private void Update()
     {
+        if (aspectPosition == null || text == null) return;
+
+        // Update position and appearance
         aspectPosition.DistanceFromEdge = new Vector3(4f, 0.1f, -5);
         aspectPosition.Alignment = AspectPosition.EdgeAlignments.RightTop;
         text.outlineWidth = 0.3f;
 
-        PlayerControl Host = AmongUsClient.Instance.GetHost().Character;
-
         StringBuilder sb = new();
 
-        if (!GameState.IsFreePlay)
+        // Check AmongUsClient.Instance
+        if (AmongUsClient.Instance != null && !GameState.IsFreePlay)
         {
             sb.AppendFormat("{0}: <b>{1}</b>\n", Translator.GetString("Ping").ToUpper(), GetPingColor(AmongUsClient.Instance.Ping));
         }
@@ -41,7 +49,6 @@ internal class BetterPingTracker : MonoBehaviour
 
         sb.Append($"<color=#00dbdb><size=75%>BetterAmongUs {Main.GetVersionText(true)}</size></color>\n");
         sb.Append("<size=68%><color=#8040bf>By</color> <color=#bc4345>The Enhanced Network</color></size>\n");
-        // sb.Append($"<size=50%><color=#b5b5b5>{Main.Github}</color></size>\n");
 
         if (GameState.IsTOHEHostLobby) sb.Append($"<size=75%><color=#e197dc>TOHE Lobby</color></size>\n");
 
@@ -52,12 +59,24 @@ internal class BetterPingTracker : MonoBehaviour
         }
 
         // Add Host Info if not in lobby
-        if (GameState.IsInGamePlay && !GameState.IsFreePlay && Host != null)
+        if (GameState.IsInGamePlay && !GameState.IsFreePlay && AmongUsClient.Instance != null)
         {
-            sb.AppendFormat("<size=75%>{0}: {1}</size>\n", Translator.GetString("Host"), Host.GetPlayerNameAndColor());
+            var hostInfo = AmongUsClient.Instance.GetHost();
+            if (hostInfo?.Character != null)
+            {
+                sb.AppendFormat("<size=75%>{0}: {1}</size>\n", Translator.GetString("Host"), hostInfo.Character.GetPlayerNameAndColor());
+            }
         }
 
-        text.text = sb.ToString();
+        text?.SetText(sb.ToString());
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
+        }
     }
 
     private static string GetPingColor(int ping)

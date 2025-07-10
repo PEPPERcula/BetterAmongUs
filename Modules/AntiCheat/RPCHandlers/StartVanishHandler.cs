@@ -20,8 +20,10 @@ internal sealed class StartVanishHandler : RPCHandler
 
         if (sender.IsInVent())
         {
-            BetterNotificationManager.NotifyCheat(sender, GetFormatActionText());
-            LogRpcInfo($"{sender.IsInVent()}");
+            if (BetterNotificationManager.NotifyCheat(sender, GetFormatActionText()))
+            {
+                LogRpcInfo($"{sender.IsInVent()}");
+            }
         }
 
         return true;
@@ -31,8 +33,10 @@ internal sealed class StartVanishHandler : RPCHandler
     {
         if (!sender.Is(RoleTypes.Phantom) || !sender.IsAlive())
         {
-            BetterNotificationManager.NotifyCheat(sender, GetFormatActionText());
-            LogRpcInfo($"{!sender.Is(RoleTypes.Phantom)} || {!sender.IsAlive()}");
+            if (BetterNotificationManager.NotifyCheat(sender, GetFormatActionText()))
+            {
+                LogRpcInfo($"{!sender.Is(RoleTypes.Phantom)} || {!sender.IsAlive()}");
+            }
             return false;
         }
 

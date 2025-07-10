@@ -20,10 +20,13 @@ internal sealed class StartAppearHandler : RPCHandler
 
         if (!shouldAnimate && (!sender.IsInVent() && !GameState.IsMeeting && !GameState.IsExilling))
         {
-            BetterNotificationManager.NotifyCheat(sender, GetFormatActionText());
-            LogRpcInfo($"{!shouldAnimate} && ({!sender.IsInVent()} && {!GameState.IsMeeting} && {!GameState.IsExilling})");
+            if (BetterNotificationManager.NotifyCheat(sender, GetFormatActionText()))
+            {
+                LogRpcInfo($"{!shouldAnimate} && ({!sender.IsInVent()} && {!GameState.IsMeeting} && {!GameState.IsExilling})");
 
-            sender.HandleServerAppear(true);
+                sender.HandleServerAppear(true);
+            }
+
             return false;
         }
 

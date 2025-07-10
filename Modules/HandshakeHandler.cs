@@ -1,4 +1,5 @@
-﻿using BetterAmongUs.Data;
+﻿using BepInEx.Unity.IL2CPP.Utils;
+using BetterAmongUs.Data;
 using BetterAmongUs.Helpers;
 using Hazel;
 using System.Collections;
@@ -10,7 +11,12 @@ internal class HandshakeHandler(ExtendedPlayerInfo extendedPlayerInfo)
 {
     private readonly ExtendedPlayerInfo extendedData = extendedPlayerInfo;
 
-    internal IEnumerator CoSendSecretToPlayer()
+    internal void WaitSendSecretToPlayer()
+    {
+        extendedData.StartCoroutine(CoWaitSendSecretToPlayer());
+    }
+
+    private IEnumerator CoWaitSendSecretToPlayer()
     {
         if (!Main.SendBetterRpc.Value) yield break;
 
@@ -40,7 +46,7 @@ internal class HandshakeHandler(ExtendedPlayerInfo extendedPlayerInfo)
         if (HasSendSharedSecret) return;
 
         HasSendSharedSecret = true;
-        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SendSecret, SendOption.Reliable, extendedData._Data.ClientId);
+        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SendSecretToPlayer, SendOption.Reliable, extendedData._Data.ClientId);
         writer.WriteBytes(SharedSecret.GetPublicKey());
         writer.Write(SharedSecret.GetTempKey());
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -77,7 +83,7 @@ internal class HandshakeHandler(ExtendedPlayerInfo extendedPlayerInfo)
         int hash = SharedSecret.GetSharedSecretHash();
         // Logger.Log($"Sending secret hash: {hash} (tempKey: {tempKey})");
 
-        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.CheckSecret, SendOption.Reliable, senderClientId);
+        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.CheckSecretHashFromPlayer, SendOption.Reliable, senderClientId);
         writer.Write(tempKey);
         writer.Write(hash);
         AmongUsClient.Instance.FinishRpcImmediately(writer);

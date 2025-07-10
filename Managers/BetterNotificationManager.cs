@@ -41,8 +41,10 @@ class BetterNotificationManager
         }
     }
 
-    internal static void NotifyCheat(PlayerControl player, string reason, string newText = "", bool kickPlayer = true, bool forceBan = false)
+    internal static bool NotifyCheat(PlayerControl player, string reason, string newText = "", bool kickPlayer = true, bool forceBan = false)
     {
+        if (player.IsCheater() || player?.Data == null) return false;
+
         if (player.IsLocalPlayer())
         {
             /*
@@ -51,10 +53,8 @@ class BetterNotificationManager
             Utils.DisconnectSelf("Tampered client detected!");
             Utils.DisconnectAccountFromOnline();
             */
-            return;
+            return false;
         }
-
-        if (player?.Data == null) return;
 
         var Reason = reason;
         if (BetterGameSettings.CensorDetectionReason.GetBool())
@@ -94,6 +94,8 @@ class BetterNotificationManager
             string kickMessage = string.Format(Translator.GetString("AntiCheat.KickMessage"), byAntiCheat, Reason);
             player.Kick(true, kickMessage, true, false, forceBan);
         }
+
+        return true;
     }
 
 
