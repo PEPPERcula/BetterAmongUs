@@ -33,8 +33,8 @@ internal class Main : BasePlugin
     internal const string HotfixNum = "0";
     internal const bool IsHotFix = false;
     internal const string PluginGuid = "com.ten.betteramongus";
-    internal const string PluginVersion = "1.1.6";
-    internal const string ReleaseDate = "04.17.2025"; // mm/dd/yyyy
+    internal const string PluginVersion = "1.2.0";
+    internal const string ReleaseDate = "07.09.2025"; // mm/dd/yyyy
     internal const string Github = "https://github.com/EnhancedNetwork/BetterAmongUs-Public";
     internal const string Discord = "https://discord.gg/ten";
     internal static UserData MyData = UserData.AllUsers.First();
@@ -90,8 +90,7 @@ internal class Main : BasePlugin
 
     internal static List<string> SupportedAmongUsVersions =
     [
-        "2025.3.31",
-        "2025.3.25"
+        "2025.6.10",
     ];
 
     internal static List<PlayerControl> AllPlayerControls = [];

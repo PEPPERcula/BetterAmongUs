@@ -18,7 +18,7 @@ class FileChecker
         "MonoMod", "netstandard", "mscorlib", "AssetRipper", "Cpp2IL", "AsmResolver", "Iced", "CsvHelper",
         "SemanticVersioning", "Mono.Cecil", "Assembly-CSharp", "StableNameDotNet", "AmongUsCaching",
         "Disarm", "Gee.External.Capstone", "Rewired_Core", "AddressablesPlayAssetDelivery", "Newtonsoft.Json",
-        "Assembly-CSharp-firstpass", "Sentry", "Rewired_Windows",
+        "Assembly-CSharp-firstpass", "Sentry", "Rewired_Windows", "__Generated",
         "BetterAmongUs", "MCI", "CrowdedMod", "Mini.RegionInstall", "Unlock", "Skin"
     });
 

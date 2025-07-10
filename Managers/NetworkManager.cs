@@ -172,7 +172,7 @@ internal class NetworkManager
             {
                 uint netId = reader.ReadPackedUInt32();
 
-                if (InnerNetClient.allObjectsFast.TryGetValue(netId, out innerNetObject))
+                if (InnerNetClient.allObjects.AllObjectsFast.TryGetValue(netId, out innerNetObject))
                 {
                     innerNetObject.Deserialize(reader, false);
                     break;
@@ -221,7 +221,7 @@ internal class NetworkManager
                     throw;
                 }
 
-                if (InnerNetClient.allObjectsFast.TryGetValue(netId, out InnerNetObject innerNetObject))
+                if (InnerNetClient.allObjects.AllObjectsFast.TryGetValue(netId, out InnerNetObject innerNetObject))
                 {
                     if (!HandleInnerNetObject(innerNetObject, rpcCall, reader))
                     {
