@@ -1,4 +1,5 @@
-﻿using Hazel;
+﻿using AmongUs.InnerNet.GameDataMessages;
+using Hazel;
 using InnerNet;
 using System.Globalization;
 
@@ -6,6 +7,25 @@ namespace BetterAmongUs.Helpers;
 
 static class InnerNetClientHelper
 {
+    internal static void BroadcastRpc(this BaseRpcMessage rpcMessage, bool reliable = true)
+    {
+        if (rpcMessage.TryCast<IGameDataMessage>(out var data))
+        {
+            if (reliable)
+                AmongUsClient.Instance.reliableMessageQueue.Enqueue(data);
+            else
+                AmongUsClient.Instance.unreliableMessageQueue.Enqueue(data);
+        }
+    }
+
+    internal static void BroadcastData(this BaseGameDataMessage rpcMessage)
+    {
+        if (rpcMessage.TryCast<IGameDataMessage>(out var data))
+        {
+            AmongUsClient.Instance.reliableMessageQueue.Enqueue(data);
+        }
+    }
+
     /// <summary>
     /// Writes an array of boolean values to a MessageWriter in a packed format to save space.
     /// Each byte stores up to 8 boolean values as bits.

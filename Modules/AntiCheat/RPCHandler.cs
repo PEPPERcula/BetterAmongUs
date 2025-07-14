@@ -2,7 +2,6 @@
 using BetterAmongUs.Items.Attributes;
 using Hazel;
 using InnerNet;
-using System.Reflection;
 using UnityEngine;
 
 namespace BetterAmongUs.Modules.AntiCheat;
@@ -20,13 +19,6 @@ internal enum HandlerFlag
 internal abstract class RPCHandler
 {
     internal static readonly RPCHandler?[] allHandlers = [.. RegisterRPCHandlerAttribute.Instances];
-
-    internal static RPCHandler?[] GetAllHandlerInstances() => Assembly.GetExecutingAssembly()
-        .GetTypes()
-        .Where(t => t.IsSubclassOf(typeof(RPCHandler)) && !t.IsAbstract)
-        .Select(t => (RPCHandler?)Activator.CreateInstance(t))
-        .ToArray();
-
     internal InnerNetClient innerNetClient => AmongUsClient.Instance;
     internal virtual byte CallId => byte.MaxValue;
     internal virtual byte GameDataTag => byte.MaxValue;

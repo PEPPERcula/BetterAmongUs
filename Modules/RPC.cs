@@ -33,22 +33,6 @@ enum HandleGameDataTags : byte
 
 internal static class RPC
 {
-    internal static void RpcSyncSettings()
-    {
-        if (!AmongUsClient.Instance.AmHost)
-        {
-            return;
-        }
-
-        foreach (var player in Main.AllPlayerControls.Where(pc => !pc.IsLocalPlayer()))
-        {
-            var optionsByteArray = GameOptionsManager.Instance.gameOptionsFactory.ToBytes(GameOptionsManager.Instance.CurrentGameOptions, false);
-            MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SyncSettings, SendOption.None, player.GetClientId());
-            messageWriter.WriteBytesAndSize(optionsByteArray);
-            AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
-        }
-    }
-
     internal static void RpcSetNamePrivate(PlayerControl player, string name, PlayerControl target)
     {
         if (!GameState.IsHost || !GameState.IsVanillaServer)
@@ -66,6 +50,7 @@ internal static class RPC
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.Reliable, -1);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
+
         player.Exiled();
     }
 

@@ -60,9 +60,9 @@ internal static class Utils
         var data = PlayerControl.LocalPlayer?.Data;
         if (data == null) return;
         ChatBubble pooledBubble = chat.GetPooledBubble();
-        string MsgName = $"<color=#ffffff><b>(<color=#00ff44>{Translator.GetString("SystemMessage")}</color>)</b>";
+        string MsgName = $"<color=#ffffff><b>(<color=#00ff44>{Translator.GetString("SystemMessage")}</color>)</b>" + ChatPatch.CommandPostfixName;
         if (overrideName != "")
-            MsgName = overrideName;
+            MsgName = overrideName + ChatPatch.CommandPostfixName;
         try
         {
             pooledBubble.transform.SetParent(chat.scroller.Inner);
