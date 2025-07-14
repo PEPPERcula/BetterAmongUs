@@ -1,11 +1,9 @@
 ﻿using AmongUs.Data;
 using AmongUs.Data.Player;
 using Assets.InnerNet;
-using BepInEx.Unity.IL2CPP.Utils.Collections;
 using BetterAmongUs.Helpers;
 using HarmonyLib;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using System.Collections;
 using System.Reflection;
 using UnityEngine;
 
@@ -128,20 +126,11 @@ internal class ModNews
         }
     }
 
-    [HarmonyPatch(typeof(AnnouncementPopUp), nameof(AnnouncementPopUp.Init)), HarmonyPostfix]
-    internal static void Initialize(ref Il2CppSystem.Collections.IEnumerator __result)
-    {
-        static IEnumerator FetchBlacklist()
-        {
-            ProcessModNewsFiles();
-            yield return null;
-        }
-        __result = Effects.Sequence(FetchBlacklist().WrapToIl2Cpp(), __result);
-    }
-
     [HarmonyPatch(typeof(PlayerAnnouncementData), nameof(PlayerAnnouncementData.SetAnnouncements)), HarmonyPrefix]
     internal static bool SetModAnnouncements(PlayerAnnouncementData __instance, [HarmonyArgument(0)] ref Il2CppReferenceArray<Announcement> aRange)
     {
+        ProcessModNewsFiles();
+
         AllModNews.Sort((a1, a2) => DateTime.Compare(DateTime.Parse(a2.Date), DateTime.Parse(a1.Date)));
 
         List<Announcement> finalAllNews = new List<Announcement>();
