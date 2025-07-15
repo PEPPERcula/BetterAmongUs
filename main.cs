@@ -34,7 +34,7 @@ internal class Main : BasePlugin
     internal const bool IsHotFix = false;
     internal const string PluginGuid = "com.ten.betteramongus";
     internal const string PluginVersion = "1.2.0";
-    internal const string ReleaseDate = "07.13.2025"; // mm/dd/yyyy
+    internal const string ReleaseDate = "07.14.2025"; // mm/dd/yyyy
     internal const string Github = "https://github.com/EnhancedNetwork/BetterAmongUs-Public";
     internal const string Discord = "https://discord.gg/ten";
     internal static UserData MyData = UserData.AllUsers.First();
