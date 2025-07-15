@@ -9,16 +9,50 @@ using UnityEngine;
 
 namespace BetterAmongUs.Patches;
 
-// History and dark mode from: https://github.com/0xDrMoe/TownofHost-Enhanced
-
 class ChatPatch
 {
     internal static List<string> ChatHistory = [];
     internal static int CurrentHistorySelection = -1;
 
+    internal const string CommandPostfixName = "<size=0%>IsCommand</size>";
+
     internal static void ClearChat()
     {
+        if (!HudManager.InstanceExists) return;
+
         HudManager.Instance.Chat.chatBubblePool.ReclaimAll();
+    }
+
+    internal static void ClearPlayerChats()
+    {
+        if (!HudManager.InstanceExists) return;
+
+        foreach (var obj in HudManager.Instance.Chat.chatBubblePool.activeChildren.ToArray())
+        {
+            var chatBubble = obj.GetComponent<ChatBubble>();
+            if (chatBubble != null)
+            {
+                if (chatBubble.NameText.text.EndsWith(CommandPostfixName)) continue;
+                HudManager.Instance.Chat.chatBubblePool.Reclaim(chatBubble);
+            }
+        }
+        HudManager.Instance.Chat.AlignAllBubbles();
+    }
+
+    internal static void ClearCommands()
+    {
+        if (!HudManager.InstanceExists) return;
+
+        foreach (var obj in HudManager.Instance.Chat.chatBubblePool.activeChildren.ToArray())
+        {
+            var chatBubble = obj.GetComponent<ChatBubble>();
+            if (chatBubble != null)
+            {
+                if (!chatBubble.NameText.text.EndsWith(CommandPostfixName)) continue;
+                HudManager.Instance.Chat.chatBubblePool.Reclaim(chatBubble);
+            }
+        }
+        HudManager.Instance.Chat.AlignAllBubbles();
     }
 
     [HarmonyPatch(typeof(ChatController))]

@@ -221,7 +221,7 @@ class MeetingHudPatch
 
         if (Main.ChatInGameplay.Value && !GameState.IsFreePlay && PlayerControl.LocalPlayer.IsAlive())
         {
-            ChatPatch.ClearChat();
+            ChatPatch.ClearPlayerChats();
         }
     }
 }

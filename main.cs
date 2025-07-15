@@ -28,13 +28,13 @@ internal enum ReleaseTypes : int
 [BepInProcess("Among Us.exe")]
 internal class Main : BasePlugin
 {
-    internal static readonly ReleaseTypes ReleaseBuildType = ReleaseTypes.Release;
-    internal const string BetaNum = "0";
+    internal static readonly ReleaseTypes ReleaseBuildType = ReleaseTypes.Beta;
+    internal const string BetaNum = "1";
     internal const string HotfixNum = "0";
     internal const bool IsHotFix = false;
     internal const string PluginGuid = "com.ten.betteramongus";
     internal const string PluginVersion = "1.2.0";
-    internal const string ReleaseDate = "07.09.2025"; // mm/dd/yyyy
+    internal const string ReleaseDate = "07.14.2025"; // mm/dd/yyyy
     internal const string Github = "https://github.com/EnhancedNetwork/BetterAmongUs-Public";
     internal const string Discord = "https://discord.gg/ten";
     internal static UserData MyData = UserData.AllUsers.First();
@@ -65,10 +65,10 @@ internal class Main : BasePlugin
                 text = $"v{BetterAmongUsVersion}";
                 break;
             case ReleaseTypes.Beta:
-                text = $"v{BetterAmongUsVersion}{newLineText}Beta {Main.BetaNum}";
+                text = $"v{BetterAmongUsVersion}{newLineText}Beta {BetaNum}";
                 break;
             case ReleaseTypes.Dev:
-                text = $"v{BetterAmongUsVersion}{newLineText}Dev {Main.ReleaseDate}";
+                text = $"v{BetterAmongUsVersion}{newLineText}Dev {ReleaseDate}";
                 break;
             default:
                 break;

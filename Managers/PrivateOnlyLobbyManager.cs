@@ -1,4 +1,5 @@
-﻿using BetterAmongUs.Modules;
+﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Modules;
 using BetterAmongUs.Patches;
 using HarmonyLib;
 
@@ -7,8 +8,36 @@ namespace BetterAmongUs.Managers;
 [HarmonyPatch]
 internal static class PrivateOnlyLobbyManager
 {
-    internal static void SyncNames()
+    private static void SyncNamesAsHost()
     {
+        if (!GameState.IsHost || !GameState.IsPrivateOnlyLobby || !GameState.InGame) return;
+
+        foreach (var target in PlayerControl.AllPlayerControls)
+        {
+            if (target.IsHost() || target.BetterData().IsBetterUser) continue;
+
+            foreach (var player in PlayerControl.AllPlayerControls)
+            {
+                if (GameState.IsMeeting)
+                {
+                    SetNameMeeting(player, target);
+                }
+                else
+                {
+                    SetNameGameplay(player, target);
+                }
+            }
+        }
+    }
+
+    private static void SetNameGameplay(PlayerControl player, PlayerControl target)
+    {
+        player.RpcSetNamePrivate("", target);
+    }
+
+    private static void SetNameMeeting(PlayerControl player, PlayerControl target)
+    {
+        player.RpcSetNamePrivate("", target);
     }
 
     [HarmonyPatch(typeof(PlayerControl))]
