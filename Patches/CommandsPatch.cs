@@ -101,7 +101,7 @@ class CommandsPatch
     }
 
     private static bool isTypedOut;
-    private static string typedCommand;
+    private static string typedCommand = "";
     private static BaseCommand? closestCommand;
 
     // Command helper

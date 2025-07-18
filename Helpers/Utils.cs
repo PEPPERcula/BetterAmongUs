@@ -207,6 +207,30 @@ internal static class Utils
         return new Color32(r, g, b, 255);
     }
 
+    internal static Color LerpColor(Color[] colors, (float min, float max) lerpRange, float t, bool reverse = false)
+    {
+        float normalizedT = Mathf.InverseLerp(lerpRange.min, lerpRange.max, t);
+
+        if (colors.Length == 1)
+            return colors[0];
+
+        if (reverse)
+        {
+            colors = colors.Reverse().ToArray();
+        }
+
+        if (normalizedT <= 0f)
+            return colors[0];
+        if (normalizedT >= 1f)
+            return colors[^1];
+
+        float segmentSize = 1f / (colors.Length - 1);
+        int segmentIndex = (int)(normalizedT / segmentSize);
+        float segmentT = (normalizedT - segmentIndex * segmentSize) / segmentSize;
+
+        return Color.Lerp(colors[segmentIndex], colors[segmentIndex + 1], segmentT);
+    }
+
     internal static void DisconnectAccountFromOnline(bool apiError = false)
     {
         if (GameState.IsInGame)

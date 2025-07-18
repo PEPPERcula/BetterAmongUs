@@ -39,12 +39,14 @@ internal class BetterPingTracker : MonoBehaviour
         // Check AmongUsClient.Instance
         if (AmongUsClient.Instance != null && !GameState.IsFreePlay)
         {
-            sb.AppendFormat("{0}: <b>{1}</b>\n", Translator.GetString("Ping").ToUpper(), GetPingColor(AmongUsClient.Instance.Ping));
+            string pingColor = Utils.Color32ToHex(Utils.LerpColor([Color.green, Color.yellow, new Color(1f, 0.5f, 0f), Color.red], (25, 250), AmongUsClient.Instance.Ping));
+            sb.AppendFormat("{0}: <b>{1}</b>\n", Translator.GetString("Ping").ToUpper(), $"<{pingColor}>{AmongUsClient.Instance.Ping}</color>");
         }
 
         if (GameState.IsLobby && GameState.IsHost && GameState.IsVanillaServer && !GameState.IsLocalGame)
         {
-            sb.AppendFormat("{0}: <b>{1}</b>\n", Translator.GetString("Timer").ToUpper(), GetTimeColor(GameStartManagerPatch.lobbyTimer));
+            string timeColor = Utils.Color32ToHex(Utils.LerpColor([Color.green, Color.yellow, new Color(1f, 0.5f, 0f), Color.red], (0, 300), GameStartManagerPatch.lobbyTimer, true));
+            sb.AppendFormat("{0}: <b>{1}</b>\n", Translator.GetString("Timer").ToUpper(), $"<{timeColor}>{GameStartManagerPatch.lobbyTimerDisplay}</color>");
         }
 
         sb.Append($"<color=#00dbdb><size=75%>BetterAmongUs {Main.GetVersionText(true)}</size></color>\n");
@@ -77,55 +79,5 @@ internal class BetterPingTracker : MonoBehaviour
         {
             Instance = null;
         }
-    }
-
-    private static string GetPingColor(int ping)
-    {
-        string color;
-        switch (ping)
-        {
-            case int n when n > 250:
-                color = "#ff0000";
-                break;
-            case int n when n > 100:
-                color = "#ffa200";
-                break;
-            case int n when n > 50:
-                color = "#ffff00";
-                break;
-            default:
-                color = "#00f04c";
-                break;
-        }
-
-        string newPing = $"<color={color}>{ping} ms</color>";
-
-        return newPing;
-    }
-
-    private static string GetTimeColor(float time)
-    {
-        float minutes = (int)time / 60 + 1f;
-
-        string color;
-        switch (minutes)
-        {
-            case float n when n <= 1:
-                color = "#ff0000";
-                break;
-            case float n when n <= 3.5f:
-                color = "#ffa200";
-                break;
-            case float n when n <= 5f:
-                color = "#ffff00";
-                break;
-            default:
-                color = "#00f04c";
-                break;
-        }
-
-        string newTime = $"<color={color}>{GameStartManagerPatch.lobbyTimerDisplay}</color>";
-
-        return newTime;
     }
 }
