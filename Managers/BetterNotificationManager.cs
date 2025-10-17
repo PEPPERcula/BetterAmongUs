@@ -1,7 +1,7 @@
 ﻿using BetterAmongUs.Data;
 using BetterAmongUs.Helpers;
 using BetterAmongUs.Modules;
-using BetterAmongUs.Patches;
+using BetterAmongUs.Patches.Gameplay.UI.Settings;
 using Cpp2IL.Core.Extensions;
 using TMPro;
 using UnityEngine;
@@ -86,8 +86,6 @@ class BetterNotificationManager
 
         Logger.LogCheat($"{player.cosmetics.nameText.text} Info: {player.Data.PlayerName} - {player.Data.FriendCode} - {player.GetHashPuid()}");
         Logger.LogCheat(Utils.RemoveHtmlText(rawText));
-
-        player.DirtyName();
 
         if (GameState.IsHost && kickPlayer)
         {

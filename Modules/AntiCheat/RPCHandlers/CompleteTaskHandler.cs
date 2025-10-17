@@ -10,11 +10,6 @@ internal sealed class CompleteTaskHandler : RPCHandler
 {
     internal override byte CallId => (byte)RpcCalls.CompleteTask;
 
-    internal override void Handle(PlayerControl? sender, MessageReader reader)
-    {
-        sender.DirtyName();
-    }
-
     internal override void HandleAntiCheat(PlayerControl? sender, MessageReader reader)
     {
         var taskId = reader.ReadPackedUInt32();

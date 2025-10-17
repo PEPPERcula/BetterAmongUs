@@ -12,11 +12,6 @@ internal sealed class MurderPlayerHandler : RPCHandler
 {
     internal override byte CallId => (byte)RpcCalls.MurderPlayer;
 
-    internal override void Handle(PlayerControl? sender, MessageReader reader)
-    {
-        Utils.DirtyAllNames();
-    }
-
     // Prevent ban exploit
     internal override bool HandleAntiCheatCancel(PlayerControl? player, MessageReader reader)
     {

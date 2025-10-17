@@ -81,7 +81,6 @@ internal class ExtendedPlayerInfo : MonoBehaviour, IMonoExtension<NetworkedPlaye
     internal UserData? MyUserData { get; private set; } = UserData.AllUsers.First();
     internal byte _PlayerId { get; private set; }
     internal string? RealName { get; private set; }
-    internal bool IsDirtyInfo { get; set; } = true;
     internal Dictionary<byte, string> LastNameSetFor { get; set; } = [];
     internal bool IsBetterUser { get; set; } = false;
     internal bool IsVerifiedBetterUser { get; set; } = false;

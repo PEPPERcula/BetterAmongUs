@@ -12,11 +12,19 @@ class BetterDataManager
     internal static string filePathFolder = Path.Combine(Main.GetGamePathToAmongUs(), $"Better_Data");
     internal static string filePathFolderSaveInfo = Path.Combine(filePathFolder, $"SaveInfo");
     internal static string filePathFolderSettings = Path.Combine(filePathFolder, $"Settings");
+    internal static string filePathFolderReplays = Path.Combine(filePathFolder, $"Replays");
     internal static string SettingsFileOld = Path.Combine(filePathFolderSettings, "Preset.json");
     internal static string SettingsFile = Path.Combine(filePathFolderSettings, "Settings.dat");
     internal static string banPlayerListFile = Path.Combine(filePathFolderSaveInfo, "BanPlayerList.txt");
     internal static string banNameListFile = Path.Combine(filePathFolderSaveInfo, "BanNameList.txt");
     internal static string banWordListFile = Path.Combine(filePathFolderSaveInfo, "BanWordList.txt");
+
+    private static string[] Paths =>
+    [
+        banPlayerListFile,
+        banNameListFile,
+        banWordListFile
+    ];
 
     internal static string GetFilePath(string name)
     {
@@ -27,6 +35,20 @@ class BetterDataManager
     {
         BetterDataFile.Init();
         BetterGameSettingsFile.Init();
+
+        foreach (var path in Paths)
+        {
+            if (!File.Exists(path))
+            {
+                var directory = Path.GetDirectoryName(path);
+                if (!Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+
+                File.CreateText(path).Close();
+            }
+        }
     }
 
     internal static void SaveSetting(int id, object? input)

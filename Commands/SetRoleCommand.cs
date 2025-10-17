@@ -2,7 +2,7 @@
 using BetterAmongUs.Helpers;
 using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Modules;
-using BetterAmongUs.Patches;
+using BetterAmongUs.Patches.Managers;
 
 namespace BetterAmongUs.Commands;
 
@@ -20,7 +20,7 @@ internal class SetRoleCommand : BaseCommand
             new PlayerArgument(this),
             new StringArgument(this, "{role}"),
         }); ;
-        roleArgument.GetArgSuggestions = () => { return RoleManager.Instance.AllRoles.Select(role => role.NiceName.ToLower()).ToArray(); };
+        roleArgument.GetArgSuggestions = () => { return RoleManager.Instance.AllRoles.ToArray().Select(role => role.NiceName.ToLower()).ToArray(); };
     }
     private readonly Lazy<BaseArgument[]> _arguments;
     internal override BaseArgument[]? Arguments => _arguments.Value;
@@ -38,7 +38,7 @@ internal class SetRoleCommand : BaseCommand
             CommandErrorText("Unable to use /setrole for self, use /role!");
             return;
         }
-        var role = RoleManager.Instance.AllRoles.FirstOrDefault(r => r.NiceName.StartsWith(roleArgument.Arg));
+        var role = RoleManager.Instance.AllRoles.ToArray().FirstOrDefault(r => r.NiceName.ToLower().StartsWith(roleArgument.Arg.ToLower()));
         if (role != null)
         {
             Utils.AddChatPrivate($"Set role to <color={Utils.GetTeamHexColor(role.TeamType)}>{role.NiceName}</color> for the next game!");

@@ -2,7 +2,7 @@
 using System.Text;
 using TMPro;
 using UnityEngine;
-using static BetterAmongUs.Patches.GamePlayManager;
+using static BetterAmongUs.Patches.Managers.GamePlayManager;
 
 namespace BetterAmongUs.Modules;
 

@@ -2,7 +2,7 @@
 using BetterAmongUs.Helpers;
 using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Managers;
-using BetterAmongUs.Patches;
+using BetterAmongUs.Patches.Gameplay.UI.Settings;
 using HarmonyLib;
 using Hazel;
 using InnerNet;

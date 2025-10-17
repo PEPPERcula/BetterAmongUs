@@ -1,7 +1,6 @@
 ﻿using AmongUs.Data;
-using AmongUs.GameOptions;
 using BetterAmongUs.Modules;
-using BetterAmongUs.Patches;
+using BetterAmongUs.Patches.Gameplay.UI.Chat;
 using InnerNet;
 using System.Reflection;
 using System.Security.Cryptography;
@@ -166,19 +165,6 @@ internal static class Utils
         return false;
     }
 
-    internal static void DirtyAllNames()
-    {
-        foreach (var player in Main.AllPlayerControls)
-        {
-            if (player == null) return;
-            player.DirtyName();
-        }
-    }
-
-    // Get name for role
-    internal static string GetRoleName(RoleTypes role) => Main.GetRoleName()[(int)role];
-    // Get color for role
-    internal static string GetRoleColor(RoleTypes role) => Main.GetRoleColor[(int)role];
     // Get hex color for team
     internal static string GetTeamHexColor(RoleTeamTypes team)
     {
@@ -216,7 +202,7 @@ internal static class Utils
 
         if (reverse)
         {
-            colors = colors.Reverse().ToArray();
+            colors.Reverse();
         }
 
         if (normalizedT <= 0f)

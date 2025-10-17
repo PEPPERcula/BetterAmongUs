@@ -42,10 +42,15 @@ internal static class TextFileHandler
 
     private static IEnumerable<string> ReadContents(string filePath)
     {
-        return File.ReadLines(filePath)
-                   .Where(line => !string.IsNullOrWhiteSpace(line) && !line.StartsWith("//"))
-                   .SelectMany(line => line.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                                           .Select(s => s.Trim()));
+        if (File.Exists(filePath))
+        {
+            return File.ReadLines(filePath)
+                       .Where(line => !string.IsNullOrWhiteSpace(line) && !line.StartsWith("//"))
+                       .SelectMany(line => line.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                               .Select(s => s.Trim()));
+        }
+
+        return [];
     }
 
     private static bool CheckFilterString(string filter, string text)

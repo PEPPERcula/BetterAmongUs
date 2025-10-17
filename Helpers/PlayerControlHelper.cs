@@ -1,7 +1,8 @@
 ﻿using AmongUs.GameOptions;
 using BetterAmongUs.Data;
 using BetterAmongUs.Modules;
-using BetterAmongUs.Patches;
+using BetterAmongUs.Patches.Gameplay.Player;
+using BetterAmongUs.Patches.Gameplay.UI.Settings;
 using InnerNet;
 using TMPro;
 using UnityEngine;
@@ -40,69 +41,6 @@ static class PlayerControlHelper
         }
     }
 
-    internal static void DirtyName(this PlayerControl player)
-    {
-        if (player.BetterData() != null)
-        {
-            player.BetterData().IsDirtyInfo = true;
-        }
-    }
-    internal static void DirtyName(this NetworkedPlayerInfo data)
-    {
-        if (data.BetterData() != null)
-        {
-            data.BetterData().IsDirtyInfo = true;
-        }
-    }
-
-    internal static void DirtyNameDelay(this PlayerControl player, float delay = 1f) => player.Data.DirtyNameDelay(delay);
-    internal static void DirtyNameDelay(this NetworkedPlayerInfo data, float delay = 1f)
-    {
-        _ = new LateTask(() =>
-        {
-            if (data != null)
-            {
-                data.DirtyName();
-            }
-        }, delay, shouldLog: false);
-    }
-
-
-    // Set players over head text
-    internal static void SetPlayerTextInfo(this PlayerControl player, string text, bool isBottom = false, bool isInfo = false)
-    {
-        if (player == null) return;
-
-        var textTop = player.BetterPlayerControl().InfoTextTop;
-        var textBottom = player.BetterPlayerControl().InfoTextBottom;
-        var textInfo = player.BetterPlayerControl().InfoTextInfo;
-
-        var targetText = isBottom ? textBottom : textTop;
-        if (isInfo)
-        {
-            targetText = textInfo;
-
-            if (string.IsNullOrEmpty(Utils.RemoveHtmlText(textTop.text)))
-            {
-                text = "<voffset=-2.25em>" + text + "</voffset>";
-            }
-        }
-
-        text = "<size=65%>" + text + "</size>";
-        if (targetText != null)
-        {
-            targetText.text = text;
-        }
-    }
-
-    // Reset players over head text
-    internal static void ResetAllPlayerTextInfo(this PlayerControl player)
-    {
-        if (player == null) return;
-        player.SetPlayerTextInfo("", isInfo: true);
-        player.SetPlayerTextInfo("");
-        player.SetPlayerTextInfo("", isBottom: true);
-    }
     // Check if players character has been created and received from the Host
     internal static bool DataIsCollected(this PlayerControl player)
     {
@@ -114,7 +52,7 @@ static class PlayerControlHelper
         }
 
         if (player.gameObject.transform.Find("Names/NameText_TMP").GetComponent<TextMeshPro>().text
-        is "???" or "Player" or "<color=#b5b5b5>Loading</color>" or "" or null
+        is "???" or "Player" or "" or null
         || player.Data == null
         || player.CurrentOutfit == null
         || player.CurrentOutfit.ColorId == -1)
@@ -233,30 +171,16 @@ static class PlayerControlHelper
     internal static bool IsInVent(this PlayerControl player) => player != null && (player.inVent || player.walkingToVent || player.MyPhysics?.Animations?.IsPlayingEnterVentAnimation() == true);
     // Check if player role name
 
-    internal static void UpdateColorBlindTextPosition(this PlayerControl player)
-    {
-        var text = player.cosmetics.colorBlindText;
-        if (!text.enabled) return;
-        if (!player.onLadder && !player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
-        {
-            text.transform.localPosition = new Vector3(0f, -1.5f, 0.4999f);
-        }
-        else
-        {
-            text.transform.localPosition = new Vector3(0f, -1.75f, 0.4999f);
-        }
-    }
-
     internal static string GetRoleName(this PlayerControl player)
     {
-        if (!player.IsAlive() && !player.IsGhostRole() && Main.GetRoleName().TryGetValue((int)player.BetterData().RoleInfo.DeadDisplayRole, out var roleName))
+        if (!player.IsAlive() && !player.IsGhostRole())
         {
-            return roleName;
+            return player.BetterData().RoleInfo.DeadDisplayRole.GetRoleName();
         }
 
-        if (player?.Data != null && Main.GetRoleName().TryGetValue((int)player.Data.RoleType, out var roleName2))
+        if (player?.Data != null)
         {
-            return roleName2;
+            return player.Data.RoleType.GetRoleName();
         }
 
         return string.Empty;
@@ -291,7 +215,7 @@ static class PlayerControlHelper
     // Check if player is Ghost role type
     internal static bool IsGhostRole(this PlayerControl player) => player?.Data?.RoleType is RoleTypes.GuardianAngel;
     // Check if player is on imposter team
-    internal static bool IsImpostorTeam(this PlayerControl player) => player?.Data != null && player.Data.RoleType is RoleTypes.Impostor or RoleTypes.ImpostorGhost or RoleTypes.Shapeshifter or RoleTypes.Phantom;
+    internal static bool IsImpostorTeam(this PlayerControl player) => player?.Data != null && player.Data.RoleType is RoleTypes.Impostor or RoleTypes.ImpostorGhost or RoleTypes.Shapeshifter or RoleTypes.Phantom or RoleTypes.Viper;
     // Check if player is a imposter teammate
     internal static bool IsImpostorTeammate(this PlayerControl player) =>
         player != null && PlayerControl.LocalPlayer != null &&

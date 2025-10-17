@@ -10,11 +10,6 @@ internal sealed class SetNameHandler : RPCHandler
 {
     internal override byte CallId => (byte)RpcCalls.SetName;
 
-    internal override void Handle(PlayerControl? sender, MessageReader reader)
-    {
-        Utils.DirtyAllNames();
-    }
-
     internal override bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader)
     {
         if (GameState.IsHost) return true;

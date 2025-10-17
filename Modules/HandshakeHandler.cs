@@ -70,7 +70,6 @@ internal class HandshakeHandler(ExtendedPlayerInfo extendedPlayerInfo)
         }
         extendedData.IsBetterUser = true;
         TryHandlePendingVerificationData();
-        extendedData._Data?.Object?.DirtyName();
         SendSecretHashToSender(tempKey, extendedData._Data.ClientId);
         ResendSecretToPlayer();
     }
@@ -118,7 +117,6 @@ internal class HandshakeHandler(ExtendedPlayerInfo extendedPlayerInfo)
         if (receivedHash == SharedSecret.GetSharedSecretHash())
         {
             extendedData.IsVerifiedBetterUser = true;
-            extendedData._Data.Object?.DirtyName();
             // Logger.Log($"Verified player: {_Data.PlayerName}");
         }
         else

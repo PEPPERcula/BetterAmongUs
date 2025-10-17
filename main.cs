@@ -1,5 +1,4 @@
-﻿using AmongUs.Data;
-using BepInEx;
+﻿using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
@@ -8,7 +7,7 @@ using BetterAmongUs.Helpers;
 using BetterAmongUs.Items;
 using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Modules;
-using BetterAmongUs.Patches;
+using BetterAmongUs.Patches.Gameplay.UI.Settings;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using System.Reflection;
@@ -24,19 +23,10 @@ internal enum ReleaseTypes : int
     Dev,
 }
 
-[BepInPlugin(PluginGuid, "BetterAmongUs", PluginVersion)]
+[BepInPlugin(ModInfo.PluginGuid, ModInfo.PluginName, ModInfo.PluginVersion)]
 [BepInProcess("Among Us.exe")]
 internal class Main : BasePlugin
 {
-    internal static readonly ReleaseTypes ReleaseBuildType = ReleaseTypes.Beta;
-    internal const string BetaNum = "1";
-    internal const string HotfixNum = "0";
-    internal const bool IsHotFix = false;
-    internal const string PluginGuid = "com.ten.betteramongus";
-    internal const string PluginVersion = "1.2.0";
-    internal const string ReleaseDate = "07.14.2025"; // mm/dd/yyyy
-    internal const string Github = "https://github.com/EnhancedNetwork/BetterAmongUs-Public";
-    internal const string Discord = "https://discord.gg/ten";
     internal static UserData MyData = UserData.AllUsers.First();
 
     internal static uint ModSignature => modSignature.Value;
@@ -59,30 +49,30 @@ internal class Main : BasePlugin
 
         string newLineText = newLine ? "\n" : " ";
 
-        switch (ReleaseBuildType)
+        switch (ModInfo.ReleaseBuildType)
         {
             case ReleaseTypes.Release:
                 text = $"v{BetterAmongUsVersion}";
                 break;
             case ReleaseTypes.Beta:
-                text = $"v{BetterAmongUsVersion}{newLineText}Beta {BetaNum}";
+                text = $"v{BetterAmongUsVersion}{newLineText}Beta {ModInfo.BetaNum}";
                 break;
             case ReleaseTypes.Dev:
-                text = $"v{BetterAmongUsVersion}{newLineText}Dev {ReleaseDate}";
+                text = $"v{BetterAmongUsVersion}{newLineText}Dev {ModInfo.ReleaseDate}";
                 break;
             default:
                 break;
         }
 
-        if (IsHotFix)
-            text += $"{newLineText}Hotfix {HotfixNum}";
+        if (ModInfo.IsHotFix)
+            text += $"{newLineText}Hotfix {ModInfo.HotfixNum}";
 
         return text;
     }
 
-    internal static Harmony Harmony { get; } = new Harmony(PluginGuid);
+    internal static Harmony Harmony { get; } = new Harmony(ModInfo.PluginGuid);
 
-    internal static string BetterAmongUsVersion => PluginVersion;
+    internal static string BetterAmongUsVersion => ModInfo.PluginVersion;
     internal static string AppVersion => Application.version;
     internal static string AmongUsVersion => ReferenceDataManager.Instance.Refdata.userFacingVersion;
 
@@ -90,47 +80,14 @@ internal class Main : BasePlugin
 
     internal static List<string> SupportedAmongUsVersions =
     [
-        "2025.6.10",
+        "2025.10.14",
+        "2025.9.9",
     ];
 
     internal static List<PlayerControl> AllPlayerControls = [];
     internal static List<PlayerControl> AllAlivePlayerControls => AllPlayerControls.Where(pc => pc.IsAlive()).ToList();
     internal static DeadBody[] AllDeadBodys => UnityEngine.Object.FindObjectsOfType<DeadBody>().ToArray();
     internal static Vent[] AllVents => UnityEngine.Object.FindObjectsOfType<Vent>();
-
-    internal static Dictionary<int, string> GetRoleName()
-    {
-        return new Dictionary<int, string>
-        {
-            { 0, Translator.GetString(StringNames.Crewmate) },
-            { 1, Translator.GetString(StringNames.Impostor) },
-            { 2, Translator.GetString(StringNames.ScientistRole) },
-            { 3, Translator.GetString(StringNames.EngineerRole) },
-            { 4, Translator.GetString(StringNames.GuardianAngelRole) },
-            { 5, Translator.GetString(StringNames.ShapeshifterRole) },
-            { 6, Translator.GetString(StringNames.Crewmate) },
-            { 7, Translator.GetString(StringNames.Impostor) },
-            { 8, Translator.GetString(StringNames.NoisemakerRole) },
-            { 9, Translator.GetString(StringNames.PhantomRole) },
-           { 10, Translator.GetString(StringNames.TrackerRole) }
-        };
-    }
-
-
-    internal static Dictionary<int, string> GetRoleColor => new Dictionary<int, string>
-    {
-        { 0, "#8cffff" },
-        { 1, "#f00202" },
-        { 2, "#00d9d9" },
-        { 3, "#8f8f8f" },
-        { 4, "#8cffff" },
-        { 5, "#f06102" },
-        { 6, "#8cffff" },
-        { 7, "#f00202" },
-        { 8, "#fc7c7c" },
-        { 9, "#d100b9" },
-       { 10, "#59f002" }
-    };
 
     internal static ManualLogSource? Logger;
 
@@ -152,7 +109,7 @@ internal class Main : BasePlugin
             if (ConsoleManager.ConfigConsoleEnabled.Value) ConsoleManager.DetachConsole();
             ConsoleManager.ConfigConsoleEnabled.Value = false;
             ConsoleManager.SetConsoleTitle("Among Us - BAU Console");
-            Logger = BepInEx.Logging.Logger.CreateLogSource(PluginGuid);
+            Logger = BepInEx.Logging.Logger.CreateLogSource(ModInfo.PluginGuid);
             var customLogListener = new CustomLogListener();
             BepInEx.Logging.Logger.Listeners.Add(customLogListener);
             ConsoleManager.SetConsoleColor(ConsoleColor.Green);
@@ -170,7 +127,6 @@ internal class Main : BasePlugin
             GameSettingMenuPatch.SetupSettings(true);
             FileChecker.Initialize();
             InstanceAttribute.RegisterAll();
-            AddActions();
 
             if (PlatformData.Platform == Platforms.StandaloneSteamPC)
                 File.WriteAllText(Path.Combine(Environment.CurrentDirectory, "steam_appid.txt"), "945360");
@@ -184,23 +140,12 @@ internal class Main : BasePlugin
             string SupportedVersions = string.Empty;
             foreach (string text in SupportedAmongUsVersions.ToArray())
                 SupportedVersions += $"{text} ";
-            BetterAmongUs.Logger.Log($"BetterAmongUs {BetterAmongUsVersion}-{ReleaseDate} - [{AppVersion} --> {SupportedVersions.Substring(0, SupportedVersions.Length - 1)}] {Utils.GetPlatformName(PlatformData.Platform)}");
+            BetterAmongUs.Logger.Log($"BetterAmongUs {BetterAmongUsVersion}-{ModInfo.ReleaseDate} - [{AppVersion} --> {SupportedVersions.Substring(0, SupportedVersions.Length - 1)}] {Utils.GetPlatformName(PlatformData.Platform)}");
         }
         catch (Exception ex)
         {
             BetterAmongUs.Logger.Error(ex);
         }
-    }
-
-    private static void AddActions()
-    {
-        DataManager.Settings.Gameplay.OnStreamerModeChanged += (Action)(() =>
-        {
-            if (GameState.IsInGame)
-            {
-                Utils.DirtyAllNames();
-            }
-        });
     }
 
     private static void RegisterAllMonoBehavioursInAssembly()

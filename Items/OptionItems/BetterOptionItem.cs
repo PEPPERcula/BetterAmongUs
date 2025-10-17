@@ -1,5 +1,5 @@
 ﻿using BetterAmongUs.Helpers;
-using BetterAmongUs.Patches;
+using BetterAmongUs.Patches.Gameplay.UI.Settings;
 using TMPro;
 using UnityEngine;
 

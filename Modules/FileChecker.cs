@@ -102,14 +102,6 @@ class FileChecker
             }
             _processedAssemblies.Add(assembly);
 
-            if (!TrustedNamespaces.Any(ns => assembly.FullName.Contains(ns, StringComparison.OrdinalIgnoreCase)))
-            {
-                WarningMsg = "<#D20200>Unregistered Assembly Detected</color>\n<#9D9D9D><size=70%>Look in logs for further information!</size></color>";
-                Logger.Warning($"Unauthorized Assembly: {assembly.FullName} (Unregistered Namespace)");
-                hasUnauthorizedFileOrMod = true;
-                continue;
-            }
-
             if (UntrustedNamespaces.Any(ns => assembly.FullName.Contains(ns, StringComparison.OrdinalIgnoreCase)))
             {
                 if (TrustedNamespaces.Any(ns => assembly.FullName.Contains(ns, StringComparison.OrdinalIgnoreCase)))
@@ -119,6 +111,14 @@ class FileChecker
 
                 WarningMsg = "<#D20200>Untrusted Assembly Detected</color>\n<#9D9D9D><size=70%>Look in logs for further information!</size></color>";
                 Logger.Warning($"Unauthorized Assembly: {assembly.FullName} (Untrusted Namespace)");
+                hasUnauthorizedFileOrMod = true;
+                continue;
+            }
+
+            if (!TrustedNamespaces.Any(ns => assembly.FullName.Contains(ns, StringComparison.OrdinalIgnoreCase)))
+            {
+                WarningMsg = "<#D20200>Unregistered Assembly Detected</color>\n<#9D9D9D><size=70%>Look in logs for further information!</size></color>";
+                Logger.Warning($"Unauthorized Assembly: {assembly.FullName} (Unregistered Namespace)");
                 hasUnauthorizedFileOrMod = true;
                 continue;
             }
