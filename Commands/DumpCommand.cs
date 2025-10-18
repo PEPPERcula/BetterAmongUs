@@ -37,7 +37,7 @@ internal class DumpCommand : BaseCommand
         {
             Directory.CreateDirectory(logFolderPath);
         }
-        string logFileName = "log-" + Main.GetVersionText().Replace(' ', '-').ToLower() + "-" + DateTime.Now.ToString("yyyy.MM.dd-HH.mm.ss") + ".log";
+        string logFileName = "log-" + BAUPlugin.GetVersionText().Replace(' ', '-').ToLower() + "-" + DateTime.Now.ToString("yyyy.MM.dd-HH.mm.ss") + ".log";
         string newLogFilePath = Path.Combine(logFolderPath, logFileName);
         File.WriteAllText(newLogFilePath, newLog);
         System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()

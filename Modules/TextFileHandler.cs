@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Text;
+using System.Text.RegularExpressions;
 
 namespace BetterAmongUs.Modules;
 
@@ -64,5 +65,44 @@ internal static class TextFileHandler
         };
 
         return Regex.IsMatch(text, pattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    }
+
+    internal static Dictionary<string, string> ParseYaml(string input)
+    {
+        var result = new Dictionary<string, string>();
+        var lines = input.Split(['\n', '\r'], StringSplitOptions.RemoveEmptyEntries);
+
+        string? currentKey = null;
+        StringBuilder currentValue = new();
+
+        foreach (var line in lines)
+        {
+            var separatorIndex = line.IndexOf(':');
+            if (separatorIndex > -1)
+            {
+                if (currentKey != null && currentValue.Length > 0)
+                {
+                    result[currentKey] = currentValue.ToString().Trim();
+                    currentValue.Clear();
+                }
+
+                var key = line[..separatorIndex].Trim();
+                var value = line[(separatorIndex + 1)..].Trim();
+
+                currentKey = key;
+                currentValue.Append(value);
+            }
+            else if (currentKey != null && line.Trim().Length > 0)
+            {
+                currentValue.Append('\n').Append(line.Trim());
+            }
+        }
+
+        if (currentKey != null && currentValue.Length > 0)
+        {
+            result[currentKey] = currentValue.ToString().Trim();
+        }
+
+        return result;
     }
 }

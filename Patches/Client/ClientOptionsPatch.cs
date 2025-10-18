@@ -53,19 +53,19 @@ internal static class OptionsMenuBehaviourPatch
         if (AntiCheat == null || AntiCheat.ToggleButton == null)
         {
             string title = Translator.GetString("BetterOption.AntiCheat");
-            AntiCheat = ClientOptionItem.Create(title, Main.AntiCheat, __instance);
+            AntiCheat = ClientOptionItem.Create(title, BAUPlugin.AntiCheat, __instance);
         }
 
         if (SendBetterRpc == null || SendBetterRpc.ToggleButton == null)
         {
             string title = Translator.GetString("BetterOption.SendBetterRpc");
-            SendBetterRpc = ClientOptionItem.Create(title, Main.SendBetterRpc, __instance, SendBetterRpcToggle);
+            SendBetterRpc = ClientOptionItem.Create(title, BAUPlugin.SendBetterRpc, __instance, SendBetterRpcToggle);
 
             static void SendBetterRpcToggle()
             {
                 if (GameState.IsInGame)
                 {
-                    foreach (var player in Main.AllPlayerControls)
+                    foreach (var player in BAUPlugin.AllPlayerControls)
                     {
                         if (player.IsLocalPlayer()) continue;
                         player.BetterData().HandshakeHandler.ResendSecretToPlayer();
@@ -77,7 +77,7 @@ internal static class OptionsMenuBehaviourPatch
         if (BetterNotifications == null || BetterNotifications.ToggleButton == null)
         {
             string title = Translator.GetString("BetterOption.BetterNotifications");
-            BetterNotifications = ClientOptionItem.Create(title, Main.BetterNotifications, __instance, BetterNotificationsToggle);
+            BetterNotifications = ClientOptionItem.Create(title, BAUPlugin.BetterNotifications, __instance, BetterNotificationsToggle);
 
             static void BetterNotificationsToggle()
             {
@@ -90,13 +90,13 @@ internal static class OptionsMenuBehaviourPatch
         if (ForceOwnLanguage == null || ForceOwnLanguage.ToggleButton == null)
         {
             string title = Translator.GetString("BetterOption.ForceOwnLanguage");
-            ForceOwnLanguage = ClientOptionItem.Create(title, Main.ForceOwnLanguage, __instance);
+            ForceOwnLanguage = ClientOptionItem.Create(title, BAUPlugin.ForceOwnLanguage, __instance);
         }
 
         if (ChatDarkMode == null || ChatDarkMode.ToggleButton == null)
         {
             string title = Translator.GetString("BetterOption.ChatDarkMode");
-            ChatDarkMode = ClientOptionItem.Create(title, Main.ChatDarkMode, __instance, ChatDarkModeToggle);
+            ChatDarkMode = ClientOptionItem.Create(title, BAUPlugin.ChatDarkMode, __instance, ChatDarkModeToggle);
 
             static void ChatDarkModeToggle()
             {
@@ -107,22 +107,22 @@ internal static class OptionsMenuBehaviourPatch
         if (ChatInGameplay == null || ChatInGameplay.ToggleButton == null)
         {
             string title = Translator.GetString("BetterOption.ChatInGame");
-            ChatInGameplay = ClientOptionItem.Create(title, Main.ChatInGameplay, __instance);
+            ChatInGameplay = ClientOptionItem.Create(title, BAUPlugin.ChatInGameplay, __instance);
         }
 
         if (LobbyPlayerInfo == null || LobbyPlayerInfo.ToggleButton == null)
         {
             string title = Translator.GetString("BetterOption.LobbyInfo");
-            LobbyPlayerInfo = ClientOptionItem.Create(title, Main.LobbyPlayerInfo, __instance);
+            LobbyPlayerInfo = ClientOptionItem.Create(title, BAUPlugin.LobbyPlayerInfo, __instance);
         }
 
         if (DisableLobbyTheme == null || DisableLobbyTheme.ToggleButton == null)
         {
             string title = Translator.GetString("BetterOption.LobbyTheme");
-            DisableLobbyTheme = ClientOptionItem.Create(title, Main.DisableLobbyTheme, __instance, DisableLobbyThemeButtonToggle);
+            DisableLobbyTheme = ClientOptionItem.Create(title, BAUPlugin.DisableLobbyTheme, __instance, DisableLobbyThemeButtonToggle);
             static void DisableLobbyThemeButtonToggle()
             {
-                if (GameState.IsLobby && !Main.DisableLobbyTheme.Value)
+                if (GameState.IsLobby && !BAUPlugin.DisableLobbyTheme.Value)
                 {
                     SoundManager.instance.CrossFadeSound("MapTheme", LobbyBehaviour.Instance.MapTheme, 0.5f, 1.5f);
                 }
@@ -132,17 +132,17 @@ internal static class OptionsMenuBehaviourPatch
         if (UnlockFPS == null || UnlockFPS.ToggleButton == null)
         {
             string title = Translator.GetString("BetterOption.UnlockFPS");
-            UnlockFPS = ClientOptionItem.Create(title, Main.UnlockFPS, __instance, UnlockFPSButtonToggle);
+            UnlockFPS = ClientOptionItem.Create(title, BAUPlugin.UnlockFPS, __instance, UnlockFPSButtonToggle);
             static void UnlockFPSButtonToggle()
             {
-                Application.targetFrameRate = Main.UnlockFPS.Value ? 165 : 60;
+                Application.targetFrameRate = BAUPlugin.UnlockFPS.Value ? 165 : 60;
             }
         }
 
         if (ShowFPS == null || ShowFPS.ToggleButton == null)
         {
             string title = Translator.GetString("BetterOption.ShowFPS");
-            ShowFPS = ClientOptionItem.Create(title, Main.ShowFPS, __instance);
+            ShowFPS = ClientOptionItem.Create(title, BAUPlugin.ShowFPS, __instance);
         }
 
         if (OpenSaveData == null || OpenSaveData.ToggleButton == null)

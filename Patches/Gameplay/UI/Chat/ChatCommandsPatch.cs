@@ -11,7 +11,7 @@ namespace BetterAmongUs.Patches.Gameplay.UI.Chat;
 class ChatCommandsPatch
 {
     private static bool _enabled = true;
-    internal static string CommandPrefix => Main.CommandPrefix.Value;
+    internal static string CommandPrefix => BAUPlugin.CommandPrefix.Value;
 
     // Run code for specific commands
     private static void HandleCommand()
@@ -225,7 +225,7 @@ class ChatCommandsPatch
         if (closestNormalCommand != null)
             return closestNormalCommand;
 
-        if (Main.MyData.IsSponsor())
+        if (BAUPlugin.MyData.IsSponsor())
         {
             var directSponsorMatch = BaseCommand.allCommands
                 .FirstOrDefault(c => c.Type == CommandType.Sponsor
@@ -243,7 +243,7 @@ class ChatCommandsPatch
                 return closestSponsorCommand;
         }
 
-        if (Main.MyData.IsDev())
+        if (BAUPlugin.MyData.IsDev())
         {
             var directdebugCommand = BaseCommand.allCommands
                 .FirstOrDefault(c => c.Type == CommandType.Debug

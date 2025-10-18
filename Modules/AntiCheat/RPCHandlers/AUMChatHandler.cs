@@ -28,7 +28,7 @@ internal sealed class AUMChatHandler : RPCHandler
 
         Logger.Log($"{sender.Data.PlayerName} -> {msgString}", "AUMChatLog");
 
-        if (!Main.AntiCheat.Value || !BetterGameSettings.DetectCheatClients.GetBool()) return;
+        if (!BAUPlugin.AntiCheat.Value || !BetterGameSettings.DetectCheatClients.GetBool()) return;
 
         var flag = string.IsNullOrEmpty(nameString) && string.IsNullOrEmpty(msgString);
 

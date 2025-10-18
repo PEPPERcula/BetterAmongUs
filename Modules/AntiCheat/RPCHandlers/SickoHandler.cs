@@ -15,7 +15,7 @@ internal sealed class SickoHandler : RPCHandler
 
     internal override void HandleCheatRpcCheck(PlayerControl? sender, MessageReader reader)
     {
-        if (Main.AntiCheat.Value && BetterGameSettings.DetectCheatClients.GetBool())
+        if (BAUPlugin.AntiCheat.Value && BetterGameSettings.DetectCheatClients.GetBool())
         {
             if (reader.BytesRemaining == 0 && !BetterDataManager.BetterDataFile.SickoData.Any(info => info.CheckPlayerData(sender.Data)))
             {

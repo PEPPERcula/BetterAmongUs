@@ -58,7 +58,7 @@ internal class PrivateLobbyPatch
             }
         }
 
-        TogglePrivateOnlyLobby(Main.PrivateOnlyLobby.Value);
+        TogglePrivateOnlyLobby(BAUPlugin.PrivateOnlyLobby.Value);
     }
 
     private static void TogglePrivateOnlyLobby(bool modeOn)
@@ -78,7 +78,7 @@ internal class PrivateLobbyPatch
         {
             buttons[1].SelectButton(true);
         }
-        Main.PrivateOnlyLobby.Value = modeOn;
+        BAUPlugin.PrivateOnlyLobby.Value = modeOn;
     }
 
     [HarmonyPatch(typeof(LobbyInfoPane))]
@@ -86,7 +86,7 @@ internal class PrivateLobbyPatch
     [HarmonyPostfix]
     internal static void LobbyInfoPaneUpdate_Postfix(LobbyInfoPane __instance)
     {
-        if (Main.PrivateOnlyLobby.Value && !GameState.IsLocalGame && GameState.IsHost)
+        if (BAUPlugin.PrivateOnlyLobby.Value && !GameState.IsLocalGame && GameState.IsHost)
         {
             if (AmongUsClient.Instance.IsGamePublic)
             {

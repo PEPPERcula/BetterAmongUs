@@ -28,7 +28,7 @@ internal class SetRoleCommand : BaseCommand
     private PlayerArgument? playerArgument => (PlayerArgument)Arguments[0];
     private StringArgument? roleArgument => (StringArgument)Arguments[1];
 
-    internal override bool ShowCommand() => GameState.IsHost && Main.MyData.HasAll() && Main.MyData.IsVerified();
+    internal override bool ShowCommand() => GameState.IsHost && BAUPlugin.MyData.HasAll() && BAUPlugin.MyData.IsVerified();
 
     internal override void Run()
     {

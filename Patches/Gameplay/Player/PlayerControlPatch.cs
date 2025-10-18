@@ -10,14 +10,14 @@ class PlayerControlPatch
     [HarmonyPostfix]
     internal static void Start_Postfix(PlayerControl __instance)
     {
-        Main.AllPlayerControls.Add(__instance);
+        BAUPlugin.AllPlayerControls.Add(__instance);
     }
 
     [HarmonyPatch(nameof(PlayerControl.OnDestroy))]
     [HarmonyPostfix]
     internal static void OnDestroy_Postfix(PlayerControl __instance)
     {
-        Main.AllPlayerControls.Remove(__instance);
+        BAUPlugin.AllPlayerControls.Remove(__instance);
     }
 
     [HarmonyPatch(nameof(PlayerControl.MurderPlayer))]

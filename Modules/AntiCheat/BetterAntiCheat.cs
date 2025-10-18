@@ -17,7 +17,7 @@ class BetterAntiCheat
     {
         if (GameState.IsHost && GameState.IsInGame)
         {
-            foreach (var player in Main.AllPlayerControls)
+            foreach (var player in BAUPlugin.AllPlayerControls)
             {
                 if (BetterDataManager.BetterDataFile.SickoData.Any(info => info.CheckPlayerData(player.Data)))
                 {
@@ -54,7 +54,7 @@ class BetterAntiCheat
         [HarmonyPostfix]
         internal static void Deserialize_Postfix(PlatformSpecificData __instance)
         {
-            if (!Main.AntiCheat.Value || !GameState.IsVanillaServer) return;
+            if (!BAUPlugin.AntiCheat.Value || !GameState.IsVanillaServer) return;
 
             if (GameState.IsLobby)
             {
@@ -62,7 +62,7 @@ class BetterAntiCheat
                 {
                     _ = new LateTask(() =>
                     {
-                        var player = Main.AllPlayerControls.FirstOrDefault(pc => pc.GetClient().PlatformData == __instance);
+                        var player = BAUPlugin.AllPlayerControls.FirstOrDefault(pc => pc.GetClient().PlatformData == __instance);
 
                         if (player != null && __instance?.Platform != null)
                         {
@@ -124,7 +124,7 @@ class BetterAntiCheat
         MessageReader reader = MessageReader.Get(oldReader);
 
         if (player == null || player?.Data == null || reader == null) return;
-        if (!IsEnabled || !Main.AntiCheat.Value || (GameState.IsBetterHostLobby && !GameState.IsHost) || !BetterGameSettings.DetectInvalidRPCs.GetBool()) return;
+        if (!IsEnabled || !BAUPlugin.AntiCheat.Value || (GameState.IsBetterHostLobby && !GameState.IsHost) || !BetterGameSettings.DetectInvalidRPCs.GetBool()) return;
         if (player.IsLocalPlayer() && player.IsHost()) return;
 
         RPCHandler.HandleRPC(callId, player, reader, HandlerFlag.AntiCheat);
@@ -138,7 +138,7 @@ class BetterAntiCheat
             MessageReader reader = MessageReader.Get(oldReader);
 
             if (player == null || player?.Data == null || reader == null) return true;
-            if (!IsEnabled || !Main.AntiCheat.Value || (GameState.IsBetterHostLobby && !GameState.IsHost) || !BetterGameSettings.DetectInvalidRPCs.GetBool()) return true;
+            if (!IsEnabled || !BAUPlugin.AntiCheat.Value || (GameState.IsBetterHostLobby && !GameState.IsHost) || !BetterGameSettings.DetectInvalidRPCs.GetBool()) return true;
             if (player.IsLocalPlayer() && player.IsHost()) return true;
 
             if (TrustedRPCs(callId) != true && !player.IsHost())

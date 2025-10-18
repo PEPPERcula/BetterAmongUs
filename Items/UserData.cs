@@ -52,7 +52,7 @@ internal class UserData(string name = "", string puid = "", string friendCode = 
                 {
                     Logger.Log($"Found local UserData({data.Name})");
                     data.IsLocalData = true;
-                    Main.MyData = new(data.Name, data.Puid, data.FriendCode, data.OverheadTag, data.OverheadColor, data.Permissions)
+                    BAUPlugin.MyData = new(data.Name, data.Puid, data.FriendCode, data.OverheadTag, data.OverheadColor, data.Permissions)
                     {
                         IsLocalData = true
                     };

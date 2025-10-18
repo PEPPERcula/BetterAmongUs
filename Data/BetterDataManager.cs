@@ -9,7 +9,7 @@ class BetterDataManager
 
     internal static string dataPathOLD = GetFilePath("BetterData");
     internal static string dataPath = GetFilePath("BetterDataV2");
-    internal static string filePathFolder = Path.Combine(Main.GetGamePathToAmongUs(), $"Better_Data");
+    internal static string filePathFolder = Path.Combine(BAUPlugin.GetGamePathToAmongUs(), $"Better_Data");
     internal static string filePathFolderSaveInfo = Path.Combine(filePathFolder, $"SaveInfo");
     internal static string filePathFolderSettings = Path.Combine(filePathFolder, $"Settings");
     internal static string filePathFolderReplays = Path.Combine(filePathFolder, $"Replays");
@@ -28,7 +28,7 @@ class BetterDataManager
 
     internal static string GetFilePath(string name)
     {
-        return Path.Combine(Main.GetDataPathToAmongUs(), $"{name}.json");
+        return Path.Combine(BAUPlugin.GetDataPathToAmongUs(), $"{name}.json");
     }
 
     internal static void Init()

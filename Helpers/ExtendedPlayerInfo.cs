@@ -49,7 +49,7 @@ internal class ExtendedPlayerInfo : MonoBehaviour, IMonoExtension<NetworkedPlaye
         {
             bool flag = _Data.Object.IsCheater();
 
-            if (AntiCheatInfo.RPCSentPS >= ExtendedAntiCheatInfo.MaxRPCSent && !flag)
+            if (AntiCheatInfo.RPCSentPS >= ExtendedAntiCheatInfo.MAX_RPC_SENT && !flag)
             {
                 BetterNotificationManager.NotifyCheat(_Data.Object,
                     Translator.GetString("AntiCheat.Reason.RPCSentPS"),
@@ -93,9 +93,9 @@ internal class ExtendedPlayerInfo : MonoBehaviour, IMonoExtension<NetworkedPlaye
 
 internal class ExtendedAntiCheatInfo
 {
+    internal const int MAX_RPC_SENT = 50;
     internal bool BannedByAntiCheat { get; set; } = false;
     internal List<string> AUMChats { get; set; } = [];
-    internal static int MaxRPCSent => 50;
     internal int RPCSentPS { get; set; } = 0;
     internal int TimesAttemptedKilled { get; set; } = 0;
     internal int OpenSabotageNum { get; set; } = 0;

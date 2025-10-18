@@ -20,7 +20,7 @@ class BetterNotificationManager
 
     internal static void Notify(string text, float Time = 5f)
     {
-        if (!Main.BetterNotifications.Value) return;
+        if (!BAUPlugin.BetterNotifications.Value) return;
 
         if (BAUNotificationManagerObj != null)
         {

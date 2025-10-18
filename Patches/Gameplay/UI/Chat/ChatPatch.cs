@@ -70,7 +70,7 @@ class ChatPatch
         [HarmonyPriority(Priority.First)]
         internal static void Update_Prefix(ChatController __instance)
         {
-            if (Main.ChatDarkMode.Value)
+            if (BAUPlugin.ChatDarkMode.Value)
             {
                 // Free chat color
                 __instance.freeChatField.background.color = new Color32(40, 40, 40, byte.MaxValue);
@@ -211,7 +211,7 @@ class ChatPatch
         {
             var chat = HudManager.Instance.Chat;
 
-            if (Main.ChatDarkMode.Value)
+            if (BAUPlugin.ChatDarkMode.Value)
             {
                 // Quick chat color
                 chat.quickChatField.background.color = new Color32(40, 40, 40, byte.MaxValue);
@@ -249,7 +249,7 @@ class ChatPatch
 
             if (chatBubble == null) return chatBubble;
 
-            if (Main.ChatDarkMode.Value)
+            if (BAUPlugin.ChatDarkMode.Value)
             {
                 chatBubble.transform.Find("ChatText (TMP)").GetComponent<TextMeshPro>().color = new Color(1f, 1f, 1f, 1f);
                 chatBubble.transform.Find("Background").GetComponent<SpriteRenderer>().color = new Color(0.15f, 0.15f, 0.15f, 1f);

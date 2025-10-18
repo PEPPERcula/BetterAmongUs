@@ -15,7 +15,7 @@ internal sealed class KillNetworkChatHandler : RPCHandler
 
     internal override void HandleCheatRpcCheck(PlayerControl? sender, MessageReader reader)
     {
-        if (!Main.AntiCheat.Value || !BetterGameSettings.DetectCheatClients.GetBool()) return;
+        if (!BAUPlugin.AntiCheat.Value || !BetterGameSettings.DetectCheatClients.GetBool()) return;
 
         if (!BetterDataManager.BetterDataFile.KNData.Any(info => info.CheckPlayerData(sender.Data)))
         {

@@ -44,11 +44,11 @@ internal static class Utils
     // Get player data from friend code
     internal static NetworkedPlayerInfo? PlayerDataFromFriendCode(string friendCode) => GameData.Instance.AllPlayers.ToArray().FirstOrDefault(data => data.FriendCode == friendCode);
     // Get player from player id
-    internal static PlayerControl? PlayerFromPlayerId(int playerId) => Main.AllPlayerControls.FirstOrDefault(player => player.PlayerId == playerId) ?? null;
+    internal static PlayerControl? PlayerFromPlayerId(int playerId) => BAUPlugin.AllPlayerControls.FirstOrDefault(player => player.PlayerId == playerId) ?? null;
     // Get player from client id
-    internal static PlayerControl? PlayerFromClientId(int clientId) => Main.AllPlayerControls.FirstOrDefault(player => player.GetClientId() == clientId) ?? null;
+    internal static PlayerControl? PlayerFromClientId(int clientId) => BAUPlugin.AllPlayerControls.FirstOrDefault(player => player.GetClientId() == clientId) ?? null;
     // Get player from net id
-    internal static PlayerControl? PlayerFromNetId(uint netId) => Main.AllPlayerControls.FirstOrDefault(player => player.NetId == netId) ?? null;
+    internal static PlayerControl? PlayerFromNetId(uint netId) => BAUPlugin.AllPlayerControls.FirstOrDefault(player => player.NetId == netId) ?? null;
     // Add msg to chat
     internal static void AddChatPrivate(string text, string overrideName = "", bool setRight = false)
     {

@@ -45,8 +45,8 @@ internal static class OnPlayerJoinedPatch
                     if (player != null)
                     {
                         if (TextFileHandler.CompareStringMatch(BetterDataManager.banPlayerListFile,
-                            Main.AllPlayerControls.Select(player => player.Data.FriendCode)
-                            .Concat(Main.AllPlayerControls.Select(player => player.GetHashPuid())).ToArray()))
+                            BAUPlugin.AllPlayerControls.Select(player => player.Data.FriendCode)
+                            .Concat(BAUPlugin.AllPlayerControls.Select(player => player.GetHashPuid())).ToArray()))
                         {
                             player.Kick(true, Translator.GetString("AntiCheat.BanPlayerListMessage"), bypassDataCheck: true);
                         }

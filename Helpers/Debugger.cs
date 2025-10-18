@@ -21,7 +21,7 @@ class Logger
             string logFilePath = Path.Combine(BetterDataManager.filePathFolder, "better-log.txt");
             string newLine = $"{mark}: {Utils.RemoveHtmlText(info)}";
             File.AppendAllText(logFilePath, newLine + Environment.NewLine);
-            Main.Logger.LogInfo($"[{tag}] {info}");
+            BAUPlugin.Logger.LogInfo($"[{tag}] {info}");
             if (logConsole)
             {
                 ConsoleManager.SetConsoleColor(color);

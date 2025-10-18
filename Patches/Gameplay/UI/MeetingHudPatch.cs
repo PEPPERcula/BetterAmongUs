@@ -40,7 +40,7 @@ class MeetingHudPatch
         timeOpen = 0f;
         Logger.LogHeader("Meeting Has Ended");
 
-        if (Main.ChatInGameplay.Value && !GameState.IsFreePlay && PlayerControl.LocalPlayer.IsAlive())
+        if (BAUPlugin.ChatInGameplay.Value && !GameState.IsFreePlay && PlayerControl.LocalPlayer.IsAlive())
         {
             ChatPatch.ClearPlayerChats();
         }

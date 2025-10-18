@@ -49,12 +49,12 @@ internal class BetterPingTracker : MonoBehaviour
             sb.AppendFormat("{0}: <b>{1}</b>\n", Translator.GetString("Timer").ToUpper(), $"<{timeColor}>{GameStartManagerPatch.lobbyTimerDisplay}</color>");
         }
 
-        sb.Append($"<color=#00dbdb><size=75%>BetterAmongUs {Main.GetVersionText(true)}</size></color>\n");
+        sb.Append($"<color=#00dbdb><size=75%>BetterAmongUs {BAUPlugin.GetVersionText(true)}</size></color>\n");
         sb.Append("<size=68%><color=#8040bf>By</color> <color=#bc4345>The Enhanced Network</color></size>\n");
 
         if (GameState.IsTOHEHostLobby) sb.Append($"<size=75%><color=#e197dc>TOHE Lobby</color></size>\n");
 
-        if (Main.ShowFPS.Value)
+        if (BAUPlugin.ShowFPS.Value)
         {
             float FPSNum = 1.0f / Time.deltaTime;
             sb.AppendFormat("<color=#0dff00><size=75%>FPS: <b>{0}</b></size></color>\n", (int)FPSNum);

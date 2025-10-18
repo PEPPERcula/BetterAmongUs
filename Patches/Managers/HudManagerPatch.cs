@@ -11,7 +11,7 @@ namespace BetterAmongUs.Patches.Managers;
 [HarmonyPatch(typeof(HudManager))]
 internal class HudManagerPatch
 {
-    internal static string WelcomeMessage = $"<b><color=#00b530><size=125%><align=\"center\">{string.Format(Translator.GetString("WelcomeMsg.WelcomeToBAU"), Translator.GetString("BetterAmongUs"))}\n{Main.GetVersionText()}</size>\n" +
+    internal static string WelcomeMessage = $"<b><color=#00b530><size=125%><align=\"center\">{string.Format(Translator.GetString("WelcomeMsg.WelcomeToBAU"), Translator.GetString("BetterAmongUs"))}\n{BAUPlugin.GetVersionText()}</size>\n" +
         $"{Translator.GetString("WelcomeMsg.ThanksForDownloading")}</align></color></b>\n<size=120%> </size>\n" +
         string.Format(Translator.GetString("WelcomeMsg.BAUDescription1"), Translator.GetString("bau"), Translator.GetString("BetterOption.AntiCheat"));
 
@@ -71,7 +71,7 @@ internal class HudManagerPatch
             // Set chat
             if (GameState.InGame)
             {
-                if (!Main.ChatInGameplay.Value)
+                if (!BAUPlugin.ChatInGameplay.Value)
                 {
                     if (!PlayerControl.LocalPlayer.IsAlive())
                     {

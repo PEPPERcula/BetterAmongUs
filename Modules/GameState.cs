@@ -6,8 +6,8 @@ namespace BetterAmongUs.Modules;
 internal static class GameState
 {
     /**********Check Game Status***********/
-    internal static bool IsDev => Main.MyData.IsDev();
-    internal static bool InGame => Main.AllPlayerControls.Any();
+    internal static bool IsDev => BAUPlugin.MyData.IsDev();
+    internal static bool InGame => BAUPlugin.AllPlayerControls.Any();
     internal static bool IsNormalGame => GameOptionsManager.Instance.CurrentGameOptions.GameMode is GameModes.Normal or GameModes.NormalFools;
     internal static bool IsHideNSeek => GameOptionsManager.Instance != null && GameOptionsManager.Instance.CurrentGameOptions.GameMode is GameModes.HideNSeek or GameModes.SeekFools;
     internal static bool SkeldIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Skeld;
@@ -104,9 +104,9 @@ internal static class GameState
     internal static bool IsCountDown => GameStartManager.InstanceExists && GameStartManager.Instance.startState == GameStartManager.StartingStates.Countdown;
     internal static bool IsShip => ShipStatus.Instance != null;
     internal static bool IsHost => AmongUsClient.Instance != null && AmongUsClient.Instance.AmHost;
-    internal static bool IsPrivateOnlyLobby => (Main.PrivateOnlyLobby.Value || AmongUsClient.Instance.AmLocalHost) && IsHost;
-    internal static bool IsBetterHostLobby => PlayerControl.LocalPlayer.IsHost() || Main.AllPlayerControls.Any(pc => pc.IsHost() && pc.BetterData().IsBetterUser && pc.BetterData().IsVerifiedBetterUser);
-    internal static bool IsTOHEHostLobby => InGame && Main.AllPlayerControls.Any(pc => pc.IsHost() && pc.BetterData()?.IsTOHEHost == true);
+    internal static bool IsPrivateOnlyLobby => (BAUPlugin.PrivateOnlyLobby.Value || AmongUsClient.Instance.AmLocalHost) && IsHost;
+    internal static bool IsBetterHostLobby => PlayerControl.LocalPlayer.IsHost() || BAUPlugin.AllPlayerControls.Any(pc => pc.IsHost() && pc.BetterData().IsBetterUser && pc.BetterData().IsVerifiedBetterUser);
+    internal static bool IsTOHEHostLobby => InGame && BAUPlugin.AllPlayerControls.Any(pc => pc.IsHost() && pc.BetterData()?.IsTOHEHost == true);
     internal static bool IsCanMove => PlayerControl.LocalPlayer?.CanMove is true;
     internal static bool IsDead => PlayerControl.LocalPlayer?.Data?.IsDead is true;
 }

@@ -269,11 +269,11 @@ static class InnerNetClientHelper
 
     internal static void WriteDeadBodyId(this MessageWriter writer, DeadBody body) => writer.Write(body?.ParentId ?? 255);
 
-    internal static DeadBody? ReadDeadBodyId(this MessageReader reader) => Main.AllDeadBodys.FirstOrDefault(deadbody => deadbody.ParentId == reader.ReadByte());
+    internal static DeadBody? ReadDeadBodyId(this MessageReader reader) => BAUPlugin.AllDeadBodys.FirstOrDefault(deadbody => deadbody.ParentId == reader.ReadByte());
 
     internal static void WriteVentId(this MessageWriter writer, Vent vent) => writer.Write(vent?.Id ?? -1);
 
-    internal static Vent? ReadVentId(this MessageReader reader) => Main.AllVents.FirstOrDefault(vent => vent.Id == reader.ReadInt32());
+    internal static Vent? ReadVentId(this MessageReader reader) => BAUPlugin.AllVents.FirstOrDefault(vent => vent.Id == reader.ReadInt32());
 
     /// <summary>
     /// Converts a MessageWriter to a MessageReader.

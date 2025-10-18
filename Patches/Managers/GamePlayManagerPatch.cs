@@ -24,7 +24,7 @@ class GamePlayManager
         [HarmonyPostfix]
         internal static void Update_Postfix(/*LobbyBehaviour __instance*/)
         {
-            if (Main.DisableLobbyTheme.Value)
+            if (BAUPlugin.DisableLobbyTheme.Value)
                 SoundManager.instance.StopSound(LobbyBehaviour.Instance.MapTheme);
         }
 
@@ -45,7 +45,7 @@ class GamePlayManager
         {
             if (GameState.IsHost)
             {
-                foreach (PlayerControl player in Main.AllPlayerControls)
+                foreach (PlayerControl player in BAUPlugin.AllPlayerControls)
                 {
                     player.RpcSetName(player.Data.PlayerName);
                 }

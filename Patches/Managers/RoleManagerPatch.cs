@@ -41,12 +41,12 @@ internal class RoleManagerPatch
         Logger.LogHeader($"Better Role Assignment Has Started", "RoleManager");
 
         // Set roles up
-        foreach (var addplayer in Main.AllPlayerControls.Where(pc => !ImpostorMultiplier.ContainsKey(Utils.GetHashPuid(pc))))
+        foreach (var addplayer in BAUPlugin.AllPlayerControls.Where(pc => !ImpostorMultiplier.ContainsKey(Utils.GetHashPuid(pc))))
             ImpostorMultiplier[Utils.GetHashPuid(addplayer)] = 0;
 
         int NumImpostors = GameOptionsManager.Instance.CurrentGameOptions.NumImpostors;
 
-        int NumPlayers = Main.AllPlayerControls.Count;
+        int NumPlayers = BAUPlugin.AllPlayerControls.Count;
 
         var impostorLimits = new Dictionary<int, int>
         {
@@ -167,7 +167,7 @@ internal class RoleManagerPatch
 #endif
 
         // Get players in random order
-        List<PlayerControl> players = Main.AllPlayerControls
+        List<PlayerControl> players = BAUPlugin.AllPlayerControls
             .Where(player => !Impostors.Contains(player) && !Crewmates.Contains(player) && player.roleAssigned == false)
             .ToList();
 
@@ -273,8 +273,8 @@ internal class RoleManagerPatch
 
         int NumImpostors = BetterGameSettings.HideAndSeekImpNum?.GetInt() ?? 1;
 
-        if (NumImpostors > Main.AllPlayerControls.Count)
-            NumImpostors = Main.AllPlayerControls.Count;
+        if (NumImpostors > BAUPlugin.AllPlayerControls.Count)
+            NumImpostors = BAUPlugin.AllPlayerControls.Count;
 
         List<NetworkedPlayerInfo> Impostors = [];
         List<NetworkedPlayerInfo> Crewmates = [];
@@ -336,7 +336,7 @@ internal class RoleManagerPatch
 #endif
 
         // Get players in random order
-        List<PlayerControl> players = Main.AllPlayerControls
+        List<PlayerControl> players = BAUPlugin.AllPlayerControls
             .Where(player => !CrewAndImps().Contains(player.Data))
             .ToList();
 
@@ -398,7 +398,7 @@ internal class RoleManagerPatch
             GhostRoles[role] = GameOptionsManager.Instance.CurrentGameOptions.RoleOptions.GetNumPerGame(role);
         }
 
-        foreach (var allDeadPlayers in Main.AllPlayerControls.Where(pc => !pc.IsAlive()))
+        foreach (var allDeadPlayers in BAUPlugin.AllPlayerControls.Where(pc => !pc.IsAlive()))
         {
             for (int i = 0; i < Roles.Count; i++)
             {

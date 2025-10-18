@@ -15,7 +15,7 @@ internal sealed class AUMHandler : RPCHandler
 
     internal override void HandleCheatRpcCheck(PlayerControl? sender, MessageReader reader)
     {
-        if (Main.AntiCheat.Value && BetterGameSettings.DetectCheatClients.GetBool())
+        if (BAUPlugin.AntiCheat.Value && BetterGameSettings.DetectCheatClients.GetBool())
         {
             var aumid = reader.ReadByte();
 

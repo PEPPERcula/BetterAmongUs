@@ -16,7 +16,7 @@ internal class DiscordRPC
     {
         if (activity == null) return;
 
-        string details = $"BAU {Main.GetVersionText()}";
+        string details = $"BAU {BAUPlugin.GetVersionText()}";
         activity.Details = details;
 
         if (activity.State == "In Menus") return;

@@ -77,7 +77,7 @@ internal class PlayerInfoDisplay : MonoBehaviour
             return;
         }
 
-        if (!Main.LobbyPlayerInfo.Value && GameState.IsLobby)
+        if (!BAUPlugin.LobbyPlayerInfo.Value && GameState.IsLobby)
         {
             ResetText();
             _player.RawSetName(_player.Data.PlayerName);
@@ -127,12 +127,6 @@ internal class PlayerInfoDisplay : MonoBehaviour
         _topText?.SetText(FormatInfo(sbTagTop));
         _bottomText?.SetText(FormatInfo(sbTagBottom));
         _infoText?.SetText(FormatInfo(sbTag));
-
-        /*
-        _player.SetPlayerTextInfo(FormatInfo(sbTagTop));
-        _player.SetPlayerTextInfo(FormatInfo(sbTagBottom), isBottom: true);
-        _player.SetPlayerTextInfo(FormatInfo(sbTag), isInfo: true);
-        */
     }
 
     private string ValidateFriendCode(out string color)
@@ -218,7 +212,7 @@ internal class PlayerInfoDisplay : MonoBehaviour
 
     private void SetLobbyInfo(ref string newName, ExtendedPlayerInfo betterData, StringBuilder sbTag)
     {
-        if (_player.IsHost() && Main.LobbyPlayerInfo.Value)
+        if (_player.IsHost() && BAUPlugin.LobbyPlayerInfo.Value)
             newName = _player.GetPlayerNameAndColor();
 
         if ((_player.IsLocalPlayer() || betterData.IsBetterUser) && !GameState.IsInGamePlay)

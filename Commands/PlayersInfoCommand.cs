@@ -13,7 +13,7 @@ internal class PlayersInfoCommand : BaseCommand
     internal override void Run()
     {
         StringBuilder sb = new();
-        foreach (PlayerControl player in Main.AllPlayerControls.Where(player => !player.isDummy))
+        foreach (PlayerControl player in BAUPlugin.AllPlayerControls.Where(player => !player.isDummy))
         {
             var hexColor = Utils.Color32ToHex(Palette.PlayerColors[player.CurrentOutfit.ColorId]);
             sb.Append($"<color={hexColor}><b>{player?.Data?.PlayerName}</color> Info:</b>\n");

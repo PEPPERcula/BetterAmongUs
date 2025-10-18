@@ -58,7 +58,7 @@ internal class ClientPatch
                 return false;
             }
 
-            if (Main.MyData.IsDev())
+            if (BAUPlugin.MyData.IsDev())
             {
                 __instance.statusSprite.sprite = __instance.guestSprite;
                 __instance.glowSprite.sprite = __instance.guestGlow;
@@ -69,8 +69,8 @@ internal class ClientPatch
                 return false;
             }
 
-            var varSupportedVersions = Main.SupportedAmongUsVersions;
-            Version currentVersion = new(Main.AppVersion);
+            var varSupportedVersions = BAUPlugin.SupportedAmongUsVersions;
+            Version currentVersion = new(BAUPlugin.AppVersion);
             Version firstSupportedVersion = new(varSupportedVersions.First());
             Version lastSupportedVersion = new(varSupportedVersions.Last());
 
@@ -83,8 +83,8 @@ internal class ClientPatch
                 }
 
                 Utils.ShowPopUp($"<size=200%>-= <color=#ff2200><b>Warning</b></color> =-</size>\n\n" +
-                    $"<size=125%><color=#0dff00>Better Among Us {Main.GetVersionText()}</color>\nsupports <color=#4f92ff>Among Us {verText}</color>,\n" +
-                    $"<color=#4f92ff>Among Us <b>{Main.AppVersion}</b></color> is above the supported versions!\n" +
+                    $"<size=125%><color=#0dff00>Better Among Us {BAUPlugin.GetVersionText()}</color>\nsupports <color=#4f92ff>Among Us {verText}</color>,\n" +
+                    $"<color=#4f92ff>Among Us <b>{BAUPlugin.AppVersion}</b></color> is above the supported versions!\n" +
                     $"<color=#ae1700>You may encounter minor to game breaking bugs.</color></size>");
             }
             else if (currentVersion < lastSupportedVersion)
@@ -96,8 +96,8 @@ internal class ClientPatch
                 }
 
                 Utils.ShowPopUp($"<size=200%>-= <color=#ff2200><b>Warning</b></color> =-</size>\n\n" +
-                    $"<size=125%><color=#0dff00>Better Among Us {Main.GetVersionText()}</color>\nsupports <color=#4f92ff>Among Us {verText}</color>,\n" +
-                    $"<color=#4f92ff>Among Us <b>{Main.AppVersion}</b></color> is below the supported versions!\n" +
+                    $"<size=125%><color=#0dff00>Better Among Us {BAUPlugin.GetVersionText()}</color>\nsupports <color=#4f92ff>Among Us {verText}</color>,\n" +
+                    $"<color=#4f92ff>Among Us <b>{BAUPlugin.AppVersion}</b></color> is below the supported versions!\n" +
                     $"<color=#ae1700>You may encounter minor to game breaking bugs.</color></size>");
             }
 
@@ -139,7 +139,7 @@ internal class ClientPatch
         [HarmonyPostfix]
         internal static void CoStartGame_Postfix(AmongUsClient __instance)
         {
-            if (Main.ChatInGameplay.Value)
+            if (BAUPlugin.ChatInGameplay.Value)
             {
                 ChatPatch.ClearChat();
             }
@@ -169,7 +169,7 @@ internal class ClientPatch
             var client = AmongUsClient.Instance.GetClient(AmongUsClient.Instance.ClientId);
             var clients = AmongUsClient.Instance.allClients.ToArray();
 
-            while (Main.AllPlayerControls.Count > 0 && Main.AllPlayerControls.Any(pc => !pc.roleAssigned))
+            while (BAUPlugin.AllPlayerControls.Count > 0 && BAUPlugin.AllPlayerControls.Any(pc => !pc.roleAssigned))
             {
                 if (!GameState.IsInGame)
                 {
@@ -197,10 +197,10 @@ internal class ClientPatch
                     loadingText = isShipLoading ? "Loading Ship Async" : "Spawning Ship";
                     progress = isShipLoading ? 0.3f : 0.4f;
                 }
-                else if (Main.AllPlayerControls.Any(player => !player.roleAssigned))
+                else if (BAUPlugin.AllPlayerControls.Any(player => !player.roleAssigned))
                 {
-                    int totalPlayers = Main.AllPlayerControls.Count;
-                    int assignedPlayers = Main.AllPlayerControls.Count(pc => pc.roleAssigned);
+                    int totalPlayers = BAUPlugin.AllPlayerControls.Count;
+                    int assignedPlayers = BAUPlugin.AllPlayerControls.Count(pc => pc.roleAssigned);
                     float assignmentProgress = (float)assignedPlayers / Mathf.Max(1, totalPlayers);
 
                     loadingText = $"Assigning Roles ({assignedPlayers}/{totalPlayers})";
@@ -227,7 +227,7 @@ internal class ClientPatch
             var client = AmongUsClient.Instance.GetClient(AmongUsClient.Instance.ClientId);
             var clients = AmongUsClient.Instance.allClients.ToArray();
 
-            while (Main.AllPlayerControls.Count > 0 && Main.AllPlayerControls.Any(pc => !pc.roleAssigned))
+            while (BAUPlugin.AllPlayerControls.Count > 0 && BAUPlugin.AllPlayerControls.Any(pc => !pc.roleAssigned))
             {
 
                 if (GameState.IsHost)

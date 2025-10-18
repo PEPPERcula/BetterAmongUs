@@ -10,7 +10,7 @@ class FileChecker
     private static bool hasUnauthorizedFileOrMod = false;
     internal static string WarningMsg { get; private set; } = string.Empty;
     internal static bool HasShownWarning { get; set; } = false;
-    internal static bool HasUnauthorizedFileOrMod => hasUnauthorizedFileOrMod && (!Main.MyData.IsDev() || !Main.MyData.IsVerified());
+    internal static bool HasUnauthorizedFileOrMod => hasUnauthorizedFileOrMod && (!BAUPlugin.MyData.IsDev() || !BAUPlugin.MyData.IsVerified());
 
     private static readonly ReadOnlyCollection<string> TrustedNamespaces = new(new List<string>
     {
