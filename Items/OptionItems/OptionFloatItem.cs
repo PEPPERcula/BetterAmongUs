@@ -11,20 +11,6 @@ internal class OptionFloatItem : OptionItem<float>
     protected bool CanBeInfinite { get; set; }
     protected (string prefix, string postfix) Fixs { get; set; }
 
-    /// <summary>
-    /// Creates a new float item for the options menu. If an item with the specified ID already exists, 
-    /// it reuses the existing item and sets up its behavior.
-    /// </summary>
-    /// <param name="id">The unique identifier for the float item.</param>
-    /// <param name="tab">The tab to which the float item belongs.</param>
-    /// <param name="tranStr">The translation string for the float item label.</param>
-    /// <param name="Min_Max_Increment">A tuple containing the minimum value, maximum value, and increment value for the float item's range.</param>
-    /// <param name="defaultValue">The default value for the float item.</param>
-    /// <param name="Prefix_Postfix">A tuple containing the prefix and postfix to be displayed alongside the float value.</param>
-    /// <param name="parent">An optional parent option item that this float item belongs to.</param>
-    /// <param name="canBeInfinite">A flag indicating whether the float value can be infinite.</param>
-    /// <param name="vanillaOption">An optional vanilla option name, if any, for this float item.</param>
-    /// <returns>The created or reused <see cref="OptionFloatItem"/> instance.</returns>
     internal static OptionFloatItem Create(int id, OptionTab tab, string tranStr, (float minValue, float maxValue, float incrementValue) Min_Max_Increment, float defaultValue, (string prefix, string postfix) Prefix_Postfix = new(), OptionItem parent = null, bool canBeInfinite = false)
     {
         if (GetOptionById(id) is OptionFloatItem floatItem)

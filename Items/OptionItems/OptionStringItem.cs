@@ -3,31 +3,12 @@ using BetterAmongUs.Modules;
 
 namespace BetterAmongUs.Items.OptionItems;
 
-/// <summary>
-/// String option.
-/// Type: Int
-/// </summary>
 internal class OptionStringItem : OptionItem<int>
 {
-    protected IntRange Range { get; set; }
-    protected string[] TranslatorStrings { get; set; }
+    protected IntRange Range { get; set; } = new();
+    protected string[] TranslatorStrings { get; set; } = [];
     protected bool CanBeRandom { get; set; }
 
-    /// <summary>
-    /// Creates a new string item for the options menu. If an item with the specified ID already exists, 
-    /// it reuses the existing item and sets up its behavior. The method allows specifying translation strings 
-    /// and whether the option can be randomized.
-    /// </summary>
-    /// <param name="id">The unique identifier for the string item.</param>
-    /// <param name="tab">The tab to which the string item belongs.</param>
-    /// <param name="tranStr">The translation string for the string item label.</param>
-    /// <param name="tranStrings">An array of translation strings representing the available options for the string item.</param>
-    /// <param name="defaultValue">The default value (index) for the string item. If less than 0, the option can be randomized.</param>
-    /// <param name="parent">An optional parent option item that this string item belongs to.</param>
-    /// <param name="canBeRandom">A flag indicating whether the string item can have a random value.</param>
-    /// <param name="vanillaOption">An optional vanilla option name, if any, for this string item.</param>
-    /// <returns>The created or reused <see cref="OptionStringItem"/> instance.</returns>
-    /// <exception cref="ArgumentException">Thrown when <paramref name="tranStrings"/> has fewer than 2 strings.</exception>
     internal static OptionStringItem Create(int id, OptionTab tab, string tranStr, string[] tranStrings, int defaultValue, OptionItem parent = null, bool canBeRandom = false)
     {
         if (tranStrings.Length < 2)

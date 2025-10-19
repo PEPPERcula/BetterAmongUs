@@ -4,19 +4,11 @@ namespace BetterAmongUs.Items.OptionItems.NoneOption;
 
 internal class OptionHeaderItem : OptionItem
 {
-    private CategoryHeaderMasked categoryHeaderMasked;
+    private CategoryHeaderMasked? categoryHeaderMasked;
     internal override bool CanLoad => false;
     internal override bool IsOption => false;
     internal (float top, float bottom) Distance { get; set; }
 
-    /// <summary>
-    /// Creates a new header item for the options menu. The header is placed within the specified tab with configurable top and bottom distances.
-    /// </summary>
-    /// <param name="tab">The tab where the header item will be placed.</param>
-    /// <param name="tranStr">The translation string for the header item.</param>
-    /// <param name="topDistance">The distance from the top of the tab to the header. Default is 0.35f.</param>
-    /// <param name="bottomDistance">The distance from the bottom of the tab to the header. Default is 0.80f.</param>
-    /// <returns>The created <see cref="OptionHeaderItem"/> instance.</returns>
     internal static OptionHeaderItem Create(OptionTab tab, string tranStr, float topDistance = 0.35f, float bottomDistance = 0.80f)
     {
         var Item = new OptionHeaderItem

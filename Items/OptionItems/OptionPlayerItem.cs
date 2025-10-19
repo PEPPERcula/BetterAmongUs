@@ -4,10 +4,6 @@ using UnityEngine;
 
 namespace BetterAmongUs.Items.OptionItems;
 
-/// <summary>
-/// Int option.
-/// Type: Int
-/// </summary>
 internal class OptionPlayerItem : OptionItem<int>
 {
     internal override bool ShowChildren => base.ShowChildren && Value > Min;

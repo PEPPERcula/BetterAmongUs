@@ -3,10 +3,6 @@ using UnityEngine;
 
 namespace BetterAmongUs.Items.OptionItems;
 
-/// <summary>
-/// Int option.
-/// Type: Int
-/// </summary>
 internal class OptionIntItem : OptionItem<int>
 {
     internal override bool ShowChildren => base.ShowChildren && Value > 0;
@@ -15,20 +11,6 @@ internal class OptionIntItem : OptionItem<int>
     protected bool CanBeInfinite { get; set; }
     protected (string prefix, string postfix) Fixs { get; set; }
 
-    /// <summary>
-    /// Creates a new integer item for the options menu. If an item with the specified ID already exists, 
-    /// it reuses the existing item and sets up its behavior.
-    /// </summary>
-    /// <param name="id">The unique identifier for the integer item.</param>
-    /// <param name="tab">The tab to which the integer item belongs.</param>
-    /// <param name="tranStr">The translation string for the integer item label.</param>
-    /// <param name="Min_Max_Increment">A tuple containing the minimum value, maximum value, and increment value for the integer item's range.</param>
-    /// <param name="defaultValue">The default value for the integer item.</param>
-    /// <param name="Prefix_Postfix">A tuple containing the prefix and postfix to be displayed alongside the integer value.</param>
-    /// <param name="parent">An optional parent option item that this integer item belongs to.</param>
-    /// <param name="canBeInfinite">A flag indicating whether the integer value can be infinite.</param>
-    /// <param name="vanillaOption">An optional vanilla option name, if any, for this integer item.</param>
-    /// <returns>The created or reused <see cref="OptionIntItem"/> instance.</returns>
     internal static OptionIntItem Create(int id, OptionTab tab, string tranStr, (int minValue, int maxValue, int incrementValue) Min_Max_Increment, int defaultValue, (string prefix, string postfix) Prefix_Postfix = new(), OptionItem parent = null, bool canBeInfinite = false)
     {
         if (GetOptionById(id) is OptionIntItem intItem)

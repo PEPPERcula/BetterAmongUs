@@ -57,4 +57,22 @@ internal static class ObjectHelper
     /// Destroys all TextTranslatorTMP components in the children of a MonoBehaviour's GameObject.
     /// </summary>
     internal static void DestroyTextTranslators(this MonoBehaviour mono) => mono.gameObject.DestroyTextTranslators();
+
+    internal static void SetSpriteColors(this GameObject go, Color color)
+    {
+        var sprites = go.GetComponentsInChildren<SpriteRenderer>(true);
+        foreach (var sprite in sprites)
+        {
+            sprite.color = color;
+        }
+    }
+
+    internal static void SetSpriteColors(this GameObject go, Action<SpriteRenderer> setSprite)
+    {
+        var sprites = go.GetComponentsInChildren<SpriteRenderer>(true);
+        foreach (var sprite in sprites)
+        {
+            setSprite(sprite);
+        }
+    }
 }

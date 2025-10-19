@@ -6,9 +6,6 @@ using UnityEngine;
 
 namespace BetterAmongUs.Items.OptionItems;
 
-/// <summary>
-/// Option Tab.
-/// </summary>
 internal class OptionTab
 {
     internal static List<OptionTab> AllTabs = [];
@@ -23,16 +20,6 @@ internal class OptionTab
     internal PassiveButton? TabButton { get; private set; }
     internal Color Color { get; private set; }
 
-    /// <summary>
-    /// Creates a new option tab for the options menu. If an option tab with the specified ID already exists, 
-    /// it reuses the existing tab, clears its children, and sets up its behavior.
-    /// </summary>
-    /// <param name="Id">The unique identifier for the option tab.</param>
-    /// <param name="tranName">The translation string for the name of the tab.</param>
-    /// <param name="tranDescription">The translation string for the description of the tab.</param>
-    /// <param name="Color">The color associated with the tab.</param>
-    /// <param name="doNotDestroyMapPicker">A flag indicating whether the map picker should not be destroyed when recreating the tab.</param>
-    /// <returns>The created or reused <see cref="OptionTab"/> instance.</returns>
     internal static OptionTab Create(int Id, string tranName, string tranDescription, Color Color, bool doNotDestroyMapPicker = false)
     {
         if (GetTabById(Id) is OptionTab optionTab)

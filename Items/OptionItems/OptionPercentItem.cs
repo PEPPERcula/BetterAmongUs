@@ -1,22 +1,7 @@
 ﻿namespace BetterAmongUs.Items.OptionItems;
 
-/// <summary>
-/// Percent option.
-/// Type: Float
-/// </summary>
 internal class OptionPercentItem : OptionFloatItem
 {
-
-    /// <summary>
-    /// Creates a new percent item for the options menu. If an item with the specified ID already exists, 
-    /// it reuses the existing item and sets up its behavior.
-    /// </summary>
-    /// <param name="id">The unique identifier for the percent item.</param>
-    /// <param name="tab">The tab to which the percent item belongs.</param>
-    /// <param name="tranStr">The translation string for the percent item label.</param>
-    /// <param name="defaultValue">The default value for the percent item (in the range of 0 to 100).</param>
-    /// <param name="parent">An optional parent option item that this percent item belongs to.</param>
-    /// <returns>The created or reused <see cref="OptionPercentItem"/> instance.</returns>
     internal static OptionPercentItem Create(int id, OptionTab tab, string tranStr, float defaultValue, OptionItem parent = null)
     {
         if (GetOptionById(id) is OptionPercentItem floatItem)

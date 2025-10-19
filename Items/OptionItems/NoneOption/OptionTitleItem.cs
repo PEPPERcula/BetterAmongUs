@@ -5,18 +5,10 @@ namespace BetterAmongUs.Items.OptionItems.NoneOption;
 
 internal class OptionTitleItem : OptionItem
 {
-    private ToggleOption optionBehaviour;
+    private ToggleOption? optionBehaviour;
     internal override bool CanLoad => false;
     internal (float top, float bottom) Distance { get; set; }
 
-    /// <summary>
-    /// Creates a new title item for the options menu. The title is placed within the specified tab with configurable top and bottom distances.
-    /// </summary>
-    /// <param name="tab">The tab where the title item will be placed.</param>
-    /// <param name="tranStr">The translation string for the title item.</param>
-    /// <param name="topDistance">The distance from the top of the tab to the title. Default is 0.15f.</param>
-    /// <param name="bottomDistance">The distance from the bottom of the tab to the title. Default is 0.50f.</param>
-    /// <returns>The created <see cref="OptionTitleItem"/> instance.</returns>
     internal static OptionTitleItem Create(OptionTab tab, string tranStr, float topDistance = 0.15f, float bottomDistance = 0.50f)
     {
         var Item = new OptionTitleItem

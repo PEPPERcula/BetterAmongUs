@@ -7,17 +7,6 @@ internal class OptionCheckboxItem : OptionItem<bool>
 {
     internal override bool ShowChildren => base.ShowChildren && Value;
 
-    /// <summary>
-    /// Creates a new checkbox item for the options menu. If an item with the specified ID already exists, 
-    /// it reuses the existing item and sets up its behavior.
-    /// </summary>
-    /// <param name="id">The unique identifier for the checkbox item.</param>
-    /// <param name="tab">The tab to which the checkbox item belongs.</param>
-    /// <param name="tranStr">The translation string for the checkbox item label.</param>
-    /// <param name="defaultValue">The default value (checked/unchecked) for the checkbox.</param>
-    /// <param name="parent">An optional parent option item that this checkbox item belongs to.</param>
-    /// <param name="vanillaOption">An optional vanilla option name, if any, for this checkbox item.</param>
-    /// <returns>The created or reused <see cref="OptionCheckboxItem"/> instance.</returns>
     internal static OptionCheckboxItem Create(int id, OptionTab tab, string tranStr, bool defaultValue, OptionItem parent = null)
     {
         if (GetOptionById(id) is OptionCheckboxItem checkboxItem)
