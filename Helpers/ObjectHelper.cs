@@ -4,6 +4,10 @@ namespace BetterAmongUs.Helpers;
 
 internal static class ObjectHelper
 {
+    /// <summary>
+    /// Finds a GameObject by its name in the scene, including inactive objects.
+    /// Returns null if no object with the specified name is found.
+    /// </summary>
     internal static GameObject? FindObjectByName(string objectName)
     {
         GameObject[] allObjects = UnityEngine.Object.FindObjectsOfType<GameObject>(true);
@@ -18,6 +22,10 @@ internal static class ObjectHelper
 
         return null;
     }
+
+    /// <summary>
+    /// Destroys a GameObject if it is not null.
+    /// </summary>
     internal static void DestroyObj(this GameObject obj)
     {
         if (obj != null)
@@ -25,18 +33,28 @@ internal static class ObjectHelper
             UnityEngine.Object.Destroy(obj);
         }
     }
-    internal static void DestroyObj(this UnityEngine.Object obj) => obj.DestroyObj();
-    internal static void DestroyCom(this Component com) => com.DestroyObj();
+
+    /// <summary>
+    /// Destroys the GameObject associated with a MonoBehaviour if it is not null.
+    /// </summary>
     internal static void DestroyObj(this MonoBehaviour mono) => mono?.gameObject?.DestroyObj();
+
+    /// <summary>
+    /// Destroys a MonoBehaviour component if it is not null.
+    /// </summary>
     internal static void DestroyMono(this MonoBehaviour mono) => UnityEngine.Object.Destroy(mono);
 
-    internal static void DestroyTextTranslator(this GameObject obj)
+    /// <summary>
+    /// Destroys all TextTranslatorTMP components in the children of a GameObject.
+    /// </summary>
+    internal static void DestroyTextTranslators(this GameObject obj)
     {
-        var translator = obj.GetComponent<TextTranslatorTMP>();
-        if (translator != null)
-        {
-            UnityEngine.Object.Destroy(translator);
-        }
+        var translators = obj.GetComponentsInChildren<TextTranslatorTMP>();
+        if (translators.Length > 0) translators.ToList().ForEach(com => com.DestroyMono());
     }
-    internal static void DestroyTextTranslator(this MonoBehaviour mono) => mono.gameObject.DestroyTextTranslator();
+
+    /// <summary>
+    /// Destroys all TextTranslatorTMP components in the children of a MonoBehaviour's GameObject.
+    /// </summary>
+    internal static void DestroyTextTranslators(this MonoBehaviour mono) => mono.gameObject.DestroyTextTranslators();
 }

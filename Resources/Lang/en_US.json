@@ -63,6 +63,7 @@
 
   "BetterSetting": "Better Settings",
   "BetterSetting.Description": "Edit better settings for your lobby and gameplay.",
+  "BetterSetting.SetTo": "Set To:",
   "BetterSetting.MainHeader.AntiCheat": "<color=#4f92ff>Anti-Cheat Settings</color>",
   "BetterSetting.MainHeader.RoleAlgorithm": "<color=#4f92ff>Role Algorithm Settings</color>",
   "BetterSetting.MainHeader.Gameplay": "<color=#d7d700>Gameplay Settings</color>",

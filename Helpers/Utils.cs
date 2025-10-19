@@ -13,6 +13,18 @@ namespace BetterAmongUs.Helpers;
 
 internal static class Utils
 {
+    internal static string Size(this string str, float size) => $"<size={size}%>{str}</size>";
+
+    internal static string RemoveSizeHtmlText(string text)
+    {
+        text = Regex.Replace(text, "<size=[^>]*>", "", RegexOptions.IgnoreCase);
+        text = Regex.Replace(text, "</size>", "", RegexOptions.IgnoreCase);
+        text = Regex.Replace(text, "{[^}]*}", "");
+        text = text.Replace("\n", " ").Replace("\r", " ").Trim();
+
+        return text;
+    }
+
     internal static bool IsInternetAvailable()
     {
         if (Application.internetReachability == NetworkReachability.NotReachable)
@@ -144,9 +156,6 @@ internal static class Utils
         return text;
     }
 
-    internal static string ToColor(this string str, string hexColor) => $"<{hexColor}>{str}</color>";
-    internal static string ToColor(this string str, Color color) => $"<{Color32ToHex(color)}>{str}</color>";
-
     internal static bool IsHtmlText(string text)
     {
         if (Regex.IsMatch(text, "<[^>]*>"))
@@ -229,6 +238,40 @@ internal static class Utils
         if (apiError)
         {
             ShowPopUp(Translator.GetString("DataBaseConnect.InitFailure"), true);
+        }
+    }
+
+    // Synchronizes the settings change notification across the network
+    /// <summary>
+    /// This method synchronizes the settings change notification across the network, updating any existing notification or 
+    /// creating a new one if necessary. The message is updated or a new notification is created to reflect the changes. 
+    /// A sound can also be played to notify players.
+    /// </summary>
+    /// <param name="Id">The ID of the setting being changed.</param>
+    /// <param name="text">The message text describing the change.</param>
+    /// <param name="playSound">Flag to determine if a sound should be played during the notification.</param>
+    internal static void SettingsChangeNotifier(int Id, string text, bool playSound = true)
+    {
+        var Notifier = HudManager.Instance.Notifier;
+        if (Notifier.lastMessageKey == Id && Notifier.activeMessages.Count > 0)
+        {
+            Notifier.activeMessages[Notifier.activeMessages.Count - 1].UpdateMessage(text);
+        }
+        else
+        {
+            Notifier.lastMessageKey = Id;
+            LobbyNotificationMessage newMessage = UnityEngine.Object.Instantiate(Notifier.notificationMessageOrigin, Vector3.zero, Quaternion.identity, Notifier.transform);
+            newMessage.transform.localPosition = new Vector3(0f, 0f, -2f);
+            newMessage.SetUp(text, Notifier.settingsChangeSprite, Notifier.settingsChangeColor, (Action)(() =>
+            {
+                Notifier.OnMessageDestroy(newMessage);
+            }));
+            Notifier.ShiftMessages();
+            Notifier.AddMessageToQueue(newMessage);
+        }
+        if (playSound)
+        {
+            SoundManager.Instance.PlaySoundImmediate(Notifier.settingsChangeSound, false, 1f, 1f, null);
         }
     }
 

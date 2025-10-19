@@ -284,10 +284,10 @@ internal class RoleManagerPatch
         int[] betterImpostorSettings =
         [
             GameOptionsManager.Instance.currentHideNSeekGameOptions.ImpostorPlayerID,
-            BetterGameSettingsTemp.HideAndSeekImp2?.GetValue() ?? -1,
-            BetterGameSettingsTemp.HideAndSeekImp3?.GetValue() ?? -1,
-            BetterGameSettingsTemp.HideAndSeekImp4?.GetValue() ?? -1,
-            BetterGameSettingsTemp.HideAndSeekImp5?.GetValue() ?? -1
+            BetterGameSettingsTemp.HideAndSeekImp2?.GetInt() ?? -1,
+            BetterGameSettingsTemp.HideAndSeekImp3?.GetInt() ?? -1,
+            BetterGameSettingsTemp.HideAndSeekImp4?.GetInt() ?? -1,
+            BetterGameSettingsTemp.HideAndSeekImp5?.GetInt() ?? -1
         ];
 
         for (int i = 0; i < NumImpostors; i++)
@@ -464,7 +464,7 @@ internal class RoleManagerPatch
 
     internal static int RNG()
     {
-        switch (BetterGameSettings.RoleRandomizer.GetValue())
+        switch (BetterGameSettings.RoleRandomizer.GetStringValue())
         {
             case 1:
                 return UnityEngine.Random.Range(0, 100);

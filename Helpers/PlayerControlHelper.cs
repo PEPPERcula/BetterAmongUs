@@ -73,12 +73,12 @@ static class PlayerControlHelper
 
         if (AntiCheatBan)
         {
-            if (BetterGameSettings.WhenCheating.GetValue() == 0 && !forceBan)
+            if (BetterGameSettings.WhenCheating.GetStringValue() == 0 && !forceBan)
             {
                 return;
             }
 
-            Ban = (Ban && BetterGameSettings.WhenCheating.GetValue() == 2) || forceBan;
+            Ban = (Ban && BetterGameSettings.WhenCheating.GetStringValue() == 2) || forceBan;
         }
 
         if (setReasonInfo != "")

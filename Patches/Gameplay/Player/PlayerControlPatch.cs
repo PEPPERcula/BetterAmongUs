@@ -1,4 +1,5 @@
 ﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.OptionItems;
 using HarmonyLib;
 
 namespace BetterAmongUs.Patches.Gameplay.Player;
@@ -11,6 +12,7 @@ class PlayerControlPatch
     internal static void Start_Postfix(PlayerControl __instance)
     {
         BAUPlugin.AllPlayerControls.Add(__instance);
+        OptionPlayerItem.UpdateAllValues();
     }
 
     [HarmonyPatch(nameof(PlayerControl.OnDestroy))]
@@ -18,6 +20,7 @@ class PlayerControlPatch
     internal static void OnDestroy_Postfix(PlayerControl __instance)
     {
         BAUPlugin.AllPlayerControls.Remove(__instance);
+        OptionPlayerItem.UpdateAllValues();
     }
 
     [HarmonyPatch(nameof(PlayerControl.MurderPlayer))]

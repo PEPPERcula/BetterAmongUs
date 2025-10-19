@@ -52,7 +52,7 @@ internal class PrivateLobbyPatch
             var text = toggle.transform.Find("BlackSquare/ModeText")?.GetComponent<TextMeshPro>();
             if (text != null)
             {
-                text.DestroyTextTranslator();
+                text.DestroyTextTranslators();
                 text.text = "Private Only Lobby";
                 toggleText = text;
             }

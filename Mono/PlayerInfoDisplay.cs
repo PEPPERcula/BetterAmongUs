@@ -212,6 +212,8 @@ internal class PlayerInfoDisplay : MonoBehaviour
 
     private void SetLobbyInfo(ref string newName, ExtendedPlayerInfo betterData, StringBuilder sbTag)
     {
+        if (betterData == null) return;
+
         if (_player.IsHost() && BAUPlugin.LobbyPlayerInfo.Value)
             newName = _player.GetPlayerNameAndColor();
 

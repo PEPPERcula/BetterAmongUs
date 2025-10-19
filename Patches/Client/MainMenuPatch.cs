@@ -130,7 +130,7 @@ internal class MainMenuPatch
 
         // Set button text
         var buttonText = button.transform.Find("FontPlacer/Text_TMP").GetComponent<TMP_Text>();
-        buttonText.DestroyTextTranslator();
+        buttonText.DestroyTextTranslators();
         buttonText.fontSize = buttonText.fontSizeMax = buttonText.fontSizeMin = 3.5f;
         buttonText.enableWordWrapping = false;
         buttonText.text = label;

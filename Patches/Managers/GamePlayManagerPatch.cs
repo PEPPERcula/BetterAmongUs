@@ -1,4 +1,5 @@
 ﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.OptionItems;
 using BetterAmongUs.Modules;
 using HarmonyLib;
 using System.Text;
@@ -17,6 +18,7 @@ class GamePlayManager
         [HarmonyPostfix]
         private static void Start_Postfix(/*LobbyBehaviour __instance*/)
         {
+            OptionPlayerItem.ResetAllValues();
         }
 
         // Disabled annoying music
