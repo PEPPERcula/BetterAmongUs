@@ -2,6 +2,7 @@
 using BetterAmongUs.Items;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
+using Il2CppInterop.Runtime.Attributes;
 using InnerNet;
 using UnityEngine;
 
@@ -18,6 +19,8 @@ internal class ExtendedPlayerInfo : MonoBehaviour, IMonoExtension<NetworkedPlaye
     internal NetworkedPlayerInfo? _Data => BaseMono;
 
     private bool hasSet = false;
+
+    [HideFromIl2Cpp]
     internal void SetInfo(NetworkedPlayerInfo data)
     {
         if (hasSet) return;
@@ -78,6 +81,7 @@ internal class ExtendedPlayerInfo : MonoBehaviour, IMonoExtension<NetworkedPlaye
     }
 
     internal HandshakeHandler HandshakeHandler { get; }
+    [HideFromIl2Cpp]
     internal UserData? MyUserData { get; private set; } = UserData.AllUsers.First();
     internal byte _PlayerId { get; private set; }
     internal string? RealName { get; private set; }
@@ -87,7 +91,9 @@ internal class ExtendedPlayerInfo : MonoBehaviour, IMonoExtension<NetworkedPlaye
     internal bool IsTOHEHost { get; set; } = false;
     internal bool HasShowDcMsg { get; set; } = false;
     internal DisconnectReasons DisconnectReason { get; set; } = DisconnectReasons.Unknown;
+    [HideFromIl2Cpp]
     internal ExtendedRoleInfo? RoleInfo { get; } = new();
+    [HideFromIl2Cpp]
     internal ExtendedAntiCheatInfo? AntiCheatInfo { get; } = new();
 }
 

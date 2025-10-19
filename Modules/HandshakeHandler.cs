@@ -2,14 +2,22 @@
 using BetterAmongUs.Data;
 using BetterAmongUs.Helpers;
 using Hazel;
+using Il2CppInterop.Runtime.Attributes;
 using System.Collections;
 using UnityEngine;
 
 namespace BetterAmongUs.Modules;
 
-internal class HandshakeHandler(ExtendedPlayerInfo extendedPlayerInfo)
+internal class HandshakeHandler
 {
-    private readonly ExtendedPlayerInfo extendedData = extendedPlayerInfo;
+    [HideFromIl2Cpp]
+    internal HandshakeHandler(ExtendedPlayerInfo extendedData)
+    {
+        this.extendedData = extendedData;
+    }
+
+    [HideFromIl2Cpp]
+    private ExtendedPlayerInfo extendedData { get; }
 
     internal void WaitSendSecretToPlayer()
     {

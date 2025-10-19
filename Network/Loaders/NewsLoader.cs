@@ -40,6 +40,8 @@ internal class NewsLoader : MonoBehaviour
             callBack = text;
         });
 
+        if (string.IsNullOrEmpty(callBack)) yield break;
+
         var options = new JsonSerializerOptions
         {
             AllowTrailingCommas = true,
