@@ -222,7 +222,9 @@ static class PlayerControlHelper
         (player.IsLocalPlayer() && PlayerControl.LocalPlayer.IsImpostorTeam() ||
         PlayerControl.LocalPlayer.IsImpostorTeam() && player.IsImpostorTeam());
     // Check if player is in the Anti-Cheat list
-    internal static bool IsCheater(this PlayerControl player) => BetterDataManager.BetterDataFile.CheckPlayerData(player.Data);
+    internal static bool IsCheater(this PlayerControl player) => BetterDataManager.BetterDataFile?.CheckPlayerData(player.Data) == true;
+    // Check if player is in the Anti-Cheat list
+    internal static bool IsCheater(this NetworkedPlayerInfo data) => BetterDataManager.BetterDataFile?.CheckPlayerData(data) == true;
     // Check if player is the host
     internal static bool IsHost(this PlayerControl player) => player?.Data != null && GameData.Instance?.GetHost() == player.Data;
 

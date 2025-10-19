@@ -47,6 +47,8 @@ internal class MeetingInfoDisplay : PlayerInfoDisplay
 
     protected override void LateUpdate()
     {
+        if (_pva == null) return;
+
         if (_player != null)
         {
             UpdateInfo();
@@ -56,51 +58,46 @@ internal class MeetingInfoDisplay : PlayerInfoDisplay
             UpdateDisconnect();
         }
 
-        if (_pva != null)
+        if (_infoText.text != string.Empty && _topText.text != string.Empty)
         {
-            if (_infoText.text != string.Empty && _topText.text != string.Empty)
-            {
-                _nameText.transform.localPosition = _namePos + new Vector3(0f, -0.1f, 0f);
-                _infoText.transform.localPosition = _infoPos + new Vector3(0f, -0.1f, 0f);
-                _topText.transform.localPosition = _TopPos + new Vector3(0f, -0.1f, 0f);
-            }
-            else if (_infoText.text != string.Empty || _topText.text != string.Empty)
-            {
-                _nameText.transform.localPosition = _namePos;
-                _infoText.transform.localPosition = _TopPos;
-                _topText.transform.localPosition = _TopPos;
-            }
-            else
-            {
-                _nameText.transform.localPosition = _namePos;
-                _infoText.transform.localPosition = _infoPos;
-                _topText.transform.localPosition = _TopPos;
-            }
-
-            _pva.ColorBlindName.transform.localPosition = new Vector3(-0.91f, -0.19f, -0.05f);
+            _nameText.transform.localPosition = _namePos + new Vector3(0f, -0.1f, 0f);
+            _infoText.transform.localPosition = _infoPos + new Vector3(0f, -0.1f, 0f);
+            _topText.transform.localPosition = _TopPos + new Vector3(0f, -0.1f, 0f);
         }
+        else if (_infoText.text != string.Empty || _topText.text != string.Empty)
+        {
+            _nameText.transform.localPosition = _namePos;
+            _infoText.transform.localPosition = _TopPos;
+            _topText.transform.localPosition = _TopPos;
+        }
+        else
+        {
+            _nameText.transform.localPosition = _namePos;
+            _infoText.transform.localPosition = _infoPos;
+            _topText.transform.localPosition = _TopPos;
+        }
+
+        _pva.ColorBlindName.transform.localPosition = new Vector3(-0.91f, -0.19f, -0.05f);
     }
 
     private void UpdateInfo()
     {
-        var target = Utils.PlayerFromPlayerId(_pva.TargetPlayerId);
-        if (target == null) return;
-
-        string hashPuid = Utils.GetHashPuid(target);
-        string friendCode = target.Data.FriendCode;
+        if (_player.Data == null || _player.BetterData() == null) return;
+        string hashPuid = Utils.GetHashPuid(_player);
+        string friendCode = _player.Data.FriendCode;
 
         StringBuilder sbTag = new();
         StringBuilder sbInfo = new();
 
         // Put +++ at the end of each tag
 
-        if (BetterDataManager.BetterDataFile.SickoData.Any(info => info.CheckPlayerData(target.Data)))
+        if (BetterDataManager.BetterDataFile.SickoData.Any(info => info.CheckPlayerData(_player.Data)))
             sbTag.Append($"<color=#00f583>{Translator.GetString("Player.SickoUser")}</color>+++");
-        else if (BetterDataManager.BetterDataFile.AUMData.Any(info => info.CheckPlayerData(target.Data)))
+        else if (BetterDataManager.BetterDataFile.AUMData.Any(info => info.CheckPlayerData(_player.Data)))
             sbTag.Append($"<color=#4f0000>{Translator.GetString("Player.AUMUser")}</color>+++");
-        else if (BetterDataManager.BetterDataFile.KNData.Any(info => info.CheckPlayerData(target.Data)))
+        else if (BetterDataManager.BetterDataFile.KNData.Any(info => info.CheckPlayerData(_player.Data)))
             sbTag.Append($"<color=#8731e7>{Translator.GetString("Player.KNUser")}</color>+++");
-        else if (BetterDataManager.BetterDataFile.CheatData.Any(info => info.CheckPlayerData(target.Data)))
+        else if (BetterDataManager.BetterDataFile.CheatData.Any(info => info.CheckPlayerData(_player.Data)))
             sbTag.Append($"<color=#fc0000>{Translator.GetString("Player.KnownCheater")}</color>+++");
 
         for (int i = 0; i < sbTag.ToString().Split("+++").Length; i++)
@@ -118,15 +115,15 @@ internal class MeetingInfoDisplay : PlayerInfoDisplay
             }
         }
 
-        string RoleHexColor = target.IsImpostorTeam() ? "#ff1919" : "#8cffff";
-        string Role = $"<color={RoleHexColor}>{target.GetRoleName()}</color>";
-        if (!target.IsImpostorTeam() && target.myTasks.Count > 0)
+        string RoleHexColor = _player.IsImpostorTeam() ? "#ff1919" : "#8cffff";
+        string Role = $"<color={RoleHexColor}>{_player.GetRoleName()}</color>";
+        if (!_player.IsImpostorTeam() && _player.myTasks.Count > 0)
         {
-            Role += $" <color=#cbcbcb>({target.myTasks.ToArray().Where(task => task.IsComplete).Count()}/{target.myTasks.Count})</color>";
+            Role += $" <color=#cbcbcb>({_player.myTasks.ToArray().Where(task => task.IsComplete).Count()}/{_player.myTasks.Count})</color>";
         }
-        if (!target.IsImpostorTeammate())
+        if (!_player.IsImpostorTeammate())
         {
-            if ((PlayerControl.LocalPlayer.IsAlive() || PlayerControl.LocalPlayer.Is(RoleTypes.GuardianAngel)) && !target.IsLocalPlayer())
+            if ((PlayerControl.LocalPlayer.IsAlive() || PlayerControl.LocalPlayer.Is(RoleTypes.GuardianAngel)) && !_player.IsLocalPlayer())
             {
                 Role = "";
             }
@@ -151,13 +148,14 @@ internal class MeetingInfoDisplay : PlayerInfoDisplay
     {
         string DisconnectText;
         var playerData = GameData.Instance.GetPlayerById(_pva.TargetPlayerId);
-        switch (playerData.BetterData().DisconnectReason)
+        var betterData = playerData.BetterData();
+        switch (betterData?.DisconnectReason)
         {
             case DisconnectReasons.ExitGame:
                 DisconnectText = Translator.GetString("DisconnectReasonMeeting.Left");
                 break;
             case DisconnectReasons.Banned:
-                if (playerData.BetterData().AntiCheatInfo.BannedByAntiCheat)
+                if (betterData?.AntiCheatInfo?.BannedByAntiCheat == true)
                 {
                     DisconnectText = Translator.GetString("DisconnectReasonMeeting.AntiCheat");
                 }
@@ -179,8 +177,8 @@ internal class MeetingInfoDisplay : PlayerInfoDisplay
 
         _infoText?.SetText($"<color=#6b6b6b>{DisconnectText}</color>");
         _topText?.SetText("");
-        _pva.transform.Find("votePlayerBase").gameObject.SetActive(false);
-        _pva.transform.Find("deadX_border").gameObject.SetActive(false);
+        _pva.transform.Find("votePlayerBase")?.gameObject.SetActive(false);
+        _pva.transform.Find("deadX_border")?.gameObject.SetActive(false);
         _pva.ClearForResults();
         _pva.SetDisabled();
     }

@@ -167,7 +167,7 @@ static class GameSettingMenuPatch
     {
         if (BetterSettingsTab == null) return;
 
-        BetterSettingsTab.AUTab.gameObject.SetActive(false);
+        BetterSettingsTab.AUTab?.gameObject?.SetActive(false);
         BetterSettingsTab.TabButton?.SelectButton(false);
 
         if (previewOnly && Controller.currentTouchType == Controller.TouchType.Joystick || !previewOnly)
@@ -175,7 +175,7 @@ static class GameSettingMenuPatch
             switch (tabNum)
             {
                 case 3:
-                    BetterSettingsTab.AUTab.gameObject.SetActive(true);
+                    BetterSettingsTab.AUTab?.gameObject?.SetActive(true);
                     BetterSettingsTab.TabButton?.SelectButton(true);
                     __instance.MenuDescriptionText.text = BetterSettingsTab.Description;
                     break;

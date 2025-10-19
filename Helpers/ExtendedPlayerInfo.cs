@@ -50,7 +50,7 @@ internal class ExtendedPlayerInfo : MonoBehaviour, IMonoExtension<NetworkedPlaye
 
         if (AntiCheatInfo.RPCSentPS > 0)
         {
-            bool flag = _Data.Object.IsCheater();
+            bool flag = _Data.IsCheater();
 
             if (AntiCheatInfo.RPCSentPS >= ExtendedAntiCheatInfo.MAX_RPC_SENT && !flag)
             {

@@ -178,6 +178,8 @@ internal class PlayerInfoDisplay : MonoBehaviour
 
     private void SetPlayerOutline(StringBuilder sbTag)
     {
+        if (_player?.Data == null) return;
+
         string hashPuid = Utils.GetHashPuid(_player);
         string friendCode = _player.Data.FriendCode;
 

@@ -9,8 +9,6 @@ using UnityEngine;
 
 namespace BetterAmongUs.Patches.Client;
 
-// Code from: https://github.com/tukasa0001/TownOfHost/pull/1265
-// Code from: https://github.com/0xDrMoe/TownofHost-Enhanced
 [HarmonyPatch(typeof(OptionsMenuBehaviour))]
 internal static class OptionsMenuBehaviourPatch
 {
