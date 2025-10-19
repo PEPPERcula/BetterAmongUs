@@ -144,7 +144,7 @@ internal class RoleManagerPatch
                     // Desync role to other clients to prevent revealing the true role
                     if (BetterGameSettings.DesyncRoles.GetBool())
                     {
-                        if (IsImpostorRole(role) && role is not RoleTypes.Phantom)
+                        if (IsImpostorRole(role) && role is not RoleTypes.Phantom or RoleTypes.Viper)
                         {
                             List<MessageWriter> messageWriter = AmongUsClient.Instance.StartRpcDesync(player.NetId, (byte)RpcCalls.SetRole, SendOption.None, player.GetClientId(), clientCheck);
                             messageWriter.ForEach(mW => mW.Write((ushort)RoleTypes.Impostor));
@@ -201,7 +201,7 @@ internal class RoleManagerPatch
                         // Desync role to other clients to prevent revealing the true role
                         if (BetterGameSettings.DesyncRoles.GetBool())
                         {
-                            if (kvp.Key is not RoleTypes.Phantom)
+                            if (kvp.Key is not RoleTypes.Phantom or RoleTypes.Viper)
                             {
                                 List<MessageWriter> messageWriter = AmongUsClient.Instance.StartRpcDesync(pc.NetId, (byte)RpcCalls.SetRole, SendOption.None, pc.GetClientId(), clientCheck);
                                 messageWriter.ForEach(mW => mW.Write((ushort)RoleTypes.Impostor));

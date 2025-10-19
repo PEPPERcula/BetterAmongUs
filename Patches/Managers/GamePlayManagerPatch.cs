@@ -126,6 +126,7 @@ class GamePlayManager
             Logger.LogHeader($"Game Has Started - {Enum.GetName(typeof(MapNames), GameState.GetActiveMapId)}/{GameState.GetActiveMapId}", "GamePlayManager");
         }
     }
+
     [HarmonyPatch(typeof(EndGameManager))]
     internal class EndGameManagerPatch
     {

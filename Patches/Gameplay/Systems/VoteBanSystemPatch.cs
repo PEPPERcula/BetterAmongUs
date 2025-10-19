@@ -3,7 +3,7 @@ using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
 using HarmonyLib;
 
-namespace BetterAmongUs.Patches.Gameplay;
+namespace BetterAmongUs.Patches.Gameplay.Systems;
 
 [HarmonyPatch(typeof(VoteBanSystem))]
 internal static class VoteBanSystemPatch

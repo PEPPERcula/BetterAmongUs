@@ -10,30 +10,30 @@ namespace BetterAmongUs.Patches.Gameplay.UI.Settings;
 
 class BetterGameSettings
 {
-    internal static OptionItem? WhenCheating;
-    internal static OptionItem? InvalidFriendCode;
-    internal static OptionItem? UseBanPlayerList;
-    internal static OptionItem? UseBanNameList;
-    internal static OptionItem? UseBanWordList;
-    internal static OptionItem? UseBanWordListOnlyLobby;
-    internal static OptionItem? HideAndSeekImpNum;
-    internal static OptionItem? DetectedLevelAbove;
-    internal static OptionItem? DetectCheatClients;
-    internal static OptionItem? DetectInvalidRPCs;
-    internal static OptionItem? RoleRandomizer;
-    internal static OptionItem? DesyncRoles;
-    internal static OptionItem? CancelInvalidSabotage;
-    internal static OptionItem? CensorDetectionReason;
-    internal static OptionItem? RemovePetOnDeath;
-    internal static OptionItem? DisableSabotages;
+    internal static OptionStringItem? WhenCheating;
+    internal static OptionCheckboxItem? InvalidFriendCode;
+    internal static OptionCheckboxItem? UseBanPlayerList;
+    internal static OptionCheckboxItem? UseBanNameList;
+    internal static OptionCheckboxItem? UseBanWordList;
+    internal static OptionCheckboxItem? UseBanWordListOnlyLobby;
+    internal static OptionIntItem? HideAndSeekImpNum;
+    internal static OptionIntItem? DetectedLevelAbove;
+    internal static OptionCheckboxItem? DetectCheatClients;
+    internal static OptionCheckboxItem? DetectInvalidRPCs;
+    internal static OptionStringItem? RoleRandomizer;
+    internal static OptionCheckboxItem? DesyncRoles;
+    internal static OptionCheckboxItem? CancelInvalidSabotage;
+    internal static OptionCheckboxItem? CensorDetectionReason;
+    internal static OptionCheckboxItem? RemovePetOnDeath;
+    internal static OptionCheckboxItem? DisableSabotages;
 }
 
 class BetterGameSettingsTemp
 {
-    internal static OptionItem? HideAndSeekImp2;
-    internal static OptionItem? HideAndSeekImp3;
-    internal static OptionItem? HideAndSeekImp4;
-    internal static OptionItem? HideAndSeekImp5;
+    internal static OptionPlayerItem? HideAndSeekImp2;
+    internal static OptionPlayerItem? HideAndSeekImp3;
+    internal static OptionPlayerItem? HideAndSeekImp4;
+    internal static OptionPlayerItem? HideAndSeekImp5;
 }
 
 [HarmonyPatch(typeof(GameSettingMenu))]
@@ -102,12 +102,24 @@ static class GameSettingMenuPatch
                     BetterGameSettings.HideAndSeekImpNum = OptionIntItem.Create(1000, BetterSettingsTab, "BetterSetting.Setting.HideAndSeekImpNum", (1, 5, 1), 1);
 
                     BetterGameSettingsTemp.HideAndSeekImp2 = OptionPlayerItem.Create(0, BetterSettingsTab, "BetterSetting.TempSetting.HideAndSeekImpNum", BetterGameSettings.HideAndSeekImpNum);
+                    BetterGameSettingsTemp.HideAndSeekImp2.ShowCondition = () => BetterGameSettings.HideAndSeekImpNum.GetValue() >= 2;
                     BetterGameSettingsTemp.HideAndSeekImp3 = OptionPlayerItem.Create(1, BetterSettingsTab, "BetterSetting.TempSetting.HideAndSeekImpNum", BetterGameSettings.HideAndSeekImpNum);
+                    BetterGameSettingsTemp.HideAndSeekImp3.ShowCondition = () => BetterGameSettings.HideAndSeekImpNum.GetValue() >= 3 &&
+                    BetterGameSettingsTemp.HideAndSeekImp2.GetValue() != -1;
                     BetterGameSettingsTemp.HideAndSeekImp4 = OptionPlayerItem.Create(2, BetterSettingsTab, "BetterSetting.TempSetting.HideAndSeekImpNum", BetterGameSettings.HideAndSeekImpNum);
+                    BetterGameSettingsTemp.HideAndSeekImp4.ShowCondition = () => BetterGameSettings.HideAndSeekImpNum.GetValue() >= 4 &&
+                    BetterGameSettingsTemp.HideAndSeekImp2.GetValue() != -1 &&
+                    BetterGameSettingsTemp.HideAndSeekImp3.GetValue() != -1;
                     BetterGameSettingsTemp.HideAndSeekImp5 = OptionPlayerItem.Create(3, BetterSettingsTab, "BetterSetting.TempSetting.HideAndSeekImpNum", BetterGameSettings.HideAndSeekImpNum);
+                    BetterGameSettingsTemp.HideAndSeekImp5.ShowCondition = () => BetterGameSettings.HideAndSeekImpNum.GetValue() >= 5 &&
+                    BetterGameSettingsTemp.HideAndSeekImp2.GetValue() != -1 &&
+                    BetterGameSettingsTemp.HideAndSeekImp3.GetValue() != -1 &&
+                    BetterGameSettingsTemp.HideAndSeekImp4.GetValue() != -1;
                 }
             }
         }
+
+        BetterSettingsTab.UpdateVisuals();
 
         /*
         new BetterOptionCheckboxItem().Create(10000, BetterSettingsTab, "CheckBox Test", true);
