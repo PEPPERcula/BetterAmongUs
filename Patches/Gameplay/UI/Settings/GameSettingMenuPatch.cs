@@ -176,6 +176,7 @@ static class GameSettingMenuPatch
             {
                 case 3:
                     BetterSettingsTab.AUTab.gameObject.SetActive(true);
+                    BetterSettingsTab.TabButton?.SelectButton(true);
                     __instance.MenuDescriptionText.text = BetterSettingsTab.Description;
                     break;
             }

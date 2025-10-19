@@ -87,7 +87,6 @@ internal class MainMenuPatch
                 },
                 "Mod Credits"); //"Credits"
         }
-        */
 
         if (gitHubButton == null)
         {
@@ -108,6 +107,7 @@ internal class MainMenuPatch
                 () => Application.OpenURL(ModInfo.Discord),
                 "Discord"); //"Discord"
         }
+        */
     }
 
     internal static PassiveButton CreateButton(string name, Color32 normalColor, Color32 hoverColor, Action action, string label, Vector2? scale = null)

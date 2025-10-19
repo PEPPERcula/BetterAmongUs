@@ -64,16 +64,21 @@ internal class OptionTab
         var SettingsButton = UnityEngine.Object.Instantiate(GameSettingMenu.Instance.GameSettingsButton, GameSettingMenu.Instance.GameSettingsButton.transform.parent);
         TabButton = SettingsButton;
         SettingsButton.DestroyTextTranslators();
-        SettingsButton.GetComponentInChildren<TextMeshPro>().text = Name;
+        var title = SettingsButton.GetComponentInChildren<TextMeshPro>();
+        title?.SetText(Name);
 
         SettingsButton.gameObject.SetActive(true);
         SettingsButton.name = Name;
         SettingsButton.OnClick.RemoveAllListeners();
         SettingsButton.OnMouseOver.RemoveAllListeners();
 
-        SettingsButton.activeSprites.GetComponent<SpriteRenderer>().color = Color;
-        SettingsButton.inactiveSprites.GetComponent<SpriteRenderer>().color = Color;
-        SettingsButton.selectedSprites.GetComponent<SpriteRenderer>().color = Color;
+        var darkColor = Color * 0.5f;
+        SettingsButton.activeSprites.GetComponent<SpriteRenderer>().color = darkColor * 0.9f;
+        SettingsButton.inactiveSprites.GetComponent<SpriteRenderer>().color = darkColor * 0.8f;
+        SettingsButton.selectedSprites.GetComponent<SpriteRenderer>().color = darkColor;
+        SettingsButton.activeTextColor = Color * 0.9f;
+        SettingsButton.inactiveTextColor = Color * 0.8f;
+        SettingsButton.selectedTextColor = Color;
 
         SettingsButton.gameObject.GetComponent<BoxCollider2D>().size = new Vector2(2.5f, 0.6176f);
 
