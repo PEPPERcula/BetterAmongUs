@@ -2,6 +2,7 @@
 using BepInEx.Unity.IL2CPP.Utils;
 
 using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Enums;
 using BetterAmongUs.Modules;
 using BetterAmongUs.Network;
 using BetterAmongUs.Patches.Gameplay.UI.Settings;
@@ -13,16 +14,9 @@ namespace BetterAmongUs.Managers;
 
 internal static class HostManager
 {
-    internal enum SyncType
-    {
-        Reset,
-        Gameplay,
-        Meeting
-    }
-
     private static Coroutine? syncCoroutine = null;
 
-    internal static void SyncNames(SyncType syncType, float sDelay, int repeat = 1)
+    internal static void SyncNames(NameSyncType syncType, float sDelay, int repeat = 1)
     {
         if (!GameState.IsHost || !BetterGameSettings.ShowRoleForClients.GetValue()) return;
 
@@ -38,7 +32,7 @@ internal static class HostManager
         }
     }
 
-    private static IEnumerator CoSyncNamesDelay(SyncType syncType, float sDelay, int repeat)
+    private static IEnumerator CoSyncNamesDelay(NameSyncType syncType, float sDelay, int repeat)
     {
         for (int i = 0; i < repeat; i++)
         {
@@ -49,7 +43,7 @@ internal static class HostManager
         syncCoroutine = null;
     }
 
-    internal static void SyncNames(SyncType syncType)
+    internal static void SyncNames(NameSyncType syncType)
     {
         if (!GameState.IsHost || !BetterGameSettings.ShowRoleForClients.GetValue()) return;
 
@@ -57,7 +51,7 @@ internal static class HostManager
 
         foreach (var player in BAUPlugin.AllPlayerControls)
         {
-            if (syncType is SyncType.Reset)
+            if (syncType is NameSyncType.Reset)
             {
                 SyncResetName(player);
                 continue;
@@ -69,10 +63,10 @@ internal static class HostManager
 
                 switch (syncType)
                 {
-                    case SyncType.Gameplay:
-                    case SyncType.Meeting:
+                    case NameSyncType.Gameplay:
+                    case NameSyncType.Meeting:
                         var shapeshift = player.shapeshiftTargetPlayerId == -1 ? player.Data : Utils.PlayerDataFromPlayerId(player.shapeshiftTargetPlayerId);
-                        SyncNamesForGameplay(shapeshift, target, sb, player.Data, syncType == SyncType.Meeting);
+                        SyncNamesForGameplay(shapeshift, target, sb, player.Data, syncType == NameSyncType.Meeting);
                         break;
                 }
 

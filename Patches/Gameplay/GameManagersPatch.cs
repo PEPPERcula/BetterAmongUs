@@ -1,4 +1,5 @@
 ﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Enums;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
 using HarmonyLib;
@@ -18,7 +19,7 @@ internal static class GameManagersPatch
         [HarmonyPostfix]
         private static void EndGame_Postfix(/*GameManager __instance*/)
         {
-            HostManager.SyncNames(HostManager.SyncType.Reset);
+            HostManager.SyncNames(NameSyncType.Reset);
         }
     }
 

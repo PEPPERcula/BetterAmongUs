@@ -1,4 +1,5 @@
 ﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Enums;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
 using HarmonyLib;
@@ -21,7 +22,7 @@ internal static class HudManagerPatch
     [HarmonyPostfix]
     private static void CoShowIntro_Postfix(HudManager __instance)
     {
-        HostManager.SyncNames(HostManager.SyncType.Gameplay, 0.25f, 20);
+        HostManager.SyncNames(NameSyncType.Gameplay, 0.25f, 20);
     }
 
     [HarmonyPatch(nameof(HudManager.Start))]

@@ -1,4 +1,5 @@
 using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Enums;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
 using BetterAmongUs.Mono;
@@ -51,6 +52,6 @@ internal static class MeetingHudPatch
     [HarmonyPostfix]
     private static void SetMasksEnabled_Postfix(MeetingHud __instance)
     {
-        HostManager.SyncNames(HostManager.SyncType.Reset);
+        HostManager.SyncNames(NameSyncType.Reset);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Enums;
 using BetterAmongUs.Items.OptionItems;
 using BetterAmongUs.Managers;
 using HarmonyLib;
@@ -34,7 +35,7 @@ internal static class PlayerControlPatch
 
         __instance.BetterData().RoleInfo.Kills += 1;
 
-        HostManager.SyncNames(HostManager.SyncType.Gameplay);
+        HostManager.SyncNames(NameSyncType.Gameplay);
     }
 
     [HarmonyPatch(nameof(PlayerControl.Shapeshift))]
@@ -48,21 +49,21 @@ internal static class PlayerControlPatch
         else
             Logger.LogPrivate($"{__instance.Data.PlayerName} Has Un-Shapeshifted, did animate: {animate}", "EventLog");
 
-        HostManager.SyncNames(HostManager.SyncType.Gameplay, 0.2f, 30);
+        HostManager.SyncNames(NameSyncType.Gameplay, 0.2f, 30);
     }
 
     [HarmonyPatch(nameof(PlayerControl.CompleteTask))]
     [HarmonyPostfix]
     private static void CompleteTask_Postfix(PlayerControl __instance)
     {
-        HostManager.SyncNames(HostManager.SyncType.Gameplay);
+        HostManager.SyncNames(NameSyncType.Gameplay);
     }
 
     [HarmonyPatch(nameof(PlayerControl.StartMeeting))]
     [HarmonyPrefix]
     private static void StartMeeting_Prefix(PlayerControl __instance)
     {
-        HostManager.SyncNames(HostManager.SyncType.Meeting);
+        HostManager.SyncNames(NameSyncType.Meeting);
     }
 
     [HarmonyPatch(nameof(PlayerControl.SetRoleInvisibility))]

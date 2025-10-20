@@ -82,7 +82,6 @@ internal class BAUPlugin : BasePlugin
     internal static List<string> SupportedAmongUsVersions =
     [
         "2025.10.14",
-        "2025.9.9",
     ];
 
     internal static List<PlayerControl> AllPlayerControls = [];

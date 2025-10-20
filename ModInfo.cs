@@ -10,6 +10,6 @@ internal static class ModInfo
     internal const string PluginGuid = "com.ten.betteramongus";
     internal const string PluginVersion = "1.3.0";
     internal const string ReleaseDate = "10.19.2025"; // mm/dd/yyyy
-    internal const string Github = "https://github.com/EnhancedNetwork/BetterAmongUs-Public";
+    internal const string Github = "https://github.com/D1GQ/BetterAmongUs-Public";
     internal const string Discord = "https://discord.gg/ten";
 }
