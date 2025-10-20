@@ -64,7 +64,7 @@ internal static class GameSettingMenuPatch
                 BetterGameSettings.UseBanWordList = OptionCheckboxItem.Create(500, BetterSettingsTab, "BetterSetting.Setting.UseBanWordList", true);
                 BetterGameSettings.UseBanWordListOnlyLobby = OptionCheckboxItem.Create(1400, BetterSettingsTab, "BetterSetting.Setting.UseBanWordListOnlyLobby", true, BetterGameSettings.UseBanWordList);
                 OptionDividerItem.Create(BetterSettingsTab);
-                BetterGameSettings.ShowRoleForClients = OptionCheckboxItem.Create(1700, BetterSettingsTab, "BetterSetting.Setting.ShowRoleForClient", false);
+                BetterGameSettings.ShowRoleForClients = OptionCheckboxItem.Create(1700, BetterSettingsTab, "BetterSetting.Setting.ShowRoleForClients", false);
                 OptionDividerItem.Create(BetterSettingsTab);
             }
 

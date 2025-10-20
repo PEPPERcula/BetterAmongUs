@@ -121,12 +121,12 @@ internal class PlayerInfoDisplay : MonoBehaviour
         else
         {
             var targetData = Utils.PlayerDataFromPlayerId(_player.shapeshiftTargetPlayerId);
-            if (targetData != null) _player.RawSetName(targetData.BetterData().RealName);
+            if (targetData != null) _player.RawSetName(targetData.BetterData()?.RealName ?? targetData.PlayerName);
         }
 
-        _topText?.SetText(FormatInfo(sbTagTop));
-        _bottomText?.SetText(FormatInfo(sbTagBottom));
-        _infoText?.SetText(FormatInfo(sbTag));
+        _topText?.SetText(Utils.FormatInfo(sbTagTop));
+        _bottomText?.SetText(Utils.FormatInfo(sbTagBottom));
+        _infoText?.SetText(Utils.FormatInfo(sbTag));
     }
 
     private string ValidateFriendCode(out string color)
@@ -262,20 +262,5 @@ internal class PlayerInfoDisplay : MonoBehaviour
         {
             text.transform.localPosition = new Vector3(0f, -1.5f, 0.4999f);
         }
-    }
-
-    private static string FormatInfo(StringBuilder source)
-    {
-        if (source.Length == 0) return string.Empty;
-
-        var sb = new StringBuilder();
-        foreach (var part in source.ToString().Split("+++"))
-        {
-            if (!string.IsNullOrEmpty(Utils.RemoveHtmlText(part)))
-            {
-                sb.Append(part).Append(" - ");
-            }
-        }
-        return sb.ToString().TrimEnd(" - ".ToCharArray());
     }
 }

@@ -1,4 +1,5 @@
 using BetterAmongUs.Managers;
+using BetterAmongUs.Network;
 using Hazel;
 using InnerNet;
 

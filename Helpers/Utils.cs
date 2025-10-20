@@ -25,6 +25,21 @@ internal static class Utils
         return text;
     }
 
+    internal static string FormatInfo(StringBuilder source)
+    {
+        if (source.Length == 0) return string.Empty;
+
+        var sb = new StringBuilder();
+        foreach (var part in source.ToString().Split("+++"))
+        {
+            if (!string.IsNullOrEmpty(Utils.RemoveHtmlText(part)))
+            {
+                sb.Append(part).Append(" - ");
+            }
+        }
+        return sb.ToString().TrimEnd(" - ".ToCharArray());
+    }
+
     internal static bool IsInternetAvailable()
     {
         if (Application.internetReachability == NetworkReachability.NotReachable)

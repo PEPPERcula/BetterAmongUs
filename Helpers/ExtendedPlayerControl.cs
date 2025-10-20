@@ -44,6 +44,8 @@ internal class ExtendedPlayerControl : MonoBehaviour, IMonoExtension<PlayerContr
     {
         MonoExtensionManager.UnregisterExtension(this);
     }
+
+    internal readonly Dictionary<NetworkedPlayerInfo, string> NameSetLastFor = [];
 }
 
 internal static class PlayerControlExtension

@@ -1,4 +1,5 @@
 ﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
 using HarmonyLib;
 using System.Text;
@@ -17,13 +18,7 @@ internal static class GameManagersPatch
         [HarmonyPostfix]
         private static void EndGame_Postfix(/*GameManager __instance*/)
         {
-            if (GameState.IsHost)
-            {
-                foreach (PlayerControl player in BAUPlugin.AllPlayerControls)
-                {
-                    player.RpcSetName(player.Data.PlayerName);
-                }
-            }
+            HostManager.SyncNames(HostManager.SyncType.Reset);
         }
     }
 

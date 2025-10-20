@@ -1,4 +1,5 @@
 using BetterAmongUs.Helpers;
+using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
 using BetterAmongUs.Mono;
 using BetterAmongUs.Patches.Gameplay.UI.Chat;
@@ -44,5 +45,12 @@ internal static class MeetingHudPatch
         {
             ChatPatch.ClearPlayerChats();
         }
+    }
+
+    [HarmonyPatch(nameof(MeetingHud.SetMasksEnabled))]
+    [HarmonyPostfix]
+    private static void SetMasksEnabled_Postfix(MeetingHud __instance)
+    {
+        HostManager.SyncNames(HostManager.SyncType.Reset);
     }
 }

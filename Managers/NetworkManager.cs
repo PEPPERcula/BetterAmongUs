@@ -3,6 +3,7 @@ using BetterAmongUs.Helpers;
 using BetterAmongUs.Items.Structs;
 using BetterAmongUs.Modules;
 using BetterAmongUs.Modules.AntiCheat;
+using BetterAmongUs.Network;
 using HarmonyLib;
 using Hazel;
 using InnerNet;

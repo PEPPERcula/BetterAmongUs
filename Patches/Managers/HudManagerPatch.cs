@@ -17,6 +17,13 @@ internal static class HudManagerPatch
 
     private static bool HasBeenWelcomed = false;
 
+    [HarmonyPatch(nameof(HudManager.CoShowIntro))]
+    [HarmonyPostfix]
+    private static void CoShowIntro_Postfix(HudManager __instance)
+    {
+        HostManager.SyncNames(HostManager.SyncType.Gameplay, 0.25f, 20);
+    }
+
     [HarmonyPatch(nameof(HudManager.Start))]
     [HarmonyPostfix]
     private static void Start_Postfix(HudManager __instance)

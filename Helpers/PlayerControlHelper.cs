@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using BetterAmongUs.Data;
 using BetterAmongUs.Modules;
+using BetterAmongUs.Network;
 using BetterAmongUs.Patches.Gameplay.Player;
 using BetterAmongUs.Patches.Gameplay.UI.Settings;
 using InnerNet;
@@ -129,13 +130,7 @@ static class PlayerControlHelper
             }
         }
     }
-    // RPCs
-    // Set name for Target
-    internal static void RpcSetNamePrivate(this PlayerControl player, string name, PlayerControl target)
-    {
-        if (player == null || target == null) return;
-        RPC.RpcSetNamePrivate(player, name, target);
-    }
+
     // Exile player
     internal static void RpcExile(this PlayerControl player)
     {
@@ -197,11 +192,12 @@ static class PlayerControlHelper
         return false;
     }
     // Get hex color for team
-    internal static string GetTeamHexColor(this PlayerControl player)
+    internal static string GetTeamHexColor(this PlayerControl player) => player.Data.GetTeamHexColor();
+    internal static string GetTeamHexColor(this NetworkedPlayerInfo data)
     {
-        if (player == null) return "#ffffff";
+        if (data == null) return "#ffffff";
 
-        if (player.IsImpostorTeam())
+        if (data.IsImpostorTeam())
         {
             return "#f00202";
         }
@@ -210,12 +206,14 @@ static class PlayerControlHelper
             return "#8cffff";
         }
     }
+
     // Check if player is role type
     internal static bool Is(this PlayerControl player, RoleTypes role) => player?.Data?.RoleType == role;
     // Check if player is Ghost role type
     internal static bool IsGhostRole(this PlayerControl player) => player?.Data?.RoleType is RoleTypes.GuardianAngel;
     // Check if player is on imposter team
-    internal static bool IsImpostorTeam(this PlayerControl player) => player?.Data != null && player.Data.RoleType is RoleTypes.Impostor or RoleTypes.ImpostorGhost or RoleTypes.Shapeshifter or RoleTypes.Phantom or RoleTypes.Viper;
+    internal static bool IsImpostorTeam(this PlayerControl player) => player?.Data?.IsImpostorTeam() == true;
+    internal static bool IsImpostorTeam(this NetworkedPlayerInfo data) => data?.RoleType is RoleTypes.Impostor or RoleTypes.ImpostorGhost or RoleTypes.Shapeshifter or RoleTypes.Phantom or RoleTypes.Viper;
     // Check if player is a imposter teammate
     internal static bool IsImpostorTeammate(this PlayerControl player) =>
         player != null && PlayerControl.LocalPlayer != null &&

@@ -1,6 +1,7 @@
 ﻿using BepInEx.Unity.IL2CPP.Utils;
 using BetterAmongUs.Data;
 using BetterAmongUs.Helpers;
+using BetterAmongUs.Network;
 using Hazel;
 using Il2CppInterop.Runtime.Attributes;
 using System.Collections;

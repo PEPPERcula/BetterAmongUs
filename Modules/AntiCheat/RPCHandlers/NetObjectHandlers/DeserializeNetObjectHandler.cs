@@ -1,4 +1,5 @@
 using BetterAmongUs.Managers;
+using BetterAmongUs.Network;
 using BetterAmongUs.Patches.Gameplay.UI;
 using Hazel;
 using InnerNet;
