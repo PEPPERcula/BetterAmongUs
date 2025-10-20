@@ -75,4 +75,31 @@ internal static class ObjectHelper
             setSprite(sprite);
         }
     }
+
+    internal static void SetUIColors(this GameObject go, params string[] avoidGoName)
+    {
+        go.SetUIColors(null, null, avoidGoName);
+    }
+
+    internal static void SetUIColors(this GameObject go, Func<SpriteRenderer, bool>? check = null, params string[] avoidGoName)
+    {
+        go.SetUIColors(null, check, avoidGoName);
+    }
+
+    internal static void SetUIColors(this GameObject go, Color? color = null, Func<SpriteRenderer, bool>? check = null, params string[] avoidGoName)
+    {
+        var sprites = go.GetComponentsInChildren<SpriteRenderer>(true);
+        foreach (var sprite in sprites)
+        {
+            if (avoidGoName.Any(name => sprite.gameObject.name == name)) continue;
+            if (check == null || check(sprite))
+                AddColor(sprite, color);
+        }
+    }
+
+    internal static void AddColor(SpriteRenderer sprite, Color? color = null)
+    {
+        color ??= Color.green;
+        sprite.color = (sprite.color * 0.6f) + ((Color)color * 0.5f);
+    }
 }

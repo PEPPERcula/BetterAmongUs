@@ -22,7 +22,7 @@ internal class MainMenuPatch
             if (sprite != null)
             {
                 sprite.color = new Color(0.7f, 0.7f, 0.7f);
-                AddColor(sprite);
+                ObjectHelper.AddColor(sprite);
             }
 
             SceneManager.s_AllowLoadScene = false;
@@ -34,7 +34,7 @@ internal class MainMenuPatch
             if (sprite != null)
             {
                 sprite.color = Color.white;
-                AddColor(sprite);
+                ObjectHelper.AddColor(sprite);
             }
 
             SceneManager.s_AllowLoadScene = true;
@@ -45,12 +45,11 @@ internal class MainMenuPatch
             __instance.newsButton, __instance.myAccountButton, __instance.settingsButton, __instance.howToPlayButton, __instance.freePlayButton];
         foreach (var button in buttons)
         {
-            button.gameObject?.SetSpriteColors(sprite =>
+            button.gameObject?.SetUIColors(sprite =>
             {
-                if (sprite.gameObject.name is "Icon" or "Background") return;
-                if (sprite.color == Color.white)
-                    AddColor(sprite);
-            });
+                return sprite.color == Color.white;
+            },
+            "Icon", "Background");
         }
 
         /*
@@ -71,11 +70,6 @@ internal class MainMenuPatch
         logo.transform.localScale = new Vector3(0.003f, 0.0025f, 0f);
         logo.GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("BetterAmongUs.Resources.Images.BetterAmongUs-Logo.png", 1f);
 
-        __instance.transform.Find("MainUI/AspectScaler/BackgroundTexture")?.gameObject?.SetSpriteColors(AddColor);
-    }
-
-    private static void AddColor(SpriteRenderer sprite)
-    {
-        sprite.color = (sprite.color * 0.6f) + (Color.green * 0.5f);
+        __instance.transform.Find("MainUI/AspectScaler/BackgroundTexture")?.gameObject?.SetSpriteColors(sprite => ObjectHelper.AddColor(sprite));
     }
 }

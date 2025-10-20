@@ -15,6 +15,18 @@ internal class FindAGameManagerPatch
     [HarmonyPrefix]
     internal static void Start_Prefix(FindAGameManager __instance)
     {
+        __instance.refreshButton.gameObject.SetUIColors();
+        __instance.BackButton.gameObject.SetUIColors();
+        __instance.clearFilterButton.gameObject.SetUIColors("Disabled");
+        __instance.serverButton.gameObject.SetUIColors("Inactive", "Disabled", "Background");
+        __instance.serverButton.activeTextColor = Color.cyan * 0.3f;
+
+        foreach (var con in __instance.gameContainers)
+        {
+            var roll = con.GetComponent<ButtonRolloverHandler>();
+            roll.OverColor = (roll.OverColor * 0.6f) + (Color.green * 0.5f);
+        }
+
         var prefab = __instance.gameContainers[4];
         var list = new GameObject("GameListScroller");
         list.transform.SetParent(prefab.transform.parent);
