@@ -3,7 +3,7 @@
 namespace BetterAmongUs.Patches.Managers;
 
 [HarmonyPatch(typeof(LoadingBarManager))]
-internal class LoadingBarManagerPatch
+internal static class LoadingBarManagerPatch
 {
     [HarmonyPatch(nameof(LoadingBarManager.SetLoadingPercent))]
     [HarmonyPrefix]

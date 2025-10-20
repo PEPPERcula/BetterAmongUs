@@ -8,7 +8,7 @@ internal static class DisconnectPenaltyPatch
 {
     [HarmonyPatch(nameof(PlayerBanData.IsBanned), MethodType.Getter)]
     [HarmonyPrefix]
-    internal static bool IsBanned_Prefix(PlayerBanData __instance, ref bool __result)
+    private static bool IsBanned_Prefix(PlayerBanData __instance, ref bool __result)
     {
         __instance.BanPoints = 0f;
         __instance.banPoints = 0f;

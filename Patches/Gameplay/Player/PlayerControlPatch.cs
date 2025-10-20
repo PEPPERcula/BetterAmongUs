@@ -5,11 +5,11 @@ using HarmonyLib;
 namespace BetterAmongUs.Patches.Gameplay.Player;
 
 [HarmonyPatch(typeof(PlayerControl))]
-class PlayerControlPatch
+internal static class PlayerControlPatch
 {
     [HarmonyPatch(nameof(PlayerControl.Start))]
     [HarmonyPostfix]
-    internal static void Start_Postfix(PlayerControl __instance)
+    private static void Start_Postfix(PlayerControl __instance)
     {
         BAUPlugin.AllPlayerControls.Add(__instance);
         OptionPlayerItem.UpdateAllValues();
@@ -17,7 +17,7 @@ class PlayerControlPatch
 
     [HarmonyPatch(nameof(PlayerControl.OnDestroy))]
     [HarmonyPostfix]
-    internal static void OnDestroy_Postfix(PlayerControl __instance)
+    private static void OnDestroy_Postfix(PlayerControl __instance)
     {
         BAUPlugin.AllPlayerControls.Remove(__instance);
         OptionPlayerItem.UpdateAllValues();
@@ -25,7 +25,7 @@ class PlayerControlPatch
 
     [HarmonyPatch(nameof(PlayerControl.MurderPlayer))]
     [HarmonyPostfix]
-    internal static void MurderPlayer_Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
+    private static void MurderPlayer_Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
     {
         if (target == null) return;
 
@@ -33,9 +33,10 @@ class PlayerControlPatch
 
         __instance.BetterData().RoleInfo.Kills += 1;
     }
+
     [HarmonyPatch(nameof(PlayerControl.Shapeshift))]
     [HarmonyPostfix]
-    internal static void Shapeshift_Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] bool animate)
+    private static void Shapeshift_Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] bool animate)
     {
         if (target == null) return;
 
@@ -44,9 +45,10 @@ class PlayerControlPatch
         else
             Logger.LogPrivate($"{__instance.Data.PlayerName} Has Un-Shapeshifted, did animate: {animate}", "EventLog");
     }
+
     [HarmonyPatch(nameof(PlayerControl.SetRoleInvisibility))]
     [HarmonyPostfix]
-    internal static void SetRoleInvisibility_Postfix(PlayerControl __instance, [HarmonyArgument(0)] bool isActive, [HarmonyArgument(1)] bool animate)
+    private static void SetRoleInvisibility_Postfix(PlayerControl __instance, [HarmonyArgument(0)] bool isActive, [HarmonyArgument(1)] bool animate)
     {
 
         if (isActive)
@@ -57,7 +59,7 @@ class PlayerControlPatch
 }
 
 [HarmonyPatch(typeof(PlayerPhysics))]
-internal class PlayerPhysicsPatch
+internal static class PlayerPhysicsPatch
 {
     [HarmonyPatch(nameof(PlayerPhysics.BootFromVent))]
     [HarmonyPostfix]
@@ -66,6 +68,7 @@ internal class PlayerPhysicsPatch
 
         Logger.LogPrivate($"{__instance.myPlayer.Data.PlayerName} Has been booted from vent: {ventId}, as {__instance.myPlayer.Data.RoleType.GetRoleName()}", "EventLog");
     }
+
     [HarmonyPatch(nameof(PlayerPhysics.CoEnterVent))]
     [HarmonyPostfix]
     private static void CoEnterVent_Postfix(PlayerPhysics __instance, [HarmonyArgument(0)] int ventId)
@@ -73,6 +76,7 @@ internal class PlayerPhysicsPatch
 
         Logger.LogPrivate($"{__instance.myPlayer.Data.PlayerName} Has entered vent: {ventId}, as {__instance.myPlayer.Data.RoleType.GetRoleName()}", "EventLog");
     }
+
     [HarmonyPatch(nameof(PlayerPhysics.CoExitVent))]
     [HarmonyPostfix]
     private static void CoExitVent_Postfix(PlayerPhysics __instance, [HarmonyArgument(0)] int ventId)

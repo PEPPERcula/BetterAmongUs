@@ -8,12 +8,13 @@ using UnityEngine.SceneManagement;
 namespace BetterAmongUs.Patches.Client;
 
 [HarmonyPatch(typeof(MainMenuManager))]
-internal class MainMenuPatch
+internal static class MainMenuPatch
 {
     private static SpriteRenderer? sprite;
+
     [HarmonyPatch(nameof(MainMenuManager.LateUpdate))]
     [HarmonyPostfix]
-    internal static void LateUpdate_Postfix(MainMenuManager __instance)
+    private static void LateUpdate_Postfix(MainMenuManager __instance)
     {
         if (BannedUserData.IsBanned || FileChecker.HasUnauthorizedFileOrMod)
         {
@@ -61,7 +62,7 @@ internal class MainMenuPatch
     // Replace AU logo with BAU logo
     [HarmonyPatch(nameof(MainMenuManager.Start))]
     [HarmonyPostfix]
-    internal static void Start_Postfix(MainMenuManager __instance)
+    private static void Start_Postfix(MainMenuManager __instance)
     {
         GameObject logo = GameObject.Find("LeftPanel/Sizer/LOGO-AU");
         GameObject sizer = logo.transform.parent.gameObject;

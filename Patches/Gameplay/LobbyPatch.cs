@@ -22,7 +22,7 @@ internal static class LobbyPatch
         // Disabled annoying music
         [HarmonyPatch(nameof(LobbyBehaviour.Update))]
         [HarmonyPostfix]
-        internal static void Update_Postfix(/*LobbyBehaviour __instance*/)
+        private static void Update_Postfix(/*LobbyBehaviour __instance*/)
         {
             if (BAUPlugin.DisableLobbyTheme.Value)
                 SoundManager.instance.StopSound(LobbyBehaviour.Instance.MapTheme);
@@ -50,10 +50,11 @@ internal static class LobbyPatch
     }
 
     [HarmonyPatch(typeof(GameStartManager))]
-    internal class GameStartManagerPatch
+    internal static class GameStartManagerPatch
     {
         internal static float lobbyTimer = 600f;
         internal static string lobbyTimerDisplay = "";
+
         [HarmonyPatch(nameof(GameStartManager.Start))]
         [HarmonyPostfix]
         private static void Start_Postfix(GameStartManager __instance)
@@ -65,6 +66,7 @@ internal static class LobbyPatch
             __instance.ClientViewButton.gameObject.SetUIColors("Icon");
             __instance.HostViewButton.gameObject.SetUIColors("Icon");
         }
+
         [HarmonyPatch(nameof(GameStartManager.Update))]
         [HarmonyPrefix]
         private static void Update_Prefix(GameStartManager __instance)

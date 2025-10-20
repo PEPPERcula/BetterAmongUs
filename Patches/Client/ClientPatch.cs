@@ -15,15 +15,25 @@ using UnityEngine.SceneManagement;
 
 namespace BetterAmongUs.Patches.Client;
 
-internal class ClientPatch
+internal static class ClientPatch
 {
-    // Show warning message for newer and older versions of among us
+    [HarmonyPatch(typeof(AccountTab))]
+    internal static class AccountTabPatch
+    {
+        [HarmonyPatch(nameof(AccountTab.Awake))]
+        [HarmonyPostfix]
+        private static void Awake_Postfix(AccountTab __instance)
+        {
+            __instance.signInStatusComponent.friendsButton.SetUIColors();
+        }
+    }
+
     [HarmonyPatch(typeof(EOSManager))]
-    internal class EOSManagerPatch
+    internal static class EOSManagerPatch
     {
         [HarmonyPatch(nameof(EOSManager.EndFinalPartsOfLoginFlow))]
         [HarmonyPostfix]
-        internal static void EndFinalPartsOfLoginFlow_Postfix()
+        private static void EndFinalPartsOfLoginFlow_Postfix()
         {
             UserData.TrySetLocalData();
         }
@@ -31,11 +41,11 @@ internal class ClientPatch
 
     // If developer set account status color to Blue
     [HarmonyPatch(typeof(SignInStatusComponent))]
-    internal class SignInStatusComponentPatch
+    internal static class SignInStatusComponentPatch
     {
         [HarmonyPatch(nameof(SignInStatusComponent.SetOnline))]
         [HarmonyPrefix]
-        internal static bool SetOnline_Prefix(SignInStatusComponent __instance)
+        private static bool SetOnline_Prefix(SignInStatusComponent __instance)
         {
             var lines = "<color=#ebbd34>----------------------------------------------------------------------------------------------</color>";
             if (!FileChecker.HasShownWarning && FileChecker.HasUnauthorizedFileOrMod)
@@ -107,11 +117,11 @@ internal class ClientPatch
 
     // Log game exit
     [HarmonyPatch(typeof(AmongUsClient))]
-    internal class AmongUsClientPatch
+    internal static class AmongUsClientPatch
     {
         [HarmonyPatch(nameof(AmongUsClient.ExitGame))]
         [HarmonyPostfix]
-        internal static void ExitGame_Postfix([HarmonyArgument(0)] DisconnectReasons reason)
+        private static void ExitGame_Postfix([HarmonyArgument(0)] DisconnectReasons reason)
         {
             CustomLoadingBarManager.ToggleLoadingBar(false);
             Logger.Log($"Client has left game for: {Enum.GetName(reason)}", "AmongUsClientPatch");
@@ -119,7 +129,7 @@ internal class ClientPatch
 
         [HarmonyPatch(nameof(AmongUsClient.OnGameEnd))]
         [HarmonyPrefix]
-        internal static void OnGameEnd_Prefix()
+        private static void OnGameEnd_Prefix()
         {
             foreach (var data in GameData.Instance.AllPlayers)
             {
@@ -137,7 +147,7 @@ internal class ClientPatch
 
         [HarmonyPatch(nameof(AmongUsClient.CoStartGame))]
         [HarmonyPostfix]
-        internal static void CoStartGame_Postfix(AmongUsClient __instance)
+        private static void CoStartGame_Postfix(AmongUsClient __instance)
         {
             if (BAUPlugin.ChatInGameplay.Value)
             {
@@ -285,11 +295,11 @@ internal class ClientPatch
     }
 
     [HarmonyPatch(typeof(InnerNetClient))]
-    internal class InnerNetClientPatch
+    internal static class InnerNetClientPatch
     {
         [HarmonyPatch(nameof(InnerNetClient.SendOrDisconnect))]
         [HarmonyPrefix]
-        public static bool SendOrDisconnect_Prefix(InnerNetClient __instance, MessageWriter msg)
+        private static bool SendOrDisconnect_Prefix(InnerNetClient __instance, MessageWriter msg)
         {
             NetworkManager.SendToServer(msg);
 
@@ -298,7 +308,7 @@ internal class ClientPatch
 
         [HarmonyPatch(nameof(InnerNetClient.HandleGameData))]
         [HarmonyPrefix]
-        internal static bool HandleGameDataInner_Prefix([HarmonyArgument(0)] MessageReader oldReader)
+        private static bool HandleGameDataInner_Prefix([HarmonyArgument(0)] MessageReader oldReader)
         {
             NetworkManager.HandleGameData(oldReader);
             return false;
@@ -306,7 +316,7 @@ internal class ClientPatch
 
         [HarmonyPatch(nameof(InnerNetClient.CanBan))]
         [HarmonyPrefix]
-        internal static bool CanBan_Prefix(ref bool __result)
+        private static bool CanBan_Prefix(ref bool __result)
         {
             __result = GameState.IsHost;
             return false;
@@ -314,7 +324,7 @@ internal class ClientPatch
 
         [HarmonyPatch(nameof(InnerNetClient.CanKick))]
         [HarmonyPrefix]
-        internal static bool CanKick_Prefix(ref bool __result)
+        private static bool CanKick_Prefix(ref bool __result)
         {
             __result = GameState.IsHost || GameState.IsInGamePlay && (GameState.IsMeeting || GameState.IsExilling);
             return false;
@@ -322,7 +332,7 @@ internal class ClientPatch
 
         [HarmonyPatch(nameof(InnerNetClient.KickPlayer))]
         [HarmonyPrefix]
-        internal static void KickPlayer_Prefix(ref int clientId, ref bool ban)
+        private static void KickPlayer_Prefix(ref int clientId, ref bool ban)
         {
             if (ban && BetterGameSettings.UseBanPlayerList.GetBool())
             {

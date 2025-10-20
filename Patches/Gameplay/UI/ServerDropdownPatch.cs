@@ -6,12 +6,12 @@ using UnityEngine.SceneManagement;
 namespace BetterAmongUs.Patches.Gameplay.UI;
 
 [HarmonyPatch]
-internal class ServerDropdownPatch
+internal static class ServerDropdownPatch
 {
     [HarmonyPatch(typeof(FindAGameManager))]
     [HarmonyPatch(nameof(FindAGameManager.Start))]
     [HarmonyPrefix]
-    internal static void Start_Prefix(FindAGameManager __instance)
+    private static void Start_Prefix(FindAGameManager __instance)
     {
         var aspectPosition = __instance.serverDropdown.transform.parent.GetComponent<AspectPosition>();
         if (aspectPosition != null)
@@ -28,7 +28,7 @@ internal class ServerDropdownPatch
     [HarmonyPatch(typeof(ServerDropdown))]
     [HarmonyPatch(nameof(ServerDropdown.FillServerOptions))]
     [HarmonyPrefix]
-    internal static bool FillServerOptions_Prefix(ServerDropdown __instance)
+    private static bool FillServerOptions_Prefix(ServerDropdown __instance)
     {
         __instance.background.size = new Vector2(5, 1);
 

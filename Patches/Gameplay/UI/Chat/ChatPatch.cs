@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace BetterAmongUs.Patches.Gameplay.UI.Chat;
 
-class ChatPatch
+internal static class ChatPatch
 {
     internal static List<string> ChatHistory = [];
     internal static int CurrentHistorySelection = -1;
@@ -60,7 +60,7 @@ class ChatPatch
     {
         [HarmonyPatch(nameof(ChatController.Toggle))]
         [HarmonyPostfix]
-        internal static void Toggle_Postfix(/*ChatController __instance*/)
+        private static void Toggle_Postfix(/*ChatController __instance*/)
         {
             SetChatTheme();
         }
@@ -68,7 +68,7 @@ class ChatPatch
         [HarmonyPatch(nameof(ChatController.Update))]
         [HarmonyPrefix]
         [HarmonyPriority(Priority.First)]
-        internal static void Update_Prefix(ChatController __instance)
+        private static void Update_Prefix(ChatController __instance)
         {
             if (BAUPlugin.ChatDarkMode.Value)
             {
@@ -109,7 +109,7 @@ class ChatPatch
         // Add extra information to chat bubble
         [HarmonyPatch(nameof(ChatController.AddChat))]
         [HarmonyPostfix]
-        internal static void AddChat_Postfix(ChatController __instance, [HarmonyArgument(0)] PlayerControl sourcePlayer, [HarmonyArgument(1)] string chatText)
+        private static void AddChat_Postfix(ChatController __instance, [HarmonyArgument(0)] PlayerControl sourcePlayer, [HarmonyArgument(1)] string chatText)
         {
             ChatBubble? chatBubble = SetChatPoolTheme();
             if (chatBubble == null) return;
@@ -195,14 +195,14 @@ class ChatPatch
 
         [HarmonyPatch(nameof(ChatController.AddChatNote))]
         [HarmonyPostfix]
-        internal static void AddChatNote_Postfix(ChatController __instance)
+        private static void AddChatNote_Postfix(ChatController __instance)
         {
             SetChatPoolTheme();
         }
 
         [HarmonyPatch(nameof(ChatController.AddChatWarning))]
         [HarmonyPostfix]
-        internal static void AddChatWarning_Postfix(ChatController __instance)
+        private static void AddChatWarning_Postfix(ChatController __instance)
         {
             SetChatPoolTheme();
         }
@@ -281,11 +281,11 @@ class ChatPatch
     }
 
     [HarmonyPatch(typeof(FreeChatInputField))]
-    class FreeChatInputFieldPatch
+    internal static class FreeChatInputFieldPatch
     {
         [HarmonyPatch(nameof(FreeChatInputField.Awake))]
         [HarmonyPostfix]
-        internal static void Awake_Postfix(FreeChatInputField __instance)
+        private static void Awake_Postfix(FreeChatInputField __instance)
         {
             __instance.textArea.allowAllCharacters = true;
             __instance.textArea.AllowSymbols = true;
@@ -294,9 +294,10 @@ class ChatPatch
             __instance.textArea.characterLimit = 118;
             __instance.charCountText.text = "0/118";
         }
+
         [HarmonyPatch(nameof(FreeChatInputField.UpdateCharCount))]
         [HarmonyPostfix]
-        internal static void UpdateCharCount_Postfix(FreeChatInputField __instance)
+        private static void UpdateCharCount_Postfix(FreeChatInputField __instance)
         {
             int length = __instance.textArea.text.Length;
             __instance.charCountText.text = string.Format("{0}/118", length);

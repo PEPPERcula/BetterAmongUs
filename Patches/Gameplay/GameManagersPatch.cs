@@ -11,7 +11,7 @@ namespace BetterAmongUs.Patches.Gameplay;
 internal static class GameManagersPatch
 {
     [HarmonyPatch(typeof(GameManager))]
-    internal class GameManagerPatch
+    internal static class GameManagerPatch
     {
         [HarmonyPatch(nameof(GameManager.EndGame))]
         [HarmonyPostfix]
@@ -28,7 +28,7 @@ internal static class GameManagersPatch
     }
 
     [HarmonyPatch(typeof(EndGameManager))]
-    internal class EndGameManagerPatch
+    internal static class EndGameManagerPatch
     {
         [HarmonyPatch(nameof(EndGameManager.SetEverythingUp))]
         [HarmonyPostfix]

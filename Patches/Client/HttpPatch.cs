@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 namespace BetterAmongUs.Patches.Client;
 
 [HarmonyPatch]
-internal class HttpPatch
+internal static class HttpPatch
 {
     public static string GetHeader()
     {
@@ -28,7 +28,7 @@ internal class HttpPatch
     [HarmonyPatch(typeof(UnityWebRequest), nameof(UnityWebRequest.SendWebRequest))]
     private static class SendWebRequestPatch
     {
-        public static void Prefix(UnityWebRequest __instance)
+        private static void Prefix(UnityWebRequest __instance)
         {
             var path = new Uri(__instance.url).AbsolutePath;
             if (path.Contains("/api/games"))
@@ -37,7 +37,7 @@ internal class HttpPatch
             }
         }
 
-        public static void Postfix(UnityWebRequest __instance, UnityWebRequestAsyncOperation __result)
+        private static void Postfix(UnityWebRequest __instance, UnityWebRequestAsyncOperation __result)
         {
             var path = new Uri(__instance.url).AbsolutePath;
             if (path.Contains("/api/games"))

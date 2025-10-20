@@ -13,6 +13,7 @@ internal static class FindGameMoreInfoPopupPatch
     private static InfoTextBox? _textBox;
     private static FindGameMoreInfoPopup? _findGameMoreInfoPopup;
     private static readonly StringBuilder _sb = new();
+
     [HarmonyPatch(nameof(FindGameMoreInfoPopup.SetupInfo))]
     [HarmonyPostfix]
     private static void SetupInfo_Postfix(FindGameMoreInfoPopup __instance)

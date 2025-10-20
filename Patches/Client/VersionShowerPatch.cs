@@ -5,11 +5,11 @@ using HarmonyLib;
 namespace BetterAmongUs.Patches.Client;
 
 [HarmonyPatch(typeof(VersionShower))]
-internal class VersionShowerPatch
+internal static class VersionShowerPatch
 {
     [HarmonyPatch(nameof(VersionShower.Start))]
     [HarmonyPostfix]
-    internal static void Postfix(VersionShower __instance)
+    private static void Postfix(VersionShower __instance)
     {
         string mark = Translator.GetString("BAUMark");
         string bau = Translator.GetString("BAU");

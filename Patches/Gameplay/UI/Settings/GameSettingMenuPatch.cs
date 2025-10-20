@@ -26,6 +26,7 @@ class BetterGameSettings
     internal static OptionCheckboxItem? CensorDetectionReason;
     internal static OptionCheckboxItem? RemovePetOnDeath;
     internal static OptionCheckboxItem? DisableSabotages;
+    internal static OptionCheckboxItem? ShowRoleForClients;
 }
 
 class BetterGameSettingsTemp
@@ -37,13 +38,13 @@ class BetterGameSettingsTemp
 }
 
 [HarmonyPatch(typeof(GameSettingMenu))]
-static class GameSettingMenuPatch
+internal static class GameSettingMenuPatch
 {
     internal static OptionTab? BetterSettingsTab;
 
     internal static void SetupSettings(bool IsPreload = false)
     {
-        // Use 1700 next ID
+        // Use 1800 next ID
 
         BetterSettingsTab = OptionTab.Create(3, "BetterSetting", "BetterSetting.Description", Color.green);
 
@@ -62,6 +63,8 @@ static class GameSettingMenuPatch
                 BetterGameSettings.UseBanNameList = OptionCheckboxItem.Create(400, BetterSettingsTab, "BetterSetting.Setting.UseBanNameList", true);
                 BetterGameSettings.UseBanWordList = OptionCheckboxItem.Create(500, BetterSettingsTab, "BetterSetting.Setting.UseBanWordList", true);
                 BetterGameSettings.UseBanWordListOnlyLobby = OptionCheckboxItem.Create(1400, BetterSettingsTab, "BetterSetting.Setting.UseBanWordListOnlyLobby", true, BetterGameSettings.UseBanWordList);
+                OptionDividerItem.Create(BetterSettingsTab);
+                BetterGameSettings.ShowRoleForClients = OptionCheckboxItem.Create(1700, BetterSettingsTab, "BetterSetting.Setting.ShowRoleForClient", false);
                 OptionDividerItem.Create(BetterSettingsTab);
             }
 
@@ -132,7 +135,7 @@ static class GameSettingMenuPatch
 
     [HarmonyPatch(nameof(GameSettingMenu.Start))]
     [HarmonyPostfix]
-    internal static void Start_Postfix(GameSettingMenu __instance)
+    private static void Start_Postfix(GameSettingMenu __instance)
     {
         SetupSettings();
 
@@ -175,7 +178,7 @@ static class GameSettingMenuPatch
 
     [HarmonyPatch(nameof(GameSettingMenu.ChangeTab))]
     [HarmonyPrefix]
-    internal static void ChangeTab_Prefix(GameSettingMenu __instance, [HarmonyArgument(0)] int tabNum, [HarmonyArgument(1)] bool previewOnly)
+    private static void ChangeTab_Prefix(GameSettingMenu __instance, [HarmonyArgument(0)] int tabNum, [HarmonyArgument(1)] bool previewOnly)
     {
         if (BetterSettingsTab == null) return;
 
@@ -197,11 +200,11 @@ static class GameSettingMenuPatch
 }
 
 [HarmonyPatch(typeof(GameOptionsMenu))]
-static class GameOptionsMenuPatch
+internal static class GameOptionsMenuPatch
 {
     [HarmonyPatch(nameof(GameOptionsMenu.CreateSettings))]
     [HarmonyPrefix]
-    internal static bool CreateSettings_Prefix(GameOptionsMenu __instance)
+    private static bool CreateSettings_Prefix(GameOptionsMenu __instance)
     {
         if (__instance == GameSettingMenuPatch.BetterSettingsTab.AUTab)
         {
@@ -213,65 +216,12 @@ static class GameOptionsMenuPatch
 }
 
 [HarmonyPatch(typeof(OptionsConsole))]
-static class OptionsConsolePatch
+internal static class OptionsConsolePatch
 {
     [HarmonyPatch(nameof(OptionsConsole.CanUse))]
     [HarmonyPrefix]
-    internal static void CanUse_Prefix(OptionsConsole __instance)
+    private static void CanUse_Prefix(OptionsConsole __instance)
     {
         __instance.HostOnly = false;
-    }
-}
-
-// Allow settings bypass
-[HarmonyPatch(typeof(NumberOption))]
-static class NumberOptionPatch
-{
-    [HarmonyPatch(nameof(NumberOption.Increase))]
-    [HarmonyPrefix]
-    internal static bool Increase_Prefix(NumberOption __instance)
-    {
-        int times = 1;
-        if (Input.GetKey(KeyCode.LeftShift))
-            times = 5;
-        if (Input.GetKey(KeyCode.LeftControl))
-            times = 10;
-
-        if (__instance.Value + __instance.Increment * times > __instance.ValidRange.max)
-        {
-            __instance.Value = __instance.ValidRange.max;
-        }
-        else
-        {
-            __instance.Value = __instance.ValidRange.Clamp(__instance.Value + __instance.Increment * times);
-        }
-        __instance.UpdateValue();
-        __instance.OnValueChanged.Invoke(__instance);
-        __instance.AdjustButtonsActiveState();
-        return false;
-    }
-
-    [HarmonyPatch(nameof(NumberOption.Decrease))]
-    [HarmonyPrefix]
-    internal static bool Decrease_Prefix(NumberOption __instance)
-    {
-        int times = 1;
-        if (Input.GetKey(KeyCode.LeftShift))
-            times = 5;
-        if (Input.GetKey(KeyCode.LeftControl))
-            times = 10;
-
-        if (__instance.Value - __instance.Increment * times < __instance.ValidRange.min)
-        {
-            __instance.Value = __instance.ValidRange.min;
-        }
-        else
-        {
-            __instance.Value = __instance.ValidRange.Clamp(__instance.Value - __instance.Increment * times);
-        }
-        __instance.UpdateValue();
-        __instance.OnValueChanged.Invoke(__instance);
-        __instance.AdjustButtonsActiveState();
-        return false;
     }
 }

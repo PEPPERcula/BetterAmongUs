@@ -8,11 +8,11 @@ using UnityEngine;
 namespace BetterAmongUs.Patches.Managers;
 
 [HarmonyPatch(typeof(ModManager))]
-internal class ModManagerPatch
+internal static class ModManagerPatch
 {
     [HarmonyPatch(nameof(ModManager.LateUpdate))]
     [HarmonyPostfix]
-    internal static void LateUpdate_Postfix(ModManager __instance)
+    private static void LateUpdate_Postfix(ModManager __instance)
     {
         if (SplashIntroPatch.IsReallyDoneLoading)
         {

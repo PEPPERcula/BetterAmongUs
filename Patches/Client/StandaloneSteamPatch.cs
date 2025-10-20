@@ -9,18 +9,18 @@ internal static class StandaloneSteamPatch
     private static readonly Type? _type = Type.GetType("Steamworks.SteamAPI, Assembly-CSharp-firstpass", false);
 
     [HarmonyPrepare]
-    public static bool Prepare()
+    private static bool Prepare()
     {
         return _type != null;
     }
 
     [HarmonyTargetMethod]
-    public static MethodBase TargetMethod()
+    private static MethodBase TargetMethod()
     {
         return AccessTools.Method(_type, "RestartAppIfNecessary");
     }
 
-    public static bool Prefix(out bool __result)
+    private static bool Prefix(out bool __result)
     {
         const string file = "steam_appid.txt";
 

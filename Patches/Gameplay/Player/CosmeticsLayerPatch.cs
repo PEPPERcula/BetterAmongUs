@@ -5,11 +5,11 @@ namespace BetterAmongUs.Patches.Gameplay.Player;
 
 // Set text color
 [HarmonyPatch(typeof(CosmeticsLayer))]
-internal class CosmeticsLayerPatch
+internal static class CosmeticsLayerPatch
 {
     [HarmonyPatch(nameof(CosmeticsLayer.GetColorBlindText))]
     [HarmonyPrefix]
-    internal static bool GetColorBlindText_Prefix(CosmeticsLayer __instance, ref string __result)
+    private static bool GetColorBlindText_Prefix(CosmeticsLayer __instance, ref string __result)
     {
         if (__instance.bodyMatProperties.ColorId > Palette.PlayerColors.Length) return true;
 

@@ -4,11 +4,11 @@ using UnityEngine;
 namespace BetterAmongUs.Patches.Gameplay.UI;
 
 [HarmonyPatch(typeof(RegionMenu))]
-internal class RegionMenuPatch
+internal static class RegionMenuPatch
 {
     [HarmonyPatch(nameof(RegionMenu.OnEnable))]
     [HarmonyPostfix]
-    internal static void AdjustButtonPositions_Postfix(RegionMenu __instance)
+    private static void AdjustButtonPositions_Postfix(RegionMenu __instance)
     {
         const int maxColumns = 4;
         int buttonsPerColumn = 6;

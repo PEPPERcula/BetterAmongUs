@@ -27,7 +27,7 @@ internal static class OptionsMenuBehaviourPatch
 
     [HarmonyPatch(nameof(OptionsMenuBehaviour.Start))]
     [HarmonyPrefix]
-    internal static void Start_Postfix(OptionsMenuBehaviour __instance)
+    private static void Start_Postfix(OptionsMenuBehaviour __instance)
     {
         static bool toggleCheckInGamePlay(string buttonName)
         {
@@ -178,7 +178,7 @@ internal static class OptionsMenuBehaviourPatch
 
     [HarmonyPatch(nameof(OptionsMenuBehaviour.Close))]
     [HarmonyPrefix]
-    internal static void Close_Postfix()
+    private static void Close_Postfix()
     {
         ClientOptionItem.CustomBackground?.gameObject.SetActive(false);
     }

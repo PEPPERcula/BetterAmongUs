@@ -10,10 +10,10 @@ using UnityEngine;
 namespace BetterAmongUs.Patches.Client;
 
 [HarmonyPatch]
-internal class AnnouncementPanelPatch
+internal static class AnnouncementPanelPatch
 {
     [HarmonyPatch(typeof(PlayerAnnouncementData), nameof(PlayerAnnouncementData.SetAnnouncements)), HarmonyPrefix]
-    internal static bool SetModAnnouncements(PlayerAnnouncementData __instance, [HarmonyArgument(0)] ref Il2CppReferenceArray<Announcement> aRange)
+    private static bool SetModAnnouncements(PlayerAnnouncementData __instance, [HarmonyArgument(0)] ref Il2CppReferenceArray<Announcement> aRange)
     {
         ModNews.ProcessModNewsFiles();
 
@@ -41,7 +41,7 @@ internal class AnnouncementPanelPatch
     }
 
     [HarmonyPatch(typeof(AnnouncementPanel), nameof(AnnouncementPanel.SetUp)), HarmonyPostfix]
-    internal static void SetUpPanel(AnnouncementPanel __instance, [HarmonyArgument(0)] Announcement announcement)
+    private static void SetUpPanel(AnnouncementPanel __instance, [HarmonyArgument(0)] Announcement announcement)
     {
         if (announcement.Number >= 100000)
         {

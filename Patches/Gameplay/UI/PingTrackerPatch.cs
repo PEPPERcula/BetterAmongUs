@@ -4,7 +4,7 @@ using HarmonyLib;
 namespace BetterAmongUs.Patches.Gameplay.UI;
 
 [HarmonyPatch(typeof(PingTracker))]
-internal class PingTrackerPatch
+internal static class PingTrackerPatch
 {
     [HarmonyPatch(nameof(PingTracker.Update))]
     [HarmonyPrefix]

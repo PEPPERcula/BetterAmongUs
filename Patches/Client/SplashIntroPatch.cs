@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace BetterAmongUs.Patches.Client;
 
-class SplashIntroPatch
+internal static class SplashIntroPatch
 {
     internal static bool Skip = false;
     internal static bool BetterIntro = false;
@@ -12,11 +12,11 @@ class SplashIntroPatch
     private static GameObject? BetterLogo;
 
     [HarmonyPatch(typeof(SplashManager))]
-    class SplashManagerPatch
+    internal class SplashManagerPatch
     {
         [HarmonyPatch(nameof(SplashManager.Start))]
         [HarmonyPrefix]
-        internal static void Start_Prefix(SplashManager __instance)
+        private static void Start_Prefix(SplashManager __instance)
         {
             Skip = false;
             BetterIntro = false;
@@ -26,7 +26,7 @@ class SplashIntroPatch
 
         [HarmonyPatch(nameof(SplashManager.Update))]
         [HarmonyPrefix]
-        internal static bool Update_Prefix(SplashManager __instance)
+        private static bool Update_Prefix(SplashManager __instance)
         {
             if (Skip)
             {
@@ -72,7 +72,7 @@ class SplashIntroPatch
             return false;
         }
 
-        internal static bool CheckIfDone(SplashManager __instance, bool isSkip = false)
+        private static bool CheckIfDone(SplashManager __instance, bool isSkip = false)
         {
             if (Time.time - __instance.startTime > 2f && BetterIntro || isSkip && BetterIntro)
             {

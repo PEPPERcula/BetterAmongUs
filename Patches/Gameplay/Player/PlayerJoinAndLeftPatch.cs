@@ -8,9 +8,9 @@ using InnerNet;
 namespace BetterAmongUs.Patches.Gameplay.Player;
 
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnGameJoined))]
-class OnGameJoinedPatch
+internal static class OnGameJoinedPatch
 {
-    internal static void Postfix(/*AmongUsClient __instance*/)
+    private static void Postfix(/*AmongUsClient __instance*/)
     {
         try
         {
@@ -28,10 +28,11 @@ class OnGameJoinedPatch
         ;
     }
 }
+
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnPlayerJoined))]
 internal static class OnPlayerJoinedPatch
 {
-    internal static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData client)
+    private static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData client)
     {
         _ = new LateTask(() =>
         {
@@ -64,10 +65,11 @@ internal static class OnPlayerJoinedPatch
         }, 2.5f, "OnPlayerJoinedPatch", false);
     }
 }
+
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnPlayerLeft))]
-class OnPlayerLeftPatch
+internal static class OnPlayerLeftPatch
 {
-    internal static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData data, [HarmonyArgument(1)] DisconnectReasons reason)
+    private static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData data, [HarmonyArgument(1)] DisconnectReasons reason)
     {
     }
 }
@@ -76,9 +78,9 @@ class OnPlayerLeftPatch
 [HarmonyPatch("HandleDisconnect")]
 [HarmonyPatch(MethodType.Normal)]
 [HarmonyPatch(new Type[] { typeof(PlayerControl), typeof(DisconnectReasons) })]
-class GameDataHandleDisconnectPatch
+internal static class GameDataHandleDisconnectPatch
 {
-    internal static void Prefix(/*GameData __instance,*/ [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] DisconnectReasons reason)
+    private static void Prefix(/*GameData __instance,*/ [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] DisconnectReasons reason)
     {
         if (player.BetterData() != null)
         {
@@ -90,7 +92,7 @@ class GameDataHandleDisconnectPatch
 }
 
 [HarmonyPatch(typeof(GameData), nameof(GameData.ShowNotification))]
-class GameDataShowNotificationPatch
+internal static class GameDataShowNotificationPatch
 {
     internal static void BetterShowNotification(NetworkedPlayerInfo playerData, DisconnectReasons reason = DisconnectReasons.Unknown, string forceReasonText = "")
     {

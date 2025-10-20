@@ -7,13 +7,13 @@ using UnityEngine;
 namespace BetterAmongUs.Patches.Managers;
 
 [HarmonyPatch(typeof(FindAGameManager))]
-internal class FindAGameManagerPatch
+internal static class FindAGameManagerPatch
 {
     public static Scroller? Scroller;
 
     [HarmonyPatch(nameof(FindAGameManager.Start))]
     [HarmonyPrefix]
-    internal static void Start_Prefix(FindAGameManager __instance)
+    private static void Start_Prefix(FindAGameManager __instance)
     {
         __instance.refreshButton.gameObject.SetUIColors();
         __instance.BackButton.gameObject.SetUIColors();
@@ -69,14 +69,14 @@ internal class FindAGameManagerPatch
 
     [HarmonyPatch(nameof(FindAGameManager.RefreshList))]
     [HarmonyPostfix]
-    internal static void RefreshList_Postfix(FindAGameManager __instance)
+    private static void RefreshList_Postfix(FindAGameManager __instance)
     {
         Scroller?.ScrollRelative(new(0f, -100f));
     }
 
     [HarmonyPatch(nameof(FindAGameManager.HandleList))]
     [HarmonyPostfix]
-    internal static void HandleList_Postfix(FindAGameManager __instance, HttpMatchmakerManager.FindGamesListFilteredResponse response)
+    private static void HandleList_Postfix(FindAGameManager __instance, HttpMatchmakerManager.FindGamesListFilteredResponse response)
     {
         __instance.ResetContainers();
         GameListing[] games = response.Games.ToArray();

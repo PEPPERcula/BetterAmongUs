@@ -8,7 +8,7 @@ using UnityEngine;
 namespace BetterAmongUs.Patches.Gameplay.UI.Chat;
 
 [HarmonyPatch(typeof(ChatController))]
-class ChatCommandsPatch
+internal static class ChatCommandsPatch
 {
     private static bool _enabled = true;
     internal static string CommandPrefix => BAUPlugin.CommandPrefix.Value;
@@ -29,7 +29,7 @@ class ChatCommandsPatch
     // Check if command is typed when sending chat message
     [HarmonyPatch(nameof(ChatController.SendChat))]
     [HarmonyPrefix]
-    internal static bool SendChat_Prefix(ChatController __instance)
+    private static bool SendChat_Prefix(ChatController __instance)
     {
         if (!_enabled)
         {
@@ -70,9 +70,10 @@ class ChatCommandsPatch
     // Set up command helper
     private static TextMeshPro? commandText;
     private static TextMeshPro? commandInfo;
+
     [HarmonyPatch(nameof(ChatController.Toggle))]
     [HarmonyPostfix]
-    internal static void Awake_Postfix(ChatController __instance)
+    private static void Awake_Postfix(ChatController __instance)
     {
         if (commandText == null)
         {
@@ -107,7 +108,7 @@ class ChatCommandsPatch
     // Command helper
     [HarmonyPatch(nameof(ChatController.Update))]
     [HarmonyPostfix]
-    internal static void Update_Postfix(ChatController __instance)
+    private static void Update_Postfix(ChatController __instance)
     {
         if (!_enabled)
         {

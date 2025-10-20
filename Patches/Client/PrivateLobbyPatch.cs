@@ -7,7 +7,7 @@ using UnityEngine;
 namespace BetterAmongUs.Patches.Client;
 
 [HarmonyPatch]
-internal class PrivateLobbyPatch
+internal static class PrivateLobbyPatch
 {
     private static GameObject? toggle;
     private static List<PassiveButton>? buttons = [];
@@ -16,7 +16,7 @@ internal class PrivateLobbyPatch
     [HarmonyPatch(typeof(CreateGameOptions))]
     [HarmonyPatch(nameof(CreateGameOptions.Show))]
     [HarmonyPostfix]
-    internal static void CreateGameOptionsShow_Postfix(CreateGameOptions __instance)
+    private static void CreateGameOptionsShow_Postfix(CreateGameOptions __instance)
     {
         if (toggle != null) return;
         buttons.Clear();
@@ -84,7 +84,7 @@ internal class PrivateLobbyPatch
     [HarmonyPatch(typeof(LobbyInfoPane))]
     [HarmonyPatch(nameof(LobbyInfoPane.Update))]
     [HarmonyPostfix]
-    internal static void LobbyInfoPaneUpdate_Postfix(LobbyInfoPane __instance)
+    private static void LobbyInfoPaneUpdate_Postfix(LobbyInfoPane __instance)
     {
         if (BAUPlugin.PrivateOnlyLobby.Value && !GameState.IsLocalGame && GameState.IsHost)
         {

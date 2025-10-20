@@ -9,16 +9,17 @@ using UnityEngine;
 namespace BetterAmongUs.Patches.Managers;
 
 [HarmonyPatch(typeof(HudManager))]
-internal class HudManagerPatch
+internal static class HudManagerPatch
 {
     internal static string WelcomeMessage = $"<b><color=#00b530><size=125%><align=\"center\">{string.Format(Translator.GetString("WelcomeMsg.WelcomeToBAU"), Translator.GetString("BetterAmongUs"))}\n{BAUPlugin.GetVersionText()}</size>\n" +
         $"{Translator.GetString("WelcomeMsg.ThanksForDownloading")}</align></color></b>\n<size=120%> </size>\n" +
         string.Format(Translator.GetString("WelcomeMsg.BAUDescription1"), Translator.GetString("bau"), Translator.GetString("BetterOption.AntiCheat"));
 
     private static bool HasBeenWelcomed = false;
+
     [HarmonyPatch(nameof(HudManager.Start))]
     [HarmonyPostfix]
-    internal static void Start_Postfix(HudManager __instance)
+    private static void Start_Postfix(HudManager __instance)
     {
         if (BetterNotificationManager.BAUNotificationManagerObj == null)
         {
@@ -57,9 +58,10 @@ internal class HudManagerPatch
             }
         }, 1f, "HudManagerPatch Start");
     }
+
     [HarmonyPatch(nameof(HudManager.Update))]
     [HarmonyPostfix]
-    internal static void Update_Postfix(HudManager __instance)
+    private static void Update_Postfix(HudManager __instance)
     {
         try
         {
@@ -92,21 +94,5 @@ internal class HudManagerPatch
             }
         }
         catch { }
-    }
-}
-
-[HarmonyPatch(typeof(KillOverlay))]
-internal class KillOverlayPatch
-{
-    [HarmonyPatch(nameof(KillOverlay.ShowKillAnimation), new Type[] { typeof(OverlayKillAnimation), typeof(NetworkedPlayerInfo), typeof(NetworkedPlayerInfo) })]
-    [HarmonyPrefix]
-    internal static bool ShowKillAnimation_Prefix()
-    {
-        if (!PlayerControl.LocalPlayer.IsAlive())
-        {
-            return false;
-        }
-
-        return true;
     }
 }

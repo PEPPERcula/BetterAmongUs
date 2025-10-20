@@ -8,11 +8,11 @@ using Hazel;
 namespace BetterAmongUs.Patches.Managers;
 
 [HarmonyPatch(typeof(RoleManager))]
-internal class RoleManagerPatch
+internal static class RoleManagerPatch
 {
     internal static Dictionary<PlayerControl, RoleTypes> SetPlayerRole = []; // Player, Role
     internal static Dictionary<string, int> ImpostorMultiplier = []; // HashPuid, Multiplier
-    private static Random random = new Random();
+    private static readonly Random random = new();
 
     static readonly Func<InnerNet.ClientData, bool> clientCheck = (clientData) =>
     {
@@ -22,7 +22,7 @@ internal class RoleManagerPatch
     // Better role algorithm
     [HarmonyPatch(nameof(RoleManager.SelectRoles))]
     [HarmonyPrefix]
-    internal static bool RoleManager_Prefix(/*RoleManager __instance*/)
+    private static bool RoleManager_Prefix(/*RoleManager __instance*/)
     {
         if (!GameState.IsHideNSeek)
         {

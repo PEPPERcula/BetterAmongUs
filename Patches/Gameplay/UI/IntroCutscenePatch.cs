@@ -5,7 +5,7 @@ using UnityEngine;
 namespace BetterAmongUs.Patches.Gameplay.UI;
 
 [HarmonyPatch]
-internal class IntroCutscenePatch
+internal static class IntroCutscenePatch
 {
     [HarmonyPatch(typeof(IntroCutscene._ShowRole_d__41), nameof(IntroCutscene._ShowRole_d__41.MoveNext))]
     [HarmonyPostfix]
