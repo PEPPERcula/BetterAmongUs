@@ -12,7 +12,6 @@ using BetterAmongUs.Patches.Gameplay.UI.Settings;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using System.Reflection;
-using System.Security.Cryptography;
 using UnityEngine;
 
 namespace BetterAmongUs;
@@ -29,20 +28,6 @@ internal enum ReleaseTypes : int
 internal class BAUPlugin : BasePlugin
 {
     internal static UserData MyData = UserData.AllUsers.First();
-
-    internal static uint ModSignature => modSignature.Value;
-    private static readonly Lazy<uint> modSignature = new(() =>
-    {
-        string dllPath = Assembly.GetExecutingAssembly().Location;
-        if (!File.Exists(dllPath))
-            return 0;
-
-        using FileStream stream = File.OpenRead(dllPath);
-        using SHA256 sha256 = SHA256.Create();
-        byte[] hashBytes = sha256.ComputeHash(stream);
-        string hashSubstring = BitConverter.ToString(hashBytes).Replace("-", "").ToLower()[..8];
-        return Convert.ToUInt32(hashSubstring, 16);
-    });
 
     internal static string GetVersionText(bool newLine = false)
     {
@@ -79,7 +64,7 @@ internal class BAUPlugin : BasePlugin
 
     internal static PlatformSpecificData PlatformData => Constants.GetPlatformData();
 
-    internal static List<string> SupportedAmongUsVersions =
+    internal static string[] SupportedAmongUsVersions =
     [
         "2025.10.14",
     ];
@@ -104,21 +89,8 @@ internal class BAUPlugin : BasePlugin
                 }
             }
 
-            ConsoleManager.CreateConsole();
-            ConsoleManager.ConfigPreventClose.Value = true;
-            if (ConsoleManager.ConfigConsoleEnabled.Value) ConsoleManager.DetachConsole();
-            ConsoleManager.ConfigConsoleEnabled.Value = false;
-            ConsoleManager.SetConsoleTitle("Among Us - BAU Console");
-            Logger = BepInEx.Logging.Logger.CreateLogSource(ModInfo.PluginGuid);
-            var customLogListener = new CustomLogListener();
-            BepInEx.Logging.Logger.Listeners.Add(customLogListener);
-            ConsoleManager.SetConsoleColor(ConsoleColor.Green);
-            ConsoleManager.ConsoleStream.WriteLine($".--------------------------------------------------------------------------------.\r\n|  ____       _   _                 _                                  _   _     |\r\n| | __ )  ___| |_| |_ ___ _ __     / \\   _ __ ___   ___  _ __   __ _  | | | |___ |\r\n| |  _ \\ / _ \\ __| __/ _ \\ '__|   / _ \\ | '_ ` _ \\ / _ \\| '_ \\ / _` | | | | / __||\r\n| | |_) |  __/ |_| ||  __/ |     / ___ \\| | | | | | (_) | | | | (_| | | |_| \\__ \\|\r\n| |____/ \\___|\\__|\\__\\___|_|    /_/   \\_\\_| |_| |_|\\___/|_| |_|\\__, |  \\___/|___/|\r\n|                                                              |___/             |\r\n'--------------------------------------------------------------------------------'");
-
-            {
-                RegisterAllMonoBehavioursInAssembly();
-                // AddComponent<UserDataLoader>();
-            }
+            SetupConsole();
+            RegisterAllMonoBehavioursInAssembly();
 
             GithubAPI.Connect();
             BetterDataManager.Init();
@@ -135,15 +107,27 @@ internal class BAUPlugin : BasePlugin
             File.WriteAllText(Path.Combine(BetterDataManager.filePathFolder, "better-log.txt"), "");
             BetterAmongUs.Logger.Log("Better Among Us successfully loaded!");
 
-            string SupportedVersions = string.Empty;
-            foreach (string text in SupportedAmongUsVersions.ToArray())
-                SupportedVersions += $"{text} ";
-            BetterAmongUs.Logger.Log($"BetterAmongUs {BetterAmongUsVersion}-{ModInfo.ReleaseDate} - [{AppVersion} --> {SupportedVersions.Substring(0, SupportedVersions.Length - 1)}] {Utils.GetPlatformName(PlatformData.Platform)}");
+            string SupportedVersions = string.Join(" ", SupportedAmongUsVersions);
+            BetterAmongUs.Logger.Log($"BetterAmongUs {BetterAmongUsVersion}-{ModInfo.ReleaseDate} - [{AppVersion} --> {SupportedVersions}] {Utils.GetPlatformName(PlatformData.Platform)}");
         }
         catch (Exception ex)
         {
             BetterAmongUs.Logger.Error(ex);
         }
+    }
+
+    private static void SetupConsole()
+    {
+        ConsoleManager.CreateConsole();
+        ConsoleManager.ConfigPreventClose.Value = true;
+        if (ConsoleManager.ConfigConsoleEnabled.Value) ConsoleManager.DetachConsole();
+        ConsoleManager.ConfigConsoleEnabled.Value = false;
+        ConsoleManager.SetConsoleTitle("Among Us - BAU Console");
+        Logger = BepInEx.Logging.Logger.CreateLogSource(ModInfo.PluginGuid);
+        var customLogListener = new CustomLogListener();
+        BepInEx.Logging.Logger.Listeners.Add(customLogListener);
+        ConsoleManager.SetConsoleColor(ConsoleColor.Green);
+        ConsoleManager.ConsoleStream.WriteLine($".--------------------------------------------------------------------------------.\r\n|  ____       _   _                 _                                  _   _     |\r\n| | __ )  ___| |_| |_ ___ _ __     / \\   _ __ ___   ___  _ __   __ _  | | | |___ |\r\n| |  _ \\ / _ \\ __| __/ _ \\ '__|   / _ \\ | '_ ` _ \\ / _ \\| '_ \\ / _` | | | | / __||\r\n| | |_) |  __/ |_| ||  __/ |     / ___ \\| | | | | | (_) | | | | (_| | | |_| \\__ \\|\r\n| |____/ \\___|\\__|\\__\\___|_|    /_/   \\_\\_| |_| |_|\\___/|_| |_|\\__, |  \\___/|___/|\r\n|                                                              |___/             |\r\n'--------------------------------------------------------------------------------'");
     }
 
     private static void RegisterAllMonoBehavioursInAssembly()
