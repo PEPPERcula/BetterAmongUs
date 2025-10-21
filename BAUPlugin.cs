@@ -3,11 +3,12 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
 using BetterAmongUs.Data;
+using BetterAmongUs.Data.Json;
 using BetterAmongUs.Helpers;
-using BetterAmongUs.Items;
 using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Modules;
 using BetterAmongUs.Network;
+using BetterAmongUs.Network.Configs;
 using BetterAmongUs.Patches.Gameplay.UI.Settings;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
@@ -100,6 +101,7 @@ internal class BAUPlugin : BasePlugin
             GameSettingMenuPatch.SetupSettings(true);
             FileChecker.Initialize();
             InstanceAttribute.RegisterAll();
+            OutfitData.Init();
 
             if (File.Exists(Path.Combine(BetterDataManager.filePathFolder, "better-log.txt")))
                 File.WriteAllText(Path.Combine(BetterDataManager.filePathFolder, "better-previous-log.txt"), File.ReadAllText(Path.Combine(BetterDataManager.filePathFolder, "better-log.txt")));

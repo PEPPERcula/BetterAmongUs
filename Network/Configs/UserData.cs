@@ -1,7 +1,7 @@
 ﻿using BetterAmongUs.Helpers;
 using System.Text.Json.Serialization;
 
-namespace BetterAmongUs.Items;
+namespace BetterAmongUs.Network.Configs;
 
 [Flags]
 internal enum MultiPermissionFlags : ushort
@@ -47,7 +47,7 @@ internal class UserData(string name = "", string puid = "", string friendCode = 
         {
             if (EOSManager.Instance)
             {
-                var data = AllUsers?.FirstOrDefault(user => user.Puid == Utils.GetHashStr(EOSManager.Instance.ProductUserId) || user.FriendCode == Utils.GetHashStr(EOSManager.Instance.FriendCode));
+                var data = AllUsers?.FirstOrDefault(user => user.Puid == EOSManager.Instance.ProductUserId.GetHashStr() || user.FriendCode == EOSManager.Instance.FriendCode.GetHashStr());
                 if (data != null)
                 {
                     Logger.Log($"Found local UserData({data.Name})");
@@ -62,8 +62,8 @@ internal class UserData(string name = "", string puid = "", string friendCode = 
         }
     }
     internal static UserData? GetPlayerUserData(NetworkedPlayerInfo data) => AllUsers?.FirstOrDefault(user => user.Puid == data.GetHashPuid() || user.FriendCode == data.GetHashFriendcode()) ?? AllUsers.First();
-    internal static UserData? GetPlayerUserDataFromPuid(string puid) => AllUsers?.FirstOrDefault(user => user.Puid == Utils.GetHashStr(puid)) ?? AllUsers.First();
-    internal static UserData? GetPlayerUserDataFromFriendCode(string friendcode) => AllUsers?.FirstOrDefault(user => user.FriendCode == Utils.GetHashStr(friendcode)) ?? AllUsers.First();
+    internal static UserData? GetPlayerUserDataFromPuid(string puid) => AllUsers?.FirstOrDefault(user => user.Puid == puid.GetHashStr()) ?? AllUsers.First();
+    internal static UserData? GetPlayerUserDataFromFriendCode(string friendcode) => AllUsers?.FirstOrDefault(user => user.FriendCode == friendcode.GetHashStr()) ?? AllUsers.First();
 
     private bool HasPermission(MultiPermissionFlags permissionFlags)
     {
@@ -82,7 +82,7 @@ internal class UserData(string name = "", string puid = "", string friendCode = 
     internal bool IsSponsorTier1() => IsSponsor();
     internal bool IsSponsor() => HasPermission(MultiPermissionFlags.Contributor_1 | MultiPermissionFlags.Contributor_2 | MultiPermissionFlags.Contributor_3 | MultiPermissionFlags.Dev);
     internal bool HasAll() => (Permissions & (ushort)MultiPermissionFlags.All) == (ushort)MultiPermissionFlags.All;
-    internal bool IsVerified() => Puid == Utils.GetHashStr(EOSManager.Instance.ProductUserId) && FriendCode == Utils.GetHashStr(EOSManager.Instance.FriendCode);
-    internal bool IsVerified(NetworkedPlayerInfo data) => Puid == Utils.GetHashStr(data?.Puid ?? string.Empty) && FriendCode == Utils.GetHashStr(data?.FriendCode ?? string.Empty);
-    internal bool IsVerified(PlayerControl player) => Puid == Utils.GetHashStr(player?.Data?.Puid ?? string.Empty) && FriendCode == Utils.GetHashStr(player?.Data?.FriendCode ?? string.Empty);
+    internal bool IsVerified() => Puid == EOSManager.Instance.ProductUserId.GetHashStr() && FriendCode == EOSManager.Instance.FriendCode.GetHashStr();
+    internal bool IsVerified(NetworkedPlayerInfo data) => Puid == (data?.Puid ?? string.Empty).GetHashStr() && FriendCode == (data?.FriendCode ?? string.Empty).GetHashStr();
+    internal bool IsVerified(PlayerControl player) => Puid == (player?.Data?.Puid ?? string.Empty).GetHashStr() && FriendCode == (player?.Data?.FriendCode ?? string.Empty).GetHashStr();
 }

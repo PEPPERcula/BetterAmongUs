@@ -3,10 +3,10 @@ using Il2CppInterop.Runtime.Attributes;
 using System.Collections;
 using System.Text.Json;
 using BetterAmongUs.Helpers;
-using BetterAmongUs.Items;
 using UnityEngine;
 using UnityEngine.Networking;
 using System.Reflection;
+using BetterAmongUs.Network.Configs;
 
 namespace BetterAmongUs.Modules;
 

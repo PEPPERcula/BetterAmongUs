@@ -3,7 +3,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace BetterAmongUs.Data;
+namespace BetterAmongUs.Data.Json;
 
 internal sealed class BetterGameSettingsFile : AbstractJsonFile
 {

@@ -1,7 +1,7 @@
 ﻿using AmongUs.GameOptions;
-using BetterAmongUs.Items;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
+using BetterAmongUs.Network.Configs;
 using Il2CppInterop.Runtime.Attributes;
 using InnerNet;
 using UnityEngine;

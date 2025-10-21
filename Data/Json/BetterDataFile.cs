@@ -1,7 +1,7 @@
 ﻿using BetterAmongUs.Items.Structs;
 using System.Text.Json.Serialization;
 
-namespace BetterAmongUs.Data;
+namespace BetterAmongUs.Data.Json;
 
 internal sealed class BetterDataFile : AbstractJsonFile
 {
@@ -12,6 +12,7 @@ internal sealed class BetterDataFile : AbstractJsonFile
         var success = base.Load();
         if (success)
         {
+            SelectedOutfitPreset = Math.Clamp(SelectedOutfitPreset, 0, 5);
             AllCheatData = [.. CheatData, .. SickoData, .. AUMData, .. KNData];
         }
         return success;
@@ -40,6 +41,12 @@ internal sealed class BetterDataFile : AbstractJsonFile
     }
 
     internal HashSet<UserInfo> AllCheatData { get; set; } = [];
+
+    [JsonPropertyName("selectedOutfitPreset")]
+    public int SelectedOutfitPreset { get; set; } = 0;
+
+    [JsonPropertyName("outfitData")]
+    public HashSet<OutfitData> OutfitData { get; set; } = [new(), new(), new(), new(), new(), new()];
 
     [JsonPropertyName("cheatData")]
     public HashSet<UserInfo> CheatData { get; set; } = [];

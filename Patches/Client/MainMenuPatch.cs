@@ -1,6 +1,6 @@
 ﻿using BetterAmongUs.Helpers;
-using BetterAmongUs.Items;
 using BetterAmongUs.Modules;
+using BetterAmongUs.Network.Configs;
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -11,6 +11,7 @@ namespace BetterAmongUs.Patches.Client;
 internal static class MainMenuPatch
 {
     private static SpriteRenderer? sprite;
+    internal static PassiveButton? ButtonPrefab;
 
     [HarmonyPatch(nameof(MainMenuManager.LateUpdate))]
     [HarmonyPostfix]
@@ -72,5 +73,12 @@ internal static class MainMenuPatch
         logo.GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("BetterAmongUs.Resources.Images.BetterAmongUs-Logo.png", 1f);
 
         __instance.transform.Find("MainUI/AspectScaler/BackgroundTexture")?.gameObject?.SetSpriteColors(sprite => ObjectHelper.AddColor(sprite));
+
+        if (ButtonPrefab == null)
+        {
+            ButtonPrefab = UnityEngine.Object.Instantiate(__instance.inventoryButton);
+            ButtonPrefab.gameObject.SetActive(false);
+            UnityEngine.Object.DontDestroyOnLoad(ButtonPrefab);
+        }
     }
 }

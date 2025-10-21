@@ -1,7 +1,7 @@
 ﻿using BetterAmongUs.Helpers;
 using System.Text.Json.Serialization;
 
-namespace BetterAmongUs.Items;
+namespace BetterAmongUs.Network.Configs;
 
 [method: JsonConstructor]
 internal class BannedUserData(string name = "", string puid = "", string friendCode = "", string reason = "")
@@ -30,7 +30,7 @@ internal class BannedUserData(string name = "", string puid = "", string friendC
 
         if (EOSManager.Instance)
         {
-            var data = AllBannedUsers?.FirstOrDefault(user => user.Puid == Utils.GetHashStr(EOSManager.Instance.ProductUserId) || user.FriendCode == Utils.GetHashStr(EOSManager.Instance.FriendCode));
+            var data = AllBannedUsers?.FirstOrDefault(user => user.Puid == EOSManager.Instance.ProductUserId.GetHashStr() || user.FriendCode == EOSManager.Instance.FriendCode.GetHashStr());
             if (data != null)
             {
                 bannedData = data;
@@ -43,6 +43,6 @@ internal class BannedUserData(string name = "", string puid = "", string friendC
         return false;
     }
     internal static bool CheckPlayerBan(NetworkedPlayerInfo data) => AllBannedUsers?.FirstOrDefault(user => user.Puid == data.GetHashPuid() || user.FriendCode == data.GetHashFriendcode()) != null;
-    internal static bool CheckPuidBan(string puid) => AllBannedUsers?.FirstOrDefault(user => user.Puid == Utils.GetHashStr(puid)) != null;
-    internal static bool CheckFriendCodeBan(string friendcode) => AllBannedUsers?.FirstOrDefault(user => user.FriendCode == Utils.GetHashStr(friendcode)) != null;
+    internal static bool CheckPuidBan(string puid) => AllBannedUsers?.FirstOrDefault(user => user.Puid == puid.GetHashStr()) != null;
+    internal static bool CheckFriendCodeBan(string friendcode) => AllBannedUsers?.FirstOrDefault(user => user.FriendCode == friendcode.GetHashStr()) != null;
 }

@@ -4,9 +4,6 @@ using UnityEngine.Networking;
 
 namespace BetterAmongUs.Network;
 
-/// <summary>
-/// Class representing a file from GitHub (for custom hats).
-/// </summary>
 internal class GitHubFile
 {
     /// <summary>

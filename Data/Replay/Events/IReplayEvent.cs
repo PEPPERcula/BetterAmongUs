@@ -1,7 +1,10 @@
-﻿namespace BetterAmongUs.Data.Replay.Events;
+﻿using System.Text.Json.Serialization;
+
+namespace BetterAmongUs.Data.Replay.Events;
 
 public interface IReplayEvent
 {
+    [JsonIgnore]
     string Id { get; }
     void Play();
 }

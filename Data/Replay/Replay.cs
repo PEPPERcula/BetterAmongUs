@@ -7,7 +7,7 @@ internal class Replay
 {
     public int MapId;
     public List<PlayerReplayData> PlayerData = [];
-    public (float timeStamp, IReplayEvent) Events;
+    public Dictionary<float, List<IReplayEvent>> Events = [];
 
     public void Load()
     {

@@ -102,4 +102,16 @@ internal static class ObjectHelper
         color ??= Color.green;
         sprite.color = (sprite.color * 0.6f) + ((Color)color * 0.5f);
     }
+
+    internal static void SetLayers(this GameObject go, string layerName)
+    {
+        int layer = LayerMask.NameToLayer(layerName);
+        if (layer == -1) return;
+
+        Transform[] allChildren = go.GetComponentsInChildren<Transform>(true);
+        foreach (Transform child in allChildren)
+        {
+            child.gameObject.layer = layer;
+        }
+    }
 }

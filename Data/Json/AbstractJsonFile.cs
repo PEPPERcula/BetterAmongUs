@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace BetterAmongUs.Data;
+namespace BetterAmongUs.Data.Json;
 
 internal abstract class AbstractJsonFile
 {
@@ -22,10 +22,14 @@ internal abstract class AbstractJsonFile
         if (_hasInit) return;
         _hasInit = true;
 
-        if (!CheckFile() || !Load())
+        if (!CheckFile())
         {
             Save();
+            return;
         }
+
+        Load();
+        Save();
     }
 
     protected virtual bool Load()
