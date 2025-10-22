@@ -1,7 +1,10 @@
 ﻿using AmongUs.Data;
 using Assets.InnerNet;
+using BetterAmongUs.Helpers;
 using BetterAmongUs.Items.Enums;
+using BetterAmongUs.Modules;
 using BetterAmongUs.Network.Configs;
+using UnityEngine;
 
 namespace BetterAmongUs.Items;
 
@@ -12,20 +15,20 @@ internal class ModNews
     internal string Title { get; }
     internal string SubTitle { get; }
     internal string ShortTitle { get; }
-    internal string Text { get; }
+    public Dictionary<int, string> Contents { get; set; } = [];
     internal string Date { get; }
 
     internal static List<NewsData> NewsDataToProcess { get; } = new();
     internal static List<ModNews> AllModNews { get; } = new();
 
-    internal ModNews(NewsTypes type, int number, string title, string subTitle, string shortTitle, string text, string date)
+    internal ModNews(NewsTypes type, int number, string title, string subTitle, string shortTitle, Dictionary<int, string> contents, string date)
     {
         NewsType = type;
         Number = number;
         Title = title;
         SubTitle = subTitle;
         ShortTitle = shortTitle;
-        Text = text;
+        Contents = contents;
         Date = date;
 
         AllModNews.Add(this);
@@ -33,17 +36,28 @@ internal class ModNews
 
     internal Announcement ToAnnouncement()
     {
-        return new Announcement
+        var announcement = new Announcement
         {
             Number = Number,
             Title = Title,
             SubTitle = SubTitle,
             ShortTitle = ShortTitle,
-            Text = Text,
+            Text = "Error processing translation!".ToColor(Color.red),
             Language = (uint)DataManager.Settings.Language.CurrentLanguage,
             Date = Date,
             Id = "ModNews"
         };
+
+        if (Contents.TryGetValue((int)Translator.GetTargetLanguageId(), out var content))
+        {
+            announcement.Text = content;
+        }
+        else if (Contents.TryGetValue((int)SupportedLangs.English, out var englishContent))
+        {
+            announcement.Text = englishContent;
+        }
+
+        return announcement;
     }
 
     internal static void ProcessModNewsFiles()
@@ -61,6 +75,6 @@ internal class ModNews
         if (config.Id == 0) return;
 
         var type = (NewsTypes)config.Type;
-        _ = new ModNews(type, (int)config.Id, config.Title, config.SubTitle, config.ListTitle, config.Content, config.Date);
+        _ = new ModNews(type, (int)config.Id, config.Title, config.SubTitle, config.ListTitle, config.Contents, config.Date);
     }
 }

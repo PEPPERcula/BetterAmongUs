@@ -197,7 +197,7 @@ internal static class Translator
     internal static string GetString(StringNames stringName) =>
         TranslationController.Instance.GetString(stringName, new Il2CppReferenceArray<Il2CppSystem.Object>(0));
 
-    private static SupportedLangs GetTargetLanguageId(bool useConsoleLanguage)
+    internal static SupportedLangs GetTargetLanguageId(bool useConsoleLanguage = false)
     {
         if (useConsoleLanguage) return SupportedLangs.English;
         if (BAUPlugin.ForceOwnLanguage.Value) return GetUserSystemLanguage();

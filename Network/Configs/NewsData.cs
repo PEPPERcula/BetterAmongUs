@@ -1,5 +1,4 @@
 ﻿using BetterAmongUs.Modules;
-using System.Text.Json.Serialization;
 
 namespace BetterAmongUs.Network.Configs;
 
@@ -12,42 +11,42 @@ internal class NewsData()
     /// <summary>
     /// Indicates whether the news item should be shown.
     /// </summary>
-    [JsonPropertyName("show")] public bool Show { get; set; }
+    public bool Show { get; set; }
 
     /// <summary>
     /// Defines the type/category of the news item.
     /// </summary>
-    [JsonPropertyName("type")] public int Type { get; set; }
+    public int Type { get; set; }
 
     /// <summary>
     /// Unique identifier for the news item.
     /// </summary>
-    [JsonPropertyName("id")] public uint Id { get; set; }
+    public uint Id { get; set; }
 
     /// <summary>
     /// The main title of the news item.
     /// </summary>
-    [JsonPropertyName("title")] public string Title { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
 
     /// <summary>
     /// The subtitle providing additional context to the news title.
     /// </summary>
-    [JsonPropertyName("subtitle")] public string SubTitle { get; set; } = string.Empty;
+    public string SubTitle { get; set; } = string.Empty;
 
     /// <summary>
     /// The title used for listing purposes.
     /// </summary>
-    [JsonPropertyName("listtitle")] public string ListTitle { get; set; } = string.Empty;
+    public string ListTitle { get; set; } = string.Empty;
 
     /// <summary>
     /// The publication date of the news item, formatted as a string.
     /// </summary>
-    [JsonPropertyName("date")] public string Date { get; set; } = string.Empty;
+    public string Date { get; set; } = string.Empty;
 
     /// <summary>
     /// The content or body of the news item.
     /// </summary>
-    [JsonPropertyName("content")] public string Content { get; set; } = string.Empty;
+    public Dictionary<int, string> Contents { get; set; } = [];
 
     internal static NewsData? Sanitize(string input)
     {
@@ -71,8 +70,14 @@ internal class NewsData()
                 newsData.ListTitle = listtitle;
             if (data.TryGetValue("date", out var date))
                 newsData.Date = date;
-            if (data.TryGetValue("content", out var content))
-                newsData.Content = content;
+
+            foreach (var kvp in Translator.TranslateIdLookup)
+            {
+                if (data.TryGetValue($"content-{kvp.Key}", out var content))
+                {
+                    newsData.Contents[kvp.Value] = content;
+                }
+            }
 
             return newsData;
         }
