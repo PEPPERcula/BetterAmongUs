@@ -48,7 +48,7 @@ internal class NewsData()
     /// </summary>
     public Dictionary<int, string> Contents { get; set; } = [];
 
-    internal static NewsData? Sanitize(string input)
+    internal static NewsData? Serialize(string input)
     {
         var newsData = new NewsData();
 

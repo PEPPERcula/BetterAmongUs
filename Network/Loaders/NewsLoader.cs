@@ -91,7 +91,7 @@ internal class NewsLoader : MonoBehaviour
 
         try
         {
-            var config = NewsData.Sanitize(wwwConfig.downloadHandler.text);
+            var config = NewsData.Serialize(wwwConfig.downloadHandler.text);
             if (config == null || !config.Show) yield break;
             ModNews.NewsDataToProcess.Add(config);
         }
@@ -117,7 +117,7 @@ internal class NewsLoader : MonoBehaviour
 
             try
             {
-                var config = NewsData.Sanitize(reader.ReadToEnd());
+                var config = NewsData.Serialize(reader.ReadToEnd());
                 if (config == null || !config.Show) yield break;
                 ModNews.NewsDataToProcess.Add(config);
             }
