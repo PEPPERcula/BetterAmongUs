@@ -177,7 +177,7 @@ internal static class ClientPatch
         private static IEnumerator CoLoadingHost()
         {
             var client = AmongUsClient.Instance.GetClient(AmongUsClient.Instance.ClientId);
-            var clients = AmongUsClient.Instance.allClients.ToArray();
+            var clients = AmongUsClient.Instance.allClients;
 
             while (BAUPlugin.AllPlayerControls.Count > 0 && BAUPlugin.AllPlayerControls.Any(pc => !pc.roleAssigned))
             {
@@ -218,8 +218,8 @@ internal static class ClientPatch
                 }
                 else if (!client.IsReady)
                 {
-                    int readyClients = clients.Count(c => c?.Character != null && c.IsReady);
-                    int totalClients = clients.Count(c => c?.Character != null);
+                    int readyClients = clients.CountIl2Cpp(c => c?.Character != null && c.IsReady);
+                    int totalClients = clients.CountIl2Cpp(c => c?.Character != null);
 
                     loadingText = $"Waiting for Players ({readyClients}/{totalClients})";
                     progress = 0.8f + 0.2f * readyClients / Mathf.Max(1, totalClients);
@@ -235,7 +235,7 @@ internal static class ClientPatch
         private static IEnumerator CoLoadingClient()
         {
             var client = AmongUsClient.Instance.GetClient(AmongUsClient.Instance.ClientId);
-            var clients = AmongUsClient.Instance.allClients.ToArray();
+            var clients = AmongUsClient.Instance.allClients;
 
             while (BAUPlugin.AllPlayerControls.Count > 0 && BAUPlugin.AllPlayerControls.Any(pc => !pc.roleAssigned))
             {
@@ -279,8 +279,8 @@ internal static class ClientPatch
                 }
                 else
                 {
-                    int readyClients = clients.Count(c => c?.Character != null && c.IsReady);
-                    int totalClients = clients.Count(c => c?.Character != null);
+                    int readyClients = clients.CountIl2Cpp(c => c?.Character != null && c.IsReady);
+                    int totalClients = clients.CountIl2Cpp(c => c?.Character != null);
 
                     loadingText = $"Waiting for Players ({readyClients}/{totalClients})";
                     progress = 0.85f + 0.15f * readyClients / Mathf.Max(1, totalClients);

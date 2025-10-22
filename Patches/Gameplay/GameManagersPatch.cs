@@ -146,7 +146,7 @@ internal static class GameManagersPatch
                     }
                     else
                     {
-                        roleInfo = $"({playerTheme(data.RoleType.GetRoleName())}) → {playerTheme($"{Translator.GetString("Tasks")}: {data.Tasks.ToArray().Where(task => task.Complete).Count()}/{data.Tasks.Count}")}";
+                        roleInfo = $"({playerTheme(data.RoleType.GetRoleName())}) → {playerTheme($"{Translator.GetString("Tasks")}: {data.Tasks.WhereIl2Cpp(task => task.Complete).Count}/{data.Tasks.Count}")}";
                     }
 
                     string deathReason;

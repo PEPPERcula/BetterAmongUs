@@ -6,7 +6,6 @@ using BetterAmongUs.Network;
 using BetterAmongUs.Patches.Gameplay.Player;
 using BetterAmongUs.Patches.Gameplay.UI.Settings;
 using InnerNet;
-using TMPro;
 using UnityEngine;
 
 namespace BetterAmongUs.Helpers;
@@ -48,21 +47,25 @@ static class PlayerControlHelper
     {
         if (player == null) return false;
 
-        if (player.isDummy || GameState.IsLocalGame/* || !GameState.IsVanillaServer*/)
+        if (player.isDummy || GameState.IsLocalGame)
         {
             return true;
         }
 
-        if (player.gameObject.transform.Find("Names/NameText_TMP").GetComponent<TextMeshPro>().text
-        is "???" or "Player" or "" or null
-        || player.Data == null
-        || player.CurrentOutfit == null
-        || player.CurrentOutfit.ColorId == -1)
+        string loading = Translator.GetString("Player.Loading");
+        string nameText = player.cosmetics.nameText.text;
+
+        if (nameText == "???" || nameText == "Player" || nameText == loading ||
+            string.IsNullOrEmpty(nameText) ||
+            player.Data == null ||
+            player.CurrentOutfit == null ||
+            player.CurrentOutfit.ColorId == -1)
         {
             return false;
         }
         return true;
     }
+
     // Kick player
     internal static void Kick(this PlayerControl player, bool ban = false, string setReasonInfo = "", bool AntiCheatBan = false, bool bypassDataCheck = false, bool forceBan = false)
     {

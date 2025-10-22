@@ -4,7 +4,7 @@ namespace BetterAmongUs.Helpers;
 
 internal static class RoleHelper
 {
-    internal static RoleBehaviour? GetBehaviour(this RoleTypes role) => RoleManager.Instance?.AllRoles.ToArray().FirstOrDefault(r => r.Role == role);
+    internal static RoleBehaviour? GetBehaviour(this RoleTypes role) => RoleManager.Instance?.AllRoles.FirstOrDefaultIl2Cpp(r => r.Role == role);
 
     internal static bool IsImpostorRole(RoleTypes role) =>
         role.GetBehaviour().TeamType is RoleTeamTypes.Impostor;

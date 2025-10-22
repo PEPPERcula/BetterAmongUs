@@ -143,7 +143,7 @@ internal static class Utils
                 pooledBubble.SetRight();
             }
 
-            chat.SetChatBubbleName(pooledBubble, data, data.IsDead, false, PlayerNameColor.Get(data), null);
+            chat.SetChatBubbleName(pooledBubble, data, false, false, PlayerNameColor.Get(data), null);
             pooledBubble.SetText(text);
             pooledBubble.AlignChildren();
             chat.AlignAllBubbles();

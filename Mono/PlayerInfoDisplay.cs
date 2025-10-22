@@ -33,6 +33,8 @@ internal class PlayerInfoDisplay : MonoBehaviour
     private static readonly Regex _friendCodePattern = new(@"^[a-zA-Z0-9#]+$", RegexOptions.Compiled);
     private static readonly Regex _hashtagPattern = new(@"^#[0-9]{4}$", RegexOptions.Compiled);
 
+    private CachedTranslations _cachedTranslations = new();
+
     // Cached colors
     private static readonly Dictionary<string, Color32> _cachedColors = new()
     {
@@ -43,16 +45,16 @@ internal class PlayerInfoDisplay : MonoBehaviour
     };
 
     // Cached translations
-    private static class CachedTranslations
+    private class CachedTranslations
     {
-        public static readonly string Loading = Translator.GetString("Player.Loading");
-        public static readonly string PlatformHidden = Translator.GetString("Player.PlatformHidden");
-        public static readonly string NoFriendCode = Translator.GetString("Player.NoFriendCode");
-        public static readonly string SickoUser = Translator.GetString("Player.SickoUser");
-        public static readonly string AUMUser = Translator.GetString("Player.AUMUser");
-        public static readonly string KNUser = Translator.GetString("Player.KNUser");
-        public static readonly string KnownCheater = Translator.GetString("Player.KnownCheater");
-        public static readonly string BetterUser = Translator.GetString("Player.BetterUser");
+        internal readonly string Loading = Translator.GetString("Player.Loading");
+        internal readonly string PlatformHidden = Translator.GetString("Player.PlatformHidden");
+        internal readonly string NoFriendCode = Translator.GetString("Player.NoFriendCode");
+        internal readonly string SickoUser = Translator.GetString("Player.SickoUser");
+        internal readonly string AUMUser = Translator.GetString("Player.AUMUser");
+        internal readonly string KNUser = Translator.GetString("Player.KNUser");
+        internal readonly string KnownCheater = Translator.GetString("Player.KnownCheater");
+        internal readonly string BetterUser = Translator.GetString("Player.BetterUser");
     }
 
     internal void Init(PlayerControl player)
@@ -116,7 +118,7 @@ internal class PlayerInfoDisplay : MonoBehaviour
 
         if (!_player.DataIsCollected())
         {
-            _nameText.text = CachedTranslations.Loading;
+            _nameText.text = _cachedTranslations.Loading;
             return;
         }
 
@@ -135,7 +137,7 @@ internal class PlayerInfoDisplay : MonoBehaviour
 
         if (DataManager.Settings.Gameplay.StreamerMode)
         {
-            platform = CachedTranslations.PlatformHidden;
+            platform = _cachedTranslations.PlatformHidden;
         }
 
         SetPlayerOutline(_sbTag);
@@ -208,7 +210,7 @@ internal class PlayerInfoDisplay : MonoBehaviour
 
         if (string.IsNullOrEmpty(friendCode))
         {
-            friendCode = CachedTranslations.NoFriendCode;
+            friendCode = _cachedTranslations.NoFriendCode;
             color = "#ff0000";
             TryKick();
         }
@@ -236,22 +238,22 @@ internal class PlayerInfoDisplay : MonoBehaviour
 
         if (ContainsPlayerData(BetterDataManager.BetterDataFile.SickoData, _player.Data))
         {
-            sbTag.Append($"<color=#00f583>{CachedTranslations.SickoUser}</color>+++");
+            sbTag.Append($"<color=#00f583>{_cachedTranslations.SickoUser}</color>+++");
             _player.SetOutlineByHex(true, "#00f583");
         }
         else if (ContainsPlayerData(BetterDataManager.BetterDataFile.AUMData, _player.Data))
         {
-            sbTag.Append($"<color=#4f0000>{CachedTranslations.AUMUser}</color>+++");
+            sbTag.Append($"<color=#4f0000>{_cachedTranslations.AUMUser}</color>+++");
             _player.SetOutlineByHex(true, "#4f0000");
         }
         else if (ContainsPlayerData(BetterDataManager.BetterDataFile.KNData, _player.Data))
         {
-            sbTag.Append($"<color=#8731e7>{CachedTranslations.KNUser}</color>+++");
+            sbTag.Append($"<color=#8731e7>{_cachedTranslations.KNUser}</color>+++");
             _player.SetOutlineByHex(true, "#8731e7");
         }
         else if (ContainsPlayerData(BetterDataManager.BetterDataFile.CheatData, _player.Data))
         {
-            sbTag.Append($"<color=#fc0000>{CachedTranslations.KnownCheater}</color>+++");
+            sbTag.Append($"<color=#fc0000>{_cachedTranslations.KnownCheater}</color>+++");
             _player.SetOutlineByHex(true, "#fc0000");
         }
         else if (_cachedColors.Any(kvp => color == kvp.Value))
@@ -281,7 +283,7 @@ internal class PlayerInfoDisplay : MonoBehaviour
         {
             string verificationSymbol = betterData.IsVerifiedBetterUser || _player.IsLocalPlayer() ? "✓ " : "";
             sbTag.AppendFormat("<color=#0dff00>{1}{0}</color>+++",
-                CachedTranslations.BetterUser, verificationSymbol);
+                _cachedTranslations.BetterUser, verificationSymbol);
         }
         sbTag.Append($"<color=#b554ff>ID: {_player.PlayerId}</color>+++");
     }

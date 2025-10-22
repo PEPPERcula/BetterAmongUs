@@ -82,7 +82,10 @@ internal static class PlayerControlPatch
     [HarmonyPostfix]
     private static void SetName_Postfix(PlayerControl __instance, string playerName)
     {
-        __instance.BetterData().NameSetAsLast = playerName;
+        __instance.BetterDataWait(data =>
+        {
+            data.NameSetAsLast = playerName;
+        });
     }
 }
 

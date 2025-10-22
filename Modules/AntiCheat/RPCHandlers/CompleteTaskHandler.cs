@@ -15,13 +15,13 @@ internal sealed class CompleteTaskHandler : RPCHandler
     {
         var taskId = reader.ReadPackedUInt32();
 
-        if (sender.IsImpostorTeam() || !sender.Data.Tasks.ToArray().Any(task => task.Id == taskId)
+        if (sender.IsImpostorTeam() || !sender.Data.Tasks.AnyIl2Cpp(task => task.Id == taskId)
             || sender.BetterData().AntiCheatInfo.LastTaskId == taskId || (sender.BetterData().AntiCheatInfo.LastTaskId != taskId
             && sender.BetterData().AntiCheatInfo.TimeSinceLastTask < 1.25f))
         {
             if (BetterNotificationManager.NotifyCheat(sender, GetFormatActionText()))
             {
-                LogRpcInfo($"{sender.IsImpostorTeam()} || {!sender.Data.Tasks.ToArray().Any(task => task.Id == taskId)} ||" +
+                LogRpcInfo($"{sender.IsImpostorTeam()} || {!sender.Data.Tasks.AnyIl2Cpp(task => task.Id == taskId)} ||" +
                     $" {sender.BetterData().AntiCheatInfo.LastTaskId == taskId} || ({sender.BetterData().AntiCheatInfo.LastTaskId != taskId} && {sender.BetterData().AntiCheatInfo.TimeSinceLastTask < 1.25f})");
             }
         }

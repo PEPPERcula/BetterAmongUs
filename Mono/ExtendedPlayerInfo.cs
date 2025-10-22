@@ -127,6 +127,11 @@ internal static class PlayerControlDataExtension
         return MonoExtensionManager.Get<ExtendedPlayerInfo>(player.Data);
     }
 
+    internal static void BetterDataWait(this PlayerControl player, Action<ExtendedPlayerInfo> callback)
+    {
+        MonoExtensionManager.RunWhenNotNull<ExtendedPlayerInfo>(player, () => player?.BetterData(), callback);
+    }
+
     // Get BetterData from NetworkedPlayerInfo
     internal static ExtendedPlayerInfo? BetterData(this NetworkedPlayerInfo data)
     {

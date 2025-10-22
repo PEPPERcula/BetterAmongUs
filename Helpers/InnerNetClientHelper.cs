@@ -369,7 +369,7 @@ static class InnerNetClientHelper
         }
         else
         {
-            foreach (var allClients in AmongUsClient.Instance.allClients.ToArray().Where(c => c.Id != ignoreClientId))
+            foreach (var allClients in AmongUsClient.Instance.allClients.WhereIl2Cpp(c => c.Id != ignoreClientId))
             {
                 if (clientCheck == null || clientCheck.Invoke(allClients))
                 {

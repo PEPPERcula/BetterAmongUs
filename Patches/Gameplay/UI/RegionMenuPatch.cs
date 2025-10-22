@@ -15,7 +15,7 @@ internal static class RegionMenuPatch
         float buttonSpacing = 0.6f;
         float buttonSpacingSide = 2.25f;
 
-        List<UiElement> buttons = __instance.controllerSelectable.ToArray().ToList();
+        var buttons = __instance.controllerSelectable;
 
         int columnCount = (buttons.Count + buttonsPerColumn - 1) / buttonsPerColumn;
 

@@ -22,19 +22,21 @@ internal class MeetingInfoDisplay : PlayerInfoDisplay
     private int _lastUpdateFrame;
     private const int UPDATE_COOLDOWN = 5;
 
+    private CachedTranslations _cachedTranslations = new();
+
     // Cached translations
-    private static class CachedTranslations
+    private class CachedTranslations
     {
-        public static readonly string SickoUser = Translator.GetString("Player.SickoUser");
-        public static readonly string AUMUser = Translator.GetString("Player.AUMUser");
-        public static readonly string KNUser = Translator.GetString("Player.KNUser");
-        public static readonly string KnownCheater = Translator.GetString("Player.KnownCheater");
-        public static readonly string DisconnectLeft = Translator.GetString("DisconnectReasonMeeting.Left");
-        public static readonly string DisconnectAntiCheat = Translator.GetString("DisconnectReasonMeeting.AntiCheat");
-        public static readonly string DisconnectBanned = Translator.GetString("DisconnectReasonMeeting.Banned");
-        public static readonly string DisconnectKicked = Translator.GetString("DisconnectReasonMeeting.Kicked");
-        public static readonly string DisconnectCheater = Translator.GetString("DisconnectReasonMeeting.Cheater");
-        public static readonly string DisconnectDefault = Translator.GetString("DisconnectReasonMeeting.Disconnect");
+        internal readonly string SickoUser = Translator.GetString("Player.SickoUser");
+        internal readonly string AUMUser = Translator.GetString("Player.AUMUser");
+        internal readonly string KNUser = Translator.GetString("Player.KNUser");
+        internal readonly string KnownCheater = Translator.GetString("Player.KnownCheater");
+        internal readonly string DisconnectLeft = Translator.GetString("DisconnectReasonMeeting.Left");
+        internal readonly string DisconnectAntiCheat = Translator.GetString("DisconnectReasonMeeting.AntiCheat");
+        internal readonly string DisconnectBanned = Translator.GetString("DisconnectReasonMeeting.Banned");
+        internal readonly string DisconnectKicked = Translator.GetString("DisconnectReasonMeeting.Kicked");
+        internal readonly string DisconnectCheater = Translator.GetString("DisconnectReasonMeeting.Cheater");
+        internal readonly string DisconnectDefault = Translator.GetString("DisconnectReasonMeeting.Disconnect");
     }
 
     internal void Init(PlayerControl? player, PlayerVoteArea pva)
@@ -136,13 +138,13 @@ internal class MeetingInfoDisplay : PlayerInfoDisplay
         if (_player?.Data == null) return;
 
         if (ContainsPlayerData(BetterDataManager.BetterDataFile.SickoData, _player.Data))
-            sbTag.Append($"<color=#00f583>{CachedTranslations.SickoUser}</color>+++");
+            sbTag.Append($"<color=#00f583>{_cachedTranslations.SickoUser}</color>+++");
         else if (ContainsPlayerData(BetterDataManager.BetterDataFile.AUMData, _player.Data))
-            sbTag.Append($"<color=#4f0000>{CachedTranslations.AUMUser}</color>+++");
+            sbTag.Append($"<color=#4f0000>{_cachedTranslations.AUMUser}</color>+++");
         else if (ContainsPlayerData(BetterDataManager.BetterDataFile.KNData, _player.Data))
-            sbTag.Append($"<color=#8731e7>{CachedTranslations.KNUser}</color>+++");
+            sbTag.Append($"<color=#8731e7>{_cachedTranslations.KNUser}</color>+++");
         else if (ContainsPlayerData(BetterDataManager.BetterDataFile.CheatData, _player.Data))
-            sbTag.Append($"<color=#fc0000>{CachedTranslations.KnownCheater}</color>+++");
+            sbTag.Append($"<color=#fc0000>{_cachedTranslations.KnownCheater}</color>+++");
     }
 
     private void FormatPlayerInfo(StringBuilder sbTag, StringBuilder sbInfo)
@@ -257,13 +259,13 @@ internal class MeetingInfoDisplay : PlayerInfoDisplay
 
         return betterData?.DisconnectReason switch
         {
-            DisconnectReasons.ExitGame => CachedTranslations.DisconnectLeft,
+            DisconnectReasons.ExitGame => _cachedTranslations.DisconnectLeft,
             DisconnectReasons.Banned => betterData?.AntiCheatInfo?.BannedByAntiCheat == true
-                ? CachedTranslations.DisconnectAntiCheat
-                : CachedTranslations.DisconnectBanned,
-            DisconnectReasons.Kicked => CachedTranslations.DisconnectKicked,
-            DisconnectReasons.Hacking => CachedTranslations.DisconnectCheater,
-            _ => CachedTranslations.DisconnectDefault
+                ? _cachedTranslations.DisconnectAntiCheat
+                : _cachedTranslations.DisconnectBanned,
+            DisconnectReasons.Kicked => _cachedTranslations.DisconnectKicked,
+            DisconnectReasons.Hacking => _cachedTranslations.DisconnectCheater,
+            _ => _cachedTranslations.DisconnectDefault
         };
     }
 }

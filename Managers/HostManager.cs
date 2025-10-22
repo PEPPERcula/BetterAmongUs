@@ -102,7 +102,7 @@ internal static class HostManager
 
             if (!playerNonShapeshift.IsImpostorTeam() && playerNonShapeshift.Tasks.Count > 0)
             {
-                int completedTasks = playerNonShapeshift.Tasks.ToArray().Count(task => task.Complete);
+                int completedTasks = playerNonShapeshift.Tasks.CountIl2Cpp(task => task.Complete);
                 roleInfo += $" <color=#cbcbcb>({completedTasks}/{playerNonShapeshift.Tasks.Count})</color>";
             }
 
