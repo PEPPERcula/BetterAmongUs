@@ -75,7 +75,7 @@ internal class NewsData()
             {
                 if (data.TryGetValue($"content-{kvp.Key}", out var content))
                 {
-                    newsData.Contents[kvp.Value] = content;
+                    newsData.Contents[kvp.Value] = TextFileHandler.FormatToRichText(content.Replace("|", ""));
                 }
             }
 
