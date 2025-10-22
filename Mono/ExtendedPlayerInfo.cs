@@ -81,6 +81,7 @@ internal class ExtendedPlayerInfo : MonoBehaviour, IMonoExtension<NetworkedPlaye
         }
     }
 
+    [HideFromIl2Cpp]
     internal HandshakeHandler HandshakeHandler { get; }
     [HideFromIl2Cpp]
     internal UserData? MyUserData { get; private set; } = UserData.AllUsers.First();

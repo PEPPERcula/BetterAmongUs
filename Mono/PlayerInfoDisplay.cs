@@ -6,6 +6,7 @@ using BetterAmongUs.Items.Structs;
 using BetterAmongUs.Modules;
 using BetterAmongUs.Patches.Gameplay.UI.Settings;
 using HarmonyLib;
+using Il2CppInterop.Runtime.Attributes;
 using System.Text;
 using System.Text.RegularExpressions;
 using TMPro;
@@ -227,6 +228,7 @@ internal class PlayerInfoDisplay : MonoBehaviour
         return friendCode.Trim();
     }
 
+    [HideFromIl2Cpp]
     private void SetPlayerOutline(StringBuilder sbTag)
     {
         if (_player?.Data == null) return;
@@ -262,7 +264,8 @@ internal class PlayerInfoDisplay : MonoBehaviour
         }
     }
 
-    private bool ContainsPlayerData(HashSet<UserInfo> dataList, NetworkedPlayerInfo playerData)
+    [HideFromIl2Cpp]
+    private static bool ContainsPlayerData(HashSet<UserInfo> dataList, NetworkedPlayerInfo playerData)
     {
         foreach (var info in dataList)
         {
@@ -272,6 +275,7 @@ internal class PlayerInfoDisplay : MonoBehaviour
         return false;
     }
 
+    [HideFromIl2Cpp]
     private void SetLobbyInfo(ref string newName, ExtendedPlayerInfo betterData, StringBuilder sbTag)
     {
         if (betterData == null) return;
@@ -288,6 +292,7 @@ internal class PlayerInfoDisplay : MonoBehaviour
         sbTag.Append($"<color=#b554ff>ID: {_player.PlayerId}</color>+++");
     }
 
+    [HideFromIl2Cpp]
     private void SetInGameInfo(StringBuilder sbTagTop)
     {
         if (_player.IsImpostorTeammate() || _player.IsLocalPlayer() ||

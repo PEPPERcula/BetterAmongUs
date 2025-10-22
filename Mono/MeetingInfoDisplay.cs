@@ -3,6 +3,7 @@ using BetterAmongUs.Data;
 using BetterAmongUs.Helpers;
 using BetterAmongUs.Items.Structs;
 using BetterAmongUs.Modules;
+using Il2CppInterop.Runtime.Attributes;
 using System.Text;
 using TMPro;
 using UnityEngine;
@@ -133,6 +134,7 @@ internal class MeetingInfoDisplay : PlayerInfoDisplay
         UpdateTextIfChanged(_topText, roleText, ref _lastTopText);
     }
 
+    [HideFromIl2Cpp]
     private void SetPlayerTags(StringBuilder sbTag)
     {
         if (_player?.Data == null) return;
@@ -147,7 +149,8 @@ internal class MeetingInfoDisplay : PlayerInfoDisplay
             sbTag.Append($"<color=#fc0000>{_cachedTranslations.KnownCheater}</color>+++");
     }
 
-    private void FormatPlayerInfo(StringBuilder sbTag, StringBuilder sbInfo)
+    [HideFromIl2Cpp]
+    private static void FormatPlayerInfo(StringBuilder sbTag, StringBuilder sbInfo)
     {
         if (sbTag.Length == 0) return;
 
@@ -209,7 +212,7 @@ internal class MeetingInfoDisplay : PlayerInfoDisplay
         _pva.NameText.transform.localPosition = textPos;
     }
 
-    private void UpdateTextIfChanged(TextMeshPro textMesh, string newText, ref string lastValue)
+    private static void UpdateTextIfChanged(TextMeshPro textMesh, string newText, ref string lastValue)
     {
         if (textMesh == null) return;
 
