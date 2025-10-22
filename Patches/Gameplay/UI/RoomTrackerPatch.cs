@@ -10,9 +10,16 @@ internal static class RoomTrackerPatch
     [HarmonyPostfix]
     private static void Awake_Postfix(RoomTracker __instance)
     {
-        var aspectPosition = __instance.gameObject.AddComponent<AspectPosition>();
+        var originalParent = __instance.transform.parent;
+
+        var holder = new GameObject("RoomTrackerHolder");
+        holder.transform.SetParent(originalParent);
+
+        __instance.transform.SetParent(holder.transform);
+
+        var aspectPosition = holder.AddComponent<AspectPosition>();
         aspectPosition.Alignment = AspectPosition.EdgeAlignments.Bottom;
-        aspectPosition.DistanceFromEdge = new Vector3(0f, 0.3f, 0f);
+        aspectPosition.DistanceFromEdge = new Vector3(0f, 3f, 0f);
         aspectPosition.updateAlways = true;
     }
 }
