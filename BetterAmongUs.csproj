@@ -23,7 +23,6 @@
   <ItemGroup>
     <!-- Embed all files in the Resources folder -->
     <EmbeddedResource Include="Resources\**\*" />
-    <EmbeddedResource Include="token.env" />
   </ItemGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
