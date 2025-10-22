@@ -1,10 +1,11 @@
 ﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Modules;
 using System.Text;
 using TMPro;
 using UnityEngine;
 using static BetterAmongUs.Patches.Gameplay.LobbyPatch;
 
-namespace BetterAmongUs.Modules;
+namespace BetterAmongUs.Mono;
 
 internal class BetterPingTracker : MonoBehaviour
 {
@@ -50,7 +51,6 @@ internal class BetterPingTracker : MonoBehaviour
         }
 
         sb.Append($"<color=#00dbdb><size=75%>BetterAmongUs {BAUPlugin.GetVersionText(true)}</size></color>\n");
-        // sb.Append("<size=68%><color=#8040bf>By</color> <color=#bc4345>The Enhanced Network</color></size>\n");
         sb.Append($"<color=#8A8A8A>{ModInfo.Github}</color>\n".Size(52f));
 
         if (BAUPlugin.ShowFPS.Value)

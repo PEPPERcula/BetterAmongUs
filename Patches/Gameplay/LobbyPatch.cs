@@ -65,6 +65,9 @@ internal static class LobbyPatch
             __instance.EditButton?.gameObject?.SetUIColors("Icon");
             __instance.ClientViewButton?.gameObject?.SetUIColors("Icon");
             __instance.HostViewButton?.gameObject?.SetUIColors("Icon");
+
+            __instance.StartButton.transform.SetParent(__instance.HostInfoPanel.transform);
+            __instance.StartButtonClient.transform.SetParent(__instance.HostInfoPanel.transform);
         }
 
         [HarmonyPatch(nameof(GameStartManager.Update))]
