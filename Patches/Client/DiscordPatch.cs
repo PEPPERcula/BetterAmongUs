@@ -51,18 +51,21 @@ internal static class DiscordRPC
     {
         if (GameState.IsLobby)
         {
-            lobbycode = GameStartManager.Instance.GameRoomNameCode.text;
-            region = ServerManager.Instance.CurrentRegion.Name;
-            region = region switch
+            if (GameStartManager.Instance?.GameRoomNameCode != null)
             {
-                "North America" => "NA",
-                "Europe" => "EU",
-                "Asia" => "AS",
-                _ when region.Contains("MNA") => "MNA",
-                _ when region.Contains("MEU") => "MEU",
-                _ when region.Contains("MAS") => "MAS",
-                _ => region
-            };
+                lobbycode = GameStartManager.Instance.GameRoomNameCode.text;
+                region = ServerManager.Instance.CurrentRegion.Name;
+                region = region switch
+                {
+                    "North America" => "NA",
+                    "Europe" => "EU",
+                    "Asia" => "AS",
+                    _ when region.Contains("MNA") => "MNA",
+                    _ when region.Contains("MEU") => "MEU",
+                    _ when region.Contains("MAS") => "MAS",
+                    _ => region
+                };
+            }
         }
     }
 }

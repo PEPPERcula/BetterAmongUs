@@ -34,7 +34,7 @@ internal static class SplashIntroPatch
                 return false;
             }
 
-            if (Time.time - __instance.startTime > 2f && BetterIntro)
+            if (Time.time - __instance.startTime > 1.8f && BetterIntro)
             {
                 UnityEngine.Object.Destroy(__instance.logoAnimFinish.GetComponent<AudioSource>());
             }
@@ -59,7 +59,7 @@ internal static class SplashIntroPatch
                     BetterLogo = UnityEngine.Object.Instantiate(InnerLogo, InnerLogo.transform.parent);
                     InnerLogo.DestroyObj();
                     BetterLogo.name = "BetterLogo";
-                    BetterLogo.GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("BetterAmongUs.Resources.Images.BetterAmongUs-By-The-Enhanced-Network-Logo.png", 150f);
+                    BetterLogo.GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("BetterAmongUs.Resources.Images.BetterAmongUs-Logo.png", 150f);
                     __instance.logoAnimFinish.transform.Find("BlackOverlay").transform.SetLocalY(0f);
 
                     BetterIntro = true;

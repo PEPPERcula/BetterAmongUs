@@ -61,10 +61,10 @@ internal static class LobbyPatch
         {
             lobbyTimer = 600f;
 
-            __instance.StartButton.gameObject.SetUIColors("Icon");
-            __instance.EditButton.gameObject.SetUIColors("Icon");
-            __instance.ClientViewButton.gameObject.SetUIColors("Icon");
-            __instance.HostViewButton.gameObject.SetUIColors("Icon");
+            __instance.StartButton?.gameObject?.SetUIColors("Icon");
+            __instance.EditButton?.gameObject?.SetUIColors("Icon");
+            __instance.ClientViewButton?.gameObject?.SetUIColors("Icon");
+            __instance.HostViewButton?.gameObject?.SetUIColors("Icon");
         }
 
         [HarmonyPatch(nameof(GameStartManager.Update))]

@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using BetterAmongUs.Data;
 using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Structs;
 using BetterAmongUs.Modules;
 using System.Text;
 using TMPro;
@@ -14,6 +15,27 @@ internal class MeetingInfoDisplay : PlayerInfoDisplay
     private Vector3 _namePos;
     private Vector3 _infoPos;
     private Vector3 _TopPos;
+
+    private readonly StringBuilder _sbTag = new(256);
+    private readonly StringBuilder _sbInfo = new(256);
+    private string _lastInfoText = "", _lastTopText = "";
+    private int _lastUpdateFrame;
+    private const int UPDATE_COOLDOWN = 5;
+
+    // Cached translations
+    private static class CachedTranslations
+    {
+        public static readonly string SickoUser = Translator.GetString("Player.SickoUser");
+        public static readonly string AUMUser = Translator.GetString("Player.AUMUser");
+        public static readonly string KNUser = Translator.GetString("Player.KNUser");
+        public static readonly string KnownCheater = Translator.GetString("Player.KnownCheater");
+        public static readonly string DisconnectLeft = Translator.GetString("DisconnectReasonMeeting.Left");
+        public static readonly string DisconnectAntiCheat = Translator.GetString("DisconnectReasonMeeting.AntiCheat");
+        public static readonly string DisconnectBanned = Translator.GetString("DisconnectReasonMeeting.Banned");
+        public static readonly string DisconnectKicked = Translator.GetString("DisconnectReasonMeeting.Kicked");
+        public static readonly string DisconnectCheater = Translator.GetString("DisconnectReasonMeeting.Cheater");
+        public static readonly string DisconnectDefault = Translator.GetString("DisconnectReasonMeeting.Disconnect");
+    }
 
     internal void Init(PlayerControl? player, PlayerVoteArea pva)
     {
@@ -47,7 +69,13 @@ internal class MeetingInfoDisplay : PlayerInfoDisplay
 
     protected override void LateUpdate()
     {
+        if (Time.frameCount - _lastUpdateFrame < UPDATE_COOLDOWN)
+            return;
+
         if (_pva == null) return;
+
+        _sbTag.Clear();
+        _sbInfo.Clear();
 
         if (_player != null)
         {
@@ -58,13 +86,24 @@ internal class MeetingInfoDisplay : PlayerInfoDisplay
             UpdateDisconnect();
         }
 
-        if (_infoText.text != string.Empty && _topText.text != string.Empty)
+        UpdateTextPositions();
+        _pva.ColorBlindName.transform.localPosition = new Vector3(-0.91f, -0.19f, -0.05f);
+
+        _lastUpdateFrame = Time.frameCount;
+    }
+
+    private void UpdateTextPositions()
+    {
+        bool hasInfoText = !string.IsNullOrEmpty(_infoText?.text);
+        bool hasTopText = !string.IsNullOrEmpty(_topText?.text);
+
+        if (hasInfoText && hasTopText)
         {
             _nameText.transform.localPosition = _namePos + new Vector3(0f, -0.1f, 0f);
             _infoText.transform.localPosition = _infoPos + new Vector3(0f, -0.1f, 0f);
             _topText.transform.localPosition = _TopPos + new Vector3(0f, -0.1f, 0f);
         }
-        else if (_infoText.text != string.Empty || _topText.text != string.Empty)
+        else if (hasInfoText || hasTopText)
         {
             _nameText.transform.localPosition = _namePos;
             _infoText.transform.localPosition = _TopPos;
@@ -76,110 +115,155 @@ internal class MeetingInfoDisplay : PlayerInfoDisplay
             _infoText.transform.localPosition = _infoPos;
             _topText.transform.localPosition = _TopPos;
         }
-
-        _pva.ColorBlindName.transform.localPosition = new Vector3(-0.91f, -0.19f, -0.05f);
     }
 
     private void UpdateInfo()
     {
-        if (_player.Data == null || _player.BetterData() == null) return;
-        string hashPuid = Utils.GetHashPuid(_player);
-        string friendCode = _player.Data.FriendCode;
+        if (_player?.Data == null || _player.BetterData() == null) return;
 
-        StringBuilder sbTag = new();
-        StringBuilder sbInfo = new();
+        SetPlayerTags(_sbTag);
+        FormatPlayerInfo(_sbTag, _sbInfo);
 
-        // Put +++ at the end of each tag
+        string roleText = GetRoleText();
+        UpdateNameTextPosition(roleText, _sbInfo.ToString());
 
-        if (BetterDataManager.BetterDataFile.SickoData.Any(info => info.CheckPlayerData(_player.Data)))
-            sbTag.Append($"<color=#00f583>{Translator.GetString("Player.SickoUser")}</color>+++");
-        else if (BetterDataManager.BetterDataFile.AUMData.Any(info => info.CheckPlayerData(_player.Data)))
-            sbTag.Append($"<color=#4f0000>{Translator.GetString("Player.AUMUser")}</color>+++");
-        else if (BetterDataManager.BetterDataFile.KNData.Any(info => info.CheckPlayerData(_player.Data)))
-            sbTag.Append($"<color=#8731e7>{Translator.GetString("Player.KNUser")}</color>+++");
-        else if (BetterDataManager.BetterDataFile.CheatData.Any(info => info.CheckPlayerData(_player.Data)))
-            sbTag.Append($"<color=#fc0000>{Translator.GetString("Player.KnownCheater")}</color>+++");
+        UpdateTextIfChanged(_infoText, _sbInfo.ToString(), ref _lastInfoText);
+        UpdateTextIfChanged(_topText, roleText, ref _lastTopText);
+    }
 
-        for (int i = 0; i < sbTag.ToString().Split("+++").Length; i++)
+    private void SetPlayerTags(StringBuilder sbTag)
+    {
+        if (_player?.Data == null) return;
+
+        if (ContainsPlayerData(BetterDataManager.BetterDataFile.SickoData, _player.Data))
+            sbTag.Append($"<color=#00f583>{CachedTranslations.SickoUser}</color>+++");
+        else if (ContainsPlayerData(BetterDataManager.BetterDataFile.AUMData, _player.Data))
+            sbTag.Append($"<color=#4f0000>{CachedTranslations.AUMUser}</color>+++");
+        else if (ContainsPlayerData(BetterDataManager.BetterDataFile.KNData, _player.Data))
+            sbTag.Append($"<color=#8731e7>{CachedTranslations.KNUser}</color>+++");
+        else if (ContainsPlayerData(BetterDataManager.BetterDataFile.CheatData, _player.Data))
+            sbTag.Append($"<color=#fc0000>{CachedTranslations.KnownCheater}</color>+++");
+    }
+
+    private void FormatPlayerInfo(StringBuilder sbTag, StringBuilder sbInfo)
+    {
+        if (sbTag.Length == 0) return;
+
+        string tagString = sbTag.ToString();
+        string[] tags = tagString.Split(["+++"], System.StringSplitOptions.RemoveEmptyEntries);
+
+        for (int i = 0; i < tags.Length; i++)
         {
-            if (!string.IsNullOrEmpty(sbTag.ToString().Split("+++")[i]))
+            if (!string.IsNullOrEmpty(tags[i]))
             {
-                if (i < sbTag.ToString().Split("+++").Length)
-                {
-                    sbInfo.Append(sbTag.ToString().Split("+++")[i]);
-                }
-                if (i != sbTag.ToString().Split("+++").Length - 2)
+                sbInfo.Append(tags[i]);
+                if (i < tags.Length - 1)
                 {
                     sbInfo.Append(" - ");
                 }
             }
         }
+    }
 
-        string RoleHexColor = _player.IsImpostorTeam() ? "#ff1919" : "#8cffff";
-        string Role = $"<color={RoleHexColor}>{_player.GetRoleName()}</color>";
+    private string GetRoleText()
+    {
+        if (_player == null) return string.Empty;
+
+        string roleHexColor = _player.IsImpostorTeam() ? "#ff1919" : "#8cffff";
+        string role = $"<color={roleHexColor}>{_player.GetRoleName()}</color>";
+
         if (!_player.IsImpostorTeam() && _player.myTasks.Count > 0)
         {
-            Role += $" <color=#cbcbcb>({_player.myTasks.ToArray().Where(task => task.IsComplete).Count()}/{_player.myTasks.Count})</color>";
+            int completedTasks = 0;
+            foreach (var task in _player.myTasks)
+            {
+                if (task.IsComplete) completedTasks++;
+            }
+            role += $" <color=#cbcbcb>({completedTasks}/{_player.myTasks.Count})</color>";
         }
+
         if (!_player.IsImpostorTeammate())
         {
             if ((PlayerControl.LocalPlayer.IsAlive() || PlayerControl.LocalPlayer.Is(RoleTypes.GuardianAngel)) && !_player.IsLocalPlayer())
             {
-                Role = "";
+                return string.Empty;
             }
         }
 
-        Vector3 textPos;
+        return role;
+    }
 
-        if (Role != "" && !string.IsNullOrEmpty(sbInfo.ToString()))
+    private void UpdateNameTextPosition(string roleText, string infoText)
+    {
+        bool hasRole = !string.IsNullOrEmpty(roleText);
+        bool hasInfo = !string.IsNullOrEmpty(infoText);
+
+        Vector3 textPos;
+        if (hasRole && hasInfo)
             textPos = new Vector3(_pva.NameText.transform.localPosition.x, -0.045f);
-        else if (Role != "" || !string.IsNullOrEmpty(sbInfo.ToString()))
-            textPos = new Vector3(_pva.NameText.transform.localPosition.x, 0.015f);
         else
             textPos = new Vector3(_pva.NameText.transform.localPosition.x, 0.015f);
 
         _pva.NameText.transform.localPosition = textPos;
+    }
 
-        _infoText.SetText($"{sbInfo}");
-        _topText.SetText($"{Role}");
+    private void UpdateTextIfChanged(TextMeshPro textMesh, string newText, ref string lastValue)
+    {
+        if (textMesh == null) return;
+
+        if (newText != lastValue)
+        {
+            textMesh.SetText(newText);
+            lastValue = newText;
+        }
+    }
+
+    private static bool ContainsPlayerData(HashSet<UserInfo> dataList, NetworkedPlayerInfo playerData)
+    {
+        foreach (var info in dataList)
+        {
+            if (info.CheckPlayerData(playerData))
+                return true;
+        }
+        return false;
     }
 
     private void UpdateDisconnect()
     {
-        string DisconnectText;
-        var playerData = GameData.Instance.GetPlayerById(_pva.TargetPlayerId);
-        var betterData = playerData.BetterData();
-        switch (betterData?.DisconnectReason)
+        string disconnectText = GetDisconnectText();
+
+        if (disconnectText != _lastInfoText)
         {
-            case DisconnectReasons.ExitGame:
-                DisconnectText = Translator.GetString("DisconnectReasonMeeting.Left");
-                break;
-            case DisconnectReasons.Banned:
-                if (betterData?.AntiCheatInfo?.BannedByAntiCheat == true)
-                {
-                    DisconnectText = Translator.GetString("DisconnectReasonMeeting.AntiCheat");
-                }
-                else
-                {
-                    DisconnectText = Translator.GetString("DisconnectReasonMeeting.Banned");
-                }
-                break;
-            case DisconnectReasons.Kicked:
-                DisconnectText = Translator.GetString("DisconnectReasonMeeting.Kicked");
-                break;
-            case DisconnectReasons.Hacking:
-                DisconnectText = Translator.GetString("DisconnectReasonMeeting.Cheater");
-                break;
-            default:
-                DisconnectText = Translator.GetString("DisconnectReasonMeeting.Disconnect");
-                break;
+            _infoText?.SetText($"<color=#6b6b6b>{disconnectText}</color>");
+            _lastInfoText = disconnectText;
         }
 
-        _infoText?.SetText($"<color=#6b6b6b>{DisconnectText}</color>");
-        _topText?.SetText("");
+        if (_lastTopText != string.Empty)
+        {
+            _topText?.SetText("");
+            _lastTopText = string.Empty;
+        }
+
         _pva.transform.Find("votePlayerBase")?.gameObject.SetActive(false);
         _pva.transform.Find("deadX_border")?.gameObject.SetActive(false);
         _pva.ClearForResults();
         _pva.SetDisabled();
+    }
+
+    private string GetDisconnectText()
+    {
+        var playerData = GameData.Instance.GetPlayerById(_pva.TargetPlayerId);
+        var betterData = playerData?.BetterData();
+
+        return betterData?.DisconnectReason switch
+        {
+            DisconnectReasons.ExitGame => CachedTranslations.DisconnectLeft,
+            DisconnectReasons.Banned => betterData?.AntiCheatInfo?.BannedByAntiCheat == true
+                ? CachedTranslations.DisconnectAntiCheat
+                : CachedTranslations.DisconnectBanned,
+            DisconnectReasons.Kicked => CachedTranslations.DisconnectKicked,
+            DisconnectReasons.Hacking => CachedTranslations.DisconnectCheater,
+            _ => CachedTranslations.DisconnectDefault
+        };
     }
 }

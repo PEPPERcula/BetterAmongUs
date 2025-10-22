@@ -12,20 +12,15 @@ internal static class OnGameJoinedPatch
 {
     private static void Postfix(/*AmongUsClient __instance*/)
     {
-        try
+        // Fix host icon in lobby on modded servers
+        if (!GameState.IsVanillaServer)
         {
-            // Fix host icon in lobby on modded servers
-            if (!GameState.IsVanillaServer)
-            {
-                var host = AmongUsClient.Instance.GetHost().Character;
-                host.SetColor(-2);
-                host.SetColor(host.CurrentOutfit.ColorId);
-            }
-
-            Logger.Log($"Successfully joined {GameCode.IntToGameName(AmongUsClient.Instance.GameId)}", "OnGameJoinedPatch");
+            var host = AmongUsClient.Instance.GetHost().Character;
+            host?.SetColor(-2);
+            host?.SetColor(host.CurrentOutfit.ColorId);
         }
-        catch { }
-        ;
+
+        Logger.Log($"Successfully joined {GameCode.IntToGameName(AmongUsClient.Instance.GameId)}", "OnGameJoinedPatch");
     }
 }
 

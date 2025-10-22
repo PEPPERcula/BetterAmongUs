@@ -2,6 +2,7 @@
 using AmongUs.GameOptions;
 using BetterAmongUs.Data;
 using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Structs;
 using BetterAmongUs.Modules;
 using BetterAmongUs.Patches.Gameplay.UI.Settings;
 using HarmonyLib;
@@ -19,6 +20,40 @@ internal class PlayerInfoDisplay : MonoBehaviour
     protected TextMeshPro? _infoText;
     protected TextMeshPro? _topText;
     protected TextMeshPro? _bottomText;
+
+    private readonly StringBuilder _sbTag = new(256);
+    private readonly StringBuilder _sbTagTop = new(256);
+    private readonly StringBuilder _sbTagBottom = new(256);
+    private string _lastTopText = "", _lastBottomText = "", _lastInfoText = "";
+    private int _lastUpdateFrame;
+    private bool _lastPlayerState;
+    private const int UPDATE_COOLDOWN = 10;
+
+    // Cached regex patterns
+    private static readonly Regex _friendCodePattern = new(@"^[a-zA-Z0-9#]+$", RegexOptions.Compiled);
+    private static readonly Regex _hashtagPattern = new(@"^#[0-9]{4}$", RegexOptions.Compiled);
+
+    // Cached colors
+    private static readonly Dictionary<string, Color32> _cachedColors = new()
+    {
+        ["#00f583"] = Utils.HexToColor32("#00f583"),
+        ["#4f0000"] = Utils.HexToColor32("#4f0000"),
+        ["#fc0000"] = Utils.HexToColor32("#fc0000"),
+        ["#8731e7"] = Utils.HexToColor32("#8731e7")
+    };
+
+    // Cached translations
+    private static class CachedTranslations
+    {
+        public static readonly string Loading = Translator.GetString("Player.Loading");
+        public static readonly string PlatformHidden = Translator.GetString("Player.PlatformHidden");
+        public static readonly string NoFriendCode = Translator.GetString("Player.NoFriendCode");
+        public static readonly string SickoUser = Translator.GetString("Player.SickoUser");
+        public static readonly string AUMUser = Translator.GetString("Player.AUMUser");
+        public static readonly string KNUser = Translator.GetString("Player.KNUser");
+        public static readonly string KnownCheater = Translator.GetString("Player.KnownCheater");
+        public static readonly string BetterUser = Translator.GetString("Player.BetterUser");
+    }
 
     internal void Init(PlayerControl player)
     {
@@ -58,10 +93,19 @@ internal class PlayerInfoDisplay : MonoBehaviour
 
     protected virtual void LateUpdate()
     {
+        if (Time.frameCount - _lastUpdateFrame < UPDATE_COOLDOWN)
+            return;
+
+        _sbTag.Clear();
+        _sbTagTop.Clear();
+        _sbTagBottom.Clear();
+
         UpdatePlayerInfo();
         UpdatePlayerHighlight();
         UpdateColorBlindTextPosition();
         _nameText.transform.parent.localPosition = new Vector3(0f, 0.8f, -0.5f);
+
+        _lastUpdateFrame = Time.frameCount;
     }
 
     private void UpdatePlayerInfo()
@@ -69,11 +113,10 @@ internal class PlayerInfoDisplay : MonoBehaviour
         if (_player?.Data == null) return;
 
         var betterData = _player.BetterData();
-        if (GameState.IsTOHEHostLobby) return;
 
         if (!_player.DataIsCollected())
         {
-            _nameText.text = Translator.GetString("Player.Loading");
+            _nameText.text = CachedTranslations.Loading;
             return;
         }
 
@@ -92,26 +135,22 @@ internal class PlayerInfoDisplay : MonoBehaviour
 
         if (DataManager.Settings.Gameplay.StreamerMode)
         {
-            platform = Translator.GetString("Player.PlatformHidden");
+            platform = CachedTranslations.PlatformHidden;
         }
 
-        var sbTag = new StringBuilder();
-        var sbTagTop = new StringBuilder();
-        var sbTagBottom = new StringBuilder();
-
-        SetPlayerOutline(sbTag);
+        SetPlayerOutline(_sbTag);
 
         if (GameState.IsInGame && GameState.IsLobby && !GameState.IsFreePlay)
         {
-            SetLobbyInfo(ref newName, betterData, sbTag);
-            sbTagTop.Append($"<color=#9e9e9e>{platform}</color>+++")
+            SetLobbyInfo(ref newName, betterData, _sbTag);
+            _sbTagTop.Append($"<color=#9e9e9e>{platform}</color>+++")
                     .Append($"<color=#ffd829>Lv: {_player.Data.PlayerLevel + 1}</color>+++");
 
-            sbTagBottom.Append($"<color={friendCodeColor}>{friendCode}</color>+++");
+            _sbTagBottom.Append($"<color={friendCodeColor}>{friendCode}</color>+++");
         }
         else if ((GameState.IsInGame || GameState.IsFreePlay) && !GameState.IsHideNSeek)
         {
-            SetInGameInfo(sbTagTop);
+            SetInGameInfo(_sbTagTop);
         }
 
         if (!_player.IsInShapeshift())
@@ -124,9 +163,21 @@ internal class PlayerInfoDisplay : MonoBehaviour
             if (targetData != null) _player.RawSetName(targetData.BetterData()?.RealName ?? targetData.PlayerName);
         }
 
-        _topText?.SetText(Utils.FormatInfo(sbTagTop));
-        _bottomText?.SetText(Utils.FormatInfo(sbTagBottom));
-        _infoText?.SetText(Utils.FormatInfo(sbTag));
+        UpdateTextIfChanged(_topText, _sbTagTop, ref _lastTopText);
+        UpdateTextIfChanged(_bottomText, _sbTagBottom, ref _lastBottomText);
+        UpdateTextIfChanged(_infoText, _sbTag, ref _lastInfoText);
+    }
+
+    private static void UpdateTextIfChanged(TextMeshPro textMesh, StringBuilder sb, ref string lastValue)
+    {
+        if (textMesh == null) return;
+
+        string newText = Utils.FormatInfo(sb);
+        if (newText != lastValue)
+        {
+            textMesh.SetText(newText);
+            lastValue = newText;
+        }
     }
 
     private string ValidateFriendCode(out string color)
@@ -146,20 +197,18 @@ internal class PlayerInfoDisplay : MonoBehaviour
         }
 
         string friendCode = _player.Data.FriendCode;
-        string pattern = @"^[a-zA-Z0-9#]+$";
-        string hashtagPattern = @"^#[0-9]{4}$";
 
         bool isValidFriendCode = !string.IsNullOrEmpty(friendCode) &&
-                               Regex.IsMatch(friendCode, pattern) &&
-                               Regex.IsMatch(friendCode, hashtagPattern) &&
+                               _friendCodePattern.IsMatch(friendCode) &&
+                               _hashtagPattern.IsMatch(friendCode) &&
                                !friendCode.Contains(' ') &&
-                               Regex.Replace(friendCode, hashtagPattern, string.Empty).Length is > 10 or < 5;
+                               Regex.Replace(friendCode, @"^#[0-9]{4}$", string.Empty).Length is > 10 or < 5;
 
         color = isValidFriendCode ? "#ff0000" : "#00f7ff";
 
         if (string.IsNullOrEmpty(friendCode))
         {
-            friendCode = Translator.GetString("Player.NoFriendCode");
+            friendCode = CachedTranslations.NoFriendCode;
             color = "#ff0000";
             TryKick();
         }
@@ -185,31 +234,40 @@ internal class PlayerInfoDisplay : MonoBehaviour
 
         var color = _player.cosmetics.currentBodySprite.BodySprite.material.GetColor("_OutlineColor");
 
-        if (BetterDataManager.BetterDataFile.SickoData.Any(info => info.CheckPlayerData(_player.Data)))
+        if (ContainsPlayerData(BetterDataManager.BetterDataFile.SickoData, _player.Data))
         {
-            sbTag.Append($"<color=#00f583>{Translator.GetString("Player.SickoUser")}</color>+++");
+            sbTag.Append($"<color=#00f583>{CachedTranslations.SickoUser}</color>+++");
             _player.SetOutlineByHex(true, "#00f583");
         }
-        else if (BetterDataManager.BetterDataFile.AUMData.Any(info => info.CheckPlayerData(_player.Data)))
+        else if (ContainsPlayerData(BetterDataManager.BetterDataFile.AUMData, _player.Data))
         {
-            sbTag.Append($"<color=#4f0000>{Translator.GetString("Player.AUMUser")}</color>+++");
+            sbTag.Append($"<color=#4f0000>{CachedTranslations.AUMUser}</color>+++");
             _player.SetOutlineByHex(true, "#4f0000");
         }
-        else if (BetterDataManager.BetterDataFile.KNData.Any(info => info.CheckPlayerData(_player.Data)))
+        else if (ContainsPlayerData(BetterDataManager.BetterDataFile.KNData, _player.Data))
         {
-            sbTag.Append($"<color=#8731e7>{Translator.GetString("Player.KNUser")}</color>+++");
+            sbTag.Append($"<color=#8731e7>{CachedTranslations.KNUser}</color>+++");
             _player.SetOutlineByHex(true, "#8731e7");
         }
-        else if (BetterDataManager.BetterDataFile.CheatData.Any(info => info.CheckPlayerData(_player.Data)))
+        else if (ContainsPlayerData(BetterDataManager.BetterDataFile.CheatData, _player.Data))
         {
-            sbTag.Append($"<color=#fc0000>{Translator.GetString("Player.KnownCheater")}</color>+++");
+            sbTag.Append($"<color=#fc0000>{CachedTranslations.KnownCheater}</color>+++");
             _player.SetOutlineByHex(true, "#fc0000");
         }
-        else if (color == Utils.HexToColor32("#00f583") || color == Utils.HexToColor32("#4f0000") ||
-                 color == Utils.HexToColor32("#fc0000") || color == Utils.HexToColor32("#8731e7"))
+        else if (_cachedColors.Any(kvp => color == kvp.Value))
         {
             _player.SetOutline(false, null);
         }
+    }
+
+    private bool ContainsPlayerData(HashSet<UserInfo> dataList, NetworkedPlayerInfo playerData)
+    {
+        foreach (var info in dataList)
+        {
+            if (info.CheckPlayerData(playerData))
+                return true;
+        }
+        return false;
     }
 
     private void SetLobbyInfo(ref string newName, ExtendedPlayerInfo betterData, StringBuilder sbTag)
@@ -223,7 +281,7 @@ internal class PlayerInfoDisplay : MonoBehaviour
         {
             string verificationSymbol = betterData.IsVerifiedBetterUser || _player.IsLocalPlayer() ? "✓ " : "";
             sbTag.AppendFormat("<color=#0dff00>{1}{0}</color>+++",
-                Translator.GetString("Player.BetterUser"), verificationSymbol);
+                CachedTranslations.BetterUser, verificationSymbol);
         }
         sbTag.Append($"<color=#b554ff>ID: {_player.PlayerId}</color>+++");
     }
@@ -237,7 +295,11 @@ internal class PlayerInfoDisplay : MonoBehaviour
 
             if (!_player.IsImpostorTeam() && _player.myTasks.Count > 0)
             {
-                int completedTasks = _player.Data.Tasks.ToArray().Count(task => task.Complete);
+                int completedTasks = 0;
+                foreach (var task in _player.Data.Tasks)
+                {
+                    if (task.Complete) completedTasks++;
+                }
                 roleInfo += $" <color=#cbcbcb>({completedTasks}/{_player.Data.Tasks.Count})</color>";
             }
 
@@ -247,7 +309,7 @@ internal class PlayerInfoDisplay : MonoBehaviour
 
     private void UpdatePlayerHighlight()
     {
-        SetPlayerOutline(new StringBuilder());
+        SetPlayerOutline(new StringBuilder(32));
     }
 
     private void UpdateColorBlindTextPosition()

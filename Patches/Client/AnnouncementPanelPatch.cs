@@ -60,9 +60,6 @@ internal static class AnnouncementPanelPatch
                     case NewsTypes.BAU:
                         renderer.sprite = Utils.LoadSprite("BetterAmongUs.Resources.Images.BetterAmongUs-Icon.png", 1225f);
                         break;
-                    case NewsTypes.TEN:
-                        renderer.sprite = Utils.LoadSprite("BetterAmongUs.Resources.Images.TEN_Icon.png", 1500f);
-                        break;
                 }
 
                 renderer.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;

@@ -88,7 +88,6 @@ internal class ExtendedPlayerInfo : MonoBehaviour, IMonoExtension<NetworkedPlaye
     internal Dictionary<byte, string> LastNameSetFor { get; set; } = [];
     internal bool IsBetterUser { get; set; } = false;
     internal bool IsVerifiedBetterUser { get; set; } = false;
-    internal bool IsTOHEHost { get; set; } = false;
     internal bool HasShowDcMsg { get; set; } = false;
     internal DisconnectReasons DisconnectReason { get; set; } = DisconnectReasons.Unknown;
     [HideFromIl2Cpp]

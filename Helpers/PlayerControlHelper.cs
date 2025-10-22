@@ -15,18 +15,18 @@ static class PlayerControlHelper
     // Get players client
     internal static ClientData? GetClient(this PlayerControl player)
     {
-        try
-        {
-            var client = AmongUsClient.Instance.allClients.ToArray().FirstOrDefault(cd => cd.Character.PlayerId == player.PlayerId);
-            return client;
-        }
-        catch
-        {
+        if (AmongUsClient.Instance?.allClients == null || player == null)
             return null;
+
+        foreach (var client in AmongUsClient.Instance.allClients)
+        {
+            if (client?.Character?.PlayerId == player.PlayerId)
+                return client;
         }
+        return null;
     }
     // Get players client id
-    internal static int GetClientId(this PlayerControl player) => player?.GetClient()?.Id != null ? player.GetClient().Id : -1;
+    internal static int GetClientId(this PlayerControl player) => player?.GetClient()?.Id ?? -1;
     // Get player name with outfit color
     internal static string GetPlayerNameAndColor(this PlayerControl player)
     {

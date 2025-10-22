@@ -4,5 +4,4 @@ internal enum NewsTypes
 {
     None,
     BAU,
-    TEN
 }

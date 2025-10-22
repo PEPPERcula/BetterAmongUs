@@ -106,7 +106,6 @@ internal static class GameState
     internal static bool IsHost => AmongUsClient.Instance != null && AmongUsClient.Instance.AmHost;
     internal static bool IsPrivateOnlyLobby => (BAUPlugin.PrivateOnlyLobby.Value || AmongUsClient.Instance.AmLocalHost) && IsHost;
     internal static bool IsBetterHostLobby => PlayerControl.LocalPlayer.IsHost() || BAUPlugin.AllPlayerControls.Any(pc => pc.IsHost() && pc.BetterData().IsBetterUser && pc.BetterData().IsVerifiedBetterUser);
-    internal static bool IsTOHEHostLobby => InGame && BAUPlugin.AllPlayerControls.Any(pc => pc.IsHost() && pc.BetterData()?.IsTOHEHost == true);
     internal static bool IsCanMove => PlayerControl.LocalPlayer?.CanMove is true;
     internal static bool IsDead => PlayerControl.LocalPlayer?.Data?.IsDead is true;
 }

@@ -46,6 +46,9 @@ class FileChecker
 
     internal static void Initialize()
     {
+#if DEBUG
+        return;
+#endif
         if (enabled) return;
         enabled = true;
 

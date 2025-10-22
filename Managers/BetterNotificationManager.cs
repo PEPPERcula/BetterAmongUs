@@ -65,8 +65,8 @@ class BetterNotificationManager
         string playerDetected = Translator.GetString("AntiCheat.PlayerDetected");
         string unauthorizedAction = Translator.GetString("AntiCheat.UnauthorizedAction");
         string byAntiCheat = Translator.GetString("AntiCheat.ByAntiCheat");
-        string playerDetectedLog = Translator.GetString("AntiCheat.PlayerDetected", console: true);
-        string unauthorizedActionLog = Translator.GetString("AntiCheat.UnauthorizedAction", console: true);
+        string playerDetectedLog = Translator.GetString("AntiCheat.PlayerDetected", useConsoleLanguage: true);
+        string unauthorizedActionLog = Translator.GetString("AntiCheat.UnauthorizedAction", useConsoleLanguage: true);
 
         string text = $"{playerDetected}: <color=#0097b5>{player?.BetterData().RealName}</color> {unauthorizedAction}: <b><color=#fc0000>{Reason}</color></b>";
         string rawText = $"{playerDetectedLog}: <color=#0097b5>{player?.BetterData().RealName}</color> {unauthorizedActionLog}: <b><color=#fc0000>{reason}</color></b>";

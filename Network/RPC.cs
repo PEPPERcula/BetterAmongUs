@@ -13,10 +13,6 @@ enum CustomRPC : int
     KillNetwork = 250,
     KillNetworkChat = 119,
 
-    // TOHE
-    VersionCheck = 80,
-    RequestRetryVersionCheck = 81,
-
     //Better Among Us
     LegacyBetterCheck = 150, // Unused
     SendSecretToPlayer,
@@ -106,21 +102,13 @@ internal static class RPC
                         player.BetterData().HandshakeHandler.HandleSecretHashFromPlayer(reader);
                     }
                     break;
-                    /*
-                case (byte)CustomRPC.VersionCheck or (byte)CustomRPC.RequestRetryVersionCheck:
-                    if (player.IsHost())
-                    {
-                        player.BetterData().IsTOHEHost = true;
-                    }
-                    break;
-                    */
             }
         }
         else if (!Enum.IsDefined(typeof(CustomRPC), (int)unchecked(callId)))
         {
             try
             {
-                if (!GameState.IsHost && !GameState.IsTOHEHostLobby)
+                if (!GameState.IsHost)
                 {
                     if (player.IsHost())
                     {

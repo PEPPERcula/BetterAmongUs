@@ -35,18 +35,18 @@ internal sealed class UpdateSystemHandler : RPCHandler
 
     internal static bool CheckConsoleDistance<T>(PlayerControl? player, float distance = 2f) where T : PlayerTask, new()
     {
-        bool isClose = false;
-        Vector2[] consolesPos = new T().FindConsolesPos().ToArray();
-        if (consolesPos != null)
+        if (player == null) return false;
+
+        var playerPos = player.GetCustomPosition();
+        var consolesPos = new T().FindConsolesPos();
+
+        foreach (var consolePos in consolesPos)
         {
-            foreach (var consolePos in consolesPos)
-            {
-                isClose = Vector2.Distance(consolePos, player.GetCustomPosition()) < distance;
-                if (isClose) break;
-            }
+            if (Vector2.Distance(consolePos, playerPos) < distance)
+                return true;
         }
 
-        return isClose;
+        return false;
     }
 
     internal override bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader)

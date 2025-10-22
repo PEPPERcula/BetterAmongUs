@@ -1,4 +1,6 @@
-﻿namespace BetterAmongUs.Helpers;
+﻿using Il2CppSystem.Linq;
+
+namespace BetterAmongUs.Helpers;
 
 /// <summary>
 /// Provides extension methods for IEnumerable collections, including shuffling, selecting a random element, and retrieving the middle element.
