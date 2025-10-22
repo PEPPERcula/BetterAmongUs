@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using BetterAmongUs.Helpers;
+using BetterAmongUs.Mono;
 
 namespace BetterAmongUs.Modules;
 

@@ -1,12 +1,11 @@
 ﻿using BepInEx.Unity.IL2CPP.Utils;
 using BetterAmongUs.Modules;
-using BetterAmongUs.Mono;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Attributes;
 using System.Collections;
 using UnityEngine;
 
-namespace BetterAmongUs.Helpers;
+namespace BetterAmongUs.Mono;
 
 internal class ExtendedPlayerControl : MonoBehaviour, IMonoExtension<PlayerControl>
 {
@@ -15,7 +14,7 @@ internal class ExtendedPlayerControl : MonoBehaviour, IMonoExtension<PlayerContr
 
     private void Awake()
     {
-        if (!MonoExtensionManager.RegisterExtension(this)) return;
+        if (!this.RegisterExtension()) return;
         this.StartCoroutine(CoAddBetterData());
         _Player.gameObject.AddComponent<PlayerInfoDisplay>().Init(_Player);
     }
@@ -42,7 +41,7 @@ internal class ExtendedPlayerControl : MonoBehaviour, IMonoExtension<PlayerContr
 
     private void OnDestroy()
     {
-        MonoExtensionManager.UnregisterExtension(this);
+        this.UnregisterExtension();
     }
 
     internal readonly Dictionary<NetworkedPlayerInfo, string> NameSetLastFor = [];

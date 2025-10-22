@@ -4,6 +4,7 @@ using BepInEx.Unity.IL2CPP.Utils;
 using BetterAmongUs.Helpers;
 using BetterAmongUs.Items.Enums;
 using BetterAmongUs.Modules;
+using BetterAmongUs.Mono;
 using BetterAmongUs.Network;
 using BetterAmongUs.Patches.Gameplay.UI.Settings;
 using System.Collections;

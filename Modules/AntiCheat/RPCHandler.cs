@@ -1,5 +1,5 @@
-﻿using BetterAmongUs.Helpers;
-using BetterAmongUs.Items.Attributes;
+﻿using BetterAmongUs.Items.Attributes;
+using BetterAmongUs.Mono;
 using BetterAmongUs.Network;
 using Hazel;
 using InnerNet;

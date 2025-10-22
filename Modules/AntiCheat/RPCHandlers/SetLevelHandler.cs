@@ -1,6 +1,7 @@
 using BetterAmongUs.Helpers;
 using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Managers;
+using BetterAmongUs.Mono;
 using BetterAmongUs.Patches.Gameplay.UI.Settings;
 using Hazel;
 

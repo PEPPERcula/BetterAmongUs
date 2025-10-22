@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using BetterAmongUs.Helpers;
 using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Managers;
+using BetterAmongUs.Mono;
 using Hazel;
 using InnerNet;
 

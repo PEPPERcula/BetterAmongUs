@@ -2,6 +2,7 @@
 using BetterAmongUs.Items.Enums;
 using BetterAmongUs.Items.OptionItems;
 using BetterAmongUs.Managers;
+using BetterAmongUs.Mono;
 using HarmonyLib;
 
 namespace BetterAmongUs.Patches.Gameplay.Player;
@@ -27,7 +28,7 @@ internal static class PlayerControlPatch
 
     [HarmonyPatch(nameof(PlayerControl.MurderPlayer))]
     [HarmonyPostfix]
-    private static void MurderPlayer_Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
+    private static void MurderPlayer_Postfix(PlayerControl __instance, PlayerControl target)
     {
         if (target == null) return;
 
@@ -40,12 +41,12 @@ internal static class PlayerControlPatch
 
     [HarmonyPatch(nameof(PlayerControl.Shapeshift))]
     [HarmonyPostfix]
-    private static void Shapeshift_Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] bool animate)
+    private static void Shapeshift_Postfix(PlayerControl __instance, PlayerControl targetPlayer, bool animate)
     {
-        if (target == null) return;
+        if (targetPlayer == null) return;
 
-        if (__instance != target)
-            Logger.LogPrivate($"{__instance.Data.PlayerName} Has Shapeshifted into {target.Data.PlayerName}, did animate: {animate}", "EventLog");
+        if (__instance != targetPlayer)
+            Logger.LogPrivate($"{__instance.Data.PlayerName} Has Shapeshifted into {targetPlayer.Data.PlayerName}, did animate: {animate}", "EventLog");
         else
             Logger.LogPrivate($"{__instance.Data.PlayerName} Has Un-Shapeshifted, did animate: {animate}", "EventLog");
 
@@ -68,13 +69,20 @@ internal static class PlayerControlPatch
 
     [HarmonyPatch(nameof(PlayerControl.SetRoleInvisibility))]
     [HarmonyPostfix]
-    private static void SetRoleInvisibility_Postfix(PlayerControl __instance, [HarmonyArgument(0)] bool isActive, [HarmonyArgument(1)] bool animate)
+    private static void SetRoleInvisibility_Postfix(PlayerControl __instance, bool isActive, bool shouldAnimate)
     {
 
         if (isActive)
-            Logger.LogPrivate($"{__instance.Data.PlayerName} Has Vanished as Phantom, did animate: {animate}", "EventLog");
+            Logger.LogPrivate($"{__instance.Data.PlayerName} Has Vanished as Phantom, did animate: {shouldAnimate}", "EventLog");
         else
-            Logger.LogPrivate($"{__instance.Data.PlayerName} Has Appeared as Phantom, did animate: {animate}", "EventLog");
+            Logger.LogPrivate($"{__instance.Data.PlayerName} Has Appeared as Phantom, did animate: {shouldAnimate}", "EventLog");
+    }
+
+    [HarmonyPatch(nameof(PlayerControl.SetName))]
+    [HarmonyPostfix]
+    private static void SetName_Postfix(PlayerControl __instance, string playerName)
+    {
+        __instance.BetterData().NameSetAsLast = playerName;
     }
 }
 
@@ -83,7 +91,7 @@ internal static class PlayerPhysicsPatch
 {
     [HarmonyPatch(nameof(PlayerPhysics.BootFromVent))]
     [HarmonyPostfix]
-    private static void BootFromVent_Postfix(PlayerPhysics __instance, [HarmonyArgument(0)] int ventId)
+    private static void BootFromVent_Postfix(PlayerPhysics __instance, int ventId)
     {
 
         Logger.LogPrivate($"{__instance.myPlayer.Data.PlayerName} Has been booted from vent: {ventId}, as {__instance.myPlayer.Data.RoleType.GetRoleName()}", "EventLog");
@@ -91,17 +99,17 @@ internal static class PlayerPhysicsPatch
 
     [HarmonyPatch(nameof(PlayerPhysics.CoEnterVent))]
     [HarmonyPostfix]
-    private static void CoEnterVent_Postfix(PlayerPhysics __instance, [HarmonyArgument(0)] int ventId)
+    private static void CoEnterVent_Postfix(PlayerPhysics __instance, int id)
     {
 
-        Logger.LogPrivate($"{__instance.myPlayer.Data.PlayerName} Has entered vent: {ventId}, as {__instance.myPlayer.Data.RoleType.GetRoleName()}", "EventLog");
+        Logger.LogPrivate($"{__instance.myPlayer.Data.PlayerName} Has entered vent: {id}, as {__instance.myPlayer.Data.RoleType.GetRoleName()}", "EventLog");
     }
 
     [HarmonyPatch(nameof(PlayerPhysics.CoExitVent))]
     [HarmonyPostfix]
-    private static void CoExitVent_Postfix(PlayerPhysics __instance, [HarmonyArgument(0)] int ventId)
+    private static void CoExitVent_Postfix(PlayerPhysics __instance, int id)
     {
 
-        Logger.LogPrivate($"{__instance.myPlayer.Data.PlayerName} Has exit vent: {ventId}, as {__instance.myPlayer.Data.RoleType.GetRoleName()}", "EventLog");
+        Logger.LogPrivate($"{__instance.myPlayer.Data.PlayerName} Has exit vent: {id}, as {__instance.myPlayer.Data.RoleType.GetRoleName()}", "EventLog");
     }
 }

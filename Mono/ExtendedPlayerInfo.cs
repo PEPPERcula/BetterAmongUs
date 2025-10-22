@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using BetterAmongUs.Helpers;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
 using BetterAmongUs.Network.Configs;
@@ -6,7 +7,7 @@ using Il2CppInterop.Runtime.Attributes;
 using InnerNet;
 using UnityEngine;
 
-namespace BetterAmongUs.Helpers;
+namespace BetterAmongUs.Mono;
 
 internal class ExtendedPlayerInfo : MonoBehaviour, IMonoExtension<NetworkedPlayerInfo>
 {
@@ -33,13 +34,13 @@ internal class ExtendedPlayerInfo : MonoBehaviour, IMonoExtension<NetworkedPlaye
 
     private void Awake()
     {
-        if (!MonoExtensionManager.RegisterExtension(this)) return;
+        if (!this.RegisterExtension()) return;
         HandshakeHandler.WaitSendSecretToPlayer();
     }
 
     private void OnDestroy()
     {
-        MonoExtensionManager.UnregisterExtension(this);
+        this.UnregisterExtension();
     }
 
     internal void Update()
@@ -62,7 +63,7 @@ internal class ExtendedPlayerInfo : MonoBehaviour, IMonoExtension<NetworkedPlaye
             }
 
             timeAccumulator += time;
-            if (timeAccumulator >= 0.25f - (0.005 * AntiCheatInfo.RPCSentPS))
+            if (timeAccumulator >= 0.25f - 0.005 * AntiCheatInfo.RPCSentPS)
             {
                 AntiCheatInfo.RPCSentPS -= 1;
                 timeAccumulator = 0f;
@@ -85,7 +86,7 @@ internal class ExtendedPlayerInfo : MonoBehaviour, IMonoExtension<NetworkedPlaye
     internal UserData? MyUserData { get; private set; } = UserData.AllUsers.First();
     internal byte _PlayerId { get; private set; }
     internal string? RealName { get; private set; }
-    internal Dictionary<byte, string> LastNameSetFor { get; set; } = [];
+    internal string NameSetAsLast { get; set; } = string.Empty;
     internal bool IsBetterUser { get; set; } = false;
     internal bool IsVerifiedBetterUser { get; set; } = false;
     internal bool HasShowDcMsg { get; set; } = false;

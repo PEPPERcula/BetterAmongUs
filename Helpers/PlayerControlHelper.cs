@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using BetterAmongUs.Data;
 using BetterAmongUs.Modules;
+using BetterAmongUs.Mono;
 using BetterAmongUs.Network;
 using BetterAmongUs.Patches.Gameplay.Player;
 using BetterAmongUs.Patches.Gameplay.UI.Settings;
