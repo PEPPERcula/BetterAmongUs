@@ -31,7 +31,13 @@ internal static class ObjectHelper
     internal static void DestroyTextTranslators(this GameObject obj)
     {
         var translators = obj.GetComponentsInChildren<TextTranslatorTMP>();
-        if (translators.Length > 0) translators.ToList().ForEach(com => com.DestroyMono());
+        if (translators.Length > 0)
+        {
+            foreach (var item in translators)
+            {
+                item.DestroyMono();
+            }
+        }
     }
 
     /// <summary>

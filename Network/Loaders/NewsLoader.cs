@@ -108,7 +108,7 @@ internal class NewsLoader : MonoBehaviour
     [HideFromIl2Cpp]
     private IEnumerator CoLoadNewsTest()
     {
-        string yamlDirectory = "BetterAmongUs.Resources.NewsTest.yaml";
+        string yamlDirectory = "BetterAmongUs.Resources.NewsTest";
         var assembly = System.Reflection.Assembly.GetExecutingAssembly();
         using Stream? resourceStream = assembly.GetManifestResourceStream(yamlDirectory);
         if (resourceStream != null)
