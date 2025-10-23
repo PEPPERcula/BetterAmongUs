@@ -1,0 +1,478 @@
+﻿using AmongUs.GameOptions;
+using BetterAmongUs.Helpers;
+using BetterAmongUs.Modules;
+using BetterAmongUs.Mono;
+using BetterAmongUs.Patches.Gameplay.UI.Settings;
+using HarmonyLib;
+using Hazel;
+
+namespace BetterAmongUs.Patches.Managers;
+
+[HarmonyPatch(typeof(RoleManager))]
+internal static class RoleManagerPatch
+{
+    internal static Dictionary<PlayerControl, RoleTypes> SetPlayerRole = []; // Player, Role
+    internal static Dictionary<string, int> ImpostorMultiplier = []; // HashPuid, Multiplier
+    private static readonly Random random = new();
+
+    static readonly Func<InnerNet.ClientData, bool> clientCheck = (clientData) =>
+    {
+        return clientData?.BetterData()?.IsVerifiedBetterUser != true;
+    };
+
+    // Better role algorithm
+    [HarmonyPatch(nameof(RoleManager.SelectRoles))]
+    [HarmonyPrefix]
+    private static bool RoleManager_Prefix(/*RoleManager __instance*/)
+    {
+        if (!GameState.IsHideNSeek)
+        {
+            RegularBetterRoleAssignment();
+        }
+        else
+        {
+            HideAndSeekBetterRoleAssignment();
+        }
+
+        return false;
+    }
+
+    internal static void RegularBetterRoleAssignment()
+    {
+        Logger.LogHeader($"Better Role Assignment Has Started", "RoleManager");
+
+        // Set roles up
+        foreach (var addplayer in BAUPlugin.AllPlayerControls.Where(pc => !ImpostorMultiplier.ContainsKey(Utils.GetHashPuid(pc))))
+            ImpostorMultiplier[Utils.GetHashPuid(addplayer)] = 0;
+
+        int NumImpostors = GameOptionsManager.Instance.CurrentGameOptions.NumImpostors;
+
+        int NumPlayers = BAUPlugin.AllPlayerControls.Count;
+
+        var impostorLimits = new Dictionary<int, int>
+        {
+            { 3, 1 },
+            { 5, 2 },
+            { 7, 3 }
+        };
+
+        foreach (var limit in impostorLimits)
+        {
+            if (NumPlayers <= limit.Key)
+            {
+                NumImpostors = Math.Min(NumImpostors, limit.Value);
+                break;
+            }
+        }
+
+        List<PlayerControl> Impostors = [];
+        List<PlayerControl> Crewmates = [];
+
+        Dictionary<RoleTypes, int> ImpostorRoles = new() // Role, Amount
+        {
+            { RoleTypes.Shapeshifter, 0 },
+            { RoleTypes.Phantom, 0 },
+            { RoleTypes.Viper, 0 }
+        };
+
+        Dictionary<RoleTypes, int> CrewmateRoles = new() // Role, Amount
+        {
+            { RoleTypes.Engineer, 0 },
+            { RoleTypes.Scientist, 0 },
+            { RoleTypes.Tracker, 0 },
+            { RoleTypes.Noisemaker, 0 },
+            { RoleTypes.Detective, 0 }
+        };
+
+        List<RoleTypes> Roles = [.. ImpostorRoles.Keys, .. CrewmateRoles.Keys];
+
+        foreach (RoleTypes role in Roles)
+        {
+            if (IsImpostorRole(role))
+                ImpostorRoles[role] = GameOptionsManager.Instance.CurrentGameOptions.RoleOptions.GetNumPerGame(role);
+            else
+                CrewmateRoles[role] = GameOptionsManager.Instance.CurrentGameOptions.RoleOptions.GetNumPerGame(role);
+        }
+
+#if DEBUG
+        // Override player role assignment
+        if (SetPlayerRole.Keys.Any())
+        {
+            foreach (var kvp in SetPlayerRole.Where(kvp => kvp.Key != null).OrderBy(kvp => kvp.Key.IsLocalPlayer() ? 0 : 1))
+            {
+                var player = kvp.Key;
+                var role = kvp.Value;
+
+                if (role is RoleTypes.Impostor)
+                {
+                    if (Impostors.Count < NumImpostors)
+                    {
+                        Impostors.Add(player);
+                        player.RpcSetRole(RoleTypes.Impostor);
+                        Logger.LogPrivate($"Override Assigned {RoleTypes.Impostor.GetRoleName()} role to {player.Data.PlayerName}", "RoleManager");
+                    }
+                    else continue;
+                }
+                else if (role is RoleTypes.Crewmate)
+                {
+                    Crewmates.Add(player);
+                    player.RpcSetRole(RoleTypes.Crewmate);
+                    Logger.LogPrivate($"Override Assigned {RoleTypes.Crewmate.GetRoleName()} role to {player.Data.PlayerName}", "RoleManager");
+                }
+                else
+                {
+                    if (IsImpostorRole(role))
+                    {
+                        if (Impostors.Count < NumImpostors && ImpostorRoles[role] > 0)
+                        {
+                            ImpostorRoles[role]--;
+                            Impostors.Add(player);
+                        }
+                        else continue;
+                    }
+                    else
+                    {
+                        if (CrewmateRoles[role] > 0)
+                        {
+                            CrewmateRoles[role]--;
+                            Crewmates.Add(player);
+                        }
+                        else continue;
+                    }
+
+                    player.RpcSetRole(role);
+
+                    // Desync role to other clients to prevent revealing the true role
+                    if (BetterGameSettings.DesyncRoles.GetBool())
+                    {
+                        if (IsImpostorRole(role) && role is not RoleTypes.Phantom or RoleTypes.Viper)
+                        {
+                            List<MessageWriter> messageWriter = AmongUsClient.Instance.StartRpcDesync(player.NetId, (byte)RpcCalls.SetRole, SendOption.None, player.GetClientId(), clientCheck);
+                            messageWriter.ForEach(mW => mW.Write((ushort)RoleTypes.Impostor));
+                            messageWriter.ForEach(mW => mW.Write(false));
+                            AmongUsClient.Instance.FinishRpcDesync(messageWriter);
+                        }
+                        else if (role is not RoleTypes.Noisemaker)
+                        {
+                            List<MessageWriter> messageWriter = AmongUsClient.Instance.StartRpcDesync(player.NetId, (byte)RpcCalls.SetRole, SendOption.None, player.GetClientId(), clientCheck);
+                            messageWriter.ForEach(mW => mW.Write((ushort)RoleTypes.Crewmate));
+                            messageWriter.ForEach(mW => mW.Write(false));
+                            AmongUsClient.Instance.FinishRpcDesync(messageWriter);
+                        }
+                    }
+
+                    Logger.LogPrivate($"Override Assigned {role.GetRoleName()} role to {player.Data.PlayerName}", "RoleManager");
+                }
+            }
+        }
+#endif
+
+        // Get players in random order
+        List<PlayerControl> players = BAUPlugin.AllPlayerControls
+            .Where(player => !Impostors.Contains(player) && !Crewmates.Contains(player) && player.roleAssigned == false)
+            .ToList();
+
+        int n = players.Count;
+        while (n > 1)
+        {
+            n--;
+            int k = random.Next(n + 1);
+            PlayerControl value = players[k];
+            players[k] = players[n];
+            players[n] = value;
+        }
+
+        // Assign roles
+        foreach (PlayerControl pc in players)
+        {
+            if (pc == null || pc.roleAssigned == true) continue;
+
+            if (Impostors.Count < NumImpostors && RNG() > ImpostorMultiplier[Utils.GetHashPuid(pc)])
+            {
+                var impRoles = Shuffle(ImpostorRoles);
+                foreach (var kvp in impRoles)
+                {
+                    if (RNG() <= GameOptionsManager.Instance.CurrentGameOptions.RoleOptions.GetChancePerGame(kvp.Key) && kvp.Value > 0)
+                    {
+                        ImpostorMultiplier[Utils.GetHashPuid(pc)] += 15;
+                        ImpostorRoles[kvp.Key]--;
+                        Impostors.Add(pc);
+                        pc.RpcSetRole(kvp.Key);
+
+                        // Desync role to other clients to prevent revealing the true role
+                        if (BetterGameSettings.DesyncRoles.GetBool())
+                        {
+                            if (kvp.Key is not RoleTypes.Phantom or RoleTypes.Viper)
+                            {
+                                List<MessageWriter> messageWriter = AmongUsClient.Instance.StartRpcDesync(pc.NetId, (byte)RpcCalls.SetRole, SendOption.None, pc.GetClientId(), clientCheck);
+                                messageWriter.ForEach(mW => mW.Write((ushort)RoleTypes.Impostor));
+                                messageWriter.ForEach(mW => mW.Write(false));
+                                AmongUsClient.Instance.FinishRpcDesync(messageWriter);
+                            }
+                        }
+
+                        Logger.LogPrivate($"Assigned {kvp.Key.GetRoleName()} role to {pc.Data.PlayerName}", "RoleManager");
+                        break;
+                    }
+                }
+
+                if (!Impostors.Contains(pc))
+                {
+                    ImpostorMultiplier[Utils.GetHashPuid(pc)] += 15;
+                    Impostors.Add(pc);
+                    pc.RpcSetRole(RoleTypes.Impostor);
+                    Logger.LogPrivate($"Assigned {RoleTypes.Impostor.GetRoleName()} role to {pc.Data.PlayerName}", "RoleManager");
+                }
+            }
+            else
+            {
+                var crewRoles = Shuffle(CrewmateRoles);
+                foreach (var kvp in crewRoles)
+                {
+                    if (RNG() <= GameOptionsManager.Instance.CurrentGameOptions.RoleOptions.GetChancePerGame(kvp.Key) && kvp.Value > 0)
+                    {
+                        ImpostorMultiplier[Utils.GetHashPuid(pc)] = 0;
+                        CrewmateRoles[kvp.Key]--;
+                        Crewmates.Add(pc);
+                        pc.RpcSetRole(kvp.Key);
+
+                        // Desync role to other clients to prevent revealing the true role
+                        if (BetterGameSettings.DesyncRoles.GetBool())
+                        {
+                            if (kvp.Key is not RoleTypes.Noisemaker)
+                            {
+                                List<MessageWriter> messageWriter = AmongUsClient.Instance.StartRpcDesync(pc.NetId, (byte)RpcCalls.SetRole, SendOption.None, pc.GetClientId(), clientCheck);
+                                messageWriter.ForEach(mW => mW.Write((ushort)RoleTypes.Crewmate));
+                                messageWriter.ForEach(mW => mW.Write(false));
+                                AmongUsClient.Instance.FinishRpcDesync(messageWriter);
+                            }
+                        }
+
+                        Logger.LogPrivate($"Assigned {kvp.Key.GetRoleName()} role to {pc.Data.PlayerName}", "RoleManager");
+                        break;
+                    }
+                }
+
+                if (!Crewmates.Contains(pc))
+                {
+                    ImpostorMultiplier[Utils.GetHashPuid(pc)] = 0;
+                    Crewmates.Add(pc);
+                    pc.RpcSetRole(RoleTypes.Crewmate);
+                    Logger.LogPrivate($"Assigned {RoleTypes.Crewmate.GetRoleName()} role to {pc.Data.PlayerName}", "RoleManager");
+                }
+            }
+        }
+
+        SetPlayerRole.Clear();
+
+        Logger.LogHeader($"Better Role Assignment Has Finished", "RoleManager");
+    }
+
+    internal static void HideAndSeekBetterRoleAssignment()
+    {
+        Logger.LogHeader($"Better Role Assignment Has Started", "RoleManager");
+
+        int NumImpostors = BetterGameSettings.HideAndSeekImpNum?.GetInt() ?? 1;
+
+        if (NumImpostors > BAUPlugin.AllPlayerControls.Count)
+            NumImpostors = BAUPlugin.AllPlayerControls.Count;
+
+        List<NetworkedPlayerInfo> Impostors = [];
+        List<NetworkedPlayerInfo> Crewmates = [];
+        List<NetworkedPlayerInfo> CrewAndImps() => [.. Impostors, .. Crewmates];
+
+        // Set imp from settings
+        int[] betterImpostorSettings =
+        [
+            GameOptionsManager.Instance.currentHideNSeekGameOptions.ImpostorPlayerID,
+            BetterGameSettingsTemp.HideAndSeekImp2?.GetInt() ?? -1,
+            BetterGameSettingsTemp.HideAndSeekImp3?.GetInt() ?? -1,
+            BetterGameSettingsTemp.HideAndSeekImp4?.GetInt() ?? -1,
+            BetterGameSettingsTemp.HideAndSeekImp5?.GetInt() ?? -1
+        ];
+
+        for (int i = 0; i < NumImpostors; i++)
+        {
+            int tempSetImpostor = betterImpostorSettings[i];
+
+            if (tempSetImpostor >= 0)
+            {
+                var player = Utils.PlayerFromPlayerId(tempSetImpostor);
+                if (player != null)
+                {
+                    if (Impostors.Count < NumImpostors)
+                    {
+                        Impostors.Add(player.Data);
+                        Logger.LogPrivate($"Settings Assigned {RoleTypes.Impostor.GetRoleName()} role to {player.Data.PlayerName}", "RoleManager");
+                    }
+                }
+            }
+        }
+
+#if DEBUG
+        // Override player role assignment
+        if (SetPlayerRole.Keys.Any())
+        {
+            foreach (var kvp in SetPlayerRole.Where(kvp => kvp.Key != null).OrderBy(kvp => kvp.Key.IsLocalPlayer() ? 0 : 1))
+            {
+                var player = kvp.Key;
+                var role = kvp.Value;
+
+                if (role is RoleTypes.Impostor)
+                {
+                    if (Impostors.Count < NumImpostors)
+                    {
+                        Impostors.Add(player.Data);
+                        Logger.LogPrivate($"Override Assigned {RoleTypes.Impostor.GetRoleName()} role to {player.Data.PlayerName}", "RoleManager");
+                    }
+                    else continue;
+                }
+                else if (role is RoleTypes.Engineer)
+                {
+                    Crewmates.Add(player.Data);
+                    Logger.LogPrivate($"Override Assigned {RoleTypes.Engineer.GetRoleName()} role to {player.Data.PlayerName}", "RoleManager");
+                }
+            }
+        }
+#endif
+
+        // Get players in random order
+        List<PlayerControl> players = BAUPlugin.AllPlayerControls
+            .Where(player => !CrewAndImps().Contains(player.Data))
+            .ToList();
+
+        int n = players.Count;
+        while (n > 1)
+        {
+            n--;
+            int k = random.Next(n + 1);
+            PlayerControl value = players[k];
+            players[k] = players[n];
+            players[n] = value;
+        }
+
+        // Assign roles
+        foreach (PlayerControl pc in players)
+        {
+            if (pc == null || pc.roleAssigned == true) continue;
+
+            if (Impostors.Count < NumImpostors)
+            {
+                Impostors.Add(pc.Data);
+                Logger.LogPrivate($"Assigned {RoleTypes.Impostor.GetRoleName()} role to {pc.Data.PlayerName}", "RoleManager");
+            }
+            else
+            {
+                Crewmates.Add(pc.Data);
+                Logger.LogPrivate($"Assigned {RoleTypes.Engineer.GetRoleName()} role to {pc.Data.PlayerName}", "RoleManager");
+            }
+        }
+
+        foreach (var data in Impostors)
+        {
+            var player = Utils.PlayerFromPlayerId(data.PlayerId);
+            player.RpcSetRole(RoleTypes.Impostor);
+        }
+
+        foreach (var data in Crewmates)
+        {
+            var player = Utils.PlayerFromPlayerId(data.PlayerId);
+            player.RpcSetRole(RoleTypes.Engineer);
+        }
+
+        Logger.LogHeader($"Better Role Assignment Has Finished", "RoleManager");
+    }
+
+    [HarmonyPatch(nameof(RoleManager.AssignRoleOnDeath))]
+    [HarmonyPrefix]
+    internal static bool AssignRoleOnDeath_Prefix(/*RoleManager __instance*/ [HarmonyArgument(0)] PlayerControl player)
+    {
+        Dictionary<RoleTypes, int> GhostRoles = new() // Role, Amount
+        {
+            { RoleTypes.GuardianAngel, 0 },
+        };
+
+        List<RoleTypes> Roles = [.. GhostRoles.Keys];
+
+        foreach (RoleTypes role in Roles)
+        {
+            GhostRoles[role] = GameOptionsManager.Instance.CurrentGameOptions.RoleOptions.GetNumPerGame(role);
+        }
+
+        foreach (var allDeadPlayers in BAUPlugin.AllPlayerControls.Where(pc => !pc.IsAlive()))
+        {
+            for (int i = 0; i < Roles.Count; i++)
+            {
+                if (allDeadPlayers.Is(Roles[i]))
+                {
+                    GhostRoles[Roles[i]]--;
+                }
+            }
+        }
+
+        var ghostRoles = Shuffle(GhostRoles);
+
+        foreach (var kvp in ghostRoles)
+        {
+            if (player.IsImpostorTeam() && kvp.Key is RoleTypes.GuardianAngel) continue;
+
+            if (kvp.Value > 0 && RNG() <= GameOptionsManager.Instance.CurrentGameOptions.RoleOptions.GetChancePerGame(kvp.Key))
+            {
+                player.RpcSetRole(kvp.Key);
+
+                // Desync role to other clients to prevent revealing the true role
+                if (BetterGameSettings.DesyncRoles.GetBool())
+                {
+                    List<MessageWriter> messageWriter = AmongUsClient.Instance.StartRpcDesync(player.NetId, (byte)RpcCalls.SetRole, SendOption.None, player.GetClientId(), clientCheck);
+                    messageWriter.ForEach(mW => mW.Write((ushort)player.Data.Role.DefaultGhostRole));
+                    messageWriter.ForEach(mW => mW.Write(false));
+                    AmongUsClient.Instance.FinishRpcDesync(messageWriter);
+                }
+
+                return false;
+            }
+        }
+
+        player.RpcSetRole(player.Data.Role.DefaultGhostRole);
+
+        return false;
+    }
+
+    private static bool IsImpostorRole(RoleTypes role) => role is RoleTypes.Impostor or RoleTypes.Shapeshifter or RoleTypes.Phantom or RoleTypes.Viper;
+
+    private static Dictionary<TKey, TValue> Shuffle<TKey, TValue>(Dictionary<TKey, TValue> dictionary)
+    {
+        List<TKey> keys = dictionary.Keys.ToList();
+
+        // Fisher-Yates shuffle algorithm
+        for (int i = keys.Count - 1; i > 0; i--)
+        {
+            int j = random.Next(0, i + 1);
+            TKey temp = keys[i];
+            keys[i] = keys[j];
+            keys[j] = temp;
+        }
+
+        // Rebuild dictionary with shuffled keys
+        Dictionary<TKey, TValue> shuffledDictionary = new Dictionary<TKey, TValue>();
+        foreach (var key in keys)
+        {
+            shuffledDictionary[key] = dictionary[key];
+        }
+
+        return shuffledDictionary;
+    }
+
+    internal static int RNG()
+    {
+        switch (BetterGameSettings.RoleRandomizer.GetStringValue())
+        {
+            case 1:
+                return UnityEngine.Random.Range(0, 100);
+
+            default:
+                Random Random = new Random();
+                return Random.Next(0, 100);
+        }
+    }
+}

@@ -1,15 +1,25 @@
 ﻿using BepInEx.Unity.IL2CPP.Utils;
 using BetterAmongUs.Data;
 using BetterAmongUs.Helpers;
+using BetterAmongUs.Mono;
+using BetterAmongUs.Network;
 using Hazel;
+using Il2CppInterop.Runtime.Attributes;
 using System.Collections;
 using UnityEngine;
 
 namespace BetterAmongUs.Modules;
 
-internal class HandshakeHandler(ExtendedPlayerInfo extendedPlayerInfo)
+internal class HandshakeHandler
 {
-    private readonly ExtendedPlayerInfo extendedData = extendedPlayerInfo;
+    [HideFromIl2Cpp]
+    internal HandshakeHandler(ExtendedPlayerInfo extendedData)
+    {
+        this.extendedData = extendedData;
+    }
+
+    [HideFromIl2Cpp]
+    private ExtendedPlayerInfo extendedData { get; }
 
     internal void WaitSendSecretToPlayer()
     {
@@ -18,7 +28,7 @@ internal class HandshakeHandler(ExtendedPlayerInfo extendedPlayerInfo)
 
     private IEnumerator CoWaitSendSecretToPlayer()
     {
-        if (!Main.SendBetterRpc.Value) yield break;
+        if (!BAUPlugin.SendBetterRpc.Value) yield break;
 
         while (extendedData._Data?.Object == null || PlayerControl.LocalPlayer == null)
         {
@@ -32,7 +42,7 @@ internal class HandshakeHandler(ExtendedPlayerInfo extendedPlayerInfo)
 
     internal void ResendSecretToPlayer()
     {
-        if (!Main.SendBetterRpc.Value) return;
+        if (!BAUPlugin.SendBetterRpc.Value) return;
         if (HasSendSharedSecret && extendedData.IsVerifiedBetterUser) return;
 
         HasSendSharedSecret = false;
@@ -70,7 +80,6 @@ internal class HandshakeHandler(ExtendedPlayerInfo extendedPlayerInfo)
         }
         extendedData.IsBetterUser = true;
         TryHandlePendingVerificationData();
-        extendedData._Data?.Object?.DirtyName();
         SendSecretHashToSender(tempKey, extendedData._Data.ClientId);
         ResendSecretToPlayer();
     }
@@ -78,7 +87,7 @@ internal class HandshakeHandler(ExtendedPlayerInfo extendedPlayerInfo)
     // Client sends back to local client
     private void SendSecretHashToSender(int tempKey, int senderClientId)
     {
-        if (!Main.SendBetterRpc.Value) return;
+        if (!BAUPlugin.SendBetterRpc.Value) return;
 
         int hash = SharedSecret.GetSharedSecretHash();
         // Logger.Log($"Sending secret hash: {hash} (tempKey: {tempKey})");
@@ -118,7 +127,6 @@ internal class HandshakeHandler(ExtendedPlayerInfo extendedPlayerInfo)
         if (receivedHash == SharedSecret.GetSharedSecretHash())
         {
             extendedData.IsVerifiedBetterUser = true;
-            extendedData._Data.Object?.DirtyName();
             // Logger.Log($"Verified player: {_Data.PlayerName}");
         }
         else

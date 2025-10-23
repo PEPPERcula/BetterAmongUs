@@ -3,6 +3,8 @@ using BetterAmongUs.Helpers;
 using BetterAmongUs.Items.Structs;
 using BetterAmongUs.Modules;
 using BetterAmongUs.Modules.AntiCheat;
+using BetterAmongUs.Mono;
+using BetterAmongUs.Network;
 using HarmonyLib;
 using Hazel;
 using InnerNet;
@@ -366,7 +368,7 @@ internal class NetworkManager
         if (player.BetterData() != null)
         {
             player.BetterData().AntiCheatInfo.RPCSentPS++;
-            if (player.BetterData().AntiCheatInfo.RPCSentPS >= ExtendedAntiCheatInfo.MaxRPCSent)
+            if (player.BetterData().AntiCheatInfo.RPCSentPS >= ExtendedAntiCheatInfo.MAX_RPC_SENT)
             {
                 return false;
             }
@@ -392,7 +394,7 @@ internal class NetworkManager
         internal static bool Prefix(/*ShipStatus __instance,*/ [HarmonyArgument(0)] SystemTypes systemType, [HarmonyArgument(1)] PlayerControl player, [HarmonyArgument(2)] MessageReader reader)
         {
             player.BetterData().AntiCheatInfo.RPCSentPS++;
-            if (player.BetterData().AntiCheatInfo.RPCSentPS >= ExtendedAntiCheatInfo.MaxRPCSent)
+            if (player.BetterData().AntiCheatInfo.RPCSentPS >= ExtendedAntiCheatInfo.MAX_RPC_SENT)
             {
                 return false;
             }

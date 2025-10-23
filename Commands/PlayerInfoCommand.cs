@@ -12,15 +12,10 @@ internal class PlayerInfoCommand : BaseCommand
 
     public PlayerInfoCommand()
     {
-        _arguments = new Lazy<BaseArgument[]>(() => new BaseArgument[]
-        {
-            new PlayerArgument(this),
-        });
+        playerArgument = new PlayerArgument(this);
+        Arguments = [playerArgument];
     }
-    private readonly Lazy<BaseArgument[]> _arguments;
-    internal override BaseArgument[]? Arguments => _arguments.Value;
-
-    private PlayerArgument? playerArgument => (PlayerArgument)Arguments[0];
+    private PlayerArgument playerArgument { get; }
 
     internal override void Run()
     {

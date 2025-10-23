@@ -1,6 +1,7 @@
 using BetterAmongUs.Helpers;
 using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Managers;
+using BetterAmongUs.Patches.Gameplay.UI;
 using Hazel;
 
 namespace BetterAmongUs.Modules.AntiCheat;
@@ -12,11 +13,11 @@ internal sealed class ReportDeadBodyHandler : RPCHandler
 
     internal override bool HandleAntiCheatCancel(PlayerControl? sender, MessageReader reader)
     {
-        if (!GameState.IsInGamePlay || !Main.AllPlayerControls.All(pc => pc.roleAssigned))
+        if (!GameState.IsInGamePlay || !BAUPlugin.AllPlayerControls.All(pc => pc.roleAssigned))
         {
             if (BetterNotificationManager.NotifyCheat(sender, string.Format(Translator.GetString("AntiCheat.InvalidActionRPC"), Enum.GetName((RpcCalls)CallId)), forceBan: true))
             {
-                LogRpcInfo($"{!GameState.IsInGamePlay} || {!Main.AllPlayerControls.All(pc => pc.roleAssigned)}");
+                LogRpcInfo($"{!GameState.IsInGamePlay} || {!BAUPlugin.AllPlayerControls.All(pc => pc.roleAssigned)}");
             }
 
             return CancelAsHost;

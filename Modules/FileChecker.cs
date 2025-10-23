@@ -10,7 +10,7 @@ class FileChecker
     private static bool hasUnauthorizedFileOrMod = false;
     internal static string WarningMsg { get; private set; } = string.Empty;
     internal static bool HasShownWarning { get; set; } = false;
-    internal static bool HasUnauthorizedFileOrMod => hasUnauthorizedFileOrMod && (!Main.MyData.IsDev() || !Main.MyData.IsVerified());
+    internal static bool HasUnauthorizedFileOrMod => hasUnauthorizedFileOrMod && (!BAUPlugin.MyData.IsDev() || !BAUPlugin.MyData.IsVerified());
 
     private static readonly ReadOnlyCollection<string> TrustedNamespaces = new(new List<string>
     {
@@ -46,6 +46,9 @@ class FileChecker
 
     internal static void Initialize()
     {
+#if DEBUG
+        return;
+#endif
         if (enabled) return;
         enabled = true;
 
@@ -102,14 +105,6 @@ class FileChecker
             }
             _processedAssemblies.Add(assembly);
 
-            if (!TrustedNamespaces.Any(ns => assembly.FullName.Contains(ns, StringComparison.OrdinalIgnoreCase)))
-            {
-                WarningMsg = "<#D20200>Unregistered Assembly Detected</color>\n<#9D9D9D><size=70%>Look in logs for further information!</size></color>";
-                Logger.Warning($"Unauthorized Assembly: {assembly.FullName} (Unregistered Namespace)");
-                hasUnauthorizedFileOrMod = true;
-                continue;
-            }
-
             if (UntrustedNamespaces.Any(ns => assembly.FullName.Contains(ns, StringComparison.OrdinalIgnoreCase)))
             {
                 if (TrustedNamespaces.Any(ns => assembly.FullName.Contains(ns, StringComparison.OrdinalIgnoreCase)))
@@ -119,6 +114,14 @@ class FileChecker
 
                 WarningMsg = "<#D20200>Untrusted Assembly Detected</color>\n<#9D9D9D><size=70%>Look in logs for further information!</size></color>";
                 Logger.Warning($"Unauthorized Assembly: {assembly.FullName} (Untrusted Namespace)");
+                hasUnauthorizedFileOrMod = true;
+                continue;
+            }
+
+            if (!TrustedNamespaces.Any(ns => assembly.FullName.Contains(ns, StringComparison.OrdinalIgnoreCase)))
+            {
+                WarningMsg = "<#D20200>Unregistered Assembly Detected</color>\n<#9D9D9D><size=70%>Look in logs for further information!</size></color>";
+                Logger.Warning($"Unauthorized Assembly: {assembly.FullName} (Unregistered Namespace)");
                 hasUnauthorizedFileOrMod = true;
                 continue;
             }

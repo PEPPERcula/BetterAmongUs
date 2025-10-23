@@ -1,7 +1,6 @@
 ﻿using AmongUs.Data;
-using AmongUs.GameOptions;
 using BetterAmongUs.Modules;
-using BetterAmongUs.Patches;
+using BetterAmongUs.Patches.Gameplay.UI.Chat;
 using InnerNet;
 using System.Reflection;
 using System.Security.Cryptography;
@@ -14,12 +13,61 @@ namespace BetterAmongUs.Helpers;
 
 internal static class Utils
 {
+    internal static Dictionary<string, Sprite> CachedSprites = [];
+
+    // String extensions and formatting
+    internal static string Size(this string str, float size) => $"<size={size}%>{str}</size>";
+
+    internal static string RemoveSizeHtmlText(string text)
+    {
+        text = Regex.Replace(text, "<size=[^>]*>", "", RegexOptions.IgnoreCase);
+        text = Regex.Replace(text, "</size>", "", RegexOptions.IgnoreCase);
+        text = Regex.Replace(text, "{[^}]*}", "");
+        text = text.Replace("\n", " ").Replace("\r", " ").Trim();
+
+        return text;
+    }
+
+    internal static string FormatInfo(StringBuilder source)
+    {
+        if (source.Length == 0) return string.Empty;
+
+        var sb = new StringBuilder();
+        foreach (var part in source.ToString().Split("+++"))
+        {
+            if (!string.IsNullOrEmpty(RemoveHtmlText(part)))
+            {
+                sb.Append(part).Append(" - ");
+            }
+        }
+        return sb.ToString().TrimEnd(" - ".ToCharArray());
+    }
+
+    internal static string RemoveHtmlText(string text)
+    {
+        text = Regex.Replace(text, "<[^>]*>", "");
+        text = Regex.Replace(text, "{[^}]*}", "");
+        text = text.Replace("\n", " ").Replace("\r", " ");
+        text = text.Trim();
+
+        return text;
+    }
+
+    internal static bool IsHtmlText(string text)
+    {
+        return Regex.IsMatch(text, "<[^>]*>") ||
+               Regex.IsMatch(text, "{[^}]*}") ||
+               text.Contains("\n") ||
+               text.Contains("\r");
+    }
+
+    // Network utilities
     internal static bool IsInternetAvailable()
     {
         if (Application.internetReachability == NetworkReachability.NotReachable)
             return false;
 
-        UnityWebRequest? www = null;
+        UnityWebRequest www = null;
         try
         {
             www = UnityWebRequest.Get("http://clients3.google.com/generate_204");
@@ -36,33 +84,46 @@ internal static class Utils
             www?.Dispose();
         }
     }
-    // Get player by client id
-    internal static ClientData? ClientFromClientId(int clientId) => AmongUsClient.Instance.allClients.ToArray().FirstOrDefault(cd => cd.Id == clientId) ?? null;
-    // Get player data from player id
-    internal static NetworkedPlayerInfo? PlayerDataFromPlayerId(int playerId) => GameData.Instance.AllPlayers.ToArray().FirstOrDefault(data => data.PlayerId == playerId);
-    // Get player data from client id
-    internal static NetworkedPlayerInfo? PlayerDataFromClientId(int clientId) => GameData.Instance.AllPlayers.ToArray().FirstOrDefault(data => data.ClientId == clientId);
-    // Get player data from friend code
-    internal static NetworkedPlayerInfo? PlayerDataFromFriendCode(string friendCode) => GameData.Instance.AllPlayers.ToArray().FirstOrDefault(data => data.FriendCode == friendCode);
-    // Get player from player id
-    internal static PlayerControl? PlayerFromPlayerId(int playerId) => Main.AllPlayerControls.FirstOrDefault(player => player.PlayerId == playerId) ?? null;
-    // Get player from client id
-    internal static PlayerControl? PlayerFromClientId(int clientId) => Main.AllPlayerControls.FirstOrDefault(player => player.GetClientId() == clientId) ?? null;
-    // Get player from net id
-    internal static PlayerControl? PlayerFromNetId(uint netId) => Main.AllPlayerControls.FirstOrDefault(player => player.NetId == netId) ?? null;
-    // Add msg to chat
+
+    // Player lookup methods
+    internal static ClientData? ClientFromClientId(int clientId) =>
+        AmongUsClient.Instance.allClients.FirstOrDefaultIl2Cpp(cd => cd.Id == clientId);
+
+    internal static NetworkedPlayerInfo? PlayerDataFromPlayerId(int playerId) =>
+        GameData.Instance.AllPlayers.FirstOrDefaultIl2Cpp(data => data.PlayerId == playerId);
+
+    internal static NetworkedPlayerInfo? PlayerDataFromClientId(int clientId) =>
+        GameData.Instance.AllPlayers.FirstOrDefaultIl2Cpp(data => data.ClientId == clientId);
+
+    internal static NetworkedPlayerInfo? PlayerDataFromFriendCode(string friendCode) =>
+        GameData.Instance.AllPlayers.FirstOrDefaultIl2Cpp(data => data.FriendCode == friendCode);
+
+    internal static PlayerControl? PlayerFromPlayerId(int playerId) =>
+        BAUPlugin.AllPlayerControls.FirstOrDefault(player => player.PlayerId == playerId);
+
+    internal static PlayerControl? PlayerFromClientId(int clientId) =>
+        BAUPlugin.AllPlayerControls.FirstOrDefault(player => player.GetClientId() == clientId);
+
+    internal static PlayerControl? PlayerFromNetId(uint netId) =>
+        BAUPlugin.AllPlayerControls.FirstOrDefault(player => player.NetId == netId);
+
+    // Chat functionality
     internal static void AddChatPrivate(string text, string overrideName = "", bool setRight = false)
     {
         if (!GameState.IsInGame) return;
 
         var chat = HudManager.Instance?.Chat;
         if (chat == null) return;
+
         var data = PlayerControl.LocalPlayer?.Data;
         if (data == null) return;
-        ChatBubble pooledBubble = chat.GetPooledBubble();
-        string MsgName = $"<color=#ffffff><b>(<color=#00ff44>{Translator.GetString("SystemMessage")}</color>)</b>" + ChatPatch.CommandPostfixName;
-        if (overrideName != "")
-            MsgName = overrideName + ChatPatch.CommandPostfixName;
+
+        var pooledBubble = chat.GetPooledBubble();
+        var messageName = $"<color=#ffffff><b>(<color=#00ff44>{Translator.GetString("SystemMessage")}</color>)</b>" + ChatPatch.CommandPostfixName;
+
+        if (!string.IsNullOrEmpty(overrideName))
+            messageName = overrideName + ChatPatch.CommandPostfixName;
+
         try
         {
             pooledBubble.transform.SetParent(chat.scroller.Inner);
@@ -70,6 +131,7 @@ internal static class Utils
             pooledBubble.SetCosmetics(data);
             pooledBubble.gameObject.transform.Find("PoolablePlayer").gameObject.SetActive(false);
             pooledBubble.ColorBlindName.gameObject.SetActive(false);
+
             if (!setRight)
             {
                 pooledBubble.SetLeft();
@@ -80,133 +142,105 @@ internal static class Utils
             {
                 pooledBubble.SetRight();
             }
-            chat.SetChatBubbleName(pooledBubble, data, data.IsDead, false, PlayerNameColor.Get(data), null);
+
+            chat.SetChatBubbleName(pooledBubble, data, false, false, PlayerNameColor.Get(data), null);
             pooledBubble.SetText(text);
             pooledBubble.AlignChildren();
             chat.AlignAllBubbles();
-            pooledBubble.NameText.text = MsgName;
+            pooledBubble.NameText.text = messageName;
+
             if (!chat.IsOpenOrOpening && chat.notificationRoutine == null)
             {
                 chat.notificationRoutine = chat.StartCoroutine(chat.BounceDot());
             }
+
             SoundManager.Instance.PlaySound(chat.messageSound, false, 1f, null).pitch = 0.5f + data.PlayerId / 15f;
             ChatPatch.ChatControllerPatch.SetChatPoolTheme(pooledBubble);
         }
         catch
         {
+            // Intentionally empty - chat failures shouldn't crash the game
         }
     }
-    internal static bool SystemTypeIsSabotage(SystemTypes type) => type is SystemTypes.Reactor
-                    or SystemTypes.Laboratory
-                    or SystemTypes.Comms
-                    or SystemTypes.LifeSupp
-                    or SystemTypes.MushroomMixupSabotage
-                    or SystemTypes.HeliSabotage
-                    or SystemTypes.Electrical;
-    internal static bool SystemTypeIsSabotage(int typeNum) => (SystemTypes)typeNum is SystemTypes.Reactor
-                or SystemTypes.Laboratory
-                or SystemTypes.Comms
-                or SystemTypes.LifeSupp
-                or SystemTypes.MushroomMixupSabotage
-                or SystemTypes.HeliSabotage
-                or SystemTypes.Electrical;
-    // Get players HashPuid
+
+    // System type checks
+    internal static bool SystemTypeIsSabotage(SystemTypes type) => type is
+        SystemTypes.Reactor or SystemTypes.Laboratory or SystemTypes.Comms or
+        SystemTypes.LifeSupp or SystemTypes.MushroomMixupSabotage or
+        SystemTypes.HeliSabotage or SystemTypes.Electrical;
+
+    internal static bool SystemTypeIsSabotage(int typeNum) =>
+        SystemTypeIsSabotage((SystemTypes)typeNum);
+
+    // Hashing utilities
     internal static string GetHashPuid(PlayerControl player)
     {
-        if (player?.Data?.Puid == null) return "";
-        return GetHashStr(player.Data.Puid);
+        return player?.Data?.Puid == null ? "" : GetHashStr(player.Data.Puid);
     }
-    // Get HashPuid from puid
+
     internal static string GetHashStr(this string str)
     {
         if (string.IsNullOrEmpty(str)) return "";
 
-        using SHA256 sha256 = SHA256.Create();
-        byte[] sha256Bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(str));
-        string sha256Hash = BitConverter.ToString(sha256Bytes).Replace("-", "").ToLower();
-        return sha256Hash.Substring(0, 5) + sha256Hash.Substring(sha256Hash.Length - 4);
+        using var sha256 = SHA256.Create();
+        var sha256Bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(str));
+        var sha256Hash = BitConverter.ToString(sha256Bytes).Replace("-", "").ToLower();
+        return sha256Hash[..5] + sha256Hash[^4..];
     }
+
     internal static ushort GetHashUInt16(string input)
     {
         if (string.IsNullOrEmpty(input)) return 0;
-
         return (ushort)(BitConverter.ToUInt16(SHA256.HashData(Encoding.UTF8.GetBytes(input)), 0) % 65536);
     }
-    // Remove Html Tags Template
-    internal static string RemoveHtmlTagsTemplate(string str) => Regex.Replace(str, "", "");
-    // Get raw text
-    internal static string RemoveHtmlText(string text)
-    {
-        text = Regex.Replace(text, "<[^>]*>", "");
-        text = Regex.Replace(text, "{[^}]*}", "");
-        text = text.Replace("\n", " ").Replace("\r", " ");
-        text = text.Trim();
 
-        return text;
-    }
-
-    internal static string ToColor(this string str, string hexColor) => $"<{hexColor}>{str}</color>";
-    internal static string ToColor(this string str, Color color) => $"<{Color32ToHex(color)}>{str}</color>";
-
-    internal static bool IsHtmlText(string text)
-    {
-        if (Regex.IsMatch(text, "<[^>]*>"))
-        {
-            return true;
-        }
-        if (Regex.IsMatch(text, "{[^}]*}"))
-        {
-            return true;
-        }
-        if (text.Contains("\n") || text.Contains("\r"))
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    internal static void DirtyAllNames()
-    {
-        foreach (var player in Main.AllPlayerControls)
-        {
-            if (player == null) return;
-            player.DirtyName();
-        }
-    }
-
-    // Get name for role
-    internal static string GetRoleName(RoleTypes role) => Main.GetRoleName()[(int)role];
-    // Get color for role
-    internal static string GetRoleColor(RoleTypes role) => Main.GetRoleColor[(int)role];
-    // Get hex color for team
+    // Color utilities
     internal static string GetTeamHexColor(RoleTeamTypes team)
     {
-        if (team == RoleTeamTypes.Impostor)
-        {
-            return "#f00202";
-        }
-        else
-        {
-            return "#8cffff";
-        }
+        return team == RoleTeamTypes.Impostor ? "#f00202" : "#8cffff";
     }
+
     internal static string Color32ToHex(Color32 color) => $"#{color.r:X2}{color.g:X2}{color.b:X2}{255:X2}";
 
     internal static Color HexToColor32(string hex)
     {
         if (hex.StartsWith("#"))
         {
-            hex = hex.Substring(1);
+            hex = hex[1..];
         }
 
-        byte r = byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
+        byte r = byte.Parse(hex[..2], System.Globalization.NumberStyles.HexNumber);
         byte g = byte.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
         byte b = byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
 
         return new Color32(r, g, b, 255);
     }
 
+    internal static Color LerpColor(Color[] colors, (float min, float max) lerpRange, float t, bool reverse = false)
+    {
+        float normalizedT = Mathf.InverseLerp(lerpRange.min, lerpRange.max, t);
+
+        if (colors.Length == 1)
+            return colors[0];
+
+        if (reverse)
+        {
+            Array.Reverse(colors);
+        }
+
+        if (normalizedT <= 0f)
+            return colors[0];
+        if (normalizedT >= 1f)
+            return colors[^1];
+
+        float segmentSize = 1f / (colors.Length - 1);
+        int segmentIndex = (int)(normalizedT / segmentSize);
+        float segmentT = (normalizedT - segmentIndex * segmentSize) / segmentSize;
+
+        return Color.Lerp(colors[segmentIndex], colors[segmentIndex + 1], segmentT);
+    }
+
+    // Network and UI operations
     internal static void DisconnectAccountFromOnline(bool apiError = false)
     {
         if (GameState.IsInGame)
@@ -216,19 +250,55 @@ internal static class Utils
 
         DataManager.Player.Account.LoginStatus = EOSManager.AccountLoginStatus.Offline;
         DataManager.Player.Save();
+
         if (apiError)
         {
             ShowPopUp(Translator.GetString("DataBaseConnect.InitFailure"), true);
         }
     }
 
-    // Disconnect client
+    internal static void SettingsChangeNotifier(int id, string text, bool playSound = true)
+    {
+        var notifier = HudManager.Instance.Notifier;
+
+        if (notifier.lastMessageKey == id && notifier.activeMessages.Count > 0)
+        {
+            notifier.activeMessages[^1].UpdateMessage(text);
+        }
+        else
+        {
+            notifier.lastMessageKey = id;
+            var newMessage = UnityEngine.Object.Instantiate(
+                notifier.notificationMessageOrigin,
+                Vector3.zero,
+                Quaternion.identity,
+                notifier.transform
+            );
+
+            newMessage.transform.localPosition = new Vector3(0f, 0f, -2f);
+            newMessage.SetUp(text, notifier.settingsChangeSprite, notifier.settingsChangeColor, (Action)(() =>
+            {
+                notifier.OnMessageDestroy(newMessage);
+            }));
+
+            notifier.ShiftMessages();
+            notifier.AddMessageToQueue(newMessage);
+        }
+
+        if (playSound)
+        {
+            SoundManager.Instance.PlaySoundImmediate(notifier.settingsChangeSound, false, 1f, 1f, null);
+        }
+    }
+
     internal static void DisconnectSelf(string reason, bool showReason = true)
     {
         AmongUsClient.Instance.ExitGame(0);
+
         _ = new LateTask(() =>
         {
             SceneChanger.ChangeScene("MainMenu");
+
             if (showReason)
             {
                 _ = new LateTask(() =>
@@ -240,7 +310,6 @@ internal static class Utils
         }, 0.2f, "DisconnectSelf 1");
     }
 
-    // Show dc pop up with text
     internal static void ShowPopUp(string text, bool enableWordWrapping = false)
     {
         DisconnectPopup.Instance.gameObject.SetActive(true);
@@ -248,13 +317,13 @@ internal static class Utils
         DisconnectPopup.Instance._textArea.text = text;
     }
 
-    internal static Dictionary<string, Sprite> CachedSprites = [];
-
-    internal static Sprite? LoadSprite(string path, float pixelsPerUnit = 1f)
+    // Resource loading
+    internal static Sprite LoadSprite(string path, float pixelsPerUnit = 1f)
     {
         try
         {
-            if (CachedSprites.TryGetValue(path + pixelsPerUnit, out var sprite))
+            var cacheKey = path + pixelsPerUnit;
+            if (CachedSprites.TryGetValue(cacheKey, out var sprite))
                 return sprite;
 
             var texture = LoadTextureFromResources(path);
@@ -264,8 +333,7 @@ internal static class Utils
             sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), pixelsPerUnit);
             sprite.hideFlags |= HideFlags.HideAndDontSave | HideFlags.DontSaveInEditor;
 
-            // Logger.Log($"Successfully loaded sprite from {path}");
-            return CachedSprites[path + pixelsPerUnit] = sprite;
+            return CachedSprites[cacheKey] = sprite;
         }
         catch (Exception ex)
         {
@@ -290,7 +358,6 @@ internal static class Utils
                     return null;
             }
 
-            // Logger.Log($"Successfully loaded texture from {path}");
             return texture;
         }
         catch (Exception ex)
@@ -300,133 +367,34 @@ internal static class Utils
         }
     }
 
-    // Get platform name
+    // Platform utilities
     internal static string GetPlatformName(PlayerControl player, bool useTag = false)
     {
-        if (player == null) return string.Empty;
-        if (player.GetClient() == null) return string.Empty;
-
-        string PlatformName = string.Empty;
-        string Tag = string.Empty;
-
-        Platforms platform = player.GetClient().PlatformData.Platform;
-
-        switch (platform)
-        {
-            case Platforms.StandaloneSteamPC:
-                PlatformName = "Steam";
-                Tag = "PC";
-                break;
-            case Platforms.StandaloneEpicPC:
-                PlatformName = "Epic Games";
-                Tag = "PC";
-                break;
-            case Platforms.StandaloneWin10:
-                PlatformName = "Microsoft Store";
-                Tag = "PC";
-                break;
-            case Platforms.StandaloneMac:
-                PlatformName = "Mac OS";
-                Tag = "PC";
-                break;
-            case Platforms.StandaloneItch:
-                PlatformName = "Itch.io";
-                Tag = "PC";
-                break;
-            case Platforms.Xbox:
-                PlatformName = "Xbox";
-                Tag = "Console";
-                break;
-            case Platforms.Playstation:
-                PlatformName = "Playstation";
-                Tag = "Console";
-                break;
-            case Platforms.Switch:
-                PlatformName = "Switch";
-                Tag = "Console";
-                break;
-            case Platforms.Android:
-                PlatformName = "Android";
-                Tag = "Mobile";
-                break;
-            case Platforms.IPhone:
-                PlatformName = "IPhone";
-                Tag = "Mobile";
-                break;
-            case Platforms p when !Enum.IsDefined(p):
-            case Platforms.Unknown:
-                PlatformName = "Unknown";
-                useTag = false;
-                break;
-            default:
-                PlatformName = "None";
-                useTag = false;
-                break;
-        }
-
-        if (useTag == false)
-            return PlatformName;
-
-        return $"{Tag}: {PlatformName}";
+        if (player?.GetClient() == null) return string.Empty;
+        return GetPlatformName(player.GetClient().PlatformData.Platform, useTag);
     }
 
     internal static string GetPlatformName(Platforms platform, bool useTag = false)
     {
-        string Tag = string.Empty;
-
-        string PlatformName;
-        switch (platform)
+        var (platformName, tag) = platform switch
         {
-            case Platforms.StandaloneSteamPC:
-                PlatformName = "Steam";
-                Tag = "PC";
-                break;
-            case Platforms.StandaloneEpicPC:
-                PlatformName = "Epic Games";
-                Tag = "PC";
-                break;
-            case Platforms.StandaloneWin10:
-                PlatformName = "Microsoft Store";
-                Tag = "PC";
-                break;
-            case Platforms.StandaloneMac:
-                PlatformName = "Mac OS";
-                Tag = "PC";
-                break;
-            case Platforms.StandaloneItch:
-                PlatformName = "Itch.io";
-                Tag = "PC";
-                break;
-            case Platforms.Xbox:
-                PlatformName = "Xbox";
-                Tag = "Console";
-                break;
-            case Platforms.Playstation:
-                PlatformName = "Playstation";
-                Tag = "Console";
-                break;
-            case Platforms.Switch:
-                PlatformName = "Switch";
-                Tag = "Console";
-                break;
-            case Platforms.Android:
-                PlatformName = "Android";
-                Tag = "Mobile";
-                break;
-            case Platforms.IPhone:
-                PlatformName = "IPhone";
-                Tag = "Mobile";
-                break;
-            case Platforms.Unknown:
-                PlatformName = "None";
-                break;
-            default:
-                return string.Empty;
-        }
+            Platforms.StandaloneSteamPC => ("Steam", "PC"),
+            Platforms.StandaloneEpicPC => ("Epic Games", "PC"),
+            Platforms.StandaloneWin10 => ("Microsoft Store", "PC"),
+            Platforms.StandaloneMac => ("Mac OS", "PC"),
+            Platforms.StandaloneItch => ("Itch.io", "PC"),
+            Platforms.Xbox => ("Xbox", "Console"),
+            Platforms.Playstation => ("Playstation", "Console"),
+            Platforms.Switch => ("Switch", "Console"),
+            Platforms.Android => ("Android", "Mobile"),
+            Platforms.IPhone => ("IPhone", "Mobile"),
+            Platforms.Unknown => ("None", ""),
+            _ => (string.Empty, string.Empty)
+        };
 
-        if (useTag == false)
-            return PlatformName;
+        if (string.IsNullOrEmpty(platformName))
+            return string.Empty;
 
-        return $"{Tag}: {PlatformName}";
+        return useTag && !string.IsNullOrEmpty(tag) ? $"{tag}: {platformName}" : platformName;
     }
 }

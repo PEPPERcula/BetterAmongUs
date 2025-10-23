@@ -4,20 +4,9 @@ namespace BetterAmongUs.Helpers;
 
 internal static class ObjectHelper
 {
-    internal static GameObject? FindObjectByName(string objectName)
-    {
-        GameObject[] allObjects = UnityEngine.Object.FindObjectsOfType<GameObject>(true);
-
-        foreach (GameObject obj in allObjects)
-        {
-            if (obj.name == objectName)
-            {
-                return obj;
-            }
-        }
-
-        return null;
-    }
+    /// <summary>
+    /// Destroys a GameObject if it is not null.
+    /// </summary>
     internal static void DestroyObj(this GameObject obj)
     {
         if (obj != null)
@@ -25,18 +14,91 @@ internal static class ObjectHelper
             UnityEngine.Object.Destroy(obj);
         }
     }
-    internal static void DestroyObj(this UnityEngine.Object obj) => obj.DestroyObj();
-    internal static void DestroyCom(this Component com) => com.DestroyObj();
+
+    /// <summary>
+    /// Destroys the GameObject associated with a MonoBehaviour if it is not null.
+    /// </summary>
     internal static void DestroyObj(this MonoBehaviour mono) => mono?.gameObject?.DestroyObj();
+
+    /// <summary>
+    /// Destroys a MonoBehaviour component if it is not null.
+    /// </summary>
     internal static void DestroyMono(this MonoBehaviour mono) => UnityEngine.Object.Destroy(mono);
 
-    internal static void DestroyTextTranslator(this GameObject obj)
+    /// <summary>
+    /// Destroys all TextTranslatorTMP components in the children of a GameObject.
+    /// </summary>
+    internal static void DestroyTextTranslators(this GameObject obj)
     {
-        var translator = obj.GetComponent<TextTranslatorTMP>();
-        if (translator != null)
+        var translators = obj.GetComponentsInChildren<TextTranslatorTMP>();
+        if (translators.Length > 0)
         {
-            UnityEngine.Object.Destroy(translator);
+            foreach (var item in translators)
+            {
+                item.DestroyMono();
+            }
         }
     }
-    internal static void DestroyTextTranslator(this MonoBehaviour mono) => mono.gameObject.DestroyTextTranslator();
+
+    /// <summary>
+    /// Destroys all TextTranslatorTMP components in the children of a MonoBehaviour's GameObject.
+    /// </summary>
+    internal static void DestroyTextTranslators(this MonoBehaviour mono) => mono.gameObject.DestroyTextTranslators();
+
+    internal static void SetSpriteColors(this GameObject go, Color color)
+    {
+        var sprites = go.GetComponentsInChildren<SpriteRenderer>(true);
+        foreach (var sprite in sprites)
+        {
+            sprite.color = color;
+        }
+    }
+
+    internal static void SetSpriteColors(this GameObject go, Action<SpriteRenderer> setSprite)
+    {
+        var sprites = go.GetComponentsInChildren<SpriteRenderer>(true);
+        foreach (var sprite in sprites)
+        {
+            setSprite(sprite);
+        }
+    }
+
+    internal static void SetUIColors(this GameObject go, params string[] avoidGoName)
+    {
+        go.SetUIColors(null, null, avoidGoName);
+    }
+
+    internal static void SetUIColors(this GameObject go, Func<SpriteRenderer, bool>? check = null, params string[] avoidGoName)
+    {
+        go.SetUIColors(null, check, avoidGoName);
+    }
+
+    internal static void SetUIColors(this GameObject go, Color? color = null, Func<SpriteRenderer, bool>? check = null, params string[] avoidGoName)
+    {
+        var sprites = go.GetComponentsInChildren<SpriteRenderer>(true);
+        foreach (var sprite in sprites)
+        {
+            if (avoidGoName.Any(name => sprite.gameObject.name == name)) continue;
+            if (check == null || check(sprite))
+                AddColor(sprite, color);
+        }
+    }
+
+    internal static void AddColor(SpriteRenderer sprite, Color? color = null)
+    {
+        color ??= Color.green;
+        sprite.color = (sprite.color * 0.6f) + ((Color)color * 0.5f);
+    }
+
+    internal static void SetLayers(this GameObject go, string layerName)
+    {
+        int layer = LayerMask.NameToLayer(layerName);
+        if (layer == -1) return;
+
+        Transform[] allChildren = go.GetComponentsInChildren<Transform>(true);
+        foreach (Transform child in allChildren)
+        {
+            child.gameObject.layer = layer;
+        }
+    }
 }

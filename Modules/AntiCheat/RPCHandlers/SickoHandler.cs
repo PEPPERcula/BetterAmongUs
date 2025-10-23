@@ -2,7 +2,9 @@ using BetterAmongUs.Data;
 using BetterAmongUs.Helpers;
 using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Managers;
-using BetterAmongUs.Patches;
+using BetterAmongUs.Mono;
+using BetterAmongUs.Network;
+using BetterAmongUs.Patches.Gameplay.UI.Settings;
 using Hazel;
 using InnerNet;
 
@@ -15,7 +17,7 @@ internal sealed class SickoHandler : RPCHandler
 
     internal override void HandleCheatRpcCheck(PlayerControl? sender, MessageReader reader)
     {
-        if (Main.AntiCheat.Value && BetterGameSettings.DetectCheatClients.GetBool())
+        if (BAUPlugin.AntiCheat.Value && BetterGameSettings.DetectCheatClients.GetBool())
         {
             if (reader.BytesRemaining == 0 && !BetterDataManager.BetterDataFile.SickoData.Any(info => info.CheckPlayerData(sender.Data)))
             {

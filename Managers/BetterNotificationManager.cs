@@ -1,7 +1,8 @@
 ﻿using BetterAmongUs.Data;
 using BetterAmongUs.Helpers;
 using BetterAmongUs.Modules;
-using BetterAmongUs.Patches;
+using BetterAmongUs.Mono;
+using BetterAmongUs.Patches.Gameplay.UI.Settings;
 using Cpp2IL.Core.Extensions;
 using TMPro;
 using UnityEngine;
@@ -20,7 +21,7 @@ class BetterNotificationManager
 
     internal static void Notify(string text, float Time = 5f)
     {
-        if (!Main.BetterNotifications.Value) return;
+        if (!BAUPlugin.BetterNotifications.Value) return;
 
         if (BAUNotificationManagerObj != null)
         {
@@ -65,8 +66,8 @@ class BetterNotificationManager
         string playerDetected = Translator.GetString("AntiCheat.PlayerDetected");
         string unauthorizedAction = Translator.GetString("AntiCheat.UnauthorizedAction");
         string byAntiCheat = Translator.GetString("AntiCheat.ByAntiCheat");
-        string playerDetectedLog = Translator.GetString("AntiCheat.PlayerDetected", console: true);
-        string unauthorizedActionLog = Translator.GetString("AntiCheat.UnauthorizedAction", console: true);
+        string playerDetectedLog = Translator.GetString("AntiCheat.PlayerDetected", useConsoleLanguage: true);
+        string unauthorizedActionLog = Translator.GetString("AntiCheat.UnauthorizedAction", useConsoleLanguage: true);
 
         string text = $"{playerDetected}: <color=#0097b5>{player?.BetterData().RealName}</color> {unauthorizedAction}: <b><color=#fc0000>{Reason}</color></b>";
         string rawText = $"{playerDetectedLog}: <color=#0097b5>{player?.BetterData().RealName}</color> {unauthorizedActionLog}: <b><color=#fc0000>{reason}</color></b>";
@@ -86,8 +87,6 @@ class BetterNotificationManager
 
         Logger.LogCheat($"{player.cosmetics.nameText.text} Info: {player.Data.PlayerName} - {player.Data.FriendCode} - {player.GetHashPuid()}");
         Logger.LogCheat(Utils.RemoveHtmlText(rawText));
-
-        player.DirtyName();
 
         if (GameState.IsHost && kickPlayer)
         {

@@ -25,12 +25,12 @@ internal class AllCommandsCommand : BaseCommand
             {
                 if (i < allNormalCommands.Length)
                 {
-                    list += $"\n{mid}<color=#e0b700><b>{Main.CommandPrefix.Value}{allNormalCommands[i].Name}</b></color> <size=65%><color=#735e00>{allNormalCommands[i].Description}.</color></size>";
+                    list += $"\n{mid}<color=#e0b700><b>{BAUPlugin.CommandPrefix.Value}{allNormalCommands[i].Name}</b></color> <size=65%><color=#735e00>{allNormalCommands[i].Description}.</color></size>";
                 }
             }
         }
 
-        if (Main.MyData.IsSponsor() && allSponsorCommands.Length > 0)
+        if (BAUPlugin.MyData.IsSponsor() && allSponsorCommands.Length > 0)
         {
             list += "\n" + close + "\n";
             list += "<color=#00751f><b><size=150%>Sponsor Command List</size></b></color>\n" + open;
@@ -38,12 +38,12 @@ internal class AllCommandsCommand : BaseCommand
             {
                 if (i < allSponsorCommands.Length)
                 {
-                    list += $"\n{mid}<color=#e0b700><b>{Main.CommandPrefix.Value}{allSponsorCommands[i].Name}</b></color> <size=65%><color=#735e00>{allSponsorCommands[i].Description}.</color></size>";
+                    list += $"\n{mid}<color=#e0b700><b>{BAUPlugin.CommandPrefix.Value}{allSponsorCommands[i].Name}</b></color> <size=65%><color=#735e00>{allSponsorCommands[i].Description}.</color></size>";
                 }
             }
         }
 
-        if (Main.MyData.IsDev() && allDebugCommands.Length > 0)
+        if (BAUPlugin.MyData.IsDev() && allDebugCommands.Length > 0)
         {
             list += "\n" + close + "\n";
             list += "<color=#00751f><b><size=150%>Debug Command List</size></b></color>\n" + open;
@@ -51,7 +51,7 @@ internal class AllCommandsCommand : BaseCommand
             {
                 if (i < allDebugCommands.Length)
                 {
-                    list += $"\n{mid}<color=#e0b700><b>{Main.CommandPrefix.Value}{allDebugCommands[i].Name}</b></color> <size=65%><color=#735e00>{allDebugCommands[i].Description}.</color></size>";
+                    list += $"\n{mid}<color=#e0b700><b>{BAUPlugin.CommandPrefix.Value}{allDebugCommands[i].Name}</b></color> <size=65%><color=#735e00>{allDebugCommands[i].Description}.</color></size>";
                 }
             }
         }

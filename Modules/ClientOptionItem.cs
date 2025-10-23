@@ -48,7 +48,7 @@ internal class ClientOptionItem
                     CustomBackground.gameObject.SetActive(false);
                 }));
 
-                UiElement[] selectableButtons = optionsMenuBehaviour.ControllerSelectable.ToArray();
+                var selectableButtons = optionsMenuBehaviour.ControllerSelectable;
                 PassiveButton leaveButton = null;
                 PassiveButton returnButton = null;
                 foreach (var button in selectableButtons)

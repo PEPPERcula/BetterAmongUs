@@ -8,164 +8,243 @@ namespace BetterAmongUs.Modules;
 
 internal static class Translator
 {
-    internal static Dictionary<string, Dictionary<int, string>> translateMaps;
-    internal const string LANGUAGE_FOLDER_NAME = "Language";
+    internal static Dictionary<string, int> TranslateIdLookup = [];
+    internal static Dictionary<string, Dictionary<int, string>> TranslateMaps = [];
+    private const string ResourcePath = "BetterAmongUs.Resources.Lang";
+
     internal static void Init()
     {
         Logger.Log("Loading language files...", "Translator");
-        LoadLangs();
-        Logger.Log("Language file loaded successfully", "Translator");
+        LoadLanguages();
+        Logger.Log("Language files loaded successfully", "Translator");
     }
-    internal static void LoadLangs()
+
+    private static void LoadLanguages()
     {
         try
         {
-            // Get the directory containing the JSON files (e.g., TOHE.Resources.Lang)
-            string jsonDirectory = "BetterAmongUs.Resources.Lang";
-            // Get the assembly containing the resources
             var assembly = System.Reflection.Assembly.GetExecutingAssembly();
-            string[] jsonFileNames = GetJsonFileNames(assembly, jsonDirectory);
+            var jsonFileNames = GetJsonResourceNames(assembly);
 
-            translateMaps = [];
-
+            TranslateMaps = [];
 
             if (jsonFileNames.Length == 0)
             {
-                Logger.Error("Json Translation files does not exist.", "Translator");
+                Logger.Error("JSON translation files do not exist.", "Translator");
                 return;
             }
-            foreach (string jsonFileName in jsonFileNames)
+
+            foreach (var jsonFileName in jsonFileNames)
             {
-                // Read the JSON file content
-                using Stream resourceStream = assembly.GetManifestResourceStream(jsonFileName);
-
-                if (resourceStream != null)
-                {
-                    using StreamReader reader = new(resourceStream);
-
-                    string jsonContent = reader.ReadToEnd();
-                    // Deserialize the JSON into a dictionary
-                    Dictionary<string, string> jsonDictionary = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonContent);
-                    if (jsonDictionary.TryGetValue("LanguageID", out string languageIdObj) && int.TryParse(languageIdObj, out int languageId))
-                    {
-                        // Remove the "LanguageID" entry
-                        jsonDictionary.Remove("LanguageID");
-
-                        // Handle the rest of the data and merge it into the resulting translation map
-                        MergeJsonIntoTranslationMap(translateMaps, languageId, jsonDictionary);
-                    }
-                    else
-                    {
-                        //Logger.Error(jsonDictionary["HostText"], "Translator");
-                        Logger.Error($"Invalid JSON format in {jsonFileName}: Missing or invalid 'LanguageID' field.", "Translator");
-                    }
-                }
+                LoadLanguageFile(assembly, jsonFileName);
             }
 
-            // Convert the resulting translation map to JSON
-            string mergedJson = JsonSerializer.Serialize(translateMaps, new JsonSerializerOptions
-            {
-                WriteIndented = true
-            });
+            TranslateIdLookup = TranslateIdLookup.OrderBy(kvp => kvp.Value).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
         }
         catch (Exception ex)
         {
-            Logger.Error($"Error: {ex}", "Translator");
+            Logger.Error($"Error loading languages: {ex}", "Translator");
         }
-        if (!Directory.Exists(LANGUAGE_FOLDER_NAME)) Directory.CreateDirectory(LANGUAGE_FOLDER_NAME);
     }
-    static void MergeJsonIntoTranslationMap(Dictionary<string, Dictionary<int, string>> translationMaps, int languageId, Dictionary<string, string> jsonDictionary)
+
+    private static string[] GetJsonResourceNames(System.Reflection.Assembly assembly)
     {
-        foreach (var kvp in jsonDictionary)
+        return assembly.GetManifestResourceNames()
+            .Where(resourceName => resourceName.StartsWith(ResourcePath) && resourceName.EndsWith(".json"))
+            .ToArray();
+    }
+
+    private static void LoadLanguageFile(System.Reflection.Assembly assembly, string resourceName)
+    {
+        try
         {
-            string textString = kvp.Key;
-            if (kvp.Value is string translation)
+            using var resourceStream = assembly.GetManifestResourceStream(resourceName);
+            if (resourceStream == null) return;
+
+            using var reader = new StreamReader(resourceStream);
+            var jsonContent = reader.ReadToEnd();
+            var jsonDictionary = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonContent);
+
+            if (jsonDictionary == null)
             {
-
-                // If the textString is not already in the translation map, add it
-                if (!translationMaps.ContainsKey(textString))
-                {
-                    translationMaps[textString] = [];
-                }
-
-                // Add or update the translation for the current id and textString
-                translationMaps[textString][languageId] = translation.Replace("\\n", "\n").Replace("\\r", "\r");
+                Logger.Error($"Failed to deserialize JSON from {resourceName}", "Translator");
+                return;
             }
-        }
-    }
 
-    // Function to get a list of JSON file names in a directory
-    static string[] GetJsonFileNames(System.Reflection.Assembly assembly, string directoryName)
-    {
-        string[] resourceNames = assembly.GetManifestResourceNames();
-        return resourceNames.Where(resourceName => resourceName.StartsWith(directoryName) && resourceName.EndsWith(".json")).ToArray();
-    }
-
-    internal static string GetString(string s, Dictionary<string, string> replacementDic = null, bool console = false, bool showInvalid = true, bool vanilla = false)
-    {
-        if (vanilla)
-        {
-            string nameToFind = s;
-            if (Enum.TryParse(nameToFind, out StringNames text))
+            if (jsonDictionary.TryGetValue("LanguageID", out var languageIdStr) &&
+                int.TryParse(languageIdStr, out var languageId))
             {
-                return TranslationController.Instance.GetString(text);
+                jsonDictionary.Remove("LanguageID");
+                var name = resourceName[(ResourcePath.Length + 1)..^5]; // remove path from name
+                TranslateIdLookup[name] = languageId;
+                MergeTranslations(TranslateMaps, languageId, jsonDictionary);
             }
             else
             {
-                return showInvalid ? $"<INVALID:{nameToFind}> (vanillaStr)" : nameToFind;
+                Logger.Error($"Invalid JSON format in {resourceName}: Missing or invalid 'LanguageID' field.", "Translator");
             }
         }
-        var langId = TranslationController.InstanceExists ? TranslationController.Instance.currentLanguage.languageID : SupportedLangs.English;
-        if (console) langId = SupportedLangs.English;
-        if (Main.ForceOwnLanguage.Value) langId = GetUserTrueLang();
-        string str = GetString(s, langId, showInvalid);
-        if (replacementDic != null)
-            foreach (var rd in replacementDic)
-            {
-                str = str.Replace(rd.Key, rd.Value);
-            }
-        return str;
+        catch (Exception ex)
+        {
+            Logger.Error($"Error loading language file {resourceName}: {ex}", "Translator");
+        }
     }
 
-    internal static string GetString(string str, SupportedLangs langId, bool showInvalid = true)
+    private static void MergeTranslations(
+        Dictionary<string, Dictionary<int, string>> translationMaps,
+        int languageId,
+        Dictionary<string, string> translations)
     {
-        var res = showInvalid ? $"<INVALID:{str}>" : str;
-        try
+        foreach (var (key, value) in translations)
         {
-            if (translateMaps.TryGetValue(str, out var dic) && (!dic.TryGetValue((int)langId, out res) || res == "" || langId is not SupportedLangs.SChinese and not SupportedLangs.TChinese && Regex.IsMatch(res, @"[\u4e00-\u9fa5]") && res == GetString(str, SupportedLangs.SChinese))) //strに該当する&無効なlangIdかresが空
+            if (!translationMaps.ContainsKey(key))
             {
-                if (langId == SupportedLangs.English) res = $"*{str}";
-                else res = GetString(str, SupportedLangs.English);
+                translationMaps[key] = [];
             }
-            if (!translateMaps.ContainsKey(str))
-            {
-                var stringNames = EnumHelper.GetAllValues<StringNames>().Where(x => x.ToString() == str).ToArray();
-                if (stringNames != null && stringNames.Any())
-                    res = GetString(stringNames.FirstOrDefault());
-            }
+
+            // Replace escape sequences with actual characters
+            var processedValue = value.Replace("\\n", "\n").Replace("\\r", "\r");
+            translationMaps[key][languageId] = processedValue;
         }
-        catch (Exception Ex)
-        {
-            Logger.Error($"Error oucured at [{str}] in String.csv", "Translator");
-            Logger.Error("Here was the error:\n" + Ex.ToString(), "Translator");
-        }
-        return res;
     }
-    internal static string GetString(StringNames stringName) => TranslationController.Instance.GetString(stringName, new Il2CppReferenceArray<Il2CppSystem.Object>(0));
-    internal static SupportedLangs GetUserTrueLang()
+
+    internal static int GetLanguageIdByName(string name)
+    {
+        if (TranslateIdLookup.TryGetValue(name, out var id))
+        {
+            return id;
+        }
+
+        return -1;
+    }
+
+    internal static string GetString(string key, Dictionary<string, string>? replacements = null, bool useConsoleLanguage = false, bool showInvalid = true, bool useVanilla = false)
+    {
+        if (useVanilla)
+        {
+            return GetVanillaString(key, showInvalid);
+        }
+
+        var langId = GetTargetLanguageId(useConsoleLanguage);
+        var result = GetString(key, langId, showInvalid);
+
+        return ApplyReplacements(result, replacements);
+    }
+
+    internal static string GetString(string key, SupportedLangs languageId, bool showInvalid = true)
+    {
+        var fallbackText = showInvalid ? $"<INVALID:{key}>" : key;
+
+        try
+        {
+            // Try to get from custom translations
+            if (TranslateMaps.TryGetValue(key, out var languageMap))
+            {
+                var result = GetTranslationFromMap(key, languageId, languageMap, showInvalid);
+                if (result != null) return result;
+            }
+
+            // Fallback to vanilla string names
+            return GetVanillaStringFallback(key, fallbackText);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error($"Error retrieving string [{key}]: {ex}", "Translator");
+            return fallbackText;
+        }
+    }
+
+    private static string GetTranslationFromMap(string key, SupportedLangs languageId, Dictionary<int, string> languageMap, bool showInvalid)
+    {
+        if (languageMap.TryGetValue((int)languageId, out var translation) &&
+            !string.IsNullOrEmpty(translation))
+        {
+            // Check for Chinese characters in non-Chinese languages
+            if (!IsChineseLanguage(languageId) && ContainsChineseCharacters(translation))
+            {
+                var chineseTranslation = GetString(key, SupportedLangs.SChinese, showInvalid);
+                if (translation == chineseTranslation)
+                {
+                    return GetEnglishFallback(key);
+                }
+            }
+            return translation;
+        }
+
+        // Fallback to English if translation not found
+        return languageId == SupportedLangs.English ? $"*{key}" : GetString(key, SupportedLangs.English, showInvalid);
+    }
+
+    private static string GetVanillaString(string key, bool showInvalid)
+    {
+        if (Enum.TryParse<StringNames>(key, out var stringName))
+        {
+            return TranslationController.Instance.GetString(stringName);
+        }
+
+        return showInvalid ? $"<INVALID:{key}> (vanillaStr)" : key;
+    }
+
+    private static string GetVanillaStringFallback(string key, string fallbackText)
+    {
+        var matchingStringNames = EnumHelper.GetAllValues<StringNames>()
+            .Where(x => x.ToString() == key)
+            .ToArray();
+
+        return matchingStringNames.Length > 0 ? GetString(matchingStringNames[0]) : fallbackText;
+    }
+
+    internal static string GetString(StringNames stringName) =>
+        TranslationController.Instance.GetString(stringName, new Il2CppReferenceArray<Il2CppSystem.Object>(0));
+
+    internal static SupportedLangs GetTargetLanguageId(bool useConsoleLanguage = false)
+    {
+        if (useConsoleLanguage) return SupportedLangs.English;
+        if (BAUPlugin.ForceOwnLanguage.Value) return GetUserSystemLanguage();
+
+        return TranslationController.InstanceExists ?
+            TranslationController.Instance.currentLanguage.languageID :
+            SupportedLangs.English;
+    }
+
+    internal static SupportedLangs GetUserSystemLanguage()
     {
         try
         {
-            var name = CultureInfo.CurrentUICulture.Name;
-            if (name.StartsWith("en")) return SupportedLangs.English;
-            if (name.StartsWith("zh_CHT")) return SupportedLangs.TChinese;
-            if (name.StartsWith("zh")) return SupportedLangs.SChinese;
-            if (name.StartsWith("ru")) return SupportedLangs.Russian;
-            return TranslationController.Instance.currentLanguage.languageID;
+            var cultureName = CultureInfo.CurrentUICulture.Name;
+
+            return cultureName switch
+            {
+                string name when name.StartsWith("zh_CHT") => SupportedLangs.TChinese,
+                string name when name.StartsWith("zh") => SupportedLangs.SChinese,
+                string name when name.StartsWith("ru") => SupportedLangs.Russian,
+                string name when name.StartsWith("en") => SupportedLangs.English,
+                _ => TranslationController.Instance.currentLanguage.languageID
+            };
         }
         catch
         {
             return SupportedLangs.English;
         }
     }
+
+    private static string ApplyReplacements(string text, Dictionary<string, string> replacements)
+    {
+        if (replacements == null) return text;
+
+        foreach (var replacement in replacements)
+        {
+            text = text.Replace(replacement.Key, replacement.Value);
+        }
+        return text;
+    }
+
+    private static string GetEnglishFallback(string key) =>
+        GetString(key, SupportedLangs.English);
+
+    private static bool IsChineseLanguage(SupportedLangs languageId) =>
+        languageId is SupportedLangs.SChinese or SupportedLangs.TChinese;
+
+    private static bool ContainsChineseCharacters(string text) =>
+        Regex.IsMatch(text, @"[\u4e00-\u9fa5]");
 }

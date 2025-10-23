@@ -1,4 +1,6 @@
-﻿using Il2CppInterop.Runtime;
+﻿using BepInEx.Unity.IL2CPP.Utils;
+using Il2CppInterop.Runtime;
+using System.Collections;
 using UnityEngine;
 
 namespace BetterAmongUs.Modules;
@@ -39,6 +41,21 @@ internal static class MonoExtensionManager
         }
 
         return null;
+    }
+
+    internal static void RunWhenNotNull<T>(MonoBehaviour mono, Func<T?> getExtension, Action<T> callback) where T : class, IMonoExtension
+    {
+        mono.StartCoroutine(CoWaitForExtension(getExtension, callback));
+    }
+
+    private static IEnumerator CoWaitForExtension<T>(Func<T?> getExtension, Action<T> callback) where T : class, IMonoExtension
+    {
+        T? extension;
+        while ((extension = getExtension()) == null)
+        {
+            yield return null;
+        }
+        callback(extension);
     }
 
     internal static void CleanAll()

@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using BetterAmongUs.Helpers;
 using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Managers;
+using BetterAmongUs.Mono;
 using Hazel;
 using InnerNet;
 
@@ -11,11 +12,6 @@ namespace BetterAmongUs.Modules.AntiCheat;
 internal sealed class MurderPlayerHandler : RPCHandler
 {
     internal override byte CallId => (byte)RpcCalls.MurderPlayer;
-
-    internal override void Handle(PlayerControl? sender, MessageReader reader)
-    {
-        Utils.DirtyAllNames();
-    }
 
     // Prevent ban exploit
     internal override bool HandleAntiCheatCancel(PlayerControl? player, MessageReader reader)
