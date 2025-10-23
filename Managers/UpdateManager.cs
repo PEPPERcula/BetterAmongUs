@@ -13,6 +13,7 @@ internal class UpdateManager : MonoBehaviour
     private bool AmUpdateing;
 
     internal static UpdateManager? Instance { get; private set; }
+    internal static bool WaitForRestart { get; private set; }
 
     internal static void Init()
     {
@@ -26,7 +27,7 @@ internal class UpdateManager : MonoBehaviour
         var doNotPress = FindObjectOfType<DoNotPressButton>(true);
         if (doNotPress != null)
         {
-            doNotPress.gameObject.SetActive(UpdateLoader.UpdateInfo?.IsNewUpdate() == true);
+            doNotPress.gameObject.SetActive(UpdateLoader.UpdateInfo?.IsNewUpdate() == true && !WaitForRestart);
             doNotPress.pressedSprite = doNotPress.transform.Find("ButtonPressed")?.gameObject?.GetComponent<SpriteRenderer>();
             doNotPress.unpressedSprite = doNotPress.transform.Find("ButtonUnpressed")?.gameObject?.GetComponent<SpriteRenderer>();
             doNotPress.pressedSprite.enabled = false;
@@ -38,7 +39,7 @@ internal class UpdateManager : MonoBehaviour
                 button.OnClick = new();
                 button.OnClick.AddListener((Action)(() =>
                 {
-                    if (AmUpdateing) return;
+                    if (AmUpdateing || WaitForRestart) return;
                     this.StartCoroutine(CoPressDownload(doNotPress));
                 }));
             }
@@ -89,6 +90,7 @@ internal class UpdateManager : MonoBehaviour
             if (UpdateLoader.UpdateInfo.IsNewUpdate())
             {
                 yield return UpdateLoader.UpdateInfo.CoDownload();
+                WaitForRestart = true;
                 mainMenu?.SetActive(true);
                 ambience?.SetActive(true);
                 yield return new WaitForSeconds(0.2f);
@@ -102,5 +104,7 @@ internal class UpdateManager : MonoBehaviour
             yield return new WaitForSeconds(0.2f);
             Utils.ShowPopUp("Download link missing!");
         }
+
+        AmUpdateing = false;
     }
 }
