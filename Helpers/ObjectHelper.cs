@@ -5,25 +5,6 @@ namespace BetterAmongUs.Helpers;
 internal static class ObjectHelper
 {
     /// <summary>
-    /// Finds a GameObject by its name in the scene, including inactive objects.
-    /// Returns null if no object with the specified name is found.
-    /// </summary>
-    internal static GameObject? FindObjectByName(string objectName)
-    {
-        GameObject[] allObjects = UnityEngine.Object.FindObjectsOfType<GameObject>(true);
-
-        foreach (GameObject obj in allObjects)
-        {
-            if (obj.name == objectName)
-            {
-                return obj;
-            }
-        }
-
-        return null;
-    }
-
-    /// <summary>
     /// Destroys a GameObject if it is not null.
     /// </summary>
     internal static void DestroyObj(this GameObject obj)

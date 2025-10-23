@@ -35,6 +35,9 @@ internal class GithubAPI : MonoBehaviour
 
         var newsLoader = gameObject.AddComponent<NewsLoader>();
         this.StartCoroutine(newsLoader.CoFetchNewsData());
+
+        var updateLoader = gameObject.AddComponent<UpdateLoader>();
+        this.StartCoroutine(updateLoader.CoFetchUpdateData());
     }
 
     [HideFromIl2Cpp]
@@ -60,7 +63,7 @@ internal class GithubAPI : MonoBehaviour
         if (Application.internetReachability == NetworkReachability.NotReachable)
             return false;
 
-        UnityWebRequest www = null;
+        UnityWebRequest? www = null;
         try
         {
             www = UnityWebRequest.Get("https://clients3.google.com/generate_204");

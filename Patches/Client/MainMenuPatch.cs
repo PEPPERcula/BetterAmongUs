@@ -1,5 +1,6 @@
 ﻿using BetterAmongUs.Helpers;
 using BetterAmongUs.Modules;
+using BetterAmongUs.Network;
 using BetterAmongUs.Network.Configs;
 using HarmonyLib;
 using UnityEngine;
@@ -80,5 +81,7 @@ internal static class MainMenuPatch
             ButtonPrefab.gameObject.SetActive(false);
             UnityEngine.Object.DontDestroyOnLoad(ButtonPrefab);
         }
+
+        UpdateManager.Instance?.OnMainMenu();
     }
 }

@@ -1,5 +1,7 @@
-﻿using Il2CppInterop.Runtime.Attributes;
+﻿using BetterAmongUs.Managers;
+using Il2CppInterop.Runtime.Attributes;
 using System.Collections;
+using UnityEngine;
 using UnityEngine.Networking;
 
 namespace BetterAmongUs.Network;
@@ -11,25 +13,55 @@ internal class GitHubFile
     /// Handles errors and logs any failed downloads to avoid missing assets.
     /// </summary>
     [HideFromIl2Cpp]
-    internal static IEnumerator CoDownloadFile(string fileUrl, string localFilePath, string fileName)
+    internal static IEnumerator CoDownloadFile(string fileUrl, string localFilePath, Action<string>? callback = null, bool showProgress = false)
     {
         var www = new UnityWebRequest(fileUrl, UnityWebRequest.kHttpVerbGET)
         {
             downloadHandler = new DownloadHandlerBuffer()
         };
 
-        yield return www.SendWebRequest();
-
-        if (www.result != UnityWebRequest.Result.Success)
+        if (showProgress)
         {
-            Logger.Error($"Error downloading file '{fileName}' from URL '{fileUrl}': {www.error} (Response Code: {(int)www.responseCode})");
+            CustomLoadingBarManager.ToggleLoadingBar(true);
+            CustomLoadingBarManager.SetLoadingPercent(0f, "Starting download...");
+        }
+
+        var operation = www.SendWebRequest();
+
+        // Track progress while downloading
+        while (!operation.isDone)
+        {
+            if (showProgress)
+            {
+                float progress = www.downloadProgress * 100f;
+                CustomLoadingBarManager.SetLoadingPercent(progress, $"Downloading... {progress:F1}%");
+            }
+            yield return null;
+        }
+
+        if (www.result == UnityWebRequest.Result.Success)
+        {
+            CustomLoadingBarManager.SetLoadingPercent(100f, "Saving file...");
+            yield return new WaitForSeconds(1f);
+            CustomLoadingBarManager.ToggleLoadingBar(false);
+        }
+        else
+        {
+            Logger.Error($"Error downloading file from URL '{fileUrl}': {www.error} (Response Code: {(int)www.responseCode})");
+            if (showProgress)
+            {
+                CustomLoadingBarManager.SetLoadingPercent(100f, "Download Failed!");
+                yield return new WaitForSeconds(2f);
+                CustomLoadingBarManager.ToggleLoadingBar(false);
+            }
             yield break;
         }
 
-        File.WriteAllBytes(localFilePath, www.downloadHandler.GetNativeData().ToArray());
+        byte[] bytes = www.downloadHandler.GetNativeData().ToArray();
+        File.WriteAllBytes(localFilePath, bytes);
 
         Logger.Log($"Saved file: {localFilePath}");
-        www.Dispose();
+        callback?.Invoke(localFilePath);
     }
 
     /// <summary>

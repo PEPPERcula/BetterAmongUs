@@ -96,6 +96,10 @@ internal static class TextFileHandler
                 }
 
                 var key = line[..separatorIndex].Trim();
+                if (key.StartsWith('^'))
+                {
+                    key = key[1..].Trim();
+                }
                 var value = line[(separatorIndex + 1)..].Trim();
 
                 currentKey = key;
@@ -124,8 +128,11 @@ internal static class TextFileHandler
     private static bool IsKeyValueLine(string line, int separatorIndex)
     {
         string keyPart = line[..separatorIndex].Trim();
-        if (keyPart.Contains(' ') || keyPart.Contains('#') || keyPart.Contains('*') || keyPart.Contains('[') || keyPart.Contains('`'))
+
+        if (!keyPart.StartsWith('^') || keyPart.Contains(' ') || keyPart.Contains('#') ||
+            keyPart.Contains('*') || keyPart.Contains('[') || keyPart.Contains('`'))
             return false;
+
         return true;
     }
 
@@ -134,7 +141,6 @@ internal static class TextFileHandler
         if (string.IsNullOrEmpty(text))
             return text;
 
-        // Process different elements in order of precedence
         text = ProcessHeaders(text);
         text = ProcessBlockQuotes(text);
         text = ProcessHorizontalRules(text);
@@ -149,7 +155,6 @@ internal static class TextFileHandler
 
     private static string ProcessHeaders(string text)
     {
-        // H1 to H6 with decreasing sizes
         var headerSizes = new Dictionary<int, int>
         {
             {1, 200}, {2, 180}, {3, 160}, {4, 140}, {5, 120}, {6, 110}
@@ -167,25 +172,18 @@ internal static class TextFileHandler
 
     private static string ProcessBlockQuotes(string text)
     {
-        // Process > block quotes
         return Regex.Replace(text, @"^>\s+(.+?)(?=\n|$)", "<color=#888888><i>│ $1</i></color>", RegexOptions.Multiline);
     }
 
     private static string ProcessHorizontalRules(string text)
     {
-        // Process --- or *** horizontal rules
-        return Regex.Replace(text, @"^\s*([-*_]){3,}\s*$", "────────────────────", RegexOptions.Multiline);
+        return Regex.Replace(text, @"^\s*([-*_]){3,}\s*$", "───────────────────────────", RegexOptions.Multiline);
     }
 
     private static string ProcessBoldAndItalic(string text)
     {
-        // Bold: **text** or __text__
         text = Regex.Replace(text, @"(\*\*|__)(?![*\s])(.*?)(?<![*\s])\1", "<b>$2</b>");
-
-        // Italic: *text* or _text_
         text = Regex.Replace(text, @"(\*|_)(?![*\s])(.*?)(?<![*\s])\1", "<i>$2</i>");
-
-        // Bold + Italic: ***text*** or ___text___
         text = Regex.Replace(text, @"(\*\*\*|___)(?![*\s])(.*?)(?<![*\s])\1", "<b><i>$2</i></b>");
 
         return text;
@@ -193,26 +191,22 @@ internal static class TextFileHandler
 
     private static string ProcessStrikethrough(string text)
     {
-        // Strikethrough: ~~text~~
         return Regex.Replace(text, @"~~(.+?)~~", "<s>$1</s>");
     }
 
     private static string ProcessLinks(string text)
     {
-        // Simple pattern that just matches the link itself
         return Regex.Replace(text, @"\[([^\]]+)\]\(([^)]+)\)",
             "<link=\"$2\"> <b>$1</b></link> ");
     }
 
     private static string ProcessInlineCode(string text)
     {
-        // Inline code with monospace-like appearance
         return Regex.Replace(text, @"`([^`]+)`", "<color=#FF8C00><size=85%>$1</size></color>");
     }
 
     private static string ProcessLineBreaks(string text)
     {
-        // Convert double newlines to proper paragraph breaks
         return Regex.Replace(text, @"\n\s*\n", "\n\n");
     }
 }

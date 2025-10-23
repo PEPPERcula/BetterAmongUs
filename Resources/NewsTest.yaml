@@ -1,10 +1,24 @@
-show: false
-type: 1
-id: 110000
-title: Main Header
-subtitle: Main Header SubText
-listtitle: List Name
-date: 2025-01-01T12:00:00.0000000Z
+^show: true
+^type: 1
+^id: 110005
+^title: Long time no see :)
+^subtitle: We are back!
+^listtitle: BAU v1.3.0
+^date: 2025-01-01T12:00:00.0000000Z
 
-content:
- Text here
+^content-en_US:
+ # Better Among Us v1.3.0
+
+ We are thrilled to announce this release of **BetterAmongUs**, a mod designed to enhance your Among Us experience!
+ ---
+
+ ## Change Log
+
+ #### New Features
+ - **Outfit Presets**: Added 5 outfit presets!
+ ---
+ #### Improvements
+ - **Performance Optimization**: Reduced lag and improved frame rate
+ ---
+ #### Bug Fixes
+ - Fixed disconnect issues during emergency meetings
