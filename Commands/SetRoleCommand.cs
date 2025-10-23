@@ -15,18 +15,15 @@ internal class SetRoleCommand : BaseCommand
 
     internal SetRoleCommand()
     {
-        _arguments = new Lazy<BaseArgument[]>(() => new BaseArgument[]
+        playerArgument = new PlayerArgument(this);
+        roleArgument = new StringArgument(this, "{role}")
         {
-            new PlayerArgument(this),
-            new StringArgument(this, "{role}"),
-        }); ;
-        roleArgument.GetArgSuggestions = () => { return RoleManager.Instance.AllRoles.ToArray().Select(role => role.NiceName.ToLower()).ToArray(); };
+            GetArgSuggestions = () => { return RoleManager.Instance.AllRoles.ToArray().Select(role => role.NiceName.ToLower()).ToArray(); }
+        };
+        Arguments = [playerArgument, roleArgument];
     }
-    private readonly Lazy<BaseArgument[]> _arguments;
-    internal override BaseArgument[]? Arguments => _arguments.Value;
-
-    private PlayerArgument? playerArgument => (PlayerArgument)Arguments[0];
-    private StringArgument? roleArgument => (StringArgument)Arguments[1];
+    private PlayerArgument playerArgument { get; }
+    private StringArgument roleArgument { get; }
 
     internal override bool ShowCommand() => GameState.IsHost && BAUPlugin.MyData.HasAll() && BAUPlugin.MyData.IsVerified();
 

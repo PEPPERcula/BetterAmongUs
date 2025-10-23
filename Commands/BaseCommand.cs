@@ -18,7 +18,7 @@ internal abstract class BaseCommand
     internal abstract string Name { get; }
     internal virtual string[] ShortNames => [];
     internal abstract string Description { get; }
-    internal virtual BaseArgument[]? Arguments { get; } = [];
+    internal BaseArgument[] Arguments { get; set; } = [];
     internal virtual bool SetChatTimer { get; set; } = false;
     internal virtual bool ShowCommand() => true;
     internal virtual bool ShowSuggestion() => ShowCommand();

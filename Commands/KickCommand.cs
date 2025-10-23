@@ -11,17 +11,13 @@ internal class KickCommand : BaseCommand
     internal override string Description => "Kick a player from the game";
     public KickCommand()
     {
-        _arguments = new Lazy<BaseArgument[]>(() => new BaseArgument[]
-        {
-            new PlayerArgument(this),
-            new BoolArgument(this, "{ban}"),
-        });
+        playerArgument = new PlayerArgument(this);
+        boolArgument = new BoolArgument(this, "{ban}");
+        Arguments = [playerArgument, boolArgument];
     }
-    private readonly Lazy<BaseArgument[]> _arguments;
-    internal override BaseArgument[]? Arguments => _arguments.Value;
+    private PlayerArgument playerArgument { get; }
+    private BoolArgument boolArgument { get; }
 
-    private PlayerArgument? playerArgument => (PlayerArgument)Arguments[0];
-    private BoolArgument? boolArgument => (BoolArgument)Arguments[1];
     internal override bool ShowCommand() => GameState.IsHost;
     internal override void Run()
     {

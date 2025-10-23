@@ -10,15 +10,10 @@ internal class SetPrefixCommand : BaseCommand
 
     internal SetPrefixCommand()
     {
-        _arguments = new Lazy<BaseArgument[]>(() => new BaseArgument[]
-        {
-            new StringArgument(this, "{prefix}"),
-        });
+        prefixArgument = new StringArgument(this, "{prefix}");
+        Arguments = [prefixArgument];
     }
-    private readonly Lazy<BaseArgument[]> _arguments;
-    internal override BaseArgument[]? Arguments => _arguments.Value;
-
-    private StringArgument? prefixArgument => (StringArgument)Arguments[0];
+    private StringArgument? prefixArgument { get; }
 
     internal override void Run()
     {
