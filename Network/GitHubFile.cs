@@ -33,15 +33,17 @@ internal class GitHubFile
         {
             if (showProgress)
             {
+                int dotCount = (int)(Time.time * 2f) % 4;
+                string dots = new('.', dotCount);
                 float progress = www.downloadProgress * 100f;
-                CustomLoadingBarManager.SetLoadingPercent(progress, $"Downloading... {progress:F1}%");
+                CustomLoadingBarManager.SetLoadingPercent(progress, $"Downloading{dots}");
             }
             yield return null;
         }
 
         if (www.result == UnityWebRequest.Result.Success)
         {
-            CustomLoadingBarManager.SetLoadingPercent(100f, "Saving file...");
+            CustomLoadingBarManager.SetLoadingPercent(100f, "Saving File!");
             yield return new WaitForSeconds(1f);
             CustomLoadingBarManager.ToggleLoadingBar(false);
         }

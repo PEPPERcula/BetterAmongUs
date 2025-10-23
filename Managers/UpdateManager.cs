@@ -77,6 +77,7 @@ internal class UpdateManager : MonoBehaviour
         button.unpressedSprite.enabled = true;
         button.pressedSprite.enabled = false;
         yield return new WaitForSeconds(0.1f);
+        button.gameObject.SetActive(false);
 
         mainMenu = GameObject.Find("MainMenuManager");
         ambience = GameObject.Find("Ambience");
@@ -93,6 +94,13 @@ internal class UpdateManager : MonoBehaviour
                 yield return new WaitForSeconds(0.2f);
                 Utils.ShowPopUp("Update complete\nRestart required!");
             }
+        }
+        else
+        {
+            mainMenu?.SetActive(true);
+            ambience?.SetActive(true);
+            yield return new WaitForSeconds(0.2f);
+            Utils.ShowPopUp("Download link missing!");
         }
     }
 }

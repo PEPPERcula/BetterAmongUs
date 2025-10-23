@@ -94,10 +94,9 @@ internal class UpdateData
         }
 
         object waiting = true;
-        var temp = Path.Combine(Path.GetTempPath(), "BetterAmongUs.dll.temp");
-        yield return GitHubFile.CoDownloadFile(DllLink, temp, path =>
+        var dllPath = Assembly.GetExecutingAssembly().Location;
+        yield return GitHubFile.CoDownloadFile(DllLink, dllPath + ".temp", path =>
         {
-            var dllPath = Assembly.GetExecutingAssembly().Location;
             File.Move(dllPath, dllPath + ".old");
             File.Move(path, dllPath);
             waiting = false;
