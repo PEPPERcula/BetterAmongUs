@@ -4,13 +4,37 @@ namespace BetterAmongUs.Helpers;
 
 internal static class RoleHelper
 {
-    internal static RoleBehaviour? GetBehaviour(this RoleTypes role) => RoleManager.Instance?.AllRoles.FirstOrDefaultIl2Cpp(r => r.Role == role);
+    private static readonly Lazy<Dictionary<RoleTypes, RoleBehaviour>> roleLookup =
+        new(() =>
+        {
+            var dict = new Dictionary<RoleTypes, RoleBehaviour>();
+            foreach (var r in RoleManager.Instance.AllRoles)
+            {
+                dict[r.Role] = r;
+            }
+            return dict;
+        });
+
+    internal static RoleBehaviour? GetBehaviour(this RoleTypes role)
+    {
+        var lookup = roleLookup.Value;
+        return lookup.TryGetValue(role, out var behaviour) ? behaviour : null;
+    }
 
     internal static bool IsImpostorRole(RoleTypes role) =>
         role.GetBehaviour().TeamType is RoleTeamTypes.Impostor;
 
     internal static string GetRoleName(this RoleTypes role)
     {
+        if (role is RoleTypes.ImpostorGhost)
+        {
+            return RoleTypes.Impostor.GetBehaviour()?.NiceName ?? "???";
+        }
+        else if (role is RoleTypes.CrewmateGhost)
+        {
+            return RoleTypes.Crewmate.GetBehaviour()?.NiceName ?? "???";
+        }
+
         return role.GetBehaviour()?.NiceName ?? "???";
     }
 

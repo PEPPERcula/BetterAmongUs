@@ -80,7 +80,6 @@ internal static class HostManager
                 player.BetterPlayerControl().NameSetLastFor[target.Data] = newName;
 
                 RPC.RpcSetNameForTarget(player, newName, target);
-                Logger.Warning($"Setting {player.BetterData().RealName} name to {newName}, for {target.BetterData().RealName}");
             }
         }
     }

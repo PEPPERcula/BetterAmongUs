@@ -18,7 +18,7 @@ internal class DumpCommand : BaseCommand
         string logFilePath = Path.Combine(BetterDataManager.filePathFolder, "better-log.txt");
         string log = File.ReadAllText(logFilePath);
         string newLog = string.Empty;
-        string[] logArray = log.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+        string[] logArray = log.Split([Environment.NewLine], StringSplitOptions.None);
         foreach (string text in logArray)
         {
             if (text.Contains("[PrivateLog]"))

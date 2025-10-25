@@ -20,10 +20,23 @@ internal static class RoleManagerPatch
         return clientData?.BetterData()?.IsVerifiedBetterUser != true;
     };
 
+    [HarmonyPatch(nameof(RoleManager.SetRole))]
+    [HarmonyPrefix]
+    private static void RoleManager_Prefix(RoleManager __instance, PlayerControl targetPlayer, RoleTypes roleType)
+    {
+        if (RoleManager.IsGhostRole(roleType))
+        {
+            if (!RoleManager.IsGhostRole(targetPlayer.Data.RoleType))
+            {
+                targetPlayer.BetterData().RoleInfo.DeadDisplayRole = targetPlayer.Data.RoleType;
+            }
+        }
+    }
+
     // Better role algorithm
     [HarmonyPatch(nameof(RoleManager.SelectRoles))]
     [HarmonyPrefix]
-    private static bool RoleManager_Prefix(/*RoleManager __instance*/)
+    private static bool SelectRoles_Prefix(/*RoleManager __instance*/)
     {
         if (!GameState.IsHideNSeek)
         {

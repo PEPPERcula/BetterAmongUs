@@ -45,6 +45,13 @@ internal static class Colors
     internal static string Color32ToHex(this Color32 color) => $"#{color.r:X2}{color.g:X2}{color.b:X2}{255:X2}";
 
     /// <summary>
+    /// Converts a Color32 object to a hexadecimal string representation.
+    /// </summary>
+    /// <param name="color">The Color32 object to convert.</param>
+    /// <returns>A hexadecimal string representing the Color32 object.</returns>
+    internal static string ColorToHex(this Color color) => $"#{color.r:X2}{color.g:X2}{color.b:X2}{255:X2}";
+
+    /// <summary>
     /// Converts a hexadecimal color string to a Color32 object.
     /// </summary>
     /// <param name="hex">The hexadecimal color string to convert.</param>
@@ -96,4 +103,7 @@ internal static class Colors
 
         return Color.Lerp(colors[segmentIndex], colors[segmentIndex + 1], segmentT);
     }
+
+    internal static readonly Color CrewmateBlue = new Color32(140, byte.MaxValue, byte.MaxValue, byte.MaxValue);
+    internal static readonly Color ImpostorRed = new Color32(byte.MaxValue, 25, 25, byte.MaxValue);
 }
