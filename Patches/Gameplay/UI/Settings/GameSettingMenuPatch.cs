@@ -63,9 +63,12 @@ internal static class GameSettingMenuPatch
                 BetterGameSettings.UseBanNameList = OptionCheckboxItem.Create(400, BetterSettingsTab, "BetterSetting.Setting.UseBanNameList", true);
                 BetterGameSettings.UseBanWordList = OptionCheckboxItem.Create(500, BetterSettingsTab, "BetterSetting.Setting.UseBanWordList", true);
                 BetterGameSettings.UseBanWordListOnlyLobby = OptionCheckboxItem.Create(1400, BetterSettingsTab, "BetterSetting.Setting.UseBanWordListOnlyLobby", true, BetterGameSettings.UseBanWordList);
-                OptionDividerItem.Create(BetterSettingsTab);
-                BetterGameSettings.ShowRoleForClients = OptionCheckboxItem.Create(1700, BetterSettingsTab, "BetterSetting.Setting.ShowRoleForClients", false);
-                OptionDividerItem.Create(BetterSettingsTab);
+
+                /*
+                  OptionDividerItem.Create(BetterSettingsTab);
+                  BetterGameSettings.ShowRoleForClients = OptionCheckboxItem.Create(1700, BetterSettingsTab, "BetterSetting.Setting.ShowRoleForClients", false);
+                  OptionDividerItem.Create(BetterSettingsTab);
+                  */
             }
 
             OptionTitleItem.Create(BetterSettingsTab, "BetterSetting.TextHeader.Detections");
@@ -73,12 +76,6 @@ internal static class GameSettingMenuPatch
             BetterGameSettings.DetectedLevelAbove = OptionIntItem.Create(600, BetterSettingsTab, "BetterSetting.Setting.DetectedLevelAbove", (100, 5000, 5), 200, ("Lv ", ""));
             BetterGameSettings.DetectCheatClients = OptionCheckboxItem.Create(700, BetterSettingsTab, "BetterSetting.Setting.DetectCheatClients", true);
             BetterGameSettings.DetectInvalidRPCs = OptionCheckboxItem.Create(800, BetterSettingsTab, "BetterSetting.Setting.DetectInvalidRPCs", true);
-
-            /*
-            TitleList.Add(new BetterOptionDividerItem().Create(BetterSettingsTab));
-            TitleList.Add(new BetterOptionTitleItem().Create(BetterSettingsTab, $"<color=#f20>Experimental</color>"));
-            BetterGameSettings.CancelInvalidSabotage = new BetterOptionCheckboxItem().Create(100000, BetterSettingsTab, "Detect Invalid Sabotages", false);
-            */
         }
 
         if (IsPreload || GameState.IsHost)
