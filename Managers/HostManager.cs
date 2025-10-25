@@ -19,6 +19,7 @@ internal static class HostManager
 
     internal static void SyncNames(NameSyncType syncType, float sDelay, int repeat = 1)
     {
+        return;
         if (!GameState.IsHost || !BetterGameSettings.ShowRoleForClients.GetValue()) return;
 
         if (syncCoroutine != null && GameData.Instance != null)
@@ -46,6 +47,7 @@ internal static class HostManager
 
     internal static void SyncNames(NameSyncType syncType)
     {
+        return;
         if (!GameState.IsHost || !BetterGameSettings.ShowRoleForClients.GetValue()) return;
 
         StringBuilder sb = new();
