@@ -1,4 +1,5 @@
-﻿using BepInEx.Unity.IL2CPP.Utils;
+﻿using AmongUs.InnerNet.GameDataMessages;
+using BepInEx.Unity.IL2CPP.Utils;
 using BetterAmongUs.Helpers;
 using BetterAmongUs.Items.Structs;
 using BetterAmongUs.Modules;
@@ -26,7 +27,7 @@ internal class NetworkManager
         }
         catch (Exception ex)
         {
-            Logger.Error(ex);
+            Logger.Error(ex, "NetworkManager");
         }
         finally
         {
@@ -126,34 +127,34 @@ internal class NetworkManager
         reader.Position = 0;
         byte tag = reader.Tag;
 
-        switch (tag)
+        switch ((GameDataTypes)tag)
         {
-            case 1: // Object deserialization
+            case GameDataTypes.DataFlag: // Object deserialization
                 yield return HandleObjectDeserialization(reader, msgNum, attemptCount);
                 break;
 
-            case 2: // RPC handling
+            case GameDataTypes.RpcFlag: // RPC handling
                 yield return HandleRpcCall(reader, msgNum, attemptCount);
                 break;
 
-            case 4: // Spawn handling
+            case GameDataTypes.SpawnFlag: // Spawn handling
                 InnerNetClient.StartCoroutine(InnerNetClient.CoHandleSpawn(reader));
                 break;
 
-            case 5: // Object destruction
+            case GameDataTypes.DespawnFlag: // Object destruction
                 yield return HandleObjectDestruction(reader);
                 break;
 
-            case 7: // Client ready status
+            case GameDataTypes.ReadyFlag: // Client ready status
                 yield return HandleClientReady(reader);
                 break;
 
-            case 6: // Scene change
+            case GameDataTypes.SceneChangeFlag: // Scene change
                 HandleSceneChange(reader);
                 break;
 
-            case 207: // Special case (ulong parsing)
-                yield return HandleSpecialCase(reader);
+            case GameDataTypes.XboxDeclareXuid: // Special case (ulong parsing) (DO NOT USE)
+                yield return HandleXboxDeclareXuid(reader);
                 break;
 
             default: // Invalid tags
@@ -323,23 +324,29 @@ internal class NetworkManager
         }
     }
 
-    private static IEnumerator HandleSpecialCase(MessageReader reader)
+    private static IEnumerator HandleXboxDeclareXuid(MessageReader reader)
     {
+        /*
         try
         {
-            ulong.Parse(reader.ReadString());
+            string data = reader.ReadString();
+            if (ulong.TryParse(data, out ulong parsedValue))
+            {
+            }
+            yield break;
         }
         finally
         {
             reader.Recycle();
         }
+        */
+        reader.Recycle();
         yield break;
     }
 
     private static void HandleInvalidTag(MessageReader reader)
     {
-        Debug.Log($"Bad tag {reader.Tag} at {reader.Offset}+{reader.Position}={reader.Length}: " +
-                  string.Join(" ", reader.Buffer.Take(128)));
+        Logger.Warning($"Bad tag {reader.Tag} at {reader.Offset}+{reader.Position}={reader.Length}: " + string.Join(" ", reader.Buffer.Take(128)), "NetworkManager");
         reader.Recycle();
     }
 

@@ -1,5 +1,5 @@
+using AmongUs.InnerNet.GameDataMessages;
 using BetterAmongUs.Managers;
-using BetterAmongUs.Network;
 using BetterAmongUs.Patches.Gameplay.UI;
 using Hazel;
 using InnerNet;
@@ -8,7 +8,7 @@ namespace BetterAmongUs.Modules.AntiCheat;
 
 internal class DeserializeNetObjectHandler : RPCHandler
 {
-    internal override byte GameDataTag => (byte)HandleGameDataTags.NetObjectDeserialize;
+    internal override byte GameDataTag => (byte)GameDataTypes.DataFlag;
 
     internal override void HandleGameData(MessageReader reader)
     {
