@@ -4,7 +4,7 @@ internal static class ModInfo
 {
     internal static readonly ReleaseTypes ReleaseBuildType = ReleaseTypes.Release;
     internal const string BetaNum = "0";
-    internal const string HotfixNum = "2";
+    internal const string HotfixNum = "3";
     internal const bool IsHotFix = true;
     internal const string PluginName = "BetterAmongUs";
     internal const string PluginGuid = "com.d1gq.betteramongus";
