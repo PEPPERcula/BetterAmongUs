@@ -155,7 +155,6 @@ internal static class Utils
             }
 
             SoundManager.Instance.PlaySound(chat.messageSound, false, 1f, null).pitch = 0.5f + data.PlayerId / 15f;
-            ChatPatch.ChatControllerPatch.SetChatPoolTheme(pooledBubble);
         }
         catch
         {
