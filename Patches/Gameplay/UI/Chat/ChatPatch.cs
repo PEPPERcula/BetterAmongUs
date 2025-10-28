@@ -110,17 +110,29 @@ internal static class ChatPatch
         // Add extra information to chat bubble
         [HarmonyPatch(nameof(ChatController.AddChat))]
         [HarmonyPostfix]
-        private static void AddChat_Postfix(ChatController __instance, [HarmonyArgument(0)] PlayerControl sourcePlayer, [HarmonyArgument(1)] string chatText)
+        private static void AddChat_Postfix(ChatController __instance, PlayerControl sourcePlayer, string chatText)
         {
-            ChatBubble? chatBubble = SetChatPoolTheme();
-            if (chatBubble == null) return;
+            if (sourcePlayer.IsAlive() || !PlayerControl.LocalPlayer.IsAlive())
+            {
+                Logger.Log($"{sourcePlayer.Data.PlayerName} -> {chatText}", "ChatLog");
+            }
+            else
+            {
+                Logger.LogPrivate($"{sourcePlayer.Data.PlayerName} -> {chatText}", "ChatLog");
+            }
+        }
 
-            StringBuilder sbTag = new StringBuilder();
-            StringBuilder sbInfo = new StringBuilder();
+        [HarmonyPatch(nameof(ChatController.SetChatBubbleName))]
+        [HarmonyPostfix]
+        private static void SetChatBubbleName_Postfix(ChatController __instance, ChatBubble bubble, NetworkedPlayerInfo playerInfo)
+        {
+            StringBuilder sbTag = new();
+            StringBuilder sbInfo = new();
 
+            var sourcePlayer = playerInfo.Object;
             string hashPuid = Utils.GetHashPuid(sourcePlayer);
-            string friendCode = sourcePlayer.Data.FriendCode;
-            string playerName = sourcePlayer.BetterData().RealName ?? "";
+            string friendCode = playerInfo.FriendCode;
+            string playerName = playerInfo.BetterData()?.RealName ?? "???";
             string Role = $"<size=75%><color={sourcePlayer.GetTeamHexColor()}>{sourcePlayer.GetRoleName()}</color></size>+++";
 
             if (GameState.IsLobby && !GameState.IsFreePlay)
@@ -183,15 +195,8 @@ internal static class ChatPatch
                 playerName += $" {sbInfo}";
             }
 
-            chatBubble.NameText.text = playerName;
-            if (sourcePlayer.IsAlive() || !PlayerControl.LocalPlayer.IsAlive())
-            {
-                Logger.Log($"{sourcePlayer.Data.PlayerName} -> {chatText}", "ChatLog");
-            }
-            else
-            {
-                Logger.LogPrivate($"{sourcePlayer.Data.PlayerName} -> {chatText}", "ChatLog");
-            }
+            bubble.NameText.SetText(playerName);
+            SetChatPoolTheme(bubble);
         }
 
         [HarmonyPatch(nameof(ChatController.AddChatNote))]
@@ -240,39 +245,33 @@ internal static class ChatPatch
         }
 
         // Set chat theme
-        internal static ChatBubble? SetChatPoolTheme(ChatBubble? asChatBubble = null)
+        internal static ChatBubble SetChatPoolTheme(ChatBubble? asChatBubble = null)
         {
-            ChatBubble Get() => HudManager.Instance.Chat.chatBubblePool.activeChildren
-                .SelectIl2Cpp(c => c.GetComponent<ChatBubble>())
-                .Last();
-
-            ChatBubble chatBubble = asChatBubble ??= Get();
-
-            if (chatBubble == null) return chatBubble;
+            ChatBubble chatBubble = asChatBubble ?? HudManager.Instance.Chat.GetPooledBubble();
 
             if (BAUPlugin.ChatDarkMode.Value)
             {
-                chatBubble.transform.Find("ChatText (TMP)").GetComponent<TextMeshPro>().color = new Color(1f, 1f, 1f, 1f);
-                chatBubble.transform.Find("Background").GetComponent<SpriteRenderer>().color = new Color(0.15f, 0.15f, 0.15f, 1f);
+                chatBubble.transform.Find("ChatText (TMP)").GetComponentInChildren<TextMeshPro>(true).color = new Color(1f, 1f, 1f, 1f);
+                chatBubble.transform.Find("Background").GetComponentInChildren<SpriteRenderer>(true).color = new Color(0.15f, 0.15f, 0.15f, 1f);
 
                 if (chatBubble.transform.Find("PoolablePlayer/xMark") != null)
                 {
-                    if (chatBubble.transform.Find("PoolablePlayer/xMark").GetComponent<SpriteRenderer>().enabled == true)
+                    if (chatBubble.transform.Find("PoolablePlayer/xMark").GetComponentInChildren<SpriteRenderer>(true).enabled == true)
                     {
-                        chatBubble.transform.Find("Background").GetComponent<SpriteRenderer>().color = new Color(0.15f, 0.15f, 0.15f, 0.5f);
+                        chatBubble.transform.Find("Background").GetComponentInChildren<SpriteRenderer>(true).color = new Color(0.15f, 0.15f, 0.15f, 0.5f);
                     }
                 }
             }
             else
             {
-                chatBubble.transform.Find("ChatText (TMP)").GetComponent<TextMeshPro>().color = new Color(0f, 0f, 0f, 1f);
-                chatBubble.transform.Find("Background").GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
+                chatBubble.transform.Find("ChatText (TMP)").GetComponentInChildren<TextMeshPro>(true).color = new Color(0f, 0f, 0f, 1f);
+                chatBubble.transform.Find("Background").GetComponentInChildren<SpriteRenderer>(true).color = new Color(1f, 1f, 1f, 1f);
 
                 if (chatBubble.transform.Find("PoolablePlayer/xMark") != null)
                 {
-                    if (chatBubble.transform.Find("PoolablePlayer/xMark").GetComponent<SpriteRenderer>().enabled == true)
+                    if (chatBubble.transform.Find("PoolablePlayer/xMark").GetComponentInChildren<SpriteRenderer>(true).enabled == true)
                     {
-                        chatBubble.transform.Find("Background").GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0.5f);
+                        chatBubble.transform.Find("Background").GetComponentInChildren<SpriteRenderer>(true).color = new Color(1f, 1f, 1f, 0.5f);
                     }
                 }
             }
