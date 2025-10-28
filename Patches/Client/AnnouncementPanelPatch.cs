@@ -5,6 +5,7 @@ using BetterAmongUs.Items;
 using BetterAmongUs.Items.Enums;
 using HarmonyLib;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using System.Globalization;
 using UnityEngine;
 
 namespace BetterAmongUs.Patches.Client;
@@ -29,7 +30,11 @@ internal static class AnnouncementPanelPatch
             }
         }
 
-        finalAllNews.Sort((a1, a2) => DateTime.Compare(DateTime.Parse(a2.Date), DateTime.Parse(a1.Date)));
+        finalAllNews.Sort((a1, a2) =>
+            DateTime.Compare(
+                DateTime.Parse(a2.Date, null, DateTimeStyles.RoundtripKind),
+                DateTime.Parse(a1.Date, null, DateTimeStyles.RoundtripKind)
+            ));
 
         aRange = new Il2CppReferenceArray<Announcement>(finalAllNews.Count);
         for (int i = 0; i < finalAllNews.Count; i++)
