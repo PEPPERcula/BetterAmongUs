@@ -20,15 +20,6 @@ enum CustomRPC : int
     CheckSecretHashFromPlayer,
 }
 
-enum HandleGameDataTags : byte
-{
-    NetObjectDeserialize = 1,
-    NetObjectHandleRPC = 2,
-    NetObjectSpawn = 4,
-    NetObjectDespawn = 5,
-    ClientDataReady = 7,
-}
-
 internal static class RPC
 {
     internal static void RpcSetNameForTarget(PlayerControl player, string name, PlayerControl target)

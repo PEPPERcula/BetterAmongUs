@@ -1,5 +1,5 @@
+using AmongUs.InnerNet.GameDataMessages;
 using BetterAmongUs.Managers;
-using BetterAmongUs.Network;
 using Hazel;
 using InnerNet;
 
@@ -7,7 +7,7 @@ namespace BetterAmongUs.Modules.AntiCheat;
 
 internal class DespawnNetObjectHandler : RPCHandler
 {
-    internal override byte GameDataTag => (byte)HandleGameDataTags.NetObjectDespawn;
+    internal override byte GameDataTag => (byte)GameDataTypes.DespawnFlag;
 
     internal override void HandleGameData(MessageReader reader)
     {

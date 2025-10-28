@@ -53,7 +53,7 @@ static class PlayerControlHelper
         }
 
         string loading = Translator.GetString("Player.Loading");
-        string nameText = player.cosmetics.nameText.text;
+        string? nameText = player.cosmetics?.nameText?.text;
 
         if (nameText == "???" || nameText == "Player" || nameText == loading ||
             string.IsNullOrEmpty(nameText) ||

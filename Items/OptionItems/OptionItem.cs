@@ -272,7 +272,7 @@ internal abstract class OptionItem
         button.ReceiveMouseOut();
         button.interactableHoveredColor = Color.gray;
         button.interactableClickColor = Color.white;
-        button.buttonSprite.sprite = Utils.LoadSprite("TheBetterRoles.Resources.Images.Icons.QuestionMark.png", 50);
+        button.buttonSprite.sprite = Utils.LoadSprite("BetterAmongUs.Resources.Images.QuestionMark.png", 50);
         button.OnClick = new();
         button.OnClick.AddListener((Action)(() =>
         {

@@ -71,22 +71,12 @@ internal class ExtendedPlayerInfo : MonoBehaviour, IMonoExtension<NetworkedPlaye
         }
     }
 
-    internal void LateUpdate()
-    {
-        if (gameObject == null) return;
-
-        if (_Data != null && string.IsNullOrEmpty(RealName) && !string.IsNullOrEmpty(_Data.PlayerName))
-        {
-            RealName = _Data.PlayerName;
-        }
-    }
-
     [HideFromIl2Cpp]
     internal HandshakeHandler HandshakeHandler { get; }
     [HideFromIl2Cpp]
     internal UserData? MyUserData { get; private set; } = UserData.AllUsers.First();
     internal byte _PlayerId { get; private set; }
-    internal string? RealName { get; private set; }
+    internal string RealName => _Data?.PlayerName ?? "???";
     internal string NameSetAsLast { get; set; } = string.Empty;
     internal bool IsBetterUser { get; set; } = false;
     internal bool IsVerifiedBetterUser { get; set; } = false;

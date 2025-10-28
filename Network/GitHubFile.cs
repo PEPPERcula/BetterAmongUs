@@ -36,6 +36,10 @@ internal class GitHubFile
                 int dotCount = (int)(Time.time * 2f) % 4;
                 string dots = new('.', dotCount);
                 float progress = www.downloadProgress * 100f;
+                if (progress < 1f)
+                {
+                    CustomLoadingBarManager.SetLoadingPercent(0f, $"Starting Download{dots}");
+                }
                 CustomLoadingBarManager.SetLoadingPercent(progress, $"Downloading{dots}");
             }
             yield return null;
