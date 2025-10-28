@@ -124,8 +124,10 @@ internal static class ChatPatch
 
         [HarmonyPatch(nameof(ChatController.SetChatBubbleName))]
         [HarmonyPostfix]
-        private static void SetChatBubbleName_Postfix(ChatController __instance, ChatBubble bubble, NetworkedPlayerInfo playerInfo)
+        private static void SetChatBubbleName_Postfix(ChatController __instance, ChatBubble bubble, NetworkedPlayerInfo playerInfo, bool isDead, bool didVote)
         {
+            if (didVote) return;
+
             StringBuilder sbTag = new();
             StringBuilder sbInfo = new();
 
@@ -196,21 +198,13 @@ internal static class ChatPatch
             }
 
             bubble.NameText.SetText(playerName);
-            SetChatPoolTheme(bubble);
         }
 
-        [HarmonyPatch(nameof(ChatController.AddChatNote))]
+        [HarmonyPatch(nameof(ChatController.GetPooledBubble))]
         [HarmonyPostfix]
-        private static void AddChatNote_Postfix(ChatController __instance)
+        private static void GetPooledBubble_Postfix(ChatController __instance, ChatBubble __result)
         {
-            SetChatPoolTheme();
-        }
-
-        [HarmonyPatch(nameof(ChatController.AddChatWarning))]
-        [HarmonyPostfix]
-        private static void AddChatWarning_Postfix(ChatController __instance)
-        {
-            SetChatPoolTheme();
+            SetChatPoolTheme(__result);
         }
 
         internal static void SetChatTheme()
@@ -245,9 +239,9 @@ internal static class ChatPatch
         }
 
         // Set chat theme
-        internal static ChatBubble SetChatPoolTheme(ChatBubble? asChatBubble = null)
+        internal static ChatBubble SetChatPoolTheme(ChatBubble asChatBubble)
         {
-            ChatBubble chatBubble = asChatBubble ?? HudManager.Instance.Chat.GetPooledBubble();
+            ChatBubble chatBubble = asChatBubble;
 
             if (BAUPlugin.ChatDarkMode.Value)
             {

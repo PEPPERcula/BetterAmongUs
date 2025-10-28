@@ -183,7 +183,7 @@ internal class PlayerInfoDisplay : MonoBehaviour
         string newText = Utils.FormatInfo(sb);
         if (newText != lastValue)
         {
-            textMesh.SetText(newText);
+            textMesh?.SetText(newText);
             lastValue = newText;
         }
     }

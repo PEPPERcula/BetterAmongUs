@@ -155,7 +155,6 @@ internal static class Utils
             }
 
             SoundManager.Instance.PlaySound(chat.messageSound, false, 1f, null).pitch = 0.5f + data.PlayerId / 15f;
-            ChatPatch.ChatControllerPatch.SetChatPoolTheme(pooledBubble);
         }
         catch
         {
@@ -370,7 +369,7 @@ internal static class Utils
     // Platform utilities
     internal static string GetPlatformName(PlayerControl player, bool useTag = false)
     {
-        if (player?.GetClient() == null) return string.Empty;
+        if (player?.GetClient()?.PlatformData == null) return string.Empty;
         return GetPlatformName(player.GetClient().PlatformData.Platform, useTag);
     }
 
