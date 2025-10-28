@@ -307,23 +307,14 @@ internal static class ChatPatch
 
     private static Color GetCharColor(int length, Color color)
     {
+        Color[] colorGradient =
+        [
+            Color.green,
+            Color.yellow,
+            Color.red
+        ];
 
-        switch (length)
-        {
-            case int n when n > 117:
-                if (ColorUtility.TryParseHtmlString("#ff0000", out Color newColor1))
-                    color = newColor1;
-                break;
-            case int n when n > 74:
-                if (ColorUtility.TryParseHtmlString("#ffff00", out Color newColor3))
-                    color = newColor3;
-                break;
-            default:
-                if (ColorUtility.TryParseHtmlString("#00f04c", out Color newColor4))
-                    color = newColor4;
-                break;
-        }
-
-        return color;
+        (float min, float max) lerpRange = (0f, 117f);
+        return colorGradient.LerpColor(lerpRange, length);
     }
 }
