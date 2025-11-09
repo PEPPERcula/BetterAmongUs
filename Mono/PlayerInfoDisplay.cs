@@ -32,7 +32,6 @@ internal class PlayerInfoDisplay : MonoBehaviour
 
     // Cached regex patterns
     private static readonly Regex _friendCodePattern = new(@"^[a-zA-Z0-9#]+$", RegexOptions.Compiled);
-    private static readonly Regex _hashtagPattern = new(@"^#[0-9]{4}$", RegexOptions.Compiled);
 
     private CachedTranslations _cachedTranslations = new();
 
@@ -206,24 +205,47 @@ internal class PlayerInfoDisplay : MonoBehaviour
 
         string friendCode = _player.Data.FriendCode;
 
-        bool isValidFriendCode = !string.IsNullOrEmpty(friendCode) &&
-                               _friendCodePattern.IsMatch(friendCode) &&
-                               _hashtagPattern.IsMatch(friendCode) &&
-                               !friendCode.Contains(' ') &&
-                               Regex.Replace(friendCode, @"^#[0-9]{4}$", string.Empty).Length is > 10 or < 5;
-
-        color = isValidFriendCode ? "#ff0000" : "#00f7ff";
+        // Proper friend code validation
+        bool isValidFriendCode = true;
 
         if (string.IsNullOrEmpty(friendCode))
         {
             friendCode = _cachedTranslations.NoFriendCode;
             color = "#ff0000";
+            isValidFriendCode = false;
             TryKick();
         }
-        else if (!isValidFriendCode)
+        else
         {
-            TryKick();
+            // Check if it matches the basic pattern (alphanumeric and # only)
+            if (!_friendCodePattern.IsMatch(friendCode) || friendCode.Contains(' '))
+            {
+                isValidFriendCode = false;
+                TryKick();
+            }
+            else
+            {
+                // Check if it ends with # followed by exactly 4 digits
+                var hashtagMatch = Regex.Match(friendCode, @"#\d{4}$");
+                if (!hashtagMatch.Success)
+                {
+                    isValidFriendCode = false;
+                    TryKick();
+                }
+                else
+                {
+                    // The part before the # should be reasonable length
+                    string namePart = friendCode[..^5];
+                    if (namePart.Length < 5 || namePart.Length > 10)
+                    {
+                        isValidFriendCode = false;
+                        TryKick();
+                    }
+                }
+            }
         }
+
+        color = isValidFriendCode ? "#00f7ff" : "#ff0000";
 
         if (DataManager.Settings.Gameplay.StreamerMode)
         {
