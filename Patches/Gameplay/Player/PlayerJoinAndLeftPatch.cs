@@ -2,6 +2,7 @@ using BetterAmongUs.Data;
 using BetterAmongUs.Helpers;
 using BetterAmongUs.Modules;
 using BetterAmongUs.Mono;
+using BetterAmongUs.Patches.Gameplay.UI;
 using BetterAmongUs.Patches.Gameplay.UI.Settings;
 using HarmonyLib;
 using InnerNet;
@@ -67,6 +68,7 @@ internal static class OnPlayerLeftPatch
 {
     private static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData data, [HarmonyArgument(1)] DisconnectReasons reason)
     {
+        MeetingHudPatch.UpdateHostIcon();
     }
 }
 
