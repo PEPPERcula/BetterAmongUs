@@ -165,6 +165,7 @@ internal class BAUPlugin : BasePlugin
     internal static ConfigEntry<bool>? UnlockFPS { get; private set; }
     internal static ConfigEntry<bool>? ShowFPS { get; private set; }
     internal static ConfigEntry<string>? CommandPrefix { get; set; }
+    internal static ConfigEntry<int>? FavoriteColor { get; set; }
     private void LoadOptions()
     {
         PrivateOnlyLobby = Config.Bind("Mod", "PrivateOnlyLobby", false);
@@ -179,6 +180,7 @@ internal class BAUPlugin : BasePlugin
         UnlockFPS = Config.Bind("Better Options", "UnlockFPS", false);
         ShowFPS = Config.Bind("Better Options", "ShowFPS", false);
         CommandPrefix = Config.Bind("Client Options", "CommandPrefix", "/");
+        FavoriteColor = Config.Bind("Mod", "FavoriteColor", -1);
     }
 
     internal static string GetDataPathToAmongUs() => Application.persistentDataPath;

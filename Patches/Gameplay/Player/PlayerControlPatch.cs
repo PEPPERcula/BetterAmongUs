@@ -1,9 +1,11 @@
-﻿using BetterAmongUs.Helpers;
+﻿using BepInEx.Unity.IL2CPP.Utils.Collections;
+using BetterAmongUs.Helpers;
 using BetterAmongUs.Items.Enums;
 using BetterAmongUs.Items.OptionItems;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Mono;
 using HarmonyLib;
+using System.Collections;
 
 namespace BetterAmongUs.Patches.Gameplay.Player;
 
@@ -12,10 +14,25 @@ internal static class PlayerControlPatch
 {
     [HarmonyPatch(nameof(PlayerControl.Start))]
     [HarmonyPostfix]
-    private static void Start_Postfix(PlayerControl __instance)
+    private static void Start_Postfix(PlayerControl __instance, ref Il2CppSystem.Collections.IEnumerator __result)
     {
         BAUPlugin.AllPlayerControls.Add(__instance);
         OptionPlayerItem.UpdateAllValues();
+
+        __result = Effects.Sequence(__result, CoSetFavoriteColor(__instance).WrapToIl2Cpp());
+    }
+
+    private static IEnumerator CoSetFavoriteColor(PlayerControl player)
+    {
+        if (player.AmOwner)
+        {
+            if (BAUPlugin.FavoriteColor.Value >= 0 && player.cosmetics.ColorId != (byte)BAUPlugin.FavoriteColor.Value)
+            {
+                player.CmdCheckColor((byte)BAUPlugin.FavoriteColor.Value);
+            }
+        }
+
+        yield break;
     }
 
     [HarmonyPatch(nameof(PlayerControl.OnDestroy))]
