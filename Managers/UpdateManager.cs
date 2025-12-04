@@ -1,6 +1,7 @@
 ﻿using BepInEx.Unity.IL2CPP.Utils;
 using BetterAmongUs.Helpers;
 using BetterAmongUs.Network.Loaders;
+using Il2CppInterop.Runtime.Attributes;
 using System.Collections;
 using System.Reflection;
 using TMPro;
@@ -68,6 +69,7 @@ internal class UpdateManager : MonoBehaviour
     private GameObject? mainMenu;
     private GameObject? ambience;
 
+    [HideFromIl2Cpp]
     private IEnumerator CoPressDownload(DoNotPressButton button)
     {
         AmUpdateing = true;

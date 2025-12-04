@@ -2,6 +2,7 @@ using BetterAmongUs.Data;
 using BetterAmongUs.Helpers;
 using BetterAmongUs.Modules;
 using BetterAmongUs.Mono;
+using BetterAmongUs.Patches.Gameplay.UI;
 using BetterAmongUs.Patches.Gameplay.UI.Settings;
 using HarmonyLib;
 using InnerNet;
@@ -32,29 +33,34 @@ internal static class OnPlayerJoinedPatch
     {
         _ = new LateTask(() =>
         {
-            if (GameState.IsInGame)
+            if (GameState.IsHost)
             {
-                var player = Utils.PlayerFromClientId(client.Id);
-
-                // Auto ban player on ban list
-                if (BetterGameSettings.UseBanPlayerList.GetBool())
+                if (GameState.IsInGame)
                 {
-                    if (player != null)
+                    var player = Utils.PlayerFromClientId(client.Id);
+
+                    // Auto ban player on ban list
+                    if (BetterGameSettings.UseBanPlayerList.GetBool())
                     {
-                        if (TextFileHandler.CompareStringMatch(BetterDataManager.banPlayerListFile,
-                            BAUPlugin.AllPlayerControls.Select(player => player.Data.FriendCode)
-                            .Concat(BAUPlugin.AllPlayerControls.Select(player => player.GetHashPuid())).ToArray()))
+                        if (player != null)
                         {
-                            player.Kick(true, Translator.GetString("AntiCheat.BanPlayerListMessage"), bypassDataCheck: true);
+                            if (TextFileHandler.CompareStringMatch(BetterDataManager.banPlayerListFile,
+                                BAUPlugin.AllPlayerControls.Select(player => player.Data.FriendCode)
+                                .Concat(BAUPlugin.AllPlayerControls.Select(player => player.GetHashPuid())).ToArray()))
+                            {
+                                player.Kick(true, Translator.GetString("AntiCheat.BanPlayerListMessage"), bypassDataCheck: true);
+                            }
                         }
                     }
-                }
-
-                if (BetterGameSettings.UseBanNameList.GetBool())
-                {
-                    if (TextFileHandler.CompareStringFilters(BetterDataManager.banNameListFile, [player.Data.PlayerName]))
+                    if (BetterGameSettings.UseBanNameList.GetBool())
                     {
-                        player?.Kick(true, Translator.GetString("AntiCheat.BanPlayerListMessage"), bypassDataCheck: true);
+                        if (player != null)
+                        {
+                            if (TextFileHandler.CompareStringFilters(BetterDataManager.banNameListFile, [player.Data.PlayerName]))
+                            {
+                                player?.Kick(true, Translator.GetString("AntiCheat.BanPlayerListMessage"), bypassDataCheck: true);
+                            }
+                        }
                     }
                 }
             }
@@ -67,6 +73,19 @@ internal static class OnPlayerLeftPatch
 {
     private static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData data, [HarmonyArgument(1)] DisconnectReasons reason)
     {
+        if (GameState.IsLobby)
+        {
+            var favColorId = (byte)BAUPlugin.FavoriteColor.Value;
+            if (BAUPlugin.FavoriteColor.Value >= 0)
+            {
+                if (PlayerControl.LocalPlayer.cosmetics.ColorId != favColorId && data.ColorId == favColorId)
+                {
+                    PlayerControl.LocalPlayer.CmdCheckColor(favColorId);
+                }
+            }
+        }
+
+        MeetingHudPatch.UpdateHostIcon();
     }
 }
 

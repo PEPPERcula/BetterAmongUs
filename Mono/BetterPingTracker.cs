@@ -60,7 +60,7 @@ internal class BetterPingTracker : MonoBehaviour
         }
 
         // Add Host Info if not in lobby
-        if (GameState.IsInGamePlay && !GameState.IsFreePlay && AmongUsClient.Instance != null)
+        if (GameState.IsInGamePlay && !GameState.IsFreePlay && AmongUsClient.Instance != null && !GameState.IsMeeting)
         {
             var hostInfo = AmongUsClient.Instance.GetHost();
             if (hostInfo?.Character != null)

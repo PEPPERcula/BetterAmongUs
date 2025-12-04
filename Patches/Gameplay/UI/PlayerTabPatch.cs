@@ -16,7 +16,7 @@ internal static class PlayerTabPatch
 
     [HarmonyPatch(nameof(PlayerTab.OnEnable))]
     [HarmonyPrefix]
-    private static void OnEnable_Postfix(PlayerTab __instance)
+    private static void OnEnable_Prefix(PlayerTab __instance)
     {
         foreach (var button in presetButtons.ToArray())
         {
@@ -56,6 +56,58 @@ internal static class PlayerTabPatch
                 });
             });
             presetButtons.Add(button);
+        }
+    }
+
+    private static readonly List<SpriteRenderer> _favoriteIcons = [];
+
+    [HarmonyPatch(nameof(PlayerTab.OnEnable))]
+    [HarmonyPostfix]
+    private static void OnEnable_Postfix(PlayerTab __instance)
+    {
+        _favoriteIcons.Clear();
+
+        for (int i = 0; i < __instance.ColorChips.Count; i++)
+        {
+            var index = i;
+            var colorChip = __instance.ColorChips[i];
+            colorChip.Button.OnClick = new();
+            colorChip.Button.OnClick.AddListener((Action)(() =>
+            {
+                if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+                {
+                    if (BAUPlugin.FavoriteColor.Value == index)
+                    {
+                        BAUPlugin.FavoriteColor.Value = -1;
+                    }
+                    else
+                    {
+                        BAUPlugin.FavoriteColor.Value = index;
+                    }
+
+                    UpdateFavorite();
+                    return;
+                }
+
+                __instance.ClickEquip();
+            }));
+
+            var checkBox = colorChip.PlayerEquippedForeground.transform.Find("CheckMark").GetComponentInChildren<SpriteRenderer>();
+            var favoriteIcon = UnityEngine.Object.Instantiate(checkBox, colorChip.transform);
+            favoriteIcon.color = Color.yellow;
+            favoriteIcon.transform.localPosition -= new Vector3(0f, 0f, 15f);
+            _favoriteIcons.Add(favoriteIcon);
+        }
+
+        UpdateFavorite();
+    }
+
+    private static void UpdateFavorite()
+    {
+        for (int i = 0; i < _favoriteIcons.Count; i++)
+        {
+            SpriteRenderer? fav = _favoriteIcons[i];
+            fav.gameObject.SetActive(i == BAUPlugin.FavoriteColor.Value);
         }
     }
 

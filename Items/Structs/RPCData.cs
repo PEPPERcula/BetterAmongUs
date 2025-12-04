@@ -3,7 +3,7 @@ using InnerNet;
 
 namespace BetterAmongUs.Items.Structs;
 
-internal struct RPCData(InnerNetObject sender, SendOption sendOption, int targetId, RpcCalls callId, MessageReader reader)
+internal readonly struct RPCData(InnerNetObject sender, SendOption sendOption, int targetId, RpcCalls callId, MessageReader reader)
 {
     public readonly InnerNetObject Sender = sender;
     public readonly SendOption SendOption = sendOption;

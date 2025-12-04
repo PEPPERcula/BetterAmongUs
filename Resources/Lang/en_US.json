@@ -16,6 +16,7 @@
   "SystemMessage": "System Message",
   "SystemNotification": "System Notification",
   "ModdedLobbyMsg": "{0} does not support\n<b>Modded Lobbies</b>",
+  "HostInMeeting": "Host: {0}",
 
   "Player.Loading": "Loading",
   "Player.NoFriendCode": "No Friend Code",
