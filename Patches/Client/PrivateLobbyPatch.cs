@@ -96,7 +96,7 @@ internal static class PrivateLobbyPatch
             var button = __instance.HostPrivateButton.GetComponent<PassiveButton>();
             if (button != null)
             {
-                button.DestroyMono();
+                button.enabled = false;
 
                 var sprite = __instance.HostPrivateButton.transform.Find("Inactive").GetComponent<SpriteRenderer>();
                 if (sprite != null)

@@ -233,11 +233,11 @@ internal class NetworkManager
 
                     if (Enum.IsDefined(typeof(RpcCalls), rpcCall))
                     {
-                        innerNetObject.HandleRpc(rpcCall, reader);
+                        innerNetObject?.HandleRpc(rpcCall, reader);
                     }
                     else
                     {
-                        if (innerNetObject is PlayerControl player)
+                        if (innerNetObject is PlayerControl player && player != null)
                         {
                             RPC.HandleCustomRPC(player, rpcCall, reader);
                         }
