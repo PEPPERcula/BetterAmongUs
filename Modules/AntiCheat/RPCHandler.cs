@@ -48,11 +48,11 @@ internal abstract class RPCHandler
             {
                 try
                 {
-                    if (handlerFlag == HandlerFlag.Handle) handler.Handle(sender, MessageReader.Get(reader));
-                    else if (handlerFlag == HandlerFlag.AntiCheatCancel) cancel = !handler.HandleAntiCheatCancel(sender, MessageReader.Get(reader));
-                    else if (handlerFlag == HandlerFlag.AntiCheat) handler.HandleAntiCheat(sender, MessageReader.Get(reader));
-                    else if (handlerFlag == HandlerFlag.CheatRpcCheck) handler.HandleCheatRpcCheck(sender, MessageReader.Get(reader));
-                    else if (handlerFlag == HandlerFlag.BetterHost) cancel = !handler.BetterHandle(sender, MessageReader.Get(reader));
+                    if (handlerFlag == HandlerFlag.Handle) handler.Handle(sender, reader);
+                    else if (handlerFlag == HandlerFlag.AntiCheatCancel) cancel = !handler.HandleAntiCheatCancel(sender, reader);
+                    else if (handlerFlag == HandlerFlag.AntiCheat) handler.HandleAntiCheat(sender, reader);
+                    else if (handlerFlag == HandlerFlag.CheatRpcCheck) handler.HandleCheatRpcCheck(sender, reader);
+                    else if (handlerFlag == HandlerFlag.BetterHost) cancel = !handler.BetterHandle(sender, reader);
                     if (!(cancel)) break;
                 }
                 catch
@@ -63,7 +63,7 @@ internal abstract class RPCHandler
             {
                 try
                 {
-                    handler.HandleGameData(MessageReader.Get(reader));
+                    handler.HandleGameData(reader);
                 }
                 catch (Exception ex)
                 {

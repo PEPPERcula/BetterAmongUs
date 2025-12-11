@@ -62,9 +62,12 @@ internal sealed class UpdateSystemHandler : RPCHandler
 
             if (systemHandlers.TryGetValue(systemKey, out var handler))
             {
+                oldReader.Recycle();
                 return handler.Invoke(sender, system, oldReader, count);
             }
         }
+
+        oldReader.Recycle();
 
         return true;
     }
