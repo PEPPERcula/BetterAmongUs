@@ -3,13 +3,13 @@
 internal static class ModInfo
 {
     internal static readonly ReleaseTypes ReleaseBuildType = ReleaseTypes.Beta;
-    internal const string BetaNum = "2";
+    internal const string BetaNum = "3";
     internal const string HotfixNum = "0";
     internal const bool IsHotFix = false;
     internal const string PluginName = "BetterAmongUs";
     internal const string PluginGuid = "com.d1gq.betteramongus";
     internal const string PluginVersion = "1.3.1";
-    internal const string ReleaseDate = "12.05.2025"; // mm/dd/yyyy
+    internal const string ReleaseDate = "01.05.2026"; // mm/dd/yyyy
     internal const string Github = "https://github.com/D1GQ/BetterAmongUs-Public";
     internal const string Discord = "https://discord.gg/vjYrXpzNAn";
 }
