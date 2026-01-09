@@ -11,7 +11,7 @@ internal static class ModInfo
     internal const string PluginName = "BetterAmongUs";
     internal const string PluginGuid = "com.d1gq.betteramongus";
     internal const string PluginVersion = "1.3.1";
-    internal const string Github = "https://github.com/D1GQ/BetterAmongUs-Public";
+    internal const string Github = "https://github.com/D1GQ/BetterAmongUs";
     internal const string Discord = "https://discord.gg/vjYrXpzNAn";
     public static string CommitHash => GetAssemblyMetadata("CommitHash");
     public static string BuildDate => GetAssemblyMetadata("BuildDate");
