@@ -124,7 +124,7 @@ internal static class BetterAntiCheat
     internal static void CheckRPC(PlayerControl player, byte callId, MessageReader oldReader)
     {
         if (player == null || player?.Data == null) return;
-        if (!IsEnabled || !BAUPlugin.AntiCheat.Value || (GameState.IsBetterHostLobby && !GameState.IsHost) || !BetterGameSettings.DetectInvalidRPCs.GetBool()) return;
+        if (!IsEnabled || !BAUPlugin.AntiCheat.Value || !BetterGameSettings.DetectInvalidRPCs.GetBool()) return;
         if (player.IsLocalPlayer() && player.IsHost()) return;
 
         MessageReader reader = MessageReader.Get(oldReader);
@@ -138,7 +138,7 @@ internal static class BetterAntiCheat
         try
         {
             if (player == null || player?.Data == null) return true;
-            if (!IsEnabled || !BAUPlugin.AntiCheat.Value || (GameState.IsBetterHostLobby && !GameState.IsHost) || !BetterGameSettings.DetectInvalidRPCs.GetBool()) return true;
+            if (!IsEnabled || !BAUPlugin.AntiCheat.Value || !BetterGameSettings.DetectInvalidRPCs.GetBool()) return true;
             if (player.IsLocalPlayer() && player.IsHost()) return true;
 
             MessageReader reader = MessageReader.Get(oldReader);

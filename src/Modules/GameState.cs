@@ -1,6 +1,4 @@
 using AmongUs.GameOptions;
-using BetterAmongUs.Helpers;
-using BetterAmongUs.Mono;
 
 namespace BetterAmongUs.Modules;
 
@@ -105,7 +103,6 @@ internal static class GameState
     internal static bool IsShip => ShipStatus.Instance != null;
     internal static bool IsHost => AmongUsClient.Instance != null && AmongUsClient.Instance.AmHost;
     internal static bool IsPrivateOnlyLobby => (BAUPlugin.PrivateOnlyLobby.Value || AmongUsClient.Instance.AmLocalHost) && IsHost;
-    internal static bool IsBetterHostLobby => PlayerControl.LocalPlayer?.IsHost() == true || BAUPlugin.AllPlayerControls.Any(pc => pc?.BetterData() != null && pc.IsHost() && pc.BetterData().IsBetterUser && pc.BetterData().IsVerifiedBetterUser);
     internal static bool IsCanMove => PlayerControl.LocalPlayer?.CanMove is true;
     internal static bool IsDead => PlayerControl.LocalPlayer?.Data?.IsDead is true;
 }
