@@ -5,8 +5,6 @@
 		<Nullable>enable</Nullable>
 		<OutputType>Library</OutputType>
 		<langVersion>preview</langVersion>
-		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 	</PropertyGroup>
 
 	<!-- Build Events -->
