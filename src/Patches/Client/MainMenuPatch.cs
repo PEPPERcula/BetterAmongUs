@@ -1,9 +1,7 @@
 ﻿using BetterAmongUs.Helpers;
 using BetterAmongUs.Managers;
-using BetterAmongUs.Modules;
 using HarmonyLib;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace BetterAmongUs.Patches.Client;
 
@@ -17,32 +15,6 @@ internal static class MainMenuPatch
     [HarmonyPostfix]
     private static void LateUpdate_Postfix(MainMenuManager __instance)
     {
-        if (FileChecker.HasUnauthorizedFileOrMod)
-        {
-            __instance.playButton.enabled = false;
-            sprite ??= __instance.playButton.transform.Find("Inactive").GetComponent<SpriteRenderer>();
-            if (sprite != null)
-            {
-                sprite.color = new Color(0.7f, 0.7f, 0.7f);
-                ObjectHelper.AddColor(sprite);
-            }
-
-            SceneManager.s_AllowLoadScene = false;
-        }
-        else
-        {
-            __instance.playButton.enabled = true;
-            sprite ??= __instance.playButton.transform.Find("Inactive").GetComponent<SpriteRenderer>();
-            if (sprite != null)
-            {
-                sprite.color = Color.white;
-                ObjectHelper.AddColor(sprite);
-            }
-
-            SceneManager.s_AllowLoadScene = true;
-        }
-
-
         List<PassiveButton> buttons = [__instance.playButton, __instance.inventoryButton, __instance.shopButton, __instance.playLocalButton, __instance.PlayOnlineButton, __instance.backButtonOnline,
             __instance.newsButton, __instance.myAccountButton, __instance.settingsButton, __instance.howToPlayButton, __instance.freePlayButton, __instance.accountCTAButton, __instance.accountStatsButton];
         foreach (var button in buttons)

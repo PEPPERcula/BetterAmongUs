@@ -9,7 +9,7 @@ internal static class ModInfo
     internal const string PluginName = "BetterAmongUs";
     internal const string PluginGuid = "com.d1gq.betteramongus";
     internal const string PluginVersion = "1.3.1";
-    internal const string ReleaseDate = "01.08.2026"; // mm/dd/yyyy
+    internal const string ReleaseDate = "01.09.2026"; // mm/dd/yyyy
     internal const string Github = "https://github.com/D1GQ/BetterAmongUs-Public";
     internal const string Discord = "https://discord.gg/vjYrXpzNAn";
 }

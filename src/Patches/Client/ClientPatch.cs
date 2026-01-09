@@ -35,13 +35,6 @@ internal static class ClientPatch
         [HarmonyPrefix]
         private static bool SetOnline_Prefix(SignInStatusComponent __instance)
         {
-            var lines = "<color=#ebbd34>----------------------------------------------------------------------------------------------</color>";
-            if (!FileChecker.HasShownWarning && FileChecker.HasUnauthorizedFileOrMod)
-            {
-                Utils.ShowPopUp($"{lines}\n<b><size=200%><#0DFF00>{Translator.GetString("BetterAmongUs")}</color></size></b>\n<color=#757575><u><size=150%>{FileChecker.WarningMsg}</size></u>\n{lines}");
-                FileChecker.HasShownWarning = true;
-            }
-
             var varSupportedVersions = BAUPlugin.SupportedAmongUsVersions;
             Version currentVersion = new(BAUPlugin.AppVersion);
             Version firstSupportedVersion = new(varSupportedVersions.First());
