@@ -5,11 +5,26 @@
 		<Nullable>enable</Nullable>
 		<OutputType>Library</OutputType>
 		<langVersion>preview</langVersion>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 	</PropertyGroup>
 
-	<ItemGroup>
-		<None Include="..\.editorconfig" Link=".editorconfig" />
-	</ItemGroup>
+	<!-- Build Events -->
+	<PropertyGroup>
+		<ModPathFile>build\mod_folder_path</ModPathFile>
+		<GamePath Condition="Exists('$(ModPathFile)')">$([System.IO.File]::ReadAllText('$(ModPathFile)').Trim())</GamePath>
+		<ModsPath>$(GamePath)</ModsPath>
+	</PropertyGroup>
+
+	<Target Name="CopyModToGame" AfterTargets="PostBuildEvent" Condition="Exists('$(ModsPath)')">
+		<Message Text="Copying mod to $(ModsPath)" Importance="high" />
+		<Copy SourceFiles="$(TargetDir)$(AssemblyName).dll" DestinationFolder="$(ModsPath)" SkipUnchangedFiles="true" />
+	</Target>
+
+	<Target Name="WarnIfNoGamePath" AfterTargets="PostBuildEvent" Condition="!Exists('$(ModsPath)')">
+		<Warning Text="Game path not found. Set game path in mod_folder_path." />
+		<Message Text="Mod was NOT copied to game folder!" Importance="high" />
+	</Target>
 
 	<ItemGroup>
 		<PackageReference Include="AmongUs.GameLibs.Steam" Version="2025.11.18" />
@@ -24,21 +39,4 @@
 		<!-- Embed all files in the Resources folder -->
 		<EmbeddedResource Include="Resources\**\*" />
 	</ItemGroup>
-
-	<!-- Build Events -->
-	<PropertyGroup>
-		<ModPathFile>build\mod_folder_path</ModPathFile>
-		<GamePath Condition="Exists('$(ModPathFile)')">$([System.IO.File]::ReadAllText('$(ModPathFile)').Trim())</GamePath>
-		<ModsPath>$(GamePath)\Mods</ModsPath>
-	</PropertyGroup>
-
-	<Target Name="CopyModToGame" AfterTargets="PostBuildEvent" Condition="Exists('$(ModsPath)')">
-		<Message Text="Copying mod to $(ModsPath)" Importance="high" />
-		<Copy SourceFiles="$(TargetDir)$(AssemblyName).dll" DestinationFolder="$(ModsPath)" SkipUnchangedFiles="true" />
-	</Target>
-
-	<Target Name="WarnIfNoGamePath" AfterTargets="PostBuildEvent" Condition="!Exists('$(ModsPath)')">
-		<Warning Text="Game path not found. Set game path in mod_folder_path." />
-		<Message Text="Mod was NOT copied to game folder!" Importance="high" />
-	</Target>
 </Project>
