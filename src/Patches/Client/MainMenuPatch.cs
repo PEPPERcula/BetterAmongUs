@@ -1,7 +1,6 @@
 ﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
-using BetterAmongUs.Network;
-using BetterAmongUs.Network.Configs;
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -18,7 +17,7 @@ internal static class MainMenuPatch
     [HarmonyPostfix]
     private static void LateUpdate_Postfix(MainMenuManager __instance)
     {
-        if (BannedUserData.IsBanned || FileChecker.HasUnauthorizedFileOrMod)
+        if (FileChecker.HasUnauthorizedFileOrMod)
         {
             __instance.playButton.enabled = false;
             sprite ??= __instance.playButton.transform.Find("Inactive").GetComponent<SpriteRenderer>();

@@ -2,14 +2,13 @@
 using BetterAmongUs.Helpers;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
-using BetterAmongUs.Network.Configs;
 using Il2CppInterop.Runtime.Attributes;
 using InnerNet;
 using UnityEngine;
 
 namespace BetterAmongUs.Mono;
 
-internal class ExtendedPlayerInfo : MonoBehaviour, IMonoExtension<NetworkedPlayerInfo>
+internal sealed class ExtendedPlayerInfo : MonoBehaviour, IMonoExtension<NetworkedPlayerInfo>
 {
     internal ExtendedPlayerInfo()
     {
@@ -25,7 +24,6 @@ internal class ExtendedPlayerInfo : MonoBehaviour, IMonoExtension<NetworkedPlaye
     internal void SetInfo(NetworkedPlayerInfo data)
     {
         if (hasSet) return;
-        MyUserData = UserData.GetPlayerUserData(data);
         _PlayerId = data.PlayerId;
         hasSet = true;
     }
@@ -59,7 +57,7 @@ internal class ExtendedPlayerInfo : MonoBehaviour, IMonoExtension<NetworkedPlaye
                     Translator.GetString("AntiCheat.Reason.RPCSentPS"),
                     Translator.GetString("AntiCheat.UnauthorizedAction")
                 );
-                Logger.LogCheat($"{_Data.Object.BetterData().RealName} {AntiCheatInfo.RPCSentPS} Sent.");
+                Logger_.LogCheat($"{_Data.Object.BetterData().RealName} {AntiCheatInfo.RPCSentPS} Sent.");
             }
 
             timeAccumulator += time;
@@ -74,7 +72,6 @@ internal class ExtendedPlayerInfo : MonoBehaviour, IMonoExtension<NetworkedPlaye
     [HideFromIl2Cpp]
     internal HandshakeHandler HandshakeHandler { get; }
     [HideFromIl2Cpp]
-    internal UserData? MyUserData { get; private set; } = UserData.AllUsers.First();
     internal byte _PlayerId { get; private set; }
     internal string RealName => _Data?.PlayerName ?? "???";
     internal string NameSetAsLast { get; set; } = string.Empty;

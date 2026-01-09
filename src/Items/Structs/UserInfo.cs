@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 namespace BetterAmongUs.Items.Structs;
 
 [method: JsonConstructor]
-internal class UserInfo(string playerName, string hashPuid, string friendCode, string reason)
+internal sealed class UserInfo(string playerName, string hashPuid, string friendCode, string reason)
 {
     internal bool CheckPlayerData(NetworkedPlayerInfo data) => CheckPlayerDataWithReason(data).check;
 

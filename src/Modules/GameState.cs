@@ -7,7 +7,6 @@ namespace BetterAmongUs.Modules;
 internal static class GameState
 {
     /**********Check Game Status***********/
-    internal static bool IsDev => BAUPlugin.MyData.IsDev();
     internal static bool InGame => BAUPlugin.AllPlayerControls.Any();
     internal static bool IsNormalGame => GameOptionsManager.Instance.CurrentGameOptions.GameMode is GameModes.Normal or GameModes.NormalFools;
     internal static bool IsHideNSeek => GameOptionsManager.Instance != null && GameOptionsManager.Instance.CurrentGameOptions.GameMode is GameModes.HideNSeek or GameModes.SeekFools;

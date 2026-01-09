@@ -1,8 +1,8 @@
 ﻿using BetterAmongUs.Helpers;
 
-namespace BetterAmongUs.Commands;
+namespace BetterAmongUs.Commands.Arguments;
 
-internal class PlayerArgument(BaseCommand? command, string argInfo = "{player}") : BaseArgument(command, argInfo)
+internal sealed class PlayerArgument(BaseCommand? command, string argInfo = "{player}") : BaseArgument(command, argInfo)
 {
     protected override string[] ArgSuggestions => BAUPlugin.AllPlayerControls.OrderBy(pc => pc.IsLocalPlayer() ? 0 : 1).Select(pc => pc.Data.PlayerName.Replace(' ', '_')).ToArray();
     internal PlayerControl? TryGetTarget()

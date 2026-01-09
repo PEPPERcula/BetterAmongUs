@@ -1,6 +1,6 @@
 ﻿namespace BetterAmongUs.Data.Replay.Events;
 
-internal class StartMeetingReplayEvent : IReplayEvent<(int playerId, int targetId)>
+internal sealed class StartMeetingReplayEvent : IReplayEvent<(int playerId, int targetId)>
 {
     public string Id => "start_meeting";
     public (int playerId, int targetId) EventData { get; set; }

@@ -3,7 +3,7 @@
 namespace BetterAmongUs.Data.Json;
 
 [Serializable]
-internal class OutfitData
+internal sealed class OutfitData
 {
     public string HatId = HatData.EmptyId;
     public string PetId = PetData.EmptyId;

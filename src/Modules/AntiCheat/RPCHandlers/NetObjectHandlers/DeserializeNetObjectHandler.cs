@@ -6,7 +6,7 @@ using InnerNet;
 
 namespace BetterAmongUs.Modules.AntiCheat;
 
-internal class DeserializeNetObjectHandler : RPCHandler
+internal sealed class DeserializeNetObjectHandler : RPCHandler
 {
     internal override byte GameDataTag => (byte)GameDataTypes.DataFlag;
 

@@ -2,14 +2,13 @@
 using BepInEx;
 using BepInEx.Logging;
 using BetterAmongUs.Data;
-using BetterAmongUs.Helpers;
 using BetterAmongUs.Modules;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
-namespace BetterAmongUs;
+namespace BetterAmongUs.Helpers;
 
-class Logger
+internal static class Logger_
 {
     internal static void Log(string info, string tag = "Log", bool logConsole = true, ConsoleColor color = ConsoleColor.White, bool hostOnly = false)
     {
@@ -102,14 +101,6 @@ class Logger
         {
             if (hostOnly && !GameState.IsHost) return;
 
-#if DEBUG
-            if (GameState.IsDev)
-            {
-                Log(info, tag, hostOnly: hostOnly);
-                return;
-            }
-#endif
-
             string mark = $"{DateTime.Now:HH:mm} [BetterLog][PrivateLog][{tag}]";
             string logFilePath = Path.Combine(BetterDataManager.filePathFolder, "better-log.txt");
             string newLine = $"{mark}: " + Encryptor.Encrypt($"{info}");
@@ -129,15 +120,15 @@ internal class CustomLogListener : ILogListener
 
         if (eventArgs.Level is LogLevel.None or LogLevel.Info)
         {
-            Logger.Log(eventArgs.Data.ToString(), "BepInEx." + eventArgs.Source.SourceName, logConsole: false);
+            Logger_.Log(eventArgs.Data.ToString(), "BepInEx." + eventArgs.Source.SourceName, logConsole: false);
         }
         else if (eventArgs.Level is LogLevel.Warning)
         {
-            Logger.Warning(eventArgs.Data.ToString(), "BepInEx." + eventArgs.Source.SourceName, logConsole: false);
+            Logger_.Warning(eventArgs.Data.ToString(), "BepInEx." + eventArgs.Source.SourceName, logConsole: false);
         }
         else if (eventArgs.Level is LogLevel.Error or LogLevel.Fatal)
         {
-            Logger.Error(eventArgs.Data.ToString(), "BepInEx." + eventArgs.Source.SourceName, logConsole: false);
+            Logger_.Error(eventArgs.Data.ToString(), "BepInEx." + eventArgs.Source.SourceName, logConsole: false);
         }
     }
 

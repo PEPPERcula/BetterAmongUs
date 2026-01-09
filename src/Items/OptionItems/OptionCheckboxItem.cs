@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace BetterAmongUs.Items.OptionItems;
 
-internal class OptionCheckboxItem : OptionItem<bool>
+internal sealed class OptionCheckboxItem : OptionItem<bool>
 {
-    internal override bool ShowChildren => base.ShowChildren && Value;
+    internal sealed override bool ShowChildren => base.ShowChildren && Value;
 
     internal static OptionCheckboxItem Create(int id, OptionTab tab, string tranStr, bool defaultValue, OptionItem parent = null)
     {
@@ -32,7 +32,7 @@ internal class OptionCheckboxItem : OptionItem<bool>
         return Item;
     }
 
-    protected override void CreateBehavior()
+    protected sealed override void CreateBehavior()
     {
         TryLoad();
         if (!GameSettingMenu.Instance) return;
@@ -48,7 +48,7 @@ internal class OptionCheckboxItem : OptionItem<bool>
         SetOptionVisuals();
     }
 
-    protected override void SetupOptionBehavior()
+    protected sealed override void SetupOptionBehavior()
     {
         if (Option is ToggleOption toggleOption)
         {
@@ -61,7 +61,7 @@ internal class OptionCheckboxItem : OptionItem<bool>
         }
     }
 
-    internal override void UpdateVisuals(bool updateTabVisuals = true)
+    internal sealed override void UpdateVisuals(bool updateTabVisuals = true)
     {
         if (Option is ToggleOption toggleOption)
         {
@@ -74,13 +74,13 @@ internal class OptionCheckboxItem : OptionItem<bool>
         }
     }
 
-    internal override string ValueAsString()
+    internal sealed override string ValueAsString()
     {
         Color color = Value ? Color.green : Color.red;
         string @bool = Value ? "On" : "Off";
         return $"<color={Colors.Color32ToHex(color)}>{@bool}</color>";
     }
 
-    internal override bool GetBool() => GetValue();
-    internal override bool Is(bool @bool) => @bool == GetBool();
+    internal sealed override bool GetBool() => GetValue();
+    internal sealed override bool Is(bool @bool) => @bool == GetBool();
 }

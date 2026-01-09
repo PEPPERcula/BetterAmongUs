@@ -162,8 +162,6 @@ static class PlayerControlHelper
     }
     // Get true position
     internal static Vector2 GetCustomPosition(this PlayerControl player) => new(player.transform.position.x, player.transform.position.y);
-    // Check if player is a dev
-    internal static bool IsDev(this PlayerControl player) => player.BetterData().MyUserData.IsDev();
     // Check if player is alive
     internal static bool IsAlive(this PlayerControl player) => player?.Data != null && !player.Data.IsDead;
     // Check if player is in a vent

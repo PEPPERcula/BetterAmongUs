@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 namespace BetterAmongUs.Data.Replay.Events;
 
 [Serializable]
-internal class ProtectedReplayEvent : IReplayEvent<(int killerId, int targetId)>
+internal sealed class ProtectedReplayEvent : IReplayEvent<(int killerId, int targetId)>
 {
     public string Id => "player_protected";
 

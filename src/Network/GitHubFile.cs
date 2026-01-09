@@ -1,4 +1,5 @@
-﻿using BetterAmongUs.Managers;
+﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Managers;
 using Il2CppInterop.Runtime.Attributes;
 using System.Collections;
 using UnityEngine;
@@ -6,7 +7,7 @@ using UnityEngine.Networking;
 
 namespace BetterAmongUs.Network;
 
-internal class GitHubFile
+internal static class GitHubFile
 {
     /// <summary>
     /// Downloads an individual visor-related file from the remote repository and saves it locally.
@@ -53,7 +54,7 @@ internal class GitHubFile
         }
         else
         {
-            Logger.Error($"Error downloading file from URL '{fileUrl}': {www.error} (Response Code: {(int)www.responseCode})");
+            Logger_.Error($"Error downloading file from URL '{fileUrl}': {www.error} (Response Code: {(int)www.responseCode})");
             if (showProgress)
             {
                 CustomLoadingBarManager.SetLoadingPercent(100f, "Download Failed!");
@@ -66,7 +67,7 @@ internal class GitHubFile
         byte[] bytes = www.downloadHandler.GetNativeData().ToArray();
         File.WriteAllBytes(localFilePath, bytes);
 
-        Logger.Log($"Saved file: {localFilePath}");
+        Logger_.Log($"Saved file: {localFilePath}");
         callback?.Invoke(localFilePath);
     }
 
@@ -85,7 +86,7 @@ internal class GitHubFile
 
         if (www.result != UnityWebRequest.Result.Success)
         {
-            Logger.Error($"Error downloading {fileUrl}/{fileName}: {www.error}");
+            Logger_.Error($"Error downloading {fileUrl}/{fileName}: {www.error}");
             yield break;
         }
 

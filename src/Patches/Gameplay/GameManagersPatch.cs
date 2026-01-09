@@ -1,6 +1,4 @@
 ﻿using BetterAmongUs.Helpers;
-using BetterAmongUs.Items.Enums;
-using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
 using BetterAmongUs.Mono;
 using HarmonyLib;
@@ -13,17 +11,6 @@ namespace BetterAmongUs.Patches.Gameplay;
 [HarmonyPatch]
 internal static class GameManagersPatch
 {
-    [HarmonyPatch(typeof(GameManager))]
-    internal static class GameManagerPatch
-    {
-        [HarmonyPatch(nameof(GameManager.EndGame))]
-        [HarmonyPostfix]
-        private static void EndGame_Postfix(/*GameManager __instance*/)
-        {
-            HostManager.SyncNames(NameSyncType.Reset);
-        }
-    }
-
     [HarmonyPatch(typeof(EndGameManager))]
     internal static class EndGameManagerPatch
     {
@@ -31,9 +18,9 @@ internal static class GameManagersPatch
         [HarmonyPostfix]
         private static void SetEverythingUp_Postfix(EndGameManager __instance)
         {
-            Logger.LogHeader($"Game Has Ended - {Enum.GetName(typeof(MapNames), GameState.GetActiveMapId)}/{GameState.GetActiveMapId}", "GamePlayManager");
+            Logger_.LogHeader($"Game Has Ended - {Enum.GetName(typeof(MapNames), GameState.GetActiveMapId)}/{GameState.GetActiveMapId}", "GamePlayManager");
 
-            Logger.LogHeader("Game Summary Start", "GameSummary");
+            Logger_.LogHeader("Game Summary Start", "GameSummary");
 
             GameObject SummaryObj = UnityEngine.Object.Instantiate(__instance.WinText.gameObject, __instance.WinText.transform.parent.transform);
             SummaryObj.name = "SummaryObj (TMP)";
@@ -126,7 +113,7 @@ internal static class GameManagersPatch
                         break;
                 }
 
-                Logger.Log($"{winTeam}: {winTag}", "GameSummary");
+                Logger_.Log($"{winTeam}: {winTag}", "GameSummary");
 
                 string SummaryHeader = $"<align=\"center\"><size=150%>   {Translator.GetString("GameSummary")}</size></align>";
                 SummaryHeader += $"\n\n<size=90%><color={winColor}>{winTeam} {Translator.GetString("Game.Summary.Won")}</color></size>" +
@@ -167,13 +154,13 @@ internal static class GameManagersPatch
                         deathReason = $"『<color=#838383<b>Unknown</b></color>』";
                     }
 
-                    Logger.Log($"{name} {roleInfo} {deathReason}", "GameSummary");
+                    Logger_.Log($"{name} {roleInfo} {deathReason}", "GameSummary");
 
                     sb.AppendLine($"- {name} {roleInfo} {deathReason}\n");
                 }
 
                 SummaryText.text = $"{SummaryHeader}\n\n<size=58%>{sb}</size>";
-                Logger.LogHeader("Game Summary End", "GameSummary");
+                Logger_.LogHeader("Game Summary End", "GameSummary");
             }
         }
 

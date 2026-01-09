@@ -23,7 +23,7 @@ internal static class ModManagerPatch
             __instance.ModStamp.GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("BetterAmongUs.Resources.Images.BetterAmongUs-Mod.png", 250f);
 
         BetterAntiCheat.Update();
-        LateTask.Update(Time.deltaTime);
+        LateTask.UpdateAll(Time.deltaTime);
         BetterNotificationManager.Update();
     }
 }

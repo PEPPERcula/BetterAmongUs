@@ -1,11 +1,12 @@
-﻿using BetterAmongUs.Data;
+﻿using BetterAmongUs.Commands.Arguments;
+using BetterAmongUs.Data;
 using BetterAmongUs.Helpers;
 using BetterAmongUs.Items.Attributes;
 
 namespace BetterAmongUs.Commands;
 
 [RegisterCommand]
-internal class RemovePlayerCommand : BaseCommand
+internal sealed class RemovePlayerCommand : BaseCommand
 {
     internal override string Name => "removeplayer";
     internal override string Description => "Remove player from local <color=#4f92ff>Anti-Cheat</color> data";

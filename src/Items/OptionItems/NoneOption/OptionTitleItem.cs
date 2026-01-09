@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BetterAmongUs.Items.OptionItems.NoneOption;
 
-internal class OptionTitleItem : OptionItem
+internal sealed class OptionTitleItem : OptionItem
 {
     private ToggleOption? optionBehaviour;
     internal override bool CanLoad => false;
@@ -52,7 +52,7 @@ internal class OptionTitleItem : OptionItem
         Tab.Children.Add(this);
     }
 
-    internal override void UpdateVisuals(bool updateTabVisuals = true)
+    internal sealed override void UpdateVisuals(bool updateTabVisuals = true)
     {
         if (optionBehaviour != null)
         {
@@ -60,7 +60,7 @@ internal class OptionTitleItem : OptionItem
         }
     }
 
-    internal override string ValueAsString()
+    internal sealed override string ValueAsString()
     {
         throw new NotImplementedException();
     }

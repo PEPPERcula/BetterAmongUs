@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace BetterAmongUs.Mono;
 
-internal class ExtendedPlayerControl : MonoBehaviour, IMonoExtension<PlayerControl>
+internal sealed class ExtendedPlayerControl : MonoBehaviour, IMonoExtension<PlayerControl>
 {
     public PlayerControl? BaseMono { get; set; }
     internal PlayerControl? _Player => BaseMono;

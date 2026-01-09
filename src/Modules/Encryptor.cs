@@ -3,7 +3,7 @@ using System.Text;
 
 namespace BetterAmongUs.Modules;
 
-class Encryptor
+internal static class Encryptor
 {
     private static readonly byte[] Key = Encoding.UTF8.GetBytes("0123456789ABCDEF0123456789ABCDEF");
     private static readonly byte[] IV = Encoding.UTF8.GetBytes("ABCDEF0123456789");

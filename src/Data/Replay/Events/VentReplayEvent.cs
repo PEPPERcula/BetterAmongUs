@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 namespace BetterAmongUs.Data.Replay.Events;
 
 [Serializable]
-internal class VentReplayEvent : IReplayEvent<(int playerId, bool exit, int ventId)>
+internal sealed class VentReplayEvent : IReplayEvent<(int playerId, bool exit, int ventId)>
 {
     public string Id => "player_vent";
 

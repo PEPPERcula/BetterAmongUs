@@ -1,21 +1,11 @@
-﻿using BetterAmongUs.Items.Attributes;
+﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Attributes;
+using BetterAmongUs.Items.Enums;
+using BetterAmongUs.Modules;
 using BetterAmongUs.Mono;
-using BetterAmongUs.Network;
 using Hazel;
 using InnerNet;
 using UnityEngine;
-
-namespace BetterAmongUs.Modules.AntiCheat;
-
-internal enum HandlerFlag
-{
-    Handle,
-    CheatRpcCheck,
-    AntiCheatCancel,
-    AntiCheat,
-    BetterHost,
-    HandleGameDataTag
-}
 
 internal abstract class RPCHandler
 {
@@ -67,7 +57,7 @@ internal abstract class RPCHandler
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error(ex);
+                    Logger_.Error(ex);
                 }
             }
         }
@@ -79,7 +69,7 @@ internal abstract class RPCHandler
     {
         string Name = Enum.GetName((RpcCalls)CallId) ?? Enum.GetName((CustomRPC)CallId) ?? $"Unregistered({CallId})";
         Name = $"[{Enum.GetName(catchedHandlerFlag)}] > " + Name;
-        Logger.LogCheat($"{catchedSender?.BetterData()?.RealName ?? player.BetterData()?.RealName ?? string.Empty} {Name}: {info}");
+        Logger_.LogCheat($"{catchedSender?.BetterData()?.RealName ?? player.BetterData()?.RealName ?? string.Empty} {Name}: {info}");
     }
 
     internal string GetFormatActionText()

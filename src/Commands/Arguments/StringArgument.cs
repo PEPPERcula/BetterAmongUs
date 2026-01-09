@@ -1,5 +1,5 @@
-﻿namespace BetterAmongUs.Commands;
+﻿namespace BetterAmongUs.Commands.Arguments;
 
-internal class StringArgument(BaseCommand? command, string argInfo = "{String}") : BaseArgument(command, argInfo)
+internal sealed class StringArgument(BaseCommand? command, string argInfo = "{String}") : BaseArgument(command, argInfo)
 {
 }

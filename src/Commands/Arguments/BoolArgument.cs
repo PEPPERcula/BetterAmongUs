@@ -1,6 +1,6 @@
-﻿namespace BetterAmongUs.Commands;
+﻿namespace BetterAmongUs.Commands.Arguments;
 
-internal class BoolArgument(BaseCommand? command, string argInfo = "{bool}") : BaseArgument(command, argInfo)
+internal sealed class BoolArgument(BaseCommand? command, string argInfo = "{bool}") : BaseArgument(command, argInfo)
 {
     protected override string[] ArgSuggestions => ["true", "false"];
     internal bool? GetBool()

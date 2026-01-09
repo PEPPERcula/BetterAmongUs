@@ -8,7 +8,6 @@ using BetterAmongUs.Helpers;
 using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Modules;
 using BetterAmongUs.Network;
-using BetterAmongUs.Network.Configs;
 using BetterAmongUs.Patches.Gameplay.UI.Settings;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
@@ -28,8 +27,6 @@ internal enum ReleaseTypes : int
 [BepInProcess("Among Us.exe")]
 internal class BAUPlugin : BasePlugin
 {
-    internal static UserData MyData = UserData.AllUsers.First();
-
     internal static string GetVersionText(bool newLine = false)
     {
         string text = string.Empty;
@@ -107,14 +104,14 @@ internal class BAUPlugin : BasePlugin
                 File.WriteAllText(Path.Combine(BetterDataManager.filePathFolder, "better-previous-log.txt"), File.ReadAllText(Path.Combine(BetterDataManager.filePathFolder, "better-log.txt")));
 
             File.WriteAllText(Path.Combine(BetterDataManager.filePathFolder, "better-log.txt"), "");
-            BetterAmongUs.Logger.Log("Better Among Us successfully loaded!");
+            Logger_.Log("Better Among Us successfully loaded!");
 
             string SupportedVersions = string.Join(" ", SupportedAmongUsVersions);
-            BetterAmongUs.Logger.Log($"BetterAmongUs {BetterAmongUsVersion}-{ModInfo.ReleaseDate} - [{AppVersion} --> {SupportedVersions}] {Utils.GetPlatformName(PlatformData.Platform)}");
+            Logger_.Log($"BetterAmongUs {BetterAmongUsVersion}-{ModInfo.ReleaseDate} - [{AppVersion} --> {SupportedVersions}] {Utils.GetPlatformName(PlatformData.Platform)}");
         }
         catch (Exception ex)
         {
-            BetterAmongUs.Logger.Error(ex);
+            Logger_.Error(ex);
         }
     }
 
@@ -148,7 +145,7 @@ internal class BAUPlugin : BasePlugin
             }
             catch (Exception ex)
             {
-                BetterAmongUs.Logger.Error($"Failed to register MonoBehaviour: {type.FullName}\n{ex}");
+                Logger_.Error($"Failed to register MonoBehaviour: {type.FullName}\n{ex}");
             }
         }
     }

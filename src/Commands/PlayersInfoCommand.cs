@@ -5,7 +5,7 @@ using System.Text;
 namespace BetterAmongUs.Commands;
 
 [RegisterCommand]
-internal class PlayersInfoCommand : BaseCommand
+internal sealed class PlayersInfoCommand : BaseCommand
 {
     internal override string Name => "players";
     internal override string Description => "Get all Player information";

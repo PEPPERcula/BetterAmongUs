@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace BetterAmongUs.Mono;
 
-internal class MeetingInfoDisplay : PlayerInfoDisplay
+internal sealed class MeetingInfoDisplay : PlayerInfoDisplay
 {
     private PlayerVoteArea? _pva;
     private Vector3 _namePos;

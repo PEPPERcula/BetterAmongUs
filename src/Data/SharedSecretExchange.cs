@@ -1,8 +1,9 @@
-﻿using System.Security.Cryptography;
+﻿using BetterAmongUs.Helpers;
+using System.Security.Cryptography;
 
 namespace BetterAmongUs.Data;
 
-internal class SharedSecretExchange
+internal sealed class SharedSecretExchange
 {
     private readonly ECDiffieHellman dh;
     private byte[] publicKey;
@@ -44,7 +45,7 @@ internal class SharedSecretExchange
         }
         catch (Exception ex)
         {
-            Logger.Error($"Error generating shared secret: {ex.Message}");
+            Logger_.Error($"Error generating shared secret: {ex.Message}");
             return [];
         }
     }

@@ -7,7 +7,7 @@ using static BetterAmongUs.Patches.Gameplay.LobbyPatch;
 
 namespace BetterAmongUs.Mono;
 
-internal class BetterPingTracker : MonoBehaviour
+internal sealed class BetterPingTracker : MonoBehaviour
 {
     internal static BetterPingTracker? Instance { get; private set; }
     private AspectPosition? aspectPosition;
@@ -17,7 +17,7 @@ internal class BetterPingTracker : MonoBehaviour
         if (Instance != null) return;
         if (pingText == null || pingAspectPosition == null)
         {
-            Logger.Error("BetterPingTracker.SetUp() called with null parameters!");
+            Logger_.Error("BetterPingTracker.SetUp() called with null parameters!");
             return;
         }
 

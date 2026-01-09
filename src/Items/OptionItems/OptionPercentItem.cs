@@ -1,6 +1,6 @@
 ﻿namespace BetterAmongUs.Items.OptionItems;
 
-internal class OptionPercentItem : OptionFloatItem
+internal sealed class OptionPercentItem : OptionFloatItem
 {
     internal static OptionPercentItem Create(int id, OptionTab tab, string tranStr, float defaultValue, OptionItem parent = null)
     {
@@ -30,7 +30,7 @@ internal class OptionPercentItem : OptionFloatItem
         return Item;
     }
 
-    internal override string ValueAsString() => $"<color={GetColor(Value)}>{Value}%</color>";
+    internal sealed override string ValueAsString() => $"<color={GetColor(Value)}>{Value}%</color>";
 
     internal string GetColor(float num)
     {

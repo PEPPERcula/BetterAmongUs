@@ -3,7 +3,7 @@ using BetterAmongUs.Modules;
 
 namespace BetterAmongUs.Items.OptionItems;
 
-internal class OptionStringItem : OptionItem<int>
+internal sealed class OptionStringItem : OptionItem<int>
 {
     protected IntRange Range { get; set; } = new();
     protected string[] TranslatorStrings { get; set; } = [];
@@ -54,7 +54,7 @@ internal class OptionStringItem : OptionItem<int>
         return Item;
     }
 
-    protected override void CreateBehavior()
+    protected sealed override void CreateBehavior()
     {
         TryLoad();
         if (!GameSettingMenu.Instance) return;
@@ -71,7 +71,7 @@ internal class OptionStringItem : OptionItem<int>
         SetOptionVisuals();
     }
 
-    protected override void SetupOptionBehavior()
+    protected sealed override void SetupOptionBehavior()
     {
         if (Option is NumberOption numberOption)
         {
@@ -85,23 +85,23 @@ internal class OptionStringItem : OptionItem<int>
         }
     }
 
-    protected virtual void Increase()
+    private void Increase()
     {
         SetValue(Value + 1);
     }
 
-    protected virtual private void Decrease()
+    private void Decrease()
     {
         SetValue(Value - 1);
     }
 
-    internal override void SetValue(int newValue)
+    internal sealed override void SetValue(int newValue)
     {
         newValue = Math.Clamp(newValue, Range.min, Range.max);
         base.SetValue(newValue);
     }
 
-    internal override void UpdateVisuals(bool updateTabVisuals = true)
+    internal sealed override void UpdateVisuals(bool updateTabVisuals = true)
     {
         if (Option is NumberOption numberOption)
         {
@@ -126,8 +126,8 @@ internal class OptionStringItem : OptionItem<int>
         }
     }
 
-    internal override string ValueAsString() => Translator.GetString(TranslatorStrings[Value], showInvalid: false);
-    internal override int GetStringValue()
+    internal sealed override string ValueAsString() => Translator.GetString(TranslatorStrings[Value], showInvalid: false);
+    internal sealed override int GetStringValue()
     {
         var value = GetValue();
         if (!CanBeRandom)
@@ -147,6 +147,6 @@ internal class OptionStringItem : OptionItem<int>
         }
     }
 
-    internal override bool Is(string @string) => TranslatorStrings[Value] == @string || ValueAsString() == @string;
-    internal override bool Is(int @int) => !CanBeRandom ? Value == @int : Value == @int - 1;
+    internal sealed override bool Is(string @string) => TranslatorStrings[Value] == @string || ValueAsString() == @string;
+    internal sealed override bool Is(int @int) => !CanBeRandom ? Value == @int : Value == @int - 1;
 }

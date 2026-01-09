@@ -3,7 +3,7 @@ using BetterAmongUs.Helpers;
 
 namespace BetterAmongUs.Data;
 
-class BetterDataManager
+internal static class BetterDataManager
 {
     internal static BetterDataFile BetterDataFile = new();
     internal static BetterGameSettingsFile BetterGameSettingsFile = new();

@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using BetterAmongUs.Helpers;
+using HarmonyLib;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -50,7 +51,7 @@ internal static class HttpPatch
 
                     if (responseHeader != null)
                     {
-                        Logger.Log("Connected to a supported Better Among Us matchmaking server");
+                        Logger_.Log("Connected to a supported Better Among Us matchmaking server");
                     }
                 }));
             }

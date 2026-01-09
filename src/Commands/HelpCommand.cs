@@ -3,7 +3,7 @@
 namespace BetterAmongUs.Commands;
 
 [RegisterCommand]
-internal class HelpCommand : BaseCommand
+internal sealed class HelpCommand : BaseCommand
 {
     internal override string Name => "help";
     internal override string Description => "Get help with commands";

@@ -129,7 +129,7 @@ internal static class LobbyPatch
         [HarmonyPrefix]
         private static void FinallyBegin_Prefix(/*GameStartManager __instance*/)
         {
-            Logger.LogHeader($"Game Has Started - {Enum.GetName(typeof(MapNames), GameState.GetActiveMapId)}/{GameState.GetActiveMapId}", "GamePlayManager");
+            Logger_.LogHeader($"Game Has Started - {Enum.GetName(typeof(MapNames), GameState.GetActiveMapId)}/{GameState.GetActiveMapId}", "GamePlayManager");
         }
     }
 }

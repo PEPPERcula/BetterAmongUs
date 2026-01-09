@@ -7,13 +7,6 @@ using UnityEngine;
 
 namespace BetterAmongUs.Items.OptionItems;
 
-internal class OptionAttributes
-{
-    internal int Amount = 0;
-    internal float Cooldown = 0f;
-    internal float Duration = 0f;
-}
-
 /// <summary>
 /// Base Option class.
 /// </summary>

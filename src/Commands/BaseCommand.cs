@@ -1,14 +1,9 @@
-﻿using BetterAmongUs.Helpers;
+﻿using BetterAmongUs.Commands.Arguments;
+using BetterAmongUs.Helpers;
 using BetterAmongUs.Items.Attributes;
+using BetterAmongUs.Items.Enums;
 
 namespace BetterAmongUs.Commands;
-
-internal enum CommandType
-{
-    Normal,
-    Sponsor,
-    Debug,
-}
 
 internal abstract class BaseCommand
 {

@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace BetterAmongUs.Items.OptionItems;
 
-internal class OptionPlayerItem : OptionItem<int>
+internal sealed class OptionPlayerItem : OptionItem<int>
 {
-    internal override bool ShowChildren => base.ShowChildren && Value > Min;
+    internal sealed override bool ShowChildren => base.ShowChildren && Value > Min;
     private int Max => BAUPlugin.AllPlayerControls.Count - 1;
     private int Min => CanBeRandom ? -1 : 0;
     protected bool CanBeRandom { get; set; }
@@ -40,11 +40,11 @@ internal class OptionPlayerItem : OptionItem<int>
         return Item;
     }
 
-    internal override void Save()
+    internal sealed override void Save()
     {
     }
 
-    protected override void CreateBehavior()
+    protected sealed override void CreateBehavior()
     {
         if (!GameSettingMenu.Instance) return;
         AllTBROptionsTemp.Add(this);
@@ -60,7 +60,7 @@ internal class OptionPlayerItem : OptionItem<int>
         SetOptionVisuals();
     }
 
-    protected override void SetupOptionBehavior()
+    protected sealed override void SetupOptionBehavior()
     {
         if (Option is NumberOption numberOption)
         {
@@ -102,7 +102,7 @@ internal class OptionPlayerItem : OptionItem<int>
         SetValue(value);
     }
 
-    internal override void SetValue(int newValue)
+    internal sealed override void SetValue(int newValue)
     {
         newValue = Math.Clamp(newValue, Min, Max);
         base.SetValue(newValue);
@@ -135,7 +135,7 @@ internal class OptionPlayerItem : OptionItem<int>
         Value = Min;
     }
 
-    internal override void UpdateVisuals(bool updateTabVisuals = true)
+    internal sealed override void UpdateVisuals(bool updateTabVisuals = true)
     {
         if (!GameSettingMenu.Instance) return;
 
@@ -162,7 +162,7 @@ internal class OptionPlayerItem : OptionItem<int>
         }
     }
 
-    internal override string ValueAsString()
+    internal sealed override string ValueAsString()
     {
         if (Value != -1)
         {
@@ -178,8 +178,8 @@ internal class OptionPlayerItem : OptionItem<int>
         }
     }
 
-    internal override int GetInt() => GetValue();
-    internal override float GetFloat() => GetValue();
-    internal override bool Is(int @int) => @int == GetInt();
-    internal override bool Is(float @float) => @float == GetFloat();
+    internal sealed override int GetInt() => GetValue();
+    internal sealed override float GetFloat() => GetValue();
+    internal sealed override bool Is(int @int) => @int == GetInt();
+    internal sealed override bool Is(float @float) => @float == GetFloat();
 }

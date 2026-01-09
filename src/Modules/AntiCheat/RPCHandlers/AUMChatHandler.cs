@@ -1,9 +1,9 @@
 using BetterAmongUs.Data;
 using BetterAmongUs.Helpers;
 using BetterAmongUs.Items.Attributes;
+using BetterAmongUs.Items.Enums;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Mono;
-using BetterAmongUs.Network;
 using BetterAmongUs.Patches.Gameplay.UI.Settings;
 using Hazel;
 using InnerNet;
@@ -28,7 +28,7 @@ internal sealed class AUMChatHandler : RPCHandler
             sender.BetterData().AntiCheatInfo.AUMChats.Add(msgString);
         }
 
-        Logger.Log($"{sender.Data.PlayerName} -> {msgString}", "AUMChatLog");
+        Logger_.Log($"{sender.Data.PlayerName} -> {msgString}", "AUMChatLog");
 
         if (!BAUPlugin.AntiCheat.Value || !BetterGameSettings.DetectCheatClients.GetBool()) return;
 

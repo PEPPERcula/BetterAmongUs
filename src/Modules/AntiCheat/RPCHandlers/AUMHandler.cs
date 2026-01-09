@@ -1,9 +1,9 @@
 using BetterAmongUs.Data;
 using BetterAmongUs.Helpers;
 using BetterAmongUs.Items.Attributes;
+using BetterAmongUs.Items.Enums;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Mono;
-using BetterAmongUs.Network;
 using BetterAmongUs.Patches.Gameplay.UI.Settings;
 using Hazel;
 using InnerNet;

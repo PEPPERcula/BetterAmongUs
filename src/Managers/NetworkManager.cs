@@ -1,6 +1,7 @@
 ﻿using AmongUs.InnerNet.GameDataMessages;
 using BepInEx.Unity.IL2CPP.Utils;
 using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Enums;
 using BetterAmongUs.Items.Structs;
 using BetterAmongUs.Modules;
 using BetterAmongUs.Modules.AntiCheat;
@@ -14,7 +15,7 @@ using UnityEngine;
 
 namespace BetterAmongUs.Managers;
 
-internal class NetworkManager
+internal static class NetworkManager
 {
     internal static InnerNetClient? InnerNetClient => AmongUsClient.Instance;
 
@@ -27,7 +28,7 @@ internal class NetworkManager
         }
         catch (Exception ex)
         {
-            Logger.Error(ex, "NetworkManager");
+            Logger_.Error(ex, "NetworkManager");
         }
         finally
         {
@@ -348,7 +349,7 @@ internal class NetworkManager
 
     private static void HandleInvalidTag(MessageReader reader)
     {
-        Logger.Warning($"Bad tag {reader.Tag} at {reader.Offset}+{reader.Position}={reader.Length}: " + string.Join(" ", reader.Buffer.Take(128)), "NetworkManager");
+        Logger_.Warning($"Bad tag {reader.Tag} at {reader.Offset}+{reader.Position}={reader.Length}: " + string.Join(" ", reader.Buffer.Take(128)), "NetworkManager");
         reader.Recycle();
     }
 
@@ -387,7 +388,7 @@ internal class NetworkManager
 
         if (BetterAntiCheat.CheckCancelRPC(player, callId, reader) != true)
         {
-            if (!player.IsLocalPlayer()) Logger.LogCheat($"RPC canceled by Anti-Cheat: {Enum.GetName((RpcCalls)callId)}{Enum.GetName((CustomRPC)callId)} - {callId}");
+            if (!player.IsLocalPlayer()) Logger_.LogCheat($"RPC canceled by Anti-Cheat: {Enum.GetName((RpcCalls)callId)}{Enum.GetName((CustomRPC)callId)} - {callId}");
             return false;
         }
 

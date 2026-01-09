@@ -1,6 +1,6 @@
 ﻿namespace BetterAmongUs.Managers;
 
-internal class CustomLoadingBarManager
+internal static class CustomLoadingBarManager
 {
     internal static AmongUsLoadingBar? LoadingBar => LoadingBarManager.Instance?.loadingBar;
 

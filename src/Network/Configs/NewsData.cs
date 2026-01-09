@@ -1,4 +1,5 @@
-﻿using BetterAmongUs.Modules;
+﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Modules;
 
 namespace BetterAmongUs.Network.Configs;
 
@@ -6,7 +7,7 @@ namespace BetterAmongUs.Network.Configs;
 /// Represents the data structure for mod news items within the game.
 /// Contains properties to store news-related details such as title, subtitle, content, and metadata.
 /// </summary>
-internal class NewsData()
+internal sealed class NewsData()
 {
     /// <summary>
     /// Indicates whether the news item should be shown.
@@ -83,7 +84,7 @@ internal class NewsData()
         }
         catch (Exception ex)
         {
-            Logger.Error($"Failed to manually deserialize YAML: {ex.Message}");
+            Logger_.Error($"Failed to manually deserialize YAML: {ex.Message}");
             return null;
         }
     }

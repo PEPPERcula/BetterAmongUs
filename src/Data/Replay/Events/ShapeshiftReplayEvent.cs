@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 namespace BetterAmongUs.Data.Replay.Events;
 
 [Serializable]
-internal class ShapeshiftReplayEvent : IReplayEvent<(int playerId, int targetId, bool animate)>
+internal sealed class ShapeshiftReplayEvent : IReplayEvent<(int playerId, int targetId, bool animate)>
 {
     public string Id => "player_shapeshift";
 

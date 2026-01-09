@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace BetterAmongUs.Managers;
 
-class BetterNotificationManager
+internal static class BetterNotificationManager
 {
     internal static GameObject? BAUNotificationManagerObj;
     internal static TextMeshPro? NameText;
@@ -85,8 +85,8 @@ class BetterNotificationManager
             Notify(text, Time: 8f);
         }
 
-        Logger.LogCheat($"{player.cosmetics.nameText.text} Info: {player.Data.PlayerName} - {player.Data.FriendCode} - {player.GetHashPuid()}");
-        Logger.LogCheat(Utils.RemoveHtmlText(rawText));
+        Logger_.LogCheat($"{player.cosmetics.nameText.text} Info: {player.Data.PlayerName} - {player.Data.FriendCode} - {player.GetHashPuid()}");
+        Logger_.LogCheat(Utils.RemoveHtmlText(rawText));
 
         if (GameState.IsHost && kickPlayer)
         {

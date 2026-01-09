@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace BetterAmongUs.Items.OptionItems;
 
-internal class OptionIntItem : OptionItem<int>
+internal sealed class OptionIntItem : OptionItem<int>
 {
-    internal override bool ShowChildren => base.ShowChildren && Value > 0;
+    internal sealed override bool ShowChildren => base.ShowChildren && Value > 0;
     protected IntRange Range { get; set; }
     protected int Increment { get; set; }
     protected bool CanBeInfinite { get; set; }
@@ -40,7 +40,7 @@ internal class OptionIntItem : OptionItem<int>
         return Item;
     }
 
-    protected override void CreateBehavior()
+    protected sealed override void CreateBehavior()
     {
         TryLoad();
         if (!GameSettingMenu.Instance) return;
@@ -57,7 +57,7 @@ internal class OptionIntItem : OptionItem<int>
         SetOptionVisuals();
     }
 
-    protected override void SetupOptionBehavior()
+    protected sealed override void SetupOptionBehavior()
     {
         if (Option is NumberOption numberOption)
         {
@@ -99,13 +99,13 @@ internal class OptionIntItem : OptionItem<int>
         SetValue(value);
     }
 
-    internal override void SetValue(int newValue)
+    internal sealed override void SetValue(int newValue)
     {
         newValue = Math.Clamp(newValue, Range.min, Range.max);
         base.SetValue(newValue);
     }
 
-    internal override void UpdateVisuals(bool updateTabVisuals = true)
+    internal sealed override void UpdateVisuals(bool updateTabVisuals = true)
     {
         if (Option is NumberOption numberOption)
         {
@@ -130,7 +130,7 @@ internal class OptionIntItem : OptionItem<int>
         }
     }
 
-    internal override string ValueAsString()
+    internal sealed override string ValueAsString()
     {
         if (CanBeInfinite)
         {
@@ -143,8 +143,8 @@ internal class OptionIntItem : OptionItem<int>
         return $"{Fixs.prefix}{Value}{Fixs.postfix}";
     }
 
-    internal override int GetInt() => GetValue();
-    internal override float GetFloat() => GetValue();
-    internal override bool Is(int @int) => @int == GetInt();
-    internal override bool Is(float @float) => @float == GetFloat();
+    internal sealed override int GetInt() => GetValue();
+    internal sealed override float GetFloat() => GetValue();
+    internal sealed override bool Is(int @int) => @int == GetInt();
+    internal sealed override bool Is(float @float) => @float == GetFloat();
 }

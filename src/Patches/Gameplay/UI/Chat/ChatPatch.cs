@@ -114,11 +114,11 @@ internal static class ChatPatch
         {
             if (sourcePlayer.IsAlive() || !PlayerControl.LocalPlayer.IsAlive())
             {
-                Logger.Log($"{sourcePlayer.Data.PlayerName} -> {chatText}", "ChatLog");
+                Logger_.Log($"{sourcePlayer.Data.PlayerName} -> {chatText}", "ChatLog");
             }
             else
             {
-                Logger.LogPrivate($"{sourcePlayer.Data.PlayerName} -> {chatText}", "ChatLog");
+                Logger_.LogPrivate($"{sourcePlayer.Data.PlayerName} -> {chatText}", "ChatLog");
             }
         }
 
@@ -140,9 +140,6 @@ internal static class ChatPatch
             if (GameState.IsLobby && !GameState.IsFreePlay)
             {
                 Role = "";
-
-                if (sourcePlayer.IsDev())
-                    sbTag.Append($"<color=#0088ff>Dev</color>+++");
 
                 if (sourcePlayer.IsLocalPlayer() || sourcePlayer.BetterData().IsBetterUser)
                     sbTag.AppendFormat("<color=#0dff00>{1}{0}</color>+++", Translator.GetString("Player.BetterUser"), sourcePlayer.BetterData().IsVerifiedBetterUser || sourcePlayer.IsLocalPlayer() ? "✓ " : "");

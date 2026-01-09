@@ -1,6 +1,4 @@
 using BetterAmongUs.Helpers;
-using BetterAmongUs.Items.Enums;
-using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
 using BetterAmongUs.Mono;
 using BetterAmongUs.Patches.Gameplay.UI.Chat;
@@ -35,7 +33,7 @@ internal static class MeetingHudPatch
         MeetingHud.Instance.ProceedButton.DestroyTextTranslators();
         UpdateHostIcon();
 
-        Logger.LogHeader("Meeting Has Started");
+        Logger_.LogHeader("Meeting Has Started");
     }
 
     internal static void UpdateHostIcon()
@@ -61,18 +59,11 @@ internal static class MeetingHudPatch
     private static void Close_Postfix()
     {
         timeOpen = 0f;
-        Logger.LogHeader("Meeting Has Ended");
+        Logger_.LogHeader("Meeting Has Ended");
 
         if (BAUPlugin.ChatInGameplay.Value && !GameState.IsFreePlay && PlayerControl.LocalPlayer.IsAlive())
         {
             ChatPatch.ClearPlayerChats();
         }
-    }
-
-    [HarmonyPatch(nameof(MeetingHud.SetMasksEnabled))]
-    [HarmonyPostfix]
-    private static void SetMasksEnabled_Postfix(MeetingHud __instance)
-    {
-        HostManager.SyncNames(NameSyncType.Reset);
     }
 }

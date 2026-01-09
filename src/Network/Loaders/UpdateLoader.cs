@@ -1,4 +1,6 @@
-﻿using BetterAmongUs.Network.Configs;
+﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Managers;
+using BetterAmongUs.Network.Configs;
 using Il2CppInterop.Runtime.Attributes;
 using System.Collections;
 using System.Text.Json;
@@ -6,7 +8,7 @@ using UnityEngine;
 
 namespace BetterAmongUs.Network.Loaders;
 
-internal class UpdateLoader : MonoBehaviour
+internal sealed class UpdateLoader : MonoBehaviour
 {
     internal static UpdateData? UpdateInfo { get; private set; }
 
@@ -45,7 +47,7 @@ internal class UpdateLoader : MonoBehaviour
         if (response != null)
         {
             UpdateInfo = response;
-            Logger.Log($"Loaded update info");
+            Logger_.Log($"Loaded update info");
         }
 
         UpdateManager.Init();

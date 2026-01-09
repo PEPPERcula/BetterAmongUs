@@ -5,16 +5,14 @@ using BetterAmongUs.Modules;
 namespace BetterAmongUs.Commands;
 
 [RegisterCommand]
-internal class DumpCommand : BaseCommand
+internal sealed class DumpCommand : BaseCommand
 {
     internal override string Name => "dump";
     internal override string Description => "Dump the entire log to the user's desktop";
-    internal override bool ShowCommand() => !GameState.IsInGamePlay || GameState.IsDev;
+    internal override bool ShowCommand() => !GameState.IsInGamePlay;
 
     internal override void Run()
     {
-        if (GameState.IsInGamePlay && !GameState.IsDev) return;
-
         string logFilePath = Path.Combine(BetterDataManager.filePathFolder, "better-log.txt");
         string log = File.ReadAllText(logFilePath);
         string newLog = string.Empty;

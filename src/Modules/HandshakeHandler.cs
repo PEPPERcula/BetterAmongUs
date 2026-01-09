@@ -1,8 +1,8 @@
 ﻿using BepInEx.Unity.IL2CPP.Utils;
 using BetterAmongUs.Data;
 using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Enums;
 using BetterAmongUs.Mono;
-using BetterAmongUs.Network;
 using Hazel;
 using Il2CppInterop.Runtime.Attributes;
 using System.Collections;
@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace BetterAmongUs.Modules;
 
-internal class HandshakeHandler
+internal sealed class HandshakeHandler
 {
     [HideFromIl2Cpp]
     internal HandshakeHandler(ExtendedPlayerInfo extendedData)

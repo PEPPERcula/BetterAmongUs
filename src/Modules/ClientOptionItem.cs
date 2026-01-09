@@ -4,21 +4,15 @@ using Object = UnityEngine.Object;
 
 namespace BetterAmongUs.Modules;
 
-internal class ClientOptionItem
+internal sealed class ClientOptionItem
 {
-    internal ConfigEntry<bool> Config;
+    internal ConfigEntry<bool>? Config;
     internal ToggleButtonBehaviour ToggleButton;
 
-    internal static SpriteRenderer CustomBackground;
+    internal static SpriteRenderer? CustomBackground;
     private static int numOptions = 0;
 
-    public ClientOptionItem(
-        string name,
-        ConfigEntry<bool> config,
-        OptionsMenuBehaviour optionsMenuBehaviour,
-        Action additionalOnClickAction = null,
-        Func<bool> toggleCheck = null,
-        bool IsToggle = true)
+    internal ClientOptionItem(string name, ConfigEntry<bool>? config, OptionsMenuBehaviour optionsMenuBehaviour, Action? additionalOnClickAction = null, Func<bool>? toggleCheck = null, bool IsToggle = true)
     {
         try
         {
@@ -49,8 +43,8 @@ internal class ClientOptionItem
                 }));
 
                 var selectableButtons = optionsMenuBehaviour.ControllerSelectable;
-                PassiveButton leaveButton = null;
-                PassiveButton returnButton = null;
+                PassiveButton? leaveButton = null;
+                PassiveButton? returnButton = null;
                 foreach (var button in selectableButtons)
                 {
                     if (button == null) continue;
@@ -80,10 +74,8 @@ internal class ClientOptionItem
                     returnButton.transform.localPosition = new(1.35f, -2.411f, -1f);
             }
 
-            // ボタン生成
             ToggleButton = Object.Instantiate(mouseMoveToggle, CustomBackground.transform);
             ToggleButton.transform.localPosition = new Vector3(
-                // 現在のオプション数を基に位置を計算
                 numOptions % 2 == 0 ? -1.3f : 1.3f,
                 2.2f - 0.5f * (numOptions / 2),
                 -6f);
@@ -129,13 +121,7 @@ internal class ClientOptionItem
         finally { numOptions++; }
     }
 
-    internal static ClientOptionItem Create(
-        string name,
-        ConfigEntry<bool> config,
-        OptionsMenuBehaviour optionsMenuBehaviour,
-        Action additionalOnClickAction = null,
-        Func<bool> toggleCheck = null,
-        bool IsToggle = true)
+    internal static ClientOptionItem Create(string name, ConfigEntry<bool> config, OptionsMenuBehaviour optionsMenuBehaviour, Action? additionalOnClickAction = null, Func<bool>? toggleCheck = null, bool IsToggle = true)
     {
         toggleCheck ??= () => true;
 

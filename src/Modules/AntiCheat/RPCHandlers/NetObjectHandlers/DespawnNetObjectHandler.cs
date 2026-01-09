@@ -5,7 +5,7 @@ using InnerNet;
 
 namespace BetterAmongUs.Modules.AntiCheat;
 
-internal class DespawnNetObjectHandler : RPCHandler
+internal sealed class DespawnNetObjectHandler : RPCHandler
 {
     internal override byte GameDataTag => (byte)GameDataTypes.DespawnFlag;
 

@@ -7,9 +7,9 @@ using System.Reflection;
 using TMPro;
 using UnityEngine;
 
-namespace BetterAmongUs.Network;
+namespace BetterAmongUs.Managers;
 
-internal class UpdateManager : MonoBehaviour
+internal sealed class UpdateManager : MonoBehaviour
 {
     private bool AmUpdateing;
 

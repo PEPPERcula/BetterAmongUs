@@ -1,16 +1,17 @@
-﻿using System.Collections.ObjectModel;
+﻿using BetterAmongUs.Helpers;
+using System.Collections.ObjectModel;
 using System.Reflection;
 
 namespace BetterAmongUs.Modules;
 
-class FileChecker
+internal static class FileChecker
 {
     private static bool enabled = false;
     private static FileSystemWatcher? fileWatcher;
     private static bool hasUnauthorizedFileOrMod = false;
     internal static string WarningMsg { get; private set; } = string.Empty;
     internal static bool HasShownWarning { get; set; } = false;
-    internal static bool HasUnauthorizedFileOrMod => hasUnauthorizedFileOrMod && (!BAUPlugin.MyData.IsDev() || !BAUPlugin.MyData.IsVerified());
+    internal static bool HasUnauthorizedFileOrMod => hasUnauthorizedFileOrMod;
 
     private static readonly ReadOnlyCollection<string> TrustedNamespaces = new(new List<string>
     {
@@ -46,9 +47,6 @@ class FileChecker
 
     internal static void Initialize()
     {
-#if DEBUG
-        return;
-#endif
         if (enabled) return;
         enabled = true;
 
@@ -82,7 +80,7 @@ class FileChecker
             if (File.Exists(Path.Combine(Environment.CurrentDirectory, fileName)))
             {
                 WarningMsg = "<#D20200>Unauthorized File Detected</color>\n<#9D9D9D><size=70%>Look in logs for further information!</size></color>";
-                Logger.Warning($"Unauthorized File: {Path.Combine(Environment.CurrentDirectory, fileName)}");
+                Logger_.Warning($"Unauthorized File: {Path.Combine(Environment.CurrentDirectory, fileName)}");
                 if (GameState.IsInGame)
                 {
                     SceneChanger.ChangeScene("MainMenu");
@@ -113,7 +111,7 @@ class FileChecker
                 }
 
                 WarningMsg = "<#D20200>Untrusted Assembly Detected</color>\n<#9D9D9D><size=70%>Look in logs for further information!</size></color>";
-                Logger.Warning($"Unauthorized Assembly: {assembly.FullName} (Untrusted Namespace)");
+                Logger_.Warning($"Unauthorized Assembly: {assembly.FullName} (Untrusted Namespace)");
                 hasUnauthorizedFileOrMod = true;
                 continue;
             }
@@ -121,7 +119,7 @@ class FileChecker
             if (!TrustedNamespaces.Any(ns => assembly.FullName.Contains(ns, StringComparison.OrdinalIgnoreCase)))
             {
                 WarningMsg = "<#D20200>Unregistered Assembly Detected</color>\n<#9D9D9D><size=70%>Look in logs for further information!</size></color>";
-                Logger.Warning($"Unauthorized Assembly: {assembly.FullName} (Unregistered Namespace)");
+                Logger_.Warning($"Unauthorized Assembly: {assembly.FullName} (Unregistered Namespace)");
                 hasUnauthorizedFileOrMod = true;
                 continue;
             }
@@ -129,7 +127,7 @@ class FileChecker
             if (!IsSafeLocation(assembly))
             {
                 WarningMsg = "<#D20200>Unregistered Assembly Location Detected</color>\n<#9D9D9D><size=70%>Look in logs for further information!</size></color>";
-                Logger.Warning($"Unauthorized Assembly: {assembly.FullName} (Unregistered Location: {assembly.Location})");
+                Logger_.Warning($"Unauthorized Assembly: {assembly.FullName} (Unregistered Location: {assembly.Location})");
                 hasUnauthorizedFileOrMod = true;
                 continue;
             }

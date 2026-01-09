@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using BetterAmongUs.Helpers;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -45,7 +46,7 @@ internal abstract class AbstractJsonFile
             var data = JsonSerializer.Deserialize(content, GetType(), SerializerOptions);
             if (data == null)
             {
-                Logger.Error("Deserialization returned null");
+                Logger_.Error("Deserialization returned null");
                 return false;
             }
 
@@ -63,12 +64,12 @@ internal abstract class AbstractJsonFile
         }
         catch (JsonException ex)
         {
-            Logger.Error($"JSON parsing error: {ex.Message}");
+            Logger_.Error($"JSON parsing error: {ex.Message}");
             return false;
         }
         catch (Exception ex)
         {
-            Logger.Error($"Unexpected error: {ex.Message}");
+            Logger_.Error($"Unexpected error: {ex.Message}");
             return false;
         }
     }
@@ -99,7 +100,7 @@ internal abstract class AbstractJsonFile
         }
         catch (Exception ex)
         {
-            Logger.Error(ex);
+            Logger_.Error(ex);
             return false;
         }
 

@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 namespace BetterAmongUs.Data.Replay.Events;
 
 [Serializable]
-internal class VanishReplayEvent : IReplayEvent<int>
+internal sealed class VanishReplayEvent : IReplayEvent<int>
 {
     public string Id => "player_vanish";
 

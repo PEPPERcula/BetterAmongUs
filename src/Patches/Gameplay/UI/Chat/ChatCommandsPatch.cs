@@ -1,5 +1,6 @@
 ﻿using BetterAmongUs.Commands;
 using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Enums;
 using BetterAmongUs.Modules;
 using HarmonyLib;
 using TMPro;
@@ -225,42 +226,6 @@ internal static class ChatCommandsPatch
                                  && c.ShowCommand());
         if (closestNormalCommand != null)
             return closestNormalCommand;
-
-        if (BAUPlugin.MyData.IsSponsor())
-        {
-            var directSponsorMatch = BaseCommand.allCommands
-                .FirstOrDefault(c => c.Type == CommandType.Sponsor
-                         && c.Names.Any(name => string.Equals(name, typedCommand, StringComparison.OrdinalIgnoreCase))
-                         && c.ShowCommand());
-            if (directSponsorMatch != null)
-                return directSponsorMatch;
-
-            var closestSponsorCommand = BaseCommand.allCommands
-                .OrderBy(c => c.Name)
-                .FirstOrDefault(c => c.Type == CommandType.Sponsor
-                                 && c.Names.Any(name => name.StartsWith(typedCommand, StringComparison.OrdinalIgnoreCase))
-                                 && c.ShowCommand());
-            if (closestSponsorCommand != null)
-                return closestSponsorCommand;
-        }
-
-        if (BAUPlugin.MyData.IsDev())
-        {
-            var directdebugCommand = BaseCommand.allCommands
-                .FirstOrDefault(c => c.Type == CommandType.Debug
-                                     && c.Names.Any(name => string.Equals(name, typedCommand, StringComparison.OrdinalIgnoreCase))
-                                     && c.ShowCommand());
-            if (directdebugCommand != null)
-                return directdebugCommand;
-
-            var closestDebugCommand = BaseCommand.allCommands
-                .OrderBy(c => c.Name)
-                .FirstOrDefault(c => c.Type == CommandType.Debug
-                     && c.Names.Any(name => name.StartsWith(typedCommand, StringComparison.OrdinalIgnoreCase))
-                     && c.ShowCommand());
-            if (closestDebugCommand != null)
-                return closestDebugCommand;
-        }
 
         return null;
     }

@@ -2,7 +2,7 @@
 
 namespace BetterAmongUs.Items.OptionItems.NoneOption;
 
-internal class OptionHeaderItem : OptionItem
+internal sealed class OptionHeaderItem : OptionItem
 {
     private CategoryHeaderMasked? categoryHeaderMasked;
     internal override bool CanLoad => false;
@@ -44,7 +44,7 @@ internal class OptionHeaderItem : OptionItem
         Tab.Children.Add(this);
     }
 
-    internal override void UpdateVisuals(bool updateTabVisuals = true)
+    internal sealed override void UpdateVisuals(bool updateTabVisuals = true)
     {
         if (categoryHeaderMasked != null)
         {
@@ -52,7 +52,7 @@ internal class OptionHeaderItem : OptionItem
         }
     }
 
-    internal override string ValueAsString()
+    internal sealed override string ValueAsString()
     {
         throw new NotImplementedException();
     }

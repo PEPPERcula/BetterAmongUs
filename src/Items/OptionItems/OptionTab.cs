@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace BetterAmongUs.Items.OptionItems;
 
-internal class OptionTab
+internal sealed class OptionTab
 {
     internal static List<OptionTab> AllTabs = [];
 

@@ -14,9 +14,9 @@ internal static class Translator
 
     internal static void Init()
     {
-        Logger.Log("Loading language files...", "Translator");
+        Logger_.Log("Loading language files...", "Translator");
         LoadLanguages();
-        Logger.Log("Language files loaded successfully", "Translator");
+        Logger_.Log("Language files loaded successfully", "Translator");
     }
 
     private static void LoadLanguages()
@@ -30,7 +30,7 @@ internal static class Translator
 
             if (jsonFileNames.Length == 0)
             {
-                Logger.Error("JSON translation files do not exist.", "Translator");
+                Logger_.Error("JSON translation files do not exist.", "Translator");
                 return;
             }
 
@@ -43,7 +43,7 @@ internal static class Translator
         }
         catch (Exception ex)
         {
-            Logger.Error($"Error loading languages: {ex}", "Translator");
+            Logger_.Error($"Error loading languages: {ex}", "Translator");
         }
     }
 
@@ -67,7 +67,7 @@ internal static class Translator
 
             if (jsonDictionary == null)
             {
-                Logger.Error($"Failed to deserialize JSON from {resourceName}", "Translator");
+                Logger_.Error($"Failed to deserialize JSON from {resourceName}", "Translator");
                 return;
             }
 
@@ -81,12 +81,12 @@ internal static class Translator
             }
             else
             {
-                Logger.Error($"Invalid JSON format in {resourceName}: Missing or invalid 'LanguageID' field.", "Translator");
+                Logger_.Error($"Invalid JSON format in {resourceName}: Missing or invalid 'LanguageID' field.", "Translator");
             }
         }
         catch (Exception ex)
         {
-            Logger.Error($"Error loading language file {resourceName}: {ex}", "Translator");
+            Logger_.Error($"Error loading language file {resourceName}: {ex}", "Translator");
         }
     }
 
@@ -149,7 +149,7 @@ internal static class Translator
         }
         catch (Exception ex)
         {
-            Logger.Error($"Error retrieving string [{key}]: {ex}", "Translator");
+            Logger_.Error($"Error retrieving string [{key}]: {ex}", "Translator");
             return fallbackText;
         }
     }

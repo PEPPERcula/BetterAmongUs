@@ -5,7 +5,7 @@ using System.Globalization;
 
 namespace BetterAmongUs.Helpers;
 
-static class InnerNetClientHelper
+internal static class InnerNetClientHelper
 {
     internal static void BroadcastRpc(this BaseRpcMessage rpcMessage, bool reliable = true)
     {

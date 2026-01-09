@@ -3,7 +3,6 @@ using BetterAmongUs.Data;
 using BetterAmongUs.Helpers;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
-using BetterAmongUs.Network.Configs;
 using BetterAmongUs.Patches.Gameplay.UI.Chat;
 using BetterAmongUs.Patches.Gameplay.UI.Settings;
 using HarmonyLib;
@@ -28,17 +27,6 @@ internal static class ClientPatch
         }
     }
 
-    [HarmonyPatch(typeof(EOSManager))]
-    internal static class EOSManagerPatch
-    {
-        [HarmonyPatch(nameof(EOSManager.EndFinalPartsOfLoginFlow))]
-        [HarmonyPostfix]
-        private static void EndFinalPartsOfLoginFlow_Postfix()
-        {
-            UserData.TrySetLocalData();
-        }
-    }
-
     // If developer set account status color to Blue
     [HarmonyPatch(typeof(SignInStatusComponent))]
     internal static class SignInStatusComponentPatch
@@ -52,31 +40,6 @@ internal static class ClientPatch
             {
                 Utils.ShowPopUp($"{lines}\n<b><size=200%><#0DFF00>{Translator.GetString("BetterAmongUs")}</color></size></b>\n<color=#757575><u><size=150%>{FileChecker.WarningMsg}</size></u>\n{lines}");
                 FileChecker.HasShownWarning = true;
-            }
-
-            if (BannedUserData.CheckLocalBan(out var bannedData))
-            {
-                __instance.statusSprite.sprite = __instance.guestSprite;
-                __instance.glowSprite.sprite = __instance.guestGlow;
-                __instance.statusSprite.color = Color.red;
-                __instance.glowSprite.color = Color.red;
-                __instance.friendsButton.SetActive(false);
-
-                var reason = bannedData.Reason;
-                Utils.ShowPopUp($"{lines}\n<b><size=200%><#0DFF00>{Translator.GetString("BetterAmongUs")}</color></size></b>\n<color=#757575><u><size=150%><color=#8f0000>You have been banned\nReason: {reason}</color></size></u>\n{lines}");
-
-                return false;
-            }
-
-            if (BAUPlugin.MyData.IsDev())
-            {
-                __instance.statusSprite.sprite = __instance.guestSprite;
-                __instance.glowSprite.sprite = __instance.guestGlow;
-                __instance.statusSprite.color = Color.cyan;
-                __instance.glowSprite.color = Color.cyan;
-                __instance.friendsButton.SetActive(true);
-
-                return false;
             }
 
             var varSupportedVersions = BAUPlugin.SupportedAmongUsVersions;
@@ -124,7 +87,7 @@ internal static class ClientPatch
         private static void ExitGame_Postfix([HarmonyArgument(0)] DisconnectReasons reason)
         {
             CustomLoadingBarManager.ToggleLoadingBar(false);
-            Logger.Log($"Client has left game for: {Enum.GetName(reason)}", "AmongUsClientPatch");
+            Logger_.Log($"Client has left game for: {Enum.GetName(reason)}", "AmongUsClientPatch");
         }
 
         [HarmonyPatch(nameof(AmongUsClient.OnGameEnd))]
@@ -136,7 +99,7 @@ internal static class ClientPatch
                 UnityEngine.Object.DontDestroyOnLoad(data.gameObject);
             }
 
-            _ = new LateTask(() =>
+            LateTask.Schedule(() =>
             {
                 foreach (var data in GameData.Instance.AllPlayers)
                 {

@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 namespace BetterAmongUs.Data.Replay.Events;
 
 [Serializable]
-internal class UpdateSystemReplayEvent : IReplayEvent<(byte systemType, int playerId, byte amount)>
+internal sealed class UpdateSystemReplayEvent : IReplayEvent<(byte systemType, int playerId, byte amount)>
 {
     public string Id => "update_system";
 

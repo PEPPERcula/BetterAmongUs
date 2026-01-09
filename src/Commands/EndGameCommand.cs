@@ -4,7 +4,7 @@ using BetterAmongUs.Modules;
 namespace BetterAmongUs.Commands;
 
 [RegisterCommand]
-internal class EndGameCommand : BaseCommand
+internal sealed class EndGameCommand : BaseCommand
 {
     internal override string Name => "endgame";
     internal override string Description => "Force end the game";

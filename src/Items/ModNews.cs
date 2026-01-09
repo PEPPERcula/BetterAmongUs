@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace BetterAmongUs.Items;
 
-internal class ModNews
+internal sealed class ModNews
 {
     internal NewsTypes NewsType { get; }
     internal int Number { get; }

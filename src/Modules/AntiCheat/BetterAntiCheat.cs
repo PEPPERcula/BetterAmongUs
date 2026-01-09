@@ -1,9 +1,9 @@
 ﻿using BetterAmongUs.Data;
 using BetterAmongUs.Helpers;
 using BetterAmongUs.Items.Attributes;
+using BetterAmongUs.Items.Enums;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Mono;
-using BetterAmongUs.Network;
 using BetterAmongUs.Patches.Gameplay.UI.Settings;
 using HarmonyLib;
 using Hazel;
@@ -11,7 +11,7 @@ using InnerNet;
 
 namespace BetterAmongUs.Modules.AntiCheat;
 
-class BetterAntiCheat
+internal static class BetterAntiCheat
 {
     internal static bool IsEnabled => PlayerControl.LocalPlayer?.Data?.IsIncomplete == false;
 
@@ -62,7 +62,7 @@ class BetterAntiCheat
             {
                 try
                 {
-                    _ = new LateTask(() =>
+                    LateTask.Schedule(() =>
                     {
                         var player = BAUPlugin.AllPlayerControls.FirstOrDefault(pc => pc.GetClient().PlatformData == __instance);
 
@@ -77,7 +77,7 @@ class BetterAntiCheat
                                         Translator.GetString("AntiCheat.Reason.PlatformSpoofer"),
                                         Translator.GetString("AntiCheat.HasBeenDetectedWithCheat")
                                     );
-                                    Logger.LogCheat($"{player.BetterData().RealName} {Translator.GetString("AntiCheat.PlatformSpoofer")}: {__instance.XboxPlatformId}");
+                                    Logger_.LogCheat($"{player.BetterData().RealName} {Translator.GetString("AntiCheat.PlatformSpoofer")}: {__instance.XboxPlatformId}");
                                 }
                             }
 
@@ -90,7 +90,7 @@ class BetterAntiCheat
                                         Translator.GetString("AntiCheat.Reason.PlatformSpoofer"),
                                         Translator.GetString("AntiCheat.HasBeenDetectedWithCheat")
                                     );
-                                    Logger.LogCheat($"{player.BetterData().RealName} {Translator.GetString("AntiCheat.PlatformSpoofer")}: {__instance.PsnPlatformId}");
+                                    Logger_.LogCheat($"{player.BetterData().RealName} {Translator.GetString("AntiCheat.PlatformSpoofer")}: {__instance.PsnPlatformId}");
                                 }
                             }
 
@@ -164,7 +164,7 @@ class BetterAntiCheat
                 {
                     if (BetterNotificationManager.NotifyCheat(player, string.Format(Translator.GetString("AntiCheat.InvalidHostRPC"), Enum.GetName((RpcCalls)callId))))
                     {
-                        Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {!player.IsHost()}");
+                        Logger_.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {!player.IsHost()}");
                     }
 
                     reader.Recycle();
@@ -183,7 +183,7 @@ class BetterAntiCheat
                 {
                     if (BetterNotificationManager.NotifyCheat(player, string.Format(Translator.GetString("AntiCheat.InvalidSetRPC"), Enum.GetName((RpcCalls)callId))))
                     {
-                        Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {GameState.IsInGamePlay}");
+                        Logger_.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {GameState.IsInGamePlay}");
                     }
 
                     reader.Recycle();
@@ -223,7 +223,7 @@ class BetterAntiCheat
                 {
                     if (BetterNotificationManager.NotifyCheat(player, string.Format(Translator.GetString("AntiCheat.InvalidLobbyRPC"), Enum.GetName((RpcCalls)callId))))
                     {
-                        Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {GameState.IsInGame} && {GameState.IsLobby}");
+                        Logger_.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {GameState.IsInGame} && {GameState.IsLobby}");
                     }
 
                     reader.Recycle();
@@ -237,7 +237,7 @@ class BetterAntiCheat
         }
         catch (Exception ex)
         {
-            Logger.Error(ex);
+            Logger_.Error(ex);
             return true;
         }
     }
@@ -267,7 +267,7 @@ class BetterAntiCheat
         if (!notCanceled)
         {
             var tempReader = MessageReader.Get(reader);
-            Logger.LogCheat($"RPC canceled by Anti-Cheat: {Enum.GetName(typeof(SystemTypes), (int)systemType)} - {tempReader.ReadByte()}");
+            Logger_.LogCheat($"RPC canceled by Anti-Cheat: {Enum.GetName(typeof(SystemTypes), (int)systemType)} - {tempReader.ReadByte()}");
             tempReader.Recycle();
         }
 

@@ -1,9 +1,10 @@
-﻿using BetterAmongUs.Items.Attributes;
+﻿using BetterAmongUs.Commands.Arguments;
+using BetterAmongUs.Items.Attributes;
 
 namespace BetterAmongUs.Commands;
 
 [RegisterCommand]
-internal class SetPrefixCommand : BaseCommand
+internal sealed class SetPrefixCommand : BaseCommand
 {
     internal override string Name => "setprefix";
     internal override string Description => "Set command prefix";

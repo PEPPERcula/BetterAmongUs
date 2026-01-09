@@ -5,7 +5,7 @@ using BetterAmongUs.Items.Attributes;
 namespace BetterAmongUs.Commands;
 
 [RegisterCommand]
-internal class RemoveAllCommand : BaseCommand
+internal sealed class RemoveAllCommand : BaseCommand
 {
     internal override string Name => "removeall";
     internal override string Description => "Remove all players from local <color=#4f92ff>Anti-Cheat</color> data";

@@ -1,4 +1,5 @@
-﻿using BetterAmongUs.Items;
+﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Items;
 using BetterAmongUs.Network.Configs;
 using Il2CppInterop.Runtime.Attributes;
 using System.Collections;
@@ -11,7 +12,7 @@ namespace BetterAmongUs.Network.Loaders;
 /// <summary>
 /// Handles downloading and processing of news data from a remote repository.
 /// </summary>
-internal class NewsLoader : MonoBehaviour
+internal sealed class NewsLoader : MonoBehaviour
 {
     /// <summary>
     /// Coroutine to fetch the news data from the remote repository.
@@ -51,7 +52,7 @@ internal class NewsLoader : MonoBehaviour
 
         if (response == null || !response.ContainsKey("News"))
         {
-            Logger.Error("manifest.json deserialization failed or no 'News' key found.");
+            Logger_.Error("manifest.json deserialization failed or no 'News' key found.");
             yield break;
         }
 
@@ -62,7 +63,7 @@ internal class NewsLoader : MonoBehaviour
 
         yield return CoLoadNewsTest();
 
-        Logger.Log($"Loaded {ModNews.NewsDataToProcess.Count} news files");
+        Logger_.Log($"Loaded {ModNews.NewsDataToProcess.Count} news files");
 
         Destroy(this);
     }
@@ -85,7 +86,7 @@ internal class NewsLoader : MonoBehaviour
 
         if (wwwConfig.result != UnityWebRequest.Result.Success)
         {
-            Logger.Error($"Error fetching config file for '{fileName}': {wwwConfig.error}");
+            Logger_.Error($"Error fetching config file for '{fileName}': {wwwConfig.error}");
             yield break;
         }
 
@@ -97,7 +98,7 @@ internal class NewsLoader : MonoBehaviour
         }
         catch (Exception ex)
         {
-            Logger.Error($"Failed to deserialize yaml for '{fileName}': {ex.Message}");
+            Logger_.Error($"Failed to deserialize yaml for '{fileName}': {ex.Message}");
             yield break;
         }
     }
@@ -123,7 +124,7 @@ internal class NewsLoader : MonoBehaviour
             }
             catch (Exception ex)
             {
-                Logger.Error($"Failed to deserialize yaml for '{yamlDirectory}': {ex.Message}");
+                Logger_.Error($"Failed to deserialize yaml for '{yamlDirectory}': {ex.Message}");
                 yield break;
             }
         }

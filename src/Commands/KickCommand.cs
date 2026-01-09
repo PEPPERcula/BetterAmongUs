@@ -1,11 +1,12 @@
-﻿using BetterAmongUs.Helpers;
+﻿using BetterAmongUs.Commands.Arguments;
+using BetterAmongUs.Helpers;
 using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Modules;
 
 namespace BetterAmongUs.Commands;
 
 [RegisterCommand]
-internal class KickCommand : BaseCommand
+internal sealed class KickCommand : BaseCommand
 {
     internal override string Name => "kick";
     internal override string Description => "Kick a player from the game";

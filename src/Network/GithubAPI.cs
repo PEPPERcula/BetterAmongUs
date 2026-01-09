@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 
 namespace BetterAmongUs.Network;
 
-internal class GithubAPI : MonoBehaviour
+internal sealed class GithubAPI : MonoBehaviour
 {
     internal static GithubAPI? Instance { get; private set; }
     internal static bool HasConnectedAPI { get; private set; } = false;

@@ -1,4 +1,5 @@
-﻿using System.IO.Compression;
+﻿using BetterAmongUs.Helpers;
+using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -33,7 +34,7 @@ internal sealed class BetterGameSettingsFile : AbstractJsonFile
                     }
                     catch (Exception ex)
                     {
-                        Logger.Error($"Failed to convert JSON element for key {kvp.Key}: {ex.Message}");
+                        Logger_.Error($"Failed to convert JSON element for key {kvp.Key}: {ex.Message}");
                     }
                 }
             }

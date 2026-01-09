@@ -1,11 +1,12 @@
-﻿using BetterAmongUs.Helpers;
+﻿using BetterAmongUs.Commands.Arguments;
+using BetterAmongUs.Helpers;
 using BetterAmongUs.Items.Attributes;
 using System.Text;
 
 namespace BetterAmongUs.Commands;
 
 [RegisterCommand]
-internal class PlayerInfoCommand : BaseCommand
+internal sealed class PlayerInfoCommand : BaseCommand
 {
     internal override string Name => "player";
     internal override string Description => "Get a Players information";

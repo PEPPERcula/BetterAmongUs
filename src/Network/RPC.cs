@@ -1,24 +1,10 @@
 ﻿using BetterAmongUs.Helpers;
+using BetterAmongUs.Items.Enums;
 using BetterAmongUs.Modules;
 using BetterAmongUs.Mono;
 using Hazel;
 
 namespace BetterAmongUs.Network;
-
-enum CustomRPC : int
-{
-    // Cheat RPC's
-    Sicko = 420, // Results in 164
-    AUM = 42069, // Results in 85
-    AUMChat = 101,
-    KillNetwork = 250,
-    KillNetworkChat = 119,
-
-    //Better Among Us
-    LegacyBetterCheck = 150, // Unused
-    SendSecretToPlayer,
-    CheckSecretHashFromPlayer,
-}
 
 internal static class RPC
 {

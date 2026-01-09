@@ -294,13 +294,13 @@ internal static class Utils
     {
         AmongUsClient.Instance.ExitGame(0);
 
-        _ = new LateTask(() =>
+        LateTask.Schedule(() =>
         {
             SceneChanger.ChangeScene("MainMenu");
 
             if (showReason)
             {
-                _ = new LateTask(() =>
+                LateTask.Schedule(() =>
                 {
                     var lines = "<color=#ebbd34>----------------------------------------------------------------------------------------------</color>";
                     ShowPopUp($"{lines}\n\n\n<size=150%>{reason}</size>\n\n\n{lines}");
@@ -336,7 +336,7 @@ internal static class Utils
         }
         catch (Exception ex)
         {
-            Logger.Error(ex);
+            Logger_.Error(ex);
             return null;
         }
     }
@@ -361,7 +361,7 @@ internal static class Utils
         }
         catch (Exception ex)
         {
-            Logger.Error(ex);
+            Logger_.Error(ex);
             return null;
         }
     }

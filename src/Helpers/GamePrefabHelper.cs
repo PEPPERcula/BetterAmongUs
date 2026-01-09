@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BetterAmongUs.Helpers;
 
-internal class GamePrefabHelper
+internal static class GamePrefabHelper
 {
     internal static UnityEngine.Object? GetPrefabByName(string objectName)
     {

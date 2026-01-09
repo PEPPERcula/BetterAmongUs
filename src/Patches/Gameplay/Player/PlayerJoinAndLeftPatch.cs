@@ -22,7 +22,7 @@ internal static class OnGameJoinedPatch
             host?.SetColor(host.CurrentOutfit.ColorId);
         }
 
-        Logger.Log($"Successfully joined {GameCode.IntToGameName(AmongUsClient.Instance.GameId)}", "OnGameJoinedPatch");
+        Logger_.Log($"Successfully joined {GameCode.IntToGameName(AmongUsClient.Instance.GameId)}", "OnGameJoinedPatch");
     }
 }
 
@@ -31,7 +31,7 @@ internal static class OnPlayerJoinedPatch
 {
     private static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData client)
     {
-        _ = new LateTask(() =>
+        LateTask.Schedule(() =>
         {
             if (GameState.IsHost)
             {
@@ -120,7 +120,7 @@ internal static class GameDataShowNotificationPatch
         {
             var ReasonText = $"<color=#ff0>{playerData.BetterData().RealName}</color> {forceReasonText}";
 
-            Logger.Log(ReasonText);
+            Logger_.Log(ReasonText);
 
             HudManager.Instance.Notifier.AddDisconnectMessage(ReasonText);
         }
@@ -156,7 +156,7 @@ internal static class GameDataShowNotificationPatch
                     break;
             }
 
-            Logger.Log(ReasonText);
+            Logger_.Log(ReasonText);
 
             HudManager.Instance.Notifier.AddDisconnectMessage(ReasonText);
         }

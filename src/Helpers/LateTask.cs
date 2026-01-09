@@ -1,52 +1,79 @@
 namespace BetterAmongUs.Helpers;
 
-class LateTask
+internal sealed class LateTask
 {
-    internal string name;
-    internal float timer;
-    internal bool shouldLog;
-    internal Action action;
-    internal static List<LateTask> Tasks = [];
-    internal bool Run(float deltaTime)
-    {
-        timer -= deltaTime;
-        if (timer <= 0)
-        {
-            action();
+    private readonly Action _action;
+    private float _remainingTime;
+    private readonly string _name;
+    private readonly bool _shouldLog;
 
-            if (shouldLog == true)
-                Logger.Log($"{name} has finished", "LateTask");
-            return true;
-        }
-        return false;
-    }
-    public LateTask(Action action, float time, string name = "No Name Task", bool shouldLog = true)
+    private static readonly List<LateTask> Tasks = new();
+
+    private LateTask(Action action, float delay, string name = "Unnamed Task", bool shouldLog = true)
     {
-        this.action = action;
-        timer = time;
-        this.name = name;
-        this.shouldLog = shouldLog;
+        _action = action ?? throw new ArgumentNullException(nameof(action));
+        _remainingTime = delay;
+        _name = name ?? throw new ArgumentNullException(nameof(name));
+        _shouldLog = shouldLog;
+
         Tasks.Add(this);
     }
 
-    internal static void Update(float deltaTime)
+    private bool Update(float deltaTime)
     {
-        var TasksToRemove = new List<LateTask>();
+        _remainingTime -= deltaTime;
+
+        if (_remainingTime > 0)
+            return false;
+
+        try
+        {
+            _action.Invoke();
+
+            if (_shouldLog)
+            {
+                Logger_.Log($"{_name} has finished", nameof(LateTask));
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Logger_.Error($"Error executing task '{_name}': {ex}");
+            return true;
+        }
+    }
+
+    internal static void Schedule(Action action, float delay, string name = "Unnamed Task", bool shouldLog = true)
+    {
+        _ = new LateTask(action, delay, name, shouldLog);
+    }
+
+    internal static void UpdateAll(float deltaTime)
+    {
+        if (Tasks.Count == 0)
+            return;
+
+        var completedTasks = new List<LateTask>(Tasks.Count);
+
         foreach (var task in Tasks.ToArray())
         {
-            try
+            if (task.Update(deltaTime))
             {
-                if (task.Run(deltaTime))
-                {
-                    TasksToRemove.Add(task);
-                }
-            }
-            catch (Exception ex)
-            {
-                TasksToRemove.Add(task);
-                Logger.Error(ex);
+                completedTasks.Add(task);
             }
         }
-        TasksToRemove.ForEach(task => Tasks.Remove(task));
+
+        foreach (var task in completedTasks)
+        {
+            Tasks.Remove(task);
+        }
     }
+
+    public static void CancelAll()
+    {
+        Tasks.Clear();
+    }
+
+    public static int ActiveTaskCount => Tasks.Count;
 }

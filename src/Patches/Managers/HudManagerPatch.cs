@@ -1,5 +1,4 @@
 ﻿using BetterAmongUs.Helpers;
-using BetterAmongUs.Items.Enums;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
 using HarmonyLib;
@@ -17,13 +16,6 @@ internal static class HudManagerPatch
         string.Format(Translator.GetString("WelcomeMsg.BAUDescription1"), Translator.GetString("bau"), Translator.GetString("BetterOption.AntiCheat"));
 
     private static bool HasBeenWelcomed = false;
-
-    [HarmonyPatch(nameof(HudManager.CoShowIntro))]
-    [HarmonyPostfix]
-    private static void CoShowIntro_Postfix(HudManager __instance)
-    {
-        HostManager.SyncNames(NameSyncType.Gameplay, 0.25f, 20);
-    }
 
     [HarmonyPatch(nameof(HudManager.Start))]
     [HarmonyPostfix]
@@ -55,7 +47,7 @@ internal static class HudManagerPatch
             }
         }
 
-        _ = new LateTask(() =>
+        LateTask.Schedule(() =>
         {
             if (!HasBeenWelcomed && GameState.IsInGame && GameState.IsLobby && !GameState.IsFreePlay)
             {

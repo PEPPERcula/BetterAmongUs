@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using BetterAmongUs.Helpers;
+using System.Collections;
 using System.Reflection;
 using System.Text.Json.Serialization;
 using UnityEngine;
@@ -6,7 +7,7 @@ using UnityEngine;
 namespace BetterAmongUs.Network.Configs;
 
 [Serializable]
-internal class UpdateData
+internal sealed class UpdateData
 {
     [JsonPropertyName("dllLink")]
     public string DllLink { get; set; } = string.Empty;
@@ -73,7 +74,7 @@ internal class UpdateData
         }
         catch (Exception ex)
         {
-            Logger.Error($"Update check failed: {ex.Message}");
+            Logger_.Error($"Update check failed: {ex.Message}");
             return false;
         }
     }

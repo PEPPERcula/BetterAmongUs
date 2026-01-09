@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BetterAmongUs.Items.OptionItems.NoneOption;
 
-internal class OptionDividerItem : OptionItem
+internal sealed class OptionDividerItem : OptionItem
 {
     internal override bool CanLoad => false;
     internal override bool IsOption => false;
@@ -37,7 +37,7 @@ internal class OptionDividerItem : OptionItem
         Tab.Children.Add(this);
     }
 
-    internal override string ValueAsString()
+    internal sealed override string ValueAsString()
     {
         throw new NotImplementedException();
     }
