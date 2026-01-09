@@ -6,12 +6,12 @@ namespace BetterAmongUs.Modules.OptionItems;
 internal sealed class OptionIntItem : OptionItem<int>
 {
     internal sealed override bool ShowChildren => base.ShowChildren && Value > 0;
-    protected IntRange Range { get; set; }
-    protected int Increment { get; set; }
-    protected bool CanBeInfinite { get; set; }
-    protected (string prefix, string postfix) Fixs { get; set; }
+    private IntRange? Range { get; set; }
+    private int Increment { get; set; }
+    private bool CanBeInfinite { get; set; }
+    private (string prefix, string postfix) Fixs { get; set; }
 
-    internal static OptionIntItem Create(int id, OptionTab tab, string tranStr, (int minValue, int maxValue, int incrementValue) Min_Max_Increment, int defaultValue, (string prefix, string postfix) Prefix_Postfix = new(), OptionItem parent = null, bool canBeInfinite = false)
+    internal static OptionIntItem Create(int id, OptionTab tab, string tranStr, (int minValue, int maxValue, int incrementValue) Min_Max_Increment, int defaultValue, (string prefix, string postfix) Prefix_Postfix = new(), OptionItem? parent = null, bool canBeInfinite = false)
     {
         if (GetOptionById(id) is OptionIntItem intItem)
         {

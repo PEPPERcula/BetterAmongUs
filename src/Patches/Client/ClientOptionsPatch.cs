@@ -30,6 +30,7 @@ internal static class OptionsMenuBehaviourPatch
     [HarmonyPrefix]
     private static void Start_Postfix(OptionsMenuBehaviour __instance)
     {
+        /*
         static bool toggleCheckInGamePlay(string buttonName)
         {
             bool flag = GameState.IsInGame && !GameState.IsLobby || GameState.IsFreePlay;
@@ -38,6 +39,8 @@ internal static class OptionsMenuBehaviourPatch
 
             return flag;
         }
+        */
+
         static bool toggleCheckInGame(string buttonName)
         {
             bool flag = GameState.IsInGame;

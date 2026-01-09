@@ -7,7 +7,7 @@ internal static class EnumHelper
     /// </summary>
     /// <typeparam name="T">Type of enum to be obtained</typeparam>
     /// <returns>All values of T</returns>
-    internal static T[] GetAllValues<T>() where T : Enum => Enum.GetValues(typeof(T)) as T[];
+    internal static T[]? GetAllValues<T>() where T : Enum => Enum.GetValues(typeof(T)) as T[];
     /// <summary>
     /// Get all names in enum
     /// </summary>
@@ -22,13 +22,13 @@ internal static class EnumHelper
     /// <typeparam name="TEnum">Type of enum to be obtained</typeparam>
     /// <param name="chunkSize">The number of elements each chunk should contain. </param>
     /// <returns>A list of arrays, each containing up to <paramref name="chunkSize"/> elements of the enum type.</returns>
-    internal static List<TEnum[]> Achunk<TEnum>(int chunkSize, bool shuffle = false, Func<TEnum, bool> exclude = null) where TEnum : Enum
+    internal static List<TEnum[]> Achunk<TEnum>(int chunkSize, bool shuffle = false, Func<TEnum, bool>? exclude = null) where TEnum : Enum
     {
         List<TEnum[]> chunkedList = [];
-        TEnum[] allValues = GetAllValues<TEnum>();
+        TEnum[]? allValues = GetAllValues<TEnum>();
         var rnd = new Random();
-        if (shuffle) allValues = allValues.Shuffle(rnd).ToArray();
-        if (exclude != null) allValues = allValues.Where(exclude).ToArray();
+        if (shuffle) allValues = [.. allValues.Shuffle(rnd)];
+        if (exclude != null) allValues = [.. allValues.Where(exclude)];
 
         for (int i = 0; i < allValues.Length; i += chunkSize)
         {

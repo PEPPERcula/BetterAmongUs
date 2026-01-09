@@ -123,7 +123,7 @@ internal abstract class OptionItem
 
         List<TreeNode> treeNodes = [];
 
-        void CollectTreeData(OptionItem option, int depth, bool isLastChild, TreeNode parent)
+        void CollectTreeData(OptionItem option, int depth, bool isLastChild, TreeNode? parent)
         {
             var node = new TreeNode
             {
@@ -190,7 +190,7 @@ internal abstract class OptionItem
 
         List<TreeNode> treeNodes = [];
 
-        void CollectTreeData(OptionItem option, int depth, bool isLastChild, TreeNode parent)
+        void CollectTreeData(OptionItem option, int depth, bool isLastChild, TreeNode? parent)
         {
             var node = new TreeNode
             {
@@ -363,7 +363,7 @@ internal abstract class OptionItem
     class TreeNode
     {
         internal TreeNode? ParentNode { get; set; }
-        internal string Text { get; set; }
+        internal string? Text { get; set; }
         internal int Depth { get; set; }
         internal bool IsLastChild { get; set; }
     }
@@ -433,7 +433,7 @@ internal abstract class OptionItem<T> : OptionItem
 
     internal virtual void SetValue(T newValue)
     {
-        T oldValue = Value;
+        T? oldValue = Value;
         Value = newValue;
         UpdateVisuals();
         PopNotification();

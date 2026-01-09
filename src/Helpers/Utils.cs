@@ -67,7 +67,7 @@ internal static class Utils
         if (Application.internetReachability == NetworkReachability.NotReachable)
             return false;
 
-        UnityWebRequest www = null;
+        UnityWebRequest? www = null;
         try
         {
             www = UnityWebRequest.Get("http://clients3.google.com/generate_204");
@@ -317,7 +317,7 @@ internal static class Utils
     }
 
     // Resource loading
-    internal static Sprite LoadSprite(string path, float pixelsPerUnit = 1f)
+    internal static Sprite? LoadSprite(string path, float pixelsPerUnit = 1f)
     {
         try
         {

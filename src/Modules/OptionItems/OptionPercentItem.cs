@@ -2,7 +2,7 @@
 
 internal sealed class OptionPercentItem : OptionFloatItem
 {
-    internal static OptionPercentItem Create(int id, OptionTab tab, string tranStr, float defaultValue, OptionItem parent = null)
+    internal static OptionPercentItem Create(int id, OptionTab tab, string tranStr, float defaultValue, OptionItem? parent = null)
     {
         if (GetOptionById(id) is OptionPercentItem floatItem)
         {
