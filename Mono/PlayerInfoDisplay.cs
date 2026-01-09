@@ -140,7 +140,10 @@ internal class PlayerInfoDisplay : MonoBehaviour
             platform = _cachedTranslations.PlatformHidden;
         }
 
-        SetPlayerOutline(_sbTag);
+        if (!_player.IsInShapeshift())
+        {
+            SetPlayerOutline(_sbTag);
+        }
 
         if (GameState.IsInGame && GameState.IsLobby && !GameState.IsFreePlay)
         {

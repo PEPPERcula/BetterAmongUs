@@ -17,7 +17,7 @@ class FileChecker
         "System", "Unity", "Harmony", "BepInEx", "Microsoft", "Il2Cpp", "Hazel", "AppleAuth", "QRCoder",
         "MonoMod", "netstandard", "mscorlib", "AssetRipper", "Cpp2IL", "AsmResolver", "Iced", "CsvHelper",
         "SemanticVersioning", "Mono.Cecil", "Assembly-CSharp", "StableNameDotNet", "AmongUsCaching",
-        "Disarm", "Gee.External.Capstone", "Rewired_Core", "AddressablesPlayAssetDelivery", "Newtonsoft.Json",
+        "Disarm", "Gee.External.Capstone", "Rewired_Core", "AddressablesPlayAssetDelivery", "Newtonsoft.Json", "Purchasing.Common",
         "Assembly-CSharp-firstpass", "Sentry", "Rewired_Windows", "__Generated", "XGamingRuntime",
         "BetterAmongUs", "MCI", "CrowdedMod", "Mini.RegionInstall", "Unlock", "Skin"
     });

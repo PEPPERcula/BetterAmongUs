@@ -113,23 +113,23 @@ class BetterAntiCheat
     // Handle RPC before anti cheat detection
     internal static void HandleCheatRPCBeforeCheck(PlayerControl player, byte callId, MessageReader oldReader)
     {
-        MessageReader reader = MessageReader.Get(oldReader);
-
         if (!IsEnabled) return;
 
+        MessageReader reader = MessageReader.Get(oldReader);
         RPCHandler.HandleRPC(callId, player, reader, HandlerFlag.CheatRpcCheck);
+        reader.Recycle();
     }
 
     // Check and notify for invalid rpcs
     internal static void CheckRPC(PlayerControl player, byte callId, MessageReader oldReader)
     {
-        MessageReader reader = MessageReader.Get(oldReader);
-
-        if (player == null || player?.Data == null || reader == null) return;
+        if (player == null || player?.Data == null) return;
         if (!IsEnabled || !BAUPlugin.AntiCheat.Value || (GameState.IsBetterHostLobby && !GameState.IsHost) || !BetterGameSettings.DetectInvalidRPCs.GetBool()) return;
         if (player.IsLocalPlayer() && player.IsHost()) return;
 
+        MessageReader reader = MessageReader.Get(oldReader);
         RPCHandler.HandleRPC(callId, player, reader, HandlerFlag.AntiCheat);
+        reader.Recycle();
     }
 
     // Check notify and cancel out request for invalid rpcs
@@ -137,20 +137,22 @@ class BetterAntiCheat
     {
         try
         {
-            MessageReader reader = MessageReader.Get(oldReader);
-
-            if (player == null || player?.Data == null || reader == null) return true;
+            if (player == null || player?.Data == null) return true;
             if (!IsEnabled || !BAUPlugin.AntiCheat.Value || (GameState.IsBetterHostLobby && !GameState.IsHost) || !BetterGameSettings.DetectInvalidRPCs.GetBool()) return true;
             if (player.IsLocalPlayer() && player.IsHost()) return true;
+
+            MessageReader reader = MessageReader.Get(oldReader);
 
             if (TrustedRPCs(callId) != true && !player.IsHost())
             {
                 BetterNotificationManager.NotifyCheat(player, $"Unregistered RPC received: {callId}");
+                reader.Recycle();
                 return false;
             }
 
             if (RPCHandler.HandleRPC(callId, player, reader, HandlerFlag.AntiCheatCancel) == false)
             {
+                reader.Recycle();
                 return false;
             }
 
@@ -164,6 +166,8 @@ class BetterAntiCheat
                     {
                         Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {!player.IsHost()}");
                     }
+
+                    reader.Recycle();
                     return false;
                 }
             }
@@ -181,6 +185,8 @@ class BetterAntiCheat
                     {
                         Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {GameState.IsInGamePlay}");
                     }
+
+                    reader.Recycle();
                     return false;
                 }
             }
@@ -219,9 +225,13 @@ class BetterAntiCheat
                     {
                         Logger.LogCheat($"{player.BetterData().RealName} {Enum.GetName((RpcCalls)callId)}: {GameState.IsInGame} && {GameState.IsLobby}");
                     }
+
+                    reader.Recycle();
                     return false;
                 }
             }
+
+            reader.Recycle();
 
             return true;
         }
@@ -238,8 +248,8 @@ class BetterAntiCheat
         if (player == null || player?.Data == null || player.IsLocalPlayer()) return;
 
         MessageReader reader = MessageReader.Get(oldReader);
-
         RPCHandler.HandleRPC(callId, player, reader, HandlerFlag.Handle);
+        reader.Recycle();
     }
 
     // Check game states when sabotaging
@@ -256,8 +266,12 @@ class BetterAntiCheat
         bool notCanceled = RPCHandler.HandleRPC((byte)RpcCalls.UpdateSystem, player, reader, HandlerFlag.AntiCheatCancel);
         if (!notCanceled)
         {
-            Logger.LogCheat($"RPC canceled by Anti-Cheat: {Enum.GetName(typeof(SystemTypes), (int)systemType)} - {MessageReader.Get(reader).ReadByte()}");
+            var tempReader = MessageReader.Get(reader);
+            Logger.LogCheat($"RPC canceled by Anti-Cheat: {Enum.GetName(typeof(SystemTypes), (int)systemType)} - {tempReader.ReadByte()}");
+            tempReader.Recycle();
         }
+
+        reader.Recycle();
         return notCanceled;
     }
 

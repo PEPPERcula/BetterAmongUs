@@ -111,7 +111,9 @@ internal class NetworkManager
                 MessageReader messageReader = parentReader.ReadMessageAsNewBuffer();
                 int currentMessageNumber = InnerNetClient.msgNum++;
                 InnerNetClient.StartCoroutine(HandleGameDataInner(messageReader, currentMessageNumber));
-                RPCHandler.HandleRPC(parentReader.Tag, null, MessageReader.Get(parentReader), HandlerFlag.HandleGameDataTag);
+                var oldReader = MessageReader.Get(messageReader);
+                RPCHandler.HandleRPC(parentReader.Tag, null, oldReader, HandlerFlag.HandleGameDataTag);
+                oldReader.Recycle();
             }
         }
         finally
