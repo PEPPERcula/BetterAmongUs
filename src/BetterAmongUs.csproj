@@ -7,10 +7,27 @@
 		<langVersion>preview</langVersion>
 	</PropertyGroup>
 
-	<!-- Build Events -->
+	<!-- Meta Data -->
 	<PropertyGroup>
+		<CommitHash Condition="'$(CommitHash)' == ''">unknown</CommitHash>
+		<BuildDate>$([System.DateTime]::UtcNow.ToString(MM.dd.yyyy))</BuildDate>
 		<IsCI Condition="'$(CI)' == 'true' or '$(GITHUB_ACTIONS)' == 'true' or '$(TF_BUILD)' == 'true'">true</IsCI>
 		<IsCI Condition="'$(IsCI)' == ''">false</IsCI>
+	</PropertyGroup>
+
+	<!-- Build Events -->
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+			<_Parameter1>CommitHash</_Parameter1>
+			<_Parameter2>$(CommitHash)</_Parameter2>
+		</AssemblyAttribute>
+		<AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+			<_Parameter1>BuildDate</_Parameter1>
+			<_Parameter2>$(BuildDate)</_Parameter2>
+		</AssemblyAttribute>
+	</ItemGroup>
+	
+	<PropertyGroup>
 		<ModPathFile>build\mod_folder_path</ModPathFile>
 		<GamePath Condition="Exists('$(ModPathFile)') and '$(IsCI)' != 'true'">$([System.IO.File]::ReadAllText('$(ModPathFile)').Trim())</GamePath>
 		<ModsPath>$(GamePath)</ModsPath>
@@ -28,6 +45,7 @@
 		<Message Text="Mod was NOT copied to game folder!" Importance="high" />
 	</Target>
 
+	<!-- Packages -->
 	<ItemGroup>
 		<PackageReference Include="AmongUs.GameLibs.Steam" Version="2025.11.18" />
 		<PackageReference Include="BepInEx.IL2CPP.MSBuild" Version="2.0.1">
@@ -37,8 +55,8 @@
 		<PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.692" Private="false" ExcludeAssets="runtime;native" />
 	</ItemGroup>
 
+	<!-- Resources -->
 	<ItemGroup>
-		<!-- Embed all files in the Resources folder -->
 		<EmbeddedResource Include="Resources\**\*" />
 	</ItemGroup>
 </Project>
