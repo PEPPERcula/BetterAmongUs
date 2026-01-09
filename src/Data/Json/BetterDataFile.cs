@@ -1,4 +1,4 @@
-﻿using BetterAmongUs.Items.Structs;
+﻿using BetterAmongUs.Structs;
 using System.Text.Json.Serialization;
 
 namespace BetterAmongUs.Data.Json;

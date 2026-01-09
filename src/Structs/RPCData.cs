@@ -1,7 +1,7 @@
 ﻿using Hazel;
 using InnerNet;
 
-namespace BetterAmongUs.Items.Structs;
+namespace BetterAmongUs.Structs;
 
 internal readonly struct RPCData(InnerNetObject sender, SendOption sendOption, int targetId, RpcCalls callId, MessageReader reader)
 {

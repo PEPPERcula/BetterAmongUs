@@ -1,6 +1,6 @@
 ﻿using BetterAmongUs.Helpers;
-using BetterAmongUs.Items.OptionItems;
 using BetterAmongUs.Modules;
+using BetterAmongUs.Modules.OptionItems;
 using HarmonyLib;
 using UnityEngine;
 

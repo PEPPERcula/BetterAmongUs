@@ -1,10 +1,9 @@
 ﻿using BetterAmongUs.Helpers;
-using BetterAmongUs.Items.OptionItems.NoneOption;
-using BetterAmongUs.Modules;
+using BetterAmongUs.Modules.OptionItems.NoneOption;
 using TMPro;
 using UnityEngine;
 
-namespace BetterAmongUs.Items.OptionItems;
+namespace BetterAmongUs.Modules.OptionItems;
 
 internal sealed class OptionTab
 {

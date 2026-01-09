@@ -1,7 +1,7 @@
 ﻿using BetterAmongUs.Helpers;
 using System.Text.Json.Serialization;
 
-namespace BetterAmongUs.Items.Structs;
+namespace BetterAmongUs.Structs;
 
 [method: JsonConstructor]
 internal sealed class UserInfo(string playerName, string hashPuid, string friendCode, string reason)
@@ -10,8 +10,8 @@ internal sealed class UserInfo(string playerName, string hashPuid, string friend
 
     internal (bool check, string reason) CheckPlayerDataWithReason(NetworkedPlayerInfo data)
     {
-        if ((!string.IsNullOrEmpty(data.GetHashPuid()) && HashPuid == data.GetHashPuid())
-            || (!string.IsNullOrEmpty(data.FriendCode) && FriendCode == data.FriendCode))
+        if (!string.IsNullOrEmpty(data.GetHashPuid()) && HashPuid == data.GetHashPuid()
+            || !string.IsNullOrEmpty(data.FriendCode) && FriendCode == data.FriendCode)
         {
             return (true, Reason);
         }

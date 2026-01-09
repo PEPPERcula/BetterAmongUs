@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace BetterAmongUs.Items.OptionItems.NoneOption;
+namespace BetterAmongUs.Modules.OptionItems.NoneOption;
 
 internal sealed class OptionHeaderItem : OptionItem
 {

@@ -1,4 +1,4 @@
-﻿namespace BetterAmongUs.Items.OptionItems;
+﻿namespace BetterAmongUs.Modules.OptionItems;
 
 internal sealed class OptionPercentItem : OptionFloatItem
 {

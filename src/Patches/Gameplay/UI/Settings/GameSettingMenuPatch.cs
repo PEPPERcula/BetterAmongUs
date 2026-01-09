@@ -1,8 +1,8 @@
 ﻿using AmongUs.GameOptions;
 using BetterAmongUs.Helpers;
-using BetterAmongUs.Items.OptionItems;
-using BetterAmongUs.Items.OptionItems.NoneOption;
 using BetterAmongUs.Modules;
+using BetterAmongUs.Modules.OptionItems;
+using BetterAmongUs.Modules.OptionItems.NoneOption;
 using HarmonyLib;
 using UnityEngine;
 

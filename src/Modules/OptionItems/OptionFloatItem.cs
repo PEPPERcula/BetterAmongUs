@@ -1,34 +1,34 @@
 ﻿using BetterAmongUs.Helpers;
-using BetterAmongUs.Modules;
 using UnityEngine;
 
-namespace BetterAmongUs.Items.OptionItems;
+namespace BetterAmongUs.Modules.OptionItems;
 
-internal sealed class OptionPlayerItem : OptionItem<int>
+internal class OptionFloatItem : OptionItem<float>
 {
-    internal sealed override bool ShowChildren => base.ShowChildren && Value > Min;
-    private int Max => BAUPlugin.AllPlayerControls.Count - 1;
-    private int Min => CanBeRandom ? -1 : 0;
-    protected bool CanBeRandom { get; set; }
-    internal override bool CanLoad => false;
+    internal override bool ShowChildren => base.ShowChildren && Value > 0f;
+    protected FloatRange Range { get; set; }
+    protected float Increment { get; set; }
+    protected bool CanBeInfinite { get; set; }
+    protected (string prefix, string postfix) Fixs { get; set; }
 
-    private static List<OptionPlayerItem> optionPlayerItems = [];
-
-    internal static OptionPlayerItem Create(int id, OptionTab tab, string tranStr, OptionItem parent = null, bool canBeRandom = true)
+    internal static OptionFloatItem Create(int id, OptionTab tab, string tranStr, (float minValue, float maxValue, float incrementValue) Min_Max_Increment, float defaultValue, (string prefix, string postfix) Prefix_Postfix = new(), OptionItem parent = null, bool canBeInfinite = false)
     {
-        if (optionPlayerItems.FirstOrDefault(opt => opt.Id == id) is OptionPlayerItem playerItem)
+        if (GetOptionById(id) is OptionFloatItem floatItem)
         {
-            playerItem.CreateBehavior();
-            return playerItem;
+            floatItem.CreateBehavior();
+            return floatItem;
         }
 
-        OptionPlayerItem Item = new();
-        optionPlayerItems.Add(Item);
-        Item.Value = canBeRandom ? -1 : 0; ;
+        OptionFloatItem Item = new();
+        AllTBROptions.Add(Item);
         Item._id = id;
         Item.Tab = tab;
         Item.Translation = tranStr;
-        Item.CanBeRandom = canBeRandom;
+        Item.Increment = Min_Max_Increment.incrementValue;
+        Item.CanBeInfinite = canBeInfinite;
+        Item.Range = new FloatRange(Min_Max_Increment.minValue, Min_Max_Increment.maxValue);
+        Item.DefaultValue = defaultValue;
+        Item.Fixs = Prefix_Postfix;
 
         if (parent != null)
         {
@@ -40,12 +40,9 @@ internal sealed class OptionPlayerItem : OptionItem<int>
         return Item;
     }
 
-    internal sealed override void Save()
+    protected override void CreateBehavior()
     {
-    }
-
-    protected sealed override void CreateBehavior()
-    {
+        TryLoad();
         if (!GameSettingMenu.Instance) return;
         AllTBROptionsTemp.Add(this);
         var numberOption = UnityEngine.Object.Instantiate(Tab.AUTab.numberOptionOrigin, Tab.AUTab.settingsContainer);
@@ -60,7 +57,7 @@ internal sealed class OptionPlayerItem : OptionItem<int>
         SetOptionVisuals();
     }
 
-    protected sealed override void SetupOptionBehavior()
+    protected override void SetupOptionBehavior()
     {
         if (Option is NumberOption numberOption)
         {
@@ -74,7 +71,7 @@ internal sealed class OptionPlayerItem : OptionItem<int>
         }
     }
 
-    private void Increase()
+    protected void Increase()
     {
         int plus = 1;
         if (Input.GetKey(KeyCode.LeftShift))
@@ -84,11 +81,11 @@ internal sealed class OptionPlayerItem : OptionItem<int>
         if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.LeftControl))
             plus = 25;
         var value = Value;
-        value += 1 * plus;
+        value += Increment * plus;
         SetValue(value);
     }
 
-    private void Decrease()
+    protected void Decrease()
     {
         int plus = 1;
         if (Input.GetKey(KeyCode.LeftShift))
@@ -98,57 +95,28 @@ internal sealed class OptionPlayerItem : OptionItem<int>
         if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.LeftControl))
             plus = 25;
         var value = Value;
-        value -= 1 * plus;
+        value -= Increment * plus;
         SetValue(value);
     }
 
-    internal sealed override void SetValue(int newValue)
+    internal override void SetValue(float newValue)
     {
-        newValue = Math.Clamp(newValue, Min, Max);
+        newValue = Math.Clamp(newValue, Range.min, Range.max);
         base.SetValue(newValue);
     }
 
-    internal static void ResetAllValues()
+    internal override void UpdateVisuals(bool updateTabVisuals = true)
     {
-        foreach (var opt in optionPlayerItems)
-        {
-            opt.ResetValue();
-        }
-    }
-
-    internal static void UpdateAllValues()
-    {
-        foreach (var opt in optionPlayerItems)
-        {
-            opt.UpdateValue();
-        }
-    }
-
-    internal void UpdateValue()
-    {
-        Value = Math.Clamp(Value, Min, Max);
-        UpdateVisuals();
-    }
-
-    internal void ResetValue()
-    {
-        Value = Min;
-    }
-
-    internal sealed override void UpdateVisuals(bool updateTabVisuals = true)
-    {
-        if (!GameSettingMenu.Instance) return;
-
         if (Option is NumberOption numberOption)
         {
             numberOption.PlusBtn.SetInteractable(false);
             numberOption.MinusBtn.SetInteractable(false);
 
-            if (Value < Max)
+            if (Value < Range.max)
             {
                 numberOption.PlusBtn.SetInteractable(true);
             }
-            if (Value > Min)
+            if (Value > Range.min)
             {
                 numberOption.MinusBtn.SetInteractable(true);
             }
@@ -162,24 +130,21 @@ internal sealed class OptionPlayerItem : OptionItem<int>
         }
     }
 
-    internal sealed override string ValueAsString()
+
+    internal override string ValueAsString()
     {
-        if (Value != -1)
+        if (CanBeInfinite)
         {
-            var player = Utils.PlayerFromPlayerId(Value);
-            if (player != null)
-                return $"{player.GetPlayerNameAndColor()}";
-            else
-                return "???";
+            if (Value <= 0f)
+            {
+                return InfiniteIcon;
+            }
         }
-        else
-        {
-            return Translator.GetString(StringNames.RoundRobin).ToColor(Color.gray);
-        }
+
+        return $"{Fixs.prefix}{Value}{Fixs.postfix}";
     }
 
-    internal sealed override int GetInt() => GetValue();
-    internal sealed override float GetFloat() => GetValue();
-    internal sealed override bool Is(int @int) => @int == GetInt();
-    internal sealed override bool Is(float @float) => @float == GetFloat();
+    internal override float GetFloat() => GetValue();
+    internal override bool Is(float @float) => @float == GetFloat();
+    internal override bool Is(int @int) => @int == GetFloat();
 }

@@ -1,6 +1,6 @@
 ﻿using BepInEx.Unity.IL2CPP.Utils.Collections;
 using BetterAmongUs.Helpers;
-using BetterAmongUs.Items.OptionItems;
+using BetterAmongUs.Modules.OptionItems;
 using BetterAmongUs.Mono;
 using HarmonyLib;
 using System.Collections;

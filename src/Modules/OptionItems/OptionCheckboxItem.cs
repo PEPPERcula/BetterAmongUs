@@ -1,7 +1,7 @@
 ﻿using BetterAmongUs.Helpers;
 using UnityEngine;
 
-namespace BetterAmongUs.Items.OptionItems;
+namespace BetterAmongUs.Modules.OptionItems;
 
 internal sealed class OptionCheckboxItem : OptionItem<bool>
 {

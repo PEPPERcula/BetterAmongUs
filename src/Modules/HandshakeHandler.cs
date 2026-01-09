@@ -1,7 +1,7 @@
 ﻿using BepInEx.Unity.IL2CPP.Utils;
 using BetterAmongUs.Data;
+using BetterAmongUs.Enums;
 using BetterAmongUs.Helpers;
-using BetterAmongUs.Items.Enums;
 using BetterAmongUs.Mono;
 using Hazel;
 using Il2CppInterop.Runtime.Attributes;

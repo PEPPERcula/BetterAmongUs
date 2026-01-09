@@ -1,5 +1,5 @@
 ﻿using BetterAmongUs.Commands.Arguments;
-using BetterAmongUs.Items.Attributes;
+using BetterAmongUs.Attributes;
 
 namespace BetterAmongUs.Commands;
 

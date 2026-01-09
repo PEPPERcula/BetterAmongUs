@@ -2,9 +2,9 @@
 using AmongUs.GameOptions;
 using BetterAmongUs.Data;
 using BetterAmongUs.Helpers;
-using BetterAmongUs.Items.Structs;
 using BetterAmongUs.Modules;
 using BetterAmongUs.Patches.Gameplay.UI.Settings;
+using BetterAmongUs.Structs;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Attributes;
 using System.Text;

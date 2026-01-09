@@ -1,12 +1,11 @@
 ﻿using AmongUs.Data;
 using Assets.InnerNet;
+using BetterAmongUs.Enums;
 using BetterAmongUs.Helpers;
-using BetterAmongUs.Items.Enums;
-using BetterAmongUs.Modules;
 using BetterAmongUs.Network.Configs;
 using UnityEngine;
 
-namespace BetterAmongUs.Items;
+namespace BetterAmongUs.Modules;
 
 internal sealed class ModNews
 {

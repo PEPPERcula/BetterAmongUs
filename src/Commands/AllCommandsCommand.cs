@@ -1,5 +1,5 @@
-﻿using BetterAmongUs.Items.Attributes;
-using BetterAmongUs.Items.Enums;
+﻿using BetterAmongUs.Attributes;
+using BetterAmongUs.Enums;
 
 namespace BetterAmongUs.Commands;
 

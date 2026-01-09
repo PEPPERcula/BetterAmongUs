@@ -1,8 +1,7 @@
 ﻿using BetterAmongUs.Commands;
-using BetterAmongUs.Modules.AntiCheat;
 using System.Reflection;
 
-namespace BetterAmongUs.Items.Attributes;
+namespace BetterAmongUs.Attributes;
 
 internal abstract class InstanceAttribute : Attribute
 {

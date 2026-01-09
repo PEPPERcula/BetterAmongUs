@@ -1,12 +1,12 @@
 ﻿using AmongUs.InnerNet.GameDataMessages;
 using BepInEx.Unity.IL2CPP.Utils;
+using BetterAmongUs.Enums;
 using BetterAmongUs.Helpers;
-using BetterAmongUs.Items.Enums;
-using BetterAmongUs.Items.Structs;
 using BetterAmongUs.Modules;
 using BetterAmongUs.Modules.AntiCheat;
 using BetterAmongUs.Mono;
 using BetterAmongUs.Network;
+using BetterAmongUs.Structs;
 using HarmonyLib;
 using Hazel;
 using InnerNet;

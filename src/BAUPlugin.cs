@@ -2,10 +2,10 @@
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
+using BetterAmongUs.Attributes;
 using BetterAmongUs.Data;
 using BetterAmongUs.Data.Json;
 using BetterAmongUs.Helpers;
-using BetterAmongUs.Items.Attributes;
 using BetterAmongUs.Modules;
 using BetterAmongUs.Network;
 using BetterAmongUs.Patches.Gameplay.UI.Settings;

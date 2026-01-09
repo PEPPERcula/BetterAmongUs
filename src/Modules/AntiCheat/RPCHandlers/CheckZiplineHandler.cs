@@ -1,4 +1,4 @@
-using BetterAmongUs.Items.Attributes;
+using BetterAmongUs.Attributes;
 using Hazel;
 
 namespace BetterAmongUs.Modules.AntiCheat;

@@ -1,11 +1,10 @@
 ﻿using BetterAmongUs.Data;
 using BetterAmongUs.Helpers;
-using BetterAmongUs.Modules;
 using System.Text;
 using TMPro;
 using UnityEngine;
 
-namespace BetterAmongUs.Items.OptionItems;
+namespace BetterAmongUs.Modules.OptionItems;
 
 /// <summary>
 /// Base Option class.

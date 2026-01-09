@@ -1,5 +1,5 @@
-﻿using BetterAmongUs.Helpers;
-using BetterAmongUs.Items.Enums;
+﻿using BetterAmongUs.Enums;
+using BetterAmongUs.Helpers;
 using BetterAmongUs.Modules;
 using BetterAmongUs.Mono;
 using Hazel;

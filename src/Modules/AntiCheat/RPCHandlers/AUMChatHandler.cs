@@ -1,7 +1,7 @@
 using BetterAmongUs.Data;
+using BetterAmongUs.Enums;
 using BetterAmongUs.Helpers;
-using BetterAmongUs.Items.Attributes;
-using BetterAmongUs.Items.Enums;
+using BetterAmongUs.Attributes;
 using BetterAmongUs.Managers;
 using BetterAmongUs.Mono;
 using BetterAmongUs.Patches.Gameplay.UI.Settings;

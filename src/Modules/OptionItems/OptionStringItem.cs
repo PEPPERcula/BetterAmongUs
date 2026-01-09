@@ -1,7 +1,6 @@
 ﻿using BetterAmongUs.Helpers;
-using BetterAmongUs.Modules;
 
-namespace BetterAmongUs.Items.OptionItems;
+namespace BetterAmongUs.Modules.OptionItems;
 
 internal sealed class OptionStringItem : OptionItem<int>
 {

@@ -1,6 +1,6 @@
 ﻿using BetterAmongUs.Commands;
+using BetterAmongUs.Enums;
 using BetterAmongUs.Helpers;
-using BetterAmongUs.Items.Enums;
 using BetterAmongUs.Modules;
 using HarmonyLib;
 using TMPro;

@@ -1,4 +1,4 @@
-﻿namespace BetterAmongUs.Items.Enums;
+﻿namespace BetterAmongUs.Enums;
 
 internal enum CommandType
 {
