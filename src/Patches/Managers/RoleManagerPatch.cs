@@ -126,7 +126,7 @@ internal static class RoleManagerPatch
 
             if (Impostors.Count < NumImpostors && RNG() > ImpostorMultiplier[Utils.GetHashPuid(pc)])
             {
-                var impRoles = Shuffle(ImpostorRoles);
+                var impRoles = ImpostorRoles.Shuffle();
                 foreach (var kvp in impRoles)
                 {
                     if (RNG() <= GameOptionsManager.Instance.CurrentGameOptions.RoleOptions.GetChancePerGame(kvp.Key) && kvp.Value > 0)
@@ -163,7 +163,7 @@ internal static class RoleManagerPatch
             }
             else
             {
-                var crewRoles = Shuffle(CrewmateRoles);
+                var crewRoles = CrewmateRoles.Shuffle();
                 foreach (var kvp in crewRoles)
                 {
                     if (RNG() <= GameOptionsManager.Instance.CurrentGameOptions.RoleOptions.GetChancePerGame(kvp.Key) && kvp.Value > 0)
@@ -316,7 +316,7 @@ internal static class RoleManagerPatch
             }
         }
 
-        var ghostRoles = Shuffle(GhostRoles);
+        var ghostRoles = GhostRoles.Shuffle();
 
         foreach (var kvp in ghostRoles)
         {
@@ -345,29 +345,6 @@ internal static class RoleManagerPatch
     }
 
     private static bool IsImpostorRole(RoleTypes role) => role is RoleTypes.Impostor or RoleTypes.Shapeshifter or RoleTypes.Phantom or RoleTypes.Viper;
-
-    private static Dictionary<TKey, TValue> Shuffle<TKey, TValue>(Dictionary<TKey, TValue> dictionary)
-    {
-        List<TKey> keys = dictionary.Keys.ToList();
-
-        // Fisher-Yates shuffle algorithm
-        for (int i = keys.Count - 1; i > 0; i--)
-        {
-            int j = random.Next(0, i + 1);
-            TKey temp = keys[i];
-            keys[i] = keys[j];
-            keys[j] = temp;
-        }
-
-        // Rebuild dictionary with shuffled keys
-        var shuffledDictionary = new Dictionary<TKey, TValue>();
-        foreach (var key in keys)
-        {
-            shuffledDictionary[key] = dictionary[key];
-        }
-
-        return shuffledDictionary;
-    }
 
     internal static int RNG()
     {

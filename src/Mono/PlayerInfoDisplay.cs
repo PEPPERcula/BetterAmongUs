@@ -27,7 +27,6 @@ internal class PlayerInfoDisplay : MonoBehaviour
     private readonly StringBuilder _sbTagBottom = new(256);
     private string _lastTopText = "", _lastBottomText = "", _lastInfoText = "";
     private int _lastUpdateFrame;
-    private bool _lastPlayerState;
     private const int UPDATE_COOLDOWN = 10;
 
     // Cached regex patterns

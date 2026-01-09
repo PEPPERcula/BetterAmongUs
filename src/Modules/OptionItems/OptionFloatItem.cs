@@ -6,12 +6,12 @@ namespace BetterAmongUs.Modules.OptionItems;
 internal class OptionFloatItem : OptionItem<float>
 {
     internal override bool ShowChildren => base.ShowChildren && Value > 0f;
-    protected FloatRange Range { get; set; }
+    protected FloatRange? Range { get; set; }
     protected float Increment { get; set; }
     protected bool CanBeInfinite { get; set; }
     protected (string prefix, string postfix) Fixs { get; set; }
 
-    internal static OptionFloatItem Create(int id, OptionTab tab, string tranStr, (float minValue, float maxValue, float incrementValue) Min_Max_Increment, float defaultValue, (string prefix, string postfix) Prefix_Postfix = new(), OptionItem parent = null, bool canBeInfinite = false)
+    internal static OptionFloatItem Create(int id, OptionTab tab, string tranStr, (float minValue, float maxValue, float incrementValue) Min_Max_Increment, float defaultValue, (string prefix, string postfix) Prefix_Postfix = new(), OptionItem? parent = null, bool canBeInfinite = false)
     {
         if (GetOptionById(id) is OptionFloatItem floatItem)
         {

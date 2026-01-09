@@ -42,7 +42,7 @@ internal class BAUPlugin : BasePlugin
                 text = $"v{BetterAmongUsVersion}{newLineText}Beta {ModInfo.BetaNum}";
                 break;
             case ReleaseTypes.Dev:
-                text = $"v{BetterAmongUsVersion}{newLineText}Dev {ModInfo.ReleaseDate}";
+                text = $"v{BetterAmongUsVersion}{newLineText}Dev {ModInfo.CommitHash}-{ModInfo.BuildDate}";
                 break;
             default:
                 break;
@@ -106,7 +106,7 @@ internal class BAUPlugin : BasePlugin
             Logger_.Log("Better Among Us successfully loaded!");
 
             string SupportedVersions = string.Join(" ", SupportedAmongUsVersions);
-            Logger_.Log($"BetterAmongUs {BetterAmongUsVersion}-{ModInfo.ReleaseDate} - [{AppVersion} --> {SupportedVersions}] {Utils.GetPlatformName(PlatformData.Platform)}");
+            Logger_.Log($"BetterAmongUs {BetterAmongUsVersion}-{ModInfo.BuildDate} - [{AppVersion} --> {SupportedVersions}] {Utils.GetPlatformName(PlatformData.Platform)}");
         }
         catch (Exception ex)
         {

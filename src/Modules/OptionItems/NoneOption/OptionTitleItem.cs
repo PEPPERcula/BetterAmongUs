@@ -22,7 +22,7 @@ internal sealed class OptionTitleItem : OptionItem
         return Item;
     }
 
-    protected void CreateBehavior()
+    private void CreateBehavior()
     {
         if (!GameSettingMenu.Instance) return;
         AllTBROptionsTemp.Add(this);

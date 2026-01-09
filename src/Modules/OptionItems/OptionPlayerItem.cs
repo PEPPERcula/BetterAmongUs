@@ -8,12 +8,12 @@ internal sealed class OptionPlayerItem : OptionItem<int>
     internal sealed override bool ShowChildren => base.ShowChildren && Value > Min;
     private int Max => BAUPlugin.AllPlayerControls.Count - 1;
     private int Min => CanBeRandom ? -1 : 0;
-    protected bool CanBeRandom { get; set; }
+    private bool CanBeRandom { get; set; }
     internal override bool CanLoad => false;
 
     private static List<OptionPlayerItem> optionPlayerItems = [];
 
-    internal static OptionPlayerItem Create(int id, OptionTab tab, string tranStr, OptionItem parent = null, bool canBeRandom = true)
+    internal static OptionPlayerItem Create(int id, OptionTab tab, string tranStr, OptionItem? parent = null, bool canBeRandom = true)
     {
         if (optionPlayerItems.FirstOrDefault(opt => opt.Id == id) is OptionPlayerItem playerItem)
         {

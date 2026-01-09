@@ -8,7 +8,6 @@ namespace BetterAmongUs.Patches.Client;
 [HarmonyPatch(typeof(MainMenuManager))]
 internal static class MainMenuPatch
 {
-    private static SpriteRenderer? sprite;
     internal static PassiveButton? ButtonPrefab;
 
     [HarmonyPatch(nameof(MainMenuManager.LateUpdate))]

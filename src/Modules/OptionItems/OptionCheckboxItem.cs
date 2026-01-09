@@ -7,7 +7,7 @@ internal sealed class OptionCheckboxItem : OptionItem<bool>
 {
     internal sealed override bool ShowChildren => base.ShowChildren && Value;
 
-    internal static OptionCheckboxItem Create(int id, OptionTab tab, string tranStr, bool defaultValue, OptionItem parent = null)
+    internal static OptionCheckboxItem Create(int id, OptionTab tab, string tranStr, bool defaultValue, OptionItem? parent = null)
     {
         if (GetOptionById(id) is OptionCheckboxItem checkboxItem)
         {

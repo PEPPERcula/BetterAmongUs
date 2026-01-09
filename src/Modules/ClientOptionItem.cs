@@ -121,7 +121,7 @@ internal sealed class ClientOptionItem
         finally { numOptions++; }
     }
 
-    internal static ClientOptionItem Create(string name, ConfigEntry<bool> config, OptionsMenuBehaviour optionsMenuBehaviour, Action? additionalOnClickAction = null, Func<bool>? toggleCheck = null, bool IsToggle = true)
+    internal static ClientOptionItem Create(string name, ConfigEntry<bool>? config, OptionsMenuBehaviour optionsMenuBehaviour, Action? additionalOnClickAction = null, Func<bool>? toggleCheck = null, bool IsToggle = true)
     {
         toggleCheck ??= () => true;
 

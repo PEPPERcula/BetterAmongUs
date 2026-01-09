@@ -124,14 +124,12 @@ static class PlayerControlHelper
         {
             longModeParts[i].material.SetFloat("_Outline", active ? 1 : 0);
         }
-        if (color != null)
+
+        player.cosmetics.currentBodySprite.BodySprite.material.SetColor("_OutlineColor", color);
+        longModeParts = player.cosmetics.currentBodySprite.LongModeParts;
+        for (int i = 0; i < longModeParts.Length; i++)
         {
-            player.cosmetics.currentBodySprite.BodySprite.material.SetColor("_OutlineColor", color);
-            longModeParts = player.cosmetics.currentBodySprite.LongModeParts;
-            for (int i = 0; i < longModeParts.Length; i++)
-            {
-                longModeParts[i].material.SetColor("_OutlineColor", color);
-            }
+            longModeParts[i].material.SetColor("_OutlineColor", color);
         }
     }
 

@@ -359,7 +359,7 @@ internal static class InnerNetClientHelper
             messageWriter.ForEach(mW => mW.Write("RPC TEST"));
             AmongUsClient.Instance.FinishRpcDesync(messageWriter);
     */
-    internal static List<MessageWriter> StartRpcDesync(this InnerNetClient client, uint playerNetId, byte callId, SendOption option, int ignoreClientId = -1, Func<ClientData, bool> clientCheck = null)
+    internal static List<MessageWriter> StartRpcDesync(this InnerNetClient client, uint playerNetId, byte callId, SendOption option, int ignoreClientId = -1, Func<ClientData, bool>? clientCheck = null)
     {
         List<MessageWriter> messageWriters = [];
 

@@ -26,7 +26,6 @@ class BetterGameSettings
     internal static OptionCheckboxItem? CensorDetectionReason;
     internal static OptionCheckboxItem? RemovePetOnDeath;
     internal static OptionCheckboxItem? DisableSabotages;
-    internal static OptionCheckboxItem? ShowRoleForClients;
 }
 
 class BetterGameSettingsTemp
@@ -44,7 +43,7 @@ internal static class GameSettingMenuPatch
 
     internal static void SetupSettings(bool IsPreload = false)
     {
-        // Use 1800 next ID
+        // Use 1700 next ID
 
         BetterSettingsTab = OptionTab.Create(3, "BetterSetting", "BetterSetting.Description", Color.green);
 
@@ -63,12 +62,6 @@ internal static class GameSettingMenuPatch
                 BetterGameSettings.UseBanNameList = OptionCheckboxItem.Create(400, BetterSettingsTab, "BetterSetting.Setting.UseBanNameList", true);
                 BetterGameSettings.UseBanWordList = OptionCheckboxItem.Create(500, BetterSettingsTab, "BetterSetting.Setting.UseBanWordList", true);
                 BetterGameSettings.UseBanWordListOnlyLobby = OptionCheckboxItem.Create(1400, BetterSettingsTab, "BetterSetting.Setting.UseBanWordListOnlyLobby", true, BetterGameSettings.UseBanWordList);
-
-                /*
-                  OptionDividerItem.Create(BetterSettingsTab);
-                  BetterGameSettings.ShowRoleForClients = OptionCheckboxItem.Create(1700, BetterSettingsTab, "BetterSetting.Setting.ShowRoleForClients", false);
-                  OptionDividerItem.Create(BetterSettingsTab);
-                  */
             }
 
             OptionTitleItem.Create(BetterSettingsTab, "BetterSetting.TextHeader.Detections");

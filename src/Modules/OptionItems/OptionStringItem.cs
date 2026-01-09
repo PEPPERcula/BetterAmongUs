@@ -4,11 +4,11 @@ namespace BetterAmongUs.Modules.OptionItems;
 
 internal sealed class OptionStringItem : OptionItem<int>
 {
-    protected IntRange Range { get; set; } = new();
-    protected string[] TranslatorStrings { get; set; } = [];
-    protected bool CanBeRandom { get; set; }
+    private IntRange Range { get; set; } = new();
+    private string[] TranslatorStrings { get; set; } = [];
+    private bool CanBeRandom { get; set; }
 
-    internal static OptionStringItem Create(int id, OptionTab tab, string tranStr, string[] tranStrings, int defaultValue, OptionItem parent = null, bool canBeRandom = false)
+    internal static OptionStringItem Create(int id, OptionTab tab, string tranStr, string[] tranStrings, int defaultValue, OptionItem? parent = null, bool canBeRandom = false)
     {
         if (tranStrings.Length < 2)
         {
