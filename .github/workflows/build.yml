@@ -2,13 +2,21 @@ name: Build
 
 on:
   push:
-    branches: [ main, dev ]
+    branches:
+      - 'main'
+      - '*-hotfix'
+      - '*-beta'
+      - '*-dev'
     paths:
-      - 'src/**'  # Only trigger when files in the 'src' folder change
+      - 'src/**'
   pull_request:
-    branches: [ main ]
+    branches:
+      - 'main'
+      - '*-hotfix'
+      - '*-beta'
+      - '*-dev'
     paths:
-      - 'src/**'  # Apply same filter to pull requests
+      - 'src/**'
       
 jobs:
   build-mod:
