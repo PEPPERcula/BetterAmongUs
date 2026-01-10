@@ -1,4 +1,5 @@
 ﻿using BetterAmongUs.Commands;
+using BetterAmongUs.Modules.AntiCheat;
 using System.Reflection;
 
 namespace BetterAmongUs.Attributes;
