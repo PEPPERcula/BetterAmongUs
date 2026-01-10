@@ -36,7 +36,7 @@ internal sealed class NewsLoader : MonoBehaviour
         }
 
         string callBack = "";
-        yield return GitHubFile.CoDownloadManifest(GitPath.Repository.ToString(), "manifest.json", (string text) =>
+        yield return GitHubFile.CoDownloadManifest(GitUrlPath.RepositoryApi.Combine("manifest.json").ToString(), (string text) =>
         {
             callBack = text;
         });
@@ -76,7 +76,7 @@ internal sealed class NewsLoader : MonoBehaviour
     [HideFromIl2Cpp]
     private IEnumerator CoDownloadNewsFile(string fileName)
     {
-        string configUrl = GitPath.News.Combine(fileName);
+        string configUrl = GitUrlPath.News.Combine(fileName);
 
         var wwwConfig = new UnityWebRequest(configUrl, UnityWebRequest.kHttpVerbGET)
         {

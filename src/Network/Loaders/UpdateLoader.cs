@@ -30,7 +30,7 @@ internal sealed class UpdateLoader : MonoBehaviour
         }
 
         string callBack = "";
-        yield return GitHubFile.CoDownloadManifest(GitPath.Repository.ToString(), "update.json", (string text) =>
+        yield return GitHubFile.CoDownloadManifest(GitUrlPath.RepositoryApi.Combine("update.json").ToString(), (string text) =>
         {
             callBack = text;
         });

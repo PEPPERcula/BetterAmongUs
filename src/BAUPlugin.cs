@@ -23,7 +23,7 @@ internal enum ReleaseTypes : int
     Dev,
 }
 
-[BepInPlugin(ModInfo.PluginGuid, ModInfo.PluginName, ModInfo.PluginVersion)]
+[BepInPlugin(ModInfo.PLUGIN_GUID, ModInfo.PLUGIN_NAME, ModInfo.PLUGIN_VERSION)]
 [BepInProcess("Among Us.exe")]
 internal class BAUPlugin : BasePlugin
 {
@@ -39,7 +39,7 @@ internal class BAUPlugin : BasePlugin
                 text = $"v{BetterAmongUsVersion}";
                 break;
             case ReleaseTypes.Beta:
-                text = $"v{BetterAmongUsVersion}{newLineText}Beta {ModInfo.BetaNum}";
+                text = $"v{BetterAmongUsVersion}{newLineText}Beta {ModInfo.BETA_NUM}";
                 break;
             case ReleaseTypes.Dev:
                 text = $"v{BetterAmongUsVersion}{newLineText}Dev {ModInfo.CommitHash}-{ModInfo.BuildDate}";
@@ -48,15 +48,15 @@ internal class BAUPlugin : BasePlugin
                 break;
         }
 
-        if (ModInfo.IsHotFix)
-            text += $"{newLineText}Hotfix {ModInfo.HotfixNum}";
+        if (ModInfo.IS_HOTFIX)
+            text += $"{newLineText}Hotfix {ModInfo.HOTFIX_NUM}";
 
         return text;
     }
 
-    internal static Harmony Harmony { get; } = new Harmony(ModInfo.PluginGuid);
+    internal static Harmony Harmony { get; } = new Harmony(ModInfo.PLUGIN_GUID);
 
-    internal static string BetterAmongUsVersion => ModInfo.PluginVersion;
+    internal static string BetterAmongUsVersion => ModInfo.PLUGIN_VERSION;
     internal static string AppVersion => Application.version;
     internal static string AmongUsVersion => ReferenceDataManager.Instance.Refdata.userFacingVersion;
 
@@ -121,7 +121,7 @@ internal class BAUPlugin : BasePlugin
         if (ConsoleManager.ConfigConsoleEnabled.Value) ConsoleManager.DetachConsole();
         ConsoleManager.ConfigConsoleEnabled.Value = false;
         ConsoleManager.SetConsoleTitle("Among Us - BAU Console");
-        Logger = BepInEx.Logging.Logger.CreateLogSource(ModInfo.PluginGuid);
+        Logger = BepInEx.Logging.Logger.CreateLogSource(ModInfo.PLUGIN_GUID);
         var customLogListener = new CustomLogListener();
         BepInEx.Logging.Logger.Listeners.Add(customLogListener);
         ConsoleManager.SetConsoleColor(ConsoleColor.Green);

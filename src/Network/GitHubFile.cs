@@ -14,9 +14,9 @@ internal static class GitHubFile
     /// Handles errors and logs any failed downloads to avoid missing assets.
     /// </summary>
     [HideFromIl2Cpp]
-    internal static IEnumerator CoDownloadFile(string fileUrl, string localFilePath, Action<string>? callback = null, bool showProgress = false)
+    internal static IEnumerator CoDownloadFile(string url, string localFilePath, Action<string>? callback = null, bool showProgress = false)
     {
-        var www = new UnityWebRequest(fileUrl, UnityWebRequest.kHttpVerbGET)
+        var www = new UnityWebRequest(url, UnityWebRequest.kHttpVerbGET)
         {
             downloadHandler = new DownloadHandlerBuffer()
         };
@@ -54,7 +54,7 @@ internal static class GitHubFile
         }
         else
         {
-            Logger_.Error($"Error downloading file from URL '{fileUrl}': {www.error} (Response Code: {(int)www.responseCode})");
+            Logger_.Error($"Error downloading file from URL '{url}': {www.error} (Response Code: {(int)www.responseCode})");
             if (showProgress)
             {
                 CustomLoadingBarManager.SetLoadingPercent(100f, "Download Failed!");
@@ -76,9 +76,9 @@ internal static class GitHubFile
     /// Handles errors and logs any failed downloads to avoid missing assets.
     /// </summary>
     [HideFromIl2Cpp]
-    internal static IEnumerator CoDownloadManifest(string fileUrl, string fileName, Action<string> Callback)
+    internal static IEnumerator CoDownloadManifest(string url, Action<string> Callback)
     {
-        var www = new UnityWebRequest($"{fileUrl}/{fileName}", UnityWebRequest.kHttpVerbGET)
+        var www = new UnityWebRequest(url, UnityWebRequest.kHttpVerbGET)
         {
             downloadHandler = new DownloadHandlerBuffer()
         };
@@ -86,7 +86,7 @@ internal static class GitHubFile
 
         if (www.result != UnityWebRequest.Result.Success)
         {
-            Logger_.Error($"Error downloading {fileUrl}/{fileName}: {www.error}");
+            Logger_.Error($"Error downloading {url}: {www.error}");
             yield break;
         }
 
