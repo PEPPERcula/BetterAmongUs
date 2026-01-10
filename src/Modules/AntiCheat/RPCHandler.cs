@@ -1,11 +1,12 @@
 ﻿using BetterAmongUs.Attributes;
 using BetterAmongUs.Enums;
 using BetterAmongUs.Helpers;
-using BetterAmongUs.Modules;
 using BetterAmongUs.Mono;
 using Hazel;
 using InnerNet;
 using UnityEngine;
+
+namespace BetterAmongUs.Modules.AntiCheat;
 
 internal abstract class RPCHandler
 {
@@ -14,7 +15,7 @@ internal abstract class RPCHandler
     internal virtual byte CallId => byte.MaxValue;
     internal virtual byte GameDataTag => byte.MaxValue;
     internal virtual bool LocalHandling { get; set; }
-    protected static bool CancelAsHost => !(GameState.IsHost);
+    protected static bool CancelAsHost => !GameState.IsHost;
 
     internal static bool CheckRange(Vector2 pos1, Vector2 pos2, float range) => Vector2.Distance(pos1, pos2) <= range;
     internal virtual void Handle(PlayerControl? sender, MessageReader reader) { }
@@ -43,7 +44,7 @@ internal abstract class RPCHandler
                     else if (handlerFlag == HandlerFlag.AntiCheat) handler.HandleAntiCheat(sender, reader);
                     else if (handlerFlag == HandlerFlag.CheatRpcCheck) handler.HandleCheatRpcCheck(sender, reader);
                     else if (handlerFlag == HandlerFlag.BetterHost) cancel = !handler.BetterHandle(sender, reader);
-                    if (!(cancel)) break;
+                    if (!cancel) break;
                 }
                 catch
                 {
@@ -62,7 +63,7 @@ internal abstract class RPCHandler
             }
         }
 
-        return !(cancel);
+        return !cancel;
     }
 
     internal void LogRpcInfo(string info, PlayerControl? player = null)
