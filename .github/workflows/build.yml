@@ -3,9 +3,13 @@ name: Build
 on:
   push:
     branches: [ main, dev ]
+    paths:
+      - 'src/**'  # Only trigger when files in the 'src' folder change
   pull_request:
     branches: [ main ]
-
+    paths:
+      - 'src/**'  # Apply same filter to pull requests
+      
 jobs:
   build-mod:
     runs-on: ubuntu-latest
