@@ -32,7 +32,7 @@ internal sealed class UpdateData
         try
         {
             var updateVersion = new Version(Version);
-            var modVersion = new Version(ModInfo.PluginVersion);
+            var modVersion = new Version(ModInfo.PLUGIN_VERSION);
 
             // 1. Compare main version (major.minor.build)
             if (updateVersion > modVersion)
@@ -59,15 +59,15 @@ internal sealed class UpdateData
             // 3. Same version and release type, compare specific numbers
             if (updateReleaseType == ReleaseTypes.Beta)
             {
-                return BetaNumber > int.Parse(ModInfo.BetaNum);
+                return BetaNumber > int.Parse(ModInfo.BETA_NUM);
             }
 
             // Release version - check hotfixes
-            if (IsHotfix && !ModInfo.IsHotFix)
+            if (IsHotfix && !ModInfo.IS_HOTFIX)
                 return true;
 
-            if (IsHotfix && ModInfo.IsHotFix)
-                return HotfixNumber > int.Parse(ModInfo.HotfixNum);
+            if (IsHotfix && ModInfo.IS_HOTFIX)
+                return HotfixNumber > int.Parse(ModInfo.HOTFIX_NUM);
 
             // Same version, same type, no newer hotfix
             return false;

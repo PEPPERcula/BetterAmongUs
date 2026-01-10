@@ -37,7 +37,7 @@ internal static class DiscordRPC
             else
             {
                 if (GameState.IsHideNSeek)
-                    details = $"BAU v{ModInfo.PluginVersion} - Hide & Seek";
+                    details = $"BAU v{ModInfo.PLUGIN_VERSION} - Hide & Seek";
             }
         }
         catch

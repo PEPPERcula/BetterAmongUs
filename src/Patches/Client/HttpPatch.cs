@@ -13,15 +13,15 @@ internal static class HttpPatch
     {
         var stringBuilder = new StringBuilder();
 
-        stringBuilder.Append(ModInfo.PluginVersion);
+        stringBuilder.Append(ModInfo.PLUGIN_VERSION);
         stringBuilder.Append(';');
         stringBuilder.Append(Enum.GetName(ModInfo.ReleaseBuildType));
         stringBuilder.Append(';');
-        stringBuilder.Append(ModInfo.IsHotFix);
+        stringBuilder.Append(ModInfo.IS_HOTFIX);
         stringBuilder.Append('/');
-        stringBuilder.Append(ModInfo.HotfixNum);
+        stringBuilder.Append(ModInfo.HOTFIX_NUM);
         stringBuilder.Append('/');
-        stringBuilder.Append(ModInfo.BetaNum);
+        stringBuilder.Append(ModInfo.BETA_NUM);
 
         return stringBuilder.ToString();
     }
