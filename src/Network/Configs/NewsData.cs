@@ -20,11 +20,6 @@ internal sealed class NewsData()
     public int Type { get; set; }
 
     /// <summary>
-    /// Unique identifier for the news item.
-    /// </summary>
-    public uint Id { get; set; }
-
-    /// <summary>
     /// The main title of the news item.
     /// </summary>
     public string Title { get; set; } = string.Empty;
@@ -61,8 +56,6 @@ internal sealed class NewsData()
                 newsData.Show = bool.Parse(show);
             if (data.TryGetValue("type", out var type))
                 newsData.Type = int.Parse(type);
-            if (data.TryGetValue("id", out var id))
-                newsData.Id = uint.Parse(id);
             if (data.TryGetValue("title", out var title))
                 newsData.Title = title;
             if (data.TryGetValue("subtitle", out var subtitle))

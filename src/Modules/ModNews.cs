@@ -17,8 +17,8 @@ internal sealed class ModNews
     public Dictionary<int, string> Contents { get; set; } = [];
     internal string Date { get; }
 
-    internal static List<NewsData> NewsDataToProcess { get; } = new();
-    internal static List<ModNews> AllModNews { get; } = new();
+    internal static List<NewsData> NewsDataToProcess { get; } = [];
+    internal static List<ModNews> AllModNews { get; } = [];
 
     internal ModNews(NewsTypes type, int number, string title, string subTitle, string shortTitle, Dictionary<int, string> contents, string date)
     {
@@ -59,21 +59,22 @@ internal sealed class ModNews
         return announcement;
     }
 
+    private static int _nextAnnouncementNumber;
     internal static void ProcessModNewsFiles()
     {
         AllModNews.Clear();
 
+        _nextAnnouncementNumber = 110000;
         foreach (var config in NewsDataToProcess)
         {
-            ParseModNewsContent(config);
+            ParseModNewsContent(config, _nextAnnouncementNumber);
+            _nextAnnouncementNumber++;
         }
     }
 
-    private static void ParseModNewsContent(NewsData config)
+    private static void ParseModNewsContent(NewsData config, int nextAnnouncementNumber)
     {
-        if (config.Id == 0) return;
-
         var type = (NewsTypes)config.Type;
-        _ = new ModNews(type, (int)config.Id, config.Title, config.SubTitle, config.ListTitle, config.Contents, config.Date);
+        _ = new ModNews(type, nextAnnouncementNumber, config.Title, config.SubTitle, config.ListTitle, config.Contents, config.Date);
     }
 }
