@@ -30,11 +30,11 @@
  ---
  #### Changed
  - **Detected Level Above**: Adjusted setting to allow higher values
+ - **Restrictions**: Removed all restrictions on untrusted assemblies
  ---
  #### Bug Fixes
  - Fixed Starting Game in Private Only Lobbies
  - Fixed memory leak in message readers
- - Fixed untrusted Itch.io assembly
  - Fixed cheater label bypassing Shapeshift
  ---
  ## [Discord](https://discord.gg/vjYrXpzNAn) [Github](https://github.com/D1GQ/BetterAmongUs/)
