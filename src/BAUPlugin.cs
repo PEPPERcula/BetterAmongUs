@@ -72,6 +72,7 @@ internal class BAUPlugin : BasePlugin
     internal static DeadBody[] AllDeadBodys => UnityEngine.Object.FindObjectsOfType<DeadBody>().ToArray();
     internal static Vent[] AllVents => UnityEngine.Object.FindObjectsOfType<Vent>();
 
+    internal static IntPtr? OriginalAffinity;
     internal static ManualLogSource? Logger;
 
     public override void Load()
@@ -112,6 +113,21 @@ internal class BAUPlugin : BasePlugin
         {
             Logger_.Error(ex);
         }
+#if UNITY_STANDALONE_WIN
+        try
+        {
+            if (TryFixStuttering.Value && Application.platform == RuntimePlatform.WindowsPlayer && Environment.ProcessorCount >= 4)
+            {
+                var process = Process.GetCurrentProcess();
+                OriginalAffinity = process.ProcessorAffinity;
+                process.ProcessorAffinity = (IntPtr)((1 << 2) | (1 << 3));
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger_.Error(ex);
+        }
+#endif
     }
 
     private static void SetupConsole()
@@ -153,13 +169,15 @@ internal class BAUPlugin : BasePlugin
     internal static ConfigEntry<bool>? AntiCheat { get; private set; }
     internal static ConfigEntry<bool>? SendBetterRpc { get; private set; }
     internal static ConfigEntry<bool>? BetterNotifications { get; private set; }
+    internal static ConfigEntry<bool>? UnlockFPS { get; private set; }
+    internal static ConfigEntry<bool>? ShowFPS { get; private set; }
     internal static ConfigEntry<bool>? ForceOwnLanguage { get; private set; }
     internal static ConfigEntry<bool>? ChatDarkMode { get; private set; }
     internal static ConfigEntry<bool>? ChatInGameplay { get; private set; }
     internal static ConfigEntry<bool>? LobbyPlayerInfo { get; private set; }
-    internal static ConfigEntry<bool>? DisableLobbyTheme { get; private set; }
-    internal static ConfigEntry<bool>? UnlockFPS { get; private set; }
-    internal static ConfigEntry<bool>? ShowFPS { get; private set; }
+    internal static ConfigEntry<bool>? LobbyTheme { get; private set; }
+    internal static ConfigEntry<bool>? ButtonCooldownInDecimalUnder10s { get; private set; }
+    internal static ConfigEntry<bool>? TryFixStuttering { get; private set; }
     internal static ConfigEntry<string>? CommandPrefix { get; set; }
     internal static ConfigEntry<int>? FavoriteColor { get; set; }
     private void LoadOptions()
@@ -168,13 +186,15 @@ internal class BAUPlugin : BasePlugin
         AntiCheat = Config.Bind("Better Options", "AntiCheat", true);
         SendBetterRpc = Config.Bind("Better Options", "SendBetterRpc", true);
         BetterNotifications = Config.Bind("Better Options", "BetterNotifications", true);
-        ForceOwnLanguage = Config.Bind("Better Options", "ForceOwnLanguage", false);
-        ChatDarkMode = Config.Bind("Better Options", "ChatDarkMode", true);
-        ChatInGameplay = Config.Bind("Better Options", "ChatInGameplay", true);
-        LobbyPlayerInfo = Config.Bind("Better Options", "LobbyPlayerInfo", true);
-        DisableLobbyTheme = Config.Bind("Better Options", "DisableLobbyTheme", true);
         UnlockFPS = Config.Bind("Better Options", "UnlockFPS", false);
         ShowFPS = Config.Bind("Better Options", "ShowFPS", false);
+        ForceOwnLanguage = Config.Bind("Better Options", "ForceOwnLanguage", false);
+        ChatDarkMode = Config.Bind("Better Options", "ChatDarkMode", true);
+        ChatInGameplay = Config.Bind("Better Options", "ChatInGameplay", false);
+        LobbyPlayerInfo = Config.Bind("Better Options", "LobbyPlayerInfo", true);
+        LobbyTheme = Config.Bind("Better Options", "LobbyTheme", true);
+        ButtonCooldownInDecimalUnder10s = Config.Bind("Better Options", "ButtonCooldownInDecimalUnder10s", false);
+        TryFixStuttering = Config.Bind("Better Options", "TryFixStuttering", true);
         CommandPrefix = Config.Bind("Client Options", "CommandPrefix", "/");
         FavoriteColor = Config.Bind("Mod", "FavoriteColor", -1);
     }
