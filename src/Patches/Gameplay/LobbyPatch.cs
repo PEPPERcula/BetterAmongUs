@@ -24,7 +24,7 @@ internal static class LobbyPatch
         [HarmonyPostfix]
         private static void Update_Postfix(/*LobbyBehaviour __instance*/)
         {
-            if (BAUPlugin.DisableLobbyTheme.Value)
+            if (!BAUPlugin.LobbyTheme.Value)
                 SoundManager.instance.StopSound(LobbyBehaviour.Instance.MapTheme);
         }
 
