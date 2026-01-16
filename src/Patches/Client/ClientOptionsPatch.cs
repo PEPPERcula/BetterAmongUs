@@ -22,7 +22,7 @@ internal static class OptionsMenuBehaviourPatch
     private static ClientOptionItem? ChatDarkMode;
     private static ClientOptionItem? ChatInGameplay;
     private static ClientOptionItem? LobbyPlayerInfo;
-    private static ClientOptionItem? DisableLobbyTheme;
+    private static ClientOptionItem? LobbyTheme;
     private static ClientOptionItem? ButtonCooldownInDecimalUnder10s;
     private static ClientOptionItem? TryFixStuttering;
     private static ClientOptionItem? OpenSaveData;
@@ -125,13 +125,13 @@ internal static class OptionsMenuBehaviourPatch
             LobbyPlayerInfo = ClientOptionItem.Create(title, BAUPlugin.LobbyPlayerInfo, __instance);
         }
 
-        if (DisableLobbyTheme == null || DisableLobbyTheme.ToggleButton == null)
+        if (LobbyTheme == null || LobbyTheme.ToggleButton == null)
         {
             string title = Translator.GetString("BetterOption.LobbyTheme");
-            DisableLobbyTheme = ClientOptionItem.Create(title, BAUPlugin.DisableLobbyTheme, __instance, DisableLobbyThemeButtonToggle);
-            static void DisableLobbyThemeButtonToggle()
+            LobbyTheme = ClientOptionItem.Create(title, BAUPlugin.LobbyTheme, __instance, LobbyThemeButtonToggle);
+            static void LobbyThemeButtonToggle()
             {
-                if (GameState.IsLobby && !BAUPlugin.DisableLobbyTheme.Value)
+                if (GameState.IsLobby && BAUPlugin.LobbyTheme.Value)
                 {
                     SoundManager.instance.CrossFadeSound("MapTheme", LobbyBehaviour.Instance.MapTheme, 0.5f, 1.5f);
                 }
