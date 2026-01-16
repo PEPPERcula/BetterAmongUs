@@ -2,6 +2,7 @@
 using BetterAmongUs.Managers;
 using BetterAmongUs.Modules;
 using HarmonyLib;
+using System.Globalization;
 using TMPro;
 using UnityEngine;
 
@@ -94,5 +95,23 @@ internal static class HudManagerPatch
             }
         }
         catch { }
+    }
+
+    [HarmonyPatch]
+    public static class ButtonCooldownPatch
+    {
+        [HarmonyPatch(typeof(ActionButton), nameof(ActionButton.SetCoolDown))]
+        [HarmonyPostfix]
+        public static void Postfix(ActionButton __instance, ref float timer)
+        {
+            if (!__instance.isActiveAndEnabled || !BAUPlugin.ButtonCooldownInDecimalUnder10s.Value) return;
+
+            if (__instance.isCoolingDown)
+            {
+                __instance.cooldownTimerText.text = timer < 10f
+                    ? timer.ToString("0.0", NumberFormatInfo.CurrentInfo)
+                    : ((int)timer).ToString();
+            }
+        }
     }
 }
