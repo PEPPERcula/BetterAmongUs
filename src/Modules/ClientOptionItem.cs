@@ -1,4 +1,5 @@
-﻿using BepInEx.Configuration;
+using BepInEx.Configuration;
+using BetterAmongUs.Helpers;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -7,10 +8,10 @@ namespace BetterAmongUs.Modules;
 internal sealed class ClientOptionItem
 {
     internal ConfigEntry<bool>? Config;
-    internal ToggleButtonBehaviour ToggleButton;
+    internal ToggleButtonBehaviour? ToggleButton;
 
     internal static SpriteRenderer? CustomBackground;
-    private static int numOptions = 0;
+    internal static List<ToggleButtonBehaviour>? OptionButtons;
 
     internal ClientOptionItem(string name, ConfigEntry<bool>? config, OptionsMenuBehaviour optionsMenuBehaviour, Action? additionalOnClickAction = null, Func<bool>? toggleCheck = null, bool IsToggle = true)
     {
@@ -23,15 +24,15 @@ internal sealed class ClientOptionItem
             // 1つ目のボタンの生成時に背景も生成
             if (CustomBackground == null)
             {
-                numOptions = 0;
                 CustomBackground = Object.Instantiate(optionsMenuBehaviour.Background, optionsMenuBehaviour.transform);
                 CustomBackground.name = "CustomBackground";
                 CustomBackground.transform.localScale = new(0.9f, 0.9f, 1f);
                 CustomBackground.transform.localPosition += Vector3.back * 8;
+                CustomBackground.size += new Vector2(3f, 0f);
                 CustomBackground.gameObject.SetActive(false);
 
                 var closeButton = Object.Instantiate(mouseMoveToggle, CustomBackground.transform);
-                closeButton.transform.localPosition = new(1.3f, -2.3f, -6f);
+                closeButton.transform.localPosition = new(2.6f, -2.3f, -6f);
                 closeButton.name = "Back";
                 closeButton.Text.text = "Back";
                 closeButton.Background.color = Palette.DisabledGrey;
@@ -65,6 +66,7 @@ internal sealed class ClientOptionItem
                 modOptionsPassiveButton.OnClick = new();
                 modOptionsPassiveButton.OnClick.AddListener(new Action(() =>
                 {
+                    AdjustButtonPositions();
                     CustomBackground.gameObject.SetActive(true);
                 }));
 
@@ -72,13 +74,16 @@ internal sealed class ClientOptionItem
                     leaveButton.transform.localPosition = new(-1.35f, -2.411f, -1f);
                 if (returnButton != null)
                     returnButton.transform.localPosition = new(1.35f, -2.411f, -1f);
+
+                OptionButtons = [];
             }
 
             ToggleButton = Object.Instantiate(mouseMoveToggle, CustomBackground.transform);
+            OptionButtons.Add(ToggleButton);
             ToggleButton.transform.localPosition = new Vector3(
-                numOptions % 2 == 0 ? -1.3f : 1.3f,
-                2.2f - 0.5f * (numOptions / 2),
-                -6f);
+                (OptionButtons.Count - 1) % 3 == 0 ? -2.6f : ((OptionButtons.Count - 1) % 3 == 1 ? 0f : 2.6f),
+                           2.2f - (0.5f * ((OptionButtons.Count - 1) / 3)),
+                           -6f);
             ToggleButton.name = name;
             ToggleButton.Text.text = name;
             ToggleButton.Text.text += Config != null && Config.Value ? ": On" : ": Off";
@@ -118,14 +123,42 @@ internal sealed class ClientOptionItem
             }));
             UpdateToggle();
         }
-        finally { numOptions++; }
+        catch (Exception ex)
+        {
+            Logger_.Error(ex.ToString(), "ClientOptionItem.Create");
+        }
     }
 
-    internal static ClientOptionItem Create(string name, ConfigEntry<bool>? config, OptionsMenuBehaviour optionsMenuBehaviour, Action? additionalOnClickAction = null, Func<bool>? toggleCheck = null, bool IsToggle = true)
+    internal static ClientOptionItem Create(string name, ConfigEntry<bool> config, OptionsMenuBehaviour optionsMenuBehaviour, Action? additionalOnClickAction = null, Func<bool>? toggleCheck = null, bool IsToggle = true)
     {
         toggleCheck ??= () => true;
 
         return new ClientOptionItem(name, config, optionsMenuBehaviour, additionalOnClickAction, toggleCheck, IsToggle);
+    }
+
+    internal static void AdjustButtonPositions()
+    {
+        if (OptionButtons == null || OptionButtons.Count == 0) return;
+
+        int totalRows = (OptionButtons.Count + 2) / 3;
+
+        float topPosition = 2.2f;
+        float bottomLimit = -1.6f;
+        float availableHeight = topPosition - bottomLimit;
+        float rowSpacing = totalRows > 1 ? availableHeight / (totalRows - 1) : 0f;
+
+        for (int i = 0; i < OptionButtons.Count; i++)
+        {
+            var button = OptionButtons[i];
+            if (button == null) continue;
+
+            int row = i / 3;
+            int col = i % 3;
+            float xPos = col == 0 ? -2.6f : (col == 1 ? 0f : 2.6f);
+            float yPos = topPosition - (row * rowSpacing);
+
+            button.transform.localPosition = new Vector3(xPos, yPos, -6f);
+        }
     }
 
     internal void UpdateToggle()
