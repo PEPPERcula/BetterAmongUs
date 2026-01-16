@@ -9,7 +9,6 @@ internal sealed class ClientOptionItem
 {
     internal ConfigEntry<bool>? Config;
     internal ToggleButtonBehaviour? ToggleButton;
-
     internal static SpriteRenderer? CustomBackground;
     private static List<ToggleButtonBehaviour>? OptionButtons;
 
