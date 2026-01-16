@@ -108,9 +108,7 @@ internal static class HudManagerPatch
 
             if (__instance.isCoolingDown)
             {
-                __instance.cooldownTimerText.text = timer < 10f
-                    ? timer.ToString("0.0", NumberFormatInfo.CurrentInfo)
-                    : ((int)timer).ToString();
+                __instance.cooldownTimerText.text = timer < 10f ? timer.ToString("0.0", NumberFormatInfo.CurrentInfo) : ((int)timer).ToString();
             }
         }
     }
