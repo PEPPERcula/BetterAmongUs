@@ -16,13 +16,15 @@ internal static class OptionsMenuBehaviourPatch
     private static ClientOptionItem? AntiCheat;
     private static ClientOptionItem? SendBetterRpc;
     private static ClientOptionItem? BetterNotifications;
+    private static ClientOptionItem? UnlockFPS;
+    private static ClientOptionItem? ShowFPS;
     private static ClientOptionItem? ForceOwnLanguage;
     private static ClientOptionItem? ChatDarkMode;
     private static ClientOptionItem? ChatInGameplay;
     private static ClientOptionItem? LobbyPlayerInfo;
     private static ClientOptionItem? DisableLobbyTheme;
-    private static ClientOptionItem? UnlockFPS;
-    private static ClientOptionItem? ShowFPS;
+    private static ClientOptionItem? ButtonCooldownInDecimalUnder10s;
+    private static ClientOptionItem? TryFixStuttering;
     private static ClientOptionItem? OpenSaveData;
     private static ClientOptionItem? SwitchToVanilla;
 
@@ -30,17 +32,6 @@ internal static class OptionsMenuBehaviourPatch
     [HarmonyPrefix]
     private static void Start_Postfix(OptionsMenuBehaviour __instance)
     {
-        /*
-        static bool toggleCheckInGamePlay(string buttonName)
-        {
-            bool flag = GameState.IsInGame && !GameState.IsLobby || GameState.IsFreePlay;
-            if (flag)
-                BetterNotificationManager.Notify($"Unable to toggle '{buttonName}' while in gameplay!", 2.5f);
-
-            return flag;
-        }
-        */
-
         static bool toggleCheckInGame(string buttonName)
         {
             bool flag = GameState.IsInGame;
@@ -89,6 +80,22 @@ internal static class OptionsMenuBehaviourPatch
             }
         }
 
+        if (UnlockFPS == null || UnlockFPS.ToggleButton == null)
+        {
+            string title = Translator.GetString("BetterOption.UnlockFPS");
+            UnlockFPS = ClientOptionItem.Create(title, BAUPlugin.UnlockFPS, __instance, UnlockFPSButtonToggle);
+            static void UnlockFPSButtonToggle()
+            {
+                Application.targetFrameRate = BAUPlugin.UnlockFPS.Value ? 165 : 60;
+            }
+        }
+
+        if (ShowFPS == null || ShowFPS.ToggleButton == null)
+        {
+            string title = Translator.GetString("BetterOption.ShowFPS");
+            ShowFPS = ClientOptionItem.Create(title, BAUPlugin.ShowFPS, __instance);
+        }
+
         if (ForceOwnLanguage == null || ForceOwnLanguage.ToggleButton == null)
         {
             string title = Translator.GetString("BetterOption.ForceOwnLanguage");
@@ -131,20 +138,38 @@ internal static class OptionsMenuBehaviourPatch
             }
         }
 
-        if (UnlockFPS == null || UnlockFPS.ToggleButton == null)
+        if (ButtonCooldownInDecimalUnder10s == null || ButtonCooldownInDecimalUnder10s.ToggleButton == null)
         {
-            string title = Translator.GetString("BetterOption.UnlockFPS");
-            UnlockFPS = ClientOptionItem.Create(title, BAUPlugin.UnlockFPS, __instance, UnlockFPSButtonToggle);
-            static void UnlockFPSButtonToggle()
-            {
-                Application.targetFrameRate = BAUPlugin.UnlockFPS.Value ? 165 : 60;
-            }
+            string title = Translator.GetString("BetterOption.ButtonCooldownInDecimalUnder10s");
+            ButtonCooldownInDecimalUnder10s = ClientOptionItem.Create(title, BAUPlugin.ButtonCooldownInDecimalUnder10s, __instance);
         }
 
-        if (ShowFPS == null || ShowFPS.ToggleButton == null)
+        if (TryFixStuttering == null || TryFixStuttering.ToggleButton == null)
         {
-            string title = Translator.GetString("BetterOption.ShowFPS");
-            ShowFPS = ClientOptionItem.Create(title, BAUPlugin.ShowFPS, __instance);
+            string title = Translator.GetString("BetterOption.TryFixStuttering");
+            TryFixStuttering = ClientOptionItem.Create(title, BAUPlugin.TryFixStuttering, __instance, TryFixStutteringButtonToggle);
+            [SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
+            static void TryFixStutteringButtonToggle()
+            {
+                if (BAUPlugin.TryFixStuttering.Value)
+                {
+                    if (Application.platform == RuntimePlatform.WindowsPlayer && Environment.ProcessorCount >= 4)
+                    {
+                        var process = Process.GetCurrentProcess();
+                        BAUPlugin.OriginalAffinity = process.ProcessorAffinity;
+                        process.ProcessorAffinity = (IntPtr)((1 << 2) | (1 << 3));
+                    }
+                }
+                else
+                {
+                    if (BAUPlugin.OriginalAffinity.HasValue)
+                    {
+                        var proc = Process.GetCurrentProcess();
+                        proc.ProcessorAffinity = BAUPlugin.OriginalAffinity.Value;
+                        BAUPlugin.OriginalAffinity = null;
+                    }
+                }
+            }
         }
 
         if (OpenSaveData == null || OpenSaveData.ToggleButton == null)
