@@ -11,7 +11,7 @@ internal sealed class ClientOptionItem
     internal ToggleButtonBehaviour? ToggleButton;
 
     internal static SpriteRenderer? CustomBackground;
-    internal static List<ToggleButtonBehaviour>? OptionButtons;
+    private static List<ToggleButtonBehaviour>? OptionButtons;
 
     internal ClientOptionItem(string name, ConfigEntry<bool>? config, OptionsMenuBehaviour optionsMenuBehaviour, Action? additionalOnClickAction = null, Func<bool>? toggleCheck = null, bool IsToggle = true)
     {
@@ -136,7 +136,7 @@ internal sealed class ClientOptionItem
         return new ClientOptionItem(name, config, optionsMenuBehaviour, additionalOnClickAction, toggleCheck, IsToggle);
     }
 
-    internal static void AdjustButtonPositions()
+    private static void AdjustButtonPositions()
     {
         if (OptionButtons == null || OptionButtons.Count == 0) return;
 
