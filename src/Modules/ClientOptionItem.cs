@@ -81,8 +81,8 @@ internal sealed class ClientOptionItem
             OptionButtons.Add(ToggleButton);
             ToggleButton.transform.localPosition = new Vector3(
                 (OptionButtons.Count - 1) % 3 == 0 ? -2.6f : ((OptionButtons.Count - 1) % 3 == 1 ? 0f : 2.6f),
-                           2.2f - (0.5f * ((OptionButtons.Count - 1) / 3)),
-                           -6f);
+                2.2f - (0.5f * ((OptionButtons.Count - 1) / 3)),
+                -6f);
             ToggleButton.name = name;
             ToggleButton.Text.text = name;
             ToggleButton.Text.text += Config != null && Config.Value ? ": On" : ": Off";
