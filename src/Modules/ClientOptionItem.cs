@@ -140,7 +140,6 @@ internal sealed class ClientOptionItem
         if (OptionButtons == null || OptionButtons.Count == 0) return;
 
         int totalRows = (OptionButtons.Count + 2) / 3;
-
         float topPosition = 2.2f;
         float bottomLimit = -1.6f;
         float availableHeight = topPosition - bottomLimit;
