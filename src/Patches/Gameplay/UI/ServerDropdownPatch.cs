@@ -1,7 +1,6 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace BetterAmongUs.Patches.Gameplay.UI;
 
@@ -30,70 +29,38 @@ internal static class ServerDropdownPatch
     [HarmonyPrefix]
     private static bool FillServerOptions_Prefix(ServerDropdown __instance)
     {
-        __instance.background.size = new Vector2(5, 1);
+        SpriteRenderer background = __instance.background;
+        background.size = new Vector2(4, 1);
+        ServerManager serverManager = ServerManager.Instance;
+        TranslationController tc = TranslationController.Instance;
+        var regions = serverManager.AvailableRegions.ToList();
+        IRegionInfo currentRegion = serverManager.CurrentRegion;
+        var displayRegions = regions.Where(r => r.Name != currentRegion.Name).ToList();
+        int totalColumns = Mathf.Max(1, Mathf.CeilToInt(displayRegions.Count / 5f));
+        int rowLimit = Mathf.Min(displayRegions.Count, 5);
 
-        int num = 0;
-        int column = 0;
-        int maxPerColumn = SceneManager.GetActiveScene().name == "FindAGame" ? 10 : 6;
-        const float columnWidth = 3.5f;
-        const float buttonSpacing = 0.5f;
+        __instance.defaultButtonSelected = __instance.firstOption;
+        __instance.firstOption.ChangeButtonText(tc.GetStringWithDefault(currentRegion.TranslateName, currentRegion.Name, new Il2CppReferenceArray<Il2CppSystem.Object>(0)));
 
-        // Get all available regions except current one
-        var regions = ServerManager.Instance.AvailableRegions.OrderBy(ServerManager.DefaultRegions.Contains).ToList();
-
-        // Calculate total columns needed
-        int totalColumns = Mathf.Max(1, Mathf.CeilToInt(regions.Count / (float)maxPerColumn));
-        int rowsInLastColumn = regions.Count % maxPerColumn;
-        int maxRows = (regions.Count > maxPerColumn) ? maxPerColumn : regions.Count;
-
-        foreach (IRegionInfo regionInfo in regions)
+        for (var index = 0; index < displayRegions.Count; index++)
         {
-            if (ServerManager.Instance.CurrentRegion.Name == regionInfo.Name)
-            {
-                __instance.defaultButtonSelected = __instance.firstOption;
-                __instance.firstOption.ChangeButtonText(TranslationController.Instance.GetStringWithDefault(regionInfo.TranslateName, regionInfo.Name, new Il2CppReferenceArray<Il2CppSystem.Object>(0)));
-                continue;
-            }
+            IRegionInfo ri = displayRegions[index];
+            var buttonPool = __instance.ButtonPool.Get<ServerListButton>();
 
-            IRegionInfo region = regionInfo;
-            ServerListButton serverListButton = __instance.ButtonPool.Get<ServerListButton>();
-
-            // Calculate position based on column and row
-            float xPos = (column - (totalColumns - 1) / 2f) * columnWidth;
-            float yPos = __instance.y_posButton - buttonSpacing * (num % maxPerColumn);
-
-            serverListButton.transform.localPosition = new Vector3(xPos, yPos, -1f);
-            serverListButton.transform.localScale = Vector3.one;
-            serverListButton.Text.enableAutoSizing = true;
-            serverListButton.Text.text = TranslationController.Instance.GetStringWithDefault(
-                regionInfo.TranslateName,
-                regionInfo.Name,
-                new Il2CppReferenceArray<Il2CppSystem.Object>(0));
-            serverListButton.Text.ForceMeshUpdate(false, false);
-            serverListButton.Button.OnClick.RemoveAllListeners();
-            serverListButton.Button.OnClick.AddListener((Action)(() => __instance.ChooseOption(region)));
-            __instance.controllerSelectable.Add(serverListButton.Button);
-
-            // Move to next column if current column is full
-            num++;
-            if (num % maxPerColumn == 0)
-            {
-                column++;
-            }
+            buttonPool.transform.localPosition = new Vector3(((index / 5) - ((totalColumns - 1) / 2f)) * 3.15f, __instance.y_posButton - (0.5f * (index % 5)), -1f);
+            buttonPool.Text.text = tc.GetStringWithDefault(ri.TranslateName, ri.Name, new Il2CppReferenceArray<Il2CppSystem.Object>(0));
+            buttonPool.Text.ForceMeshUpdate();
+            buttonPool.Button.OnClick.RemoveAllListeners();
+            buttonPool.Button.OnClick.AddListener((Action)(() => __instance.ChooseOption(ri)));
+            __instance.controllerSelectable.Add(buttonPool.Button);
         }
 
-        // Calculate background dimensions
-        float backgroundHeight = 1.2f + buttonSpacing * (maxRows - 1);
-        float backgroundWidth = (totalColumns > 1) ?
-            (columnWidth * (totalColumns - 1) + __instance.background.size.x) :
-            __instance.background.size.x;
-
-        __instance.background.transform.localPosition = new Vector3(
-            0f,
-            __instance.initialYPos - (backgroundHeight - 1.2f) / 2f,
-            0f);
-        __instance.background.size = new Vector2(backgroundWidth, backgroundHeight);
+        float height = 1.2f + (0.5f * (rowLimit - 1));
+        float width = totalColumns > 1 ? (3.15f * (totalColumns - 1)) + background.size.x : background.size.x;
+        background.transform.localPosition = new Vector3(0f, __instance.initialYPos - ((height - 1.2f) / 2f), 0f);
+        background.size = new Vector2(width, height);
 
         return false;
+
     }
 }
