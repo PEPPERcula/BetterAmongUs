@@ -229,14 +229,7 @@ internal sealed class UpdateSystemHandler : RPCHandler
                 }
             }
         }
-
-        /*
-          if (!CheckConsoleDistance<ReactorTask>(sender))
-          {
-              return false;
-          }
-         */
-
+        
         return true;
     }
 
@@ -271,13 +264,6 @@ internal sealed class UpdateSystemHandler : RPCHandler
         {
             return false;
         }
-
-        /*
-        if (!CheckConsoleDistance<NoOxyTask>(sender))
-        {
-            return false;
-        }
-        */
 
         return true;
     }
