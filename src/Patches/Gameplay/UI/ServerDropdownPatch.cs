@@ -61,6 +61,5 @@ internal static class ServerDropdownPatch
         background.size = new Vector2(width, height);
 
         return false;
-
     }
 }
