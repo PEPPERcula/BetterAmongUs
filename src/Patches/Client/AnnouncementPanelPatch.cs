@@ -63,7 +63,7 @@ internal static class AnnouncementPanelPatch
                 switch (modNews.NewsType)
                 {
                     case NewsTypes.BAU:
-                        renderer.sprite = Utils.LoadSprite("BetterAmongUs.Resources.Images.BetterAmongUs-Icon.png", 1225f);
+                        renderer.sprite = Utils.LoadSprite("BetterAmongUs.Resources.Images.BetterAmongUs-Icon.png", 535f);
                         break;
                 }
 
