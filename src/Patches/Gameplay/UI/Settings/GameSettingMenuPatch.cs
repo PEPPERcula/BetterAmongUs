@@ -113,14 +113,6 @@ internal static class GameSettingMenuPatch
         }
 
         BetterSettingsTab.UpdateVisuals();
-
-        /*
-        new BetterOptionCheckboxItem().Create(10000, BetterSettingsTab, "CheckBox Test", true);
-        new BetterOptionStringItem().Create(10001, BetterSettingsTab, "String Test", ["Test 1", "Test 2", "Test 3"], 0);
-        new BetterOptionFloatItem().Create(10002, BetterSettingsTab, "Float Test 1", [0f, 180f, 2.5f], 0f, "", "");
-        new BetterOptionIntItem().Create(10003, BetterSettingsTab, "Int Test", [0, 5, 1], 0, "", "");
-        new BetterOptionHeaderItem().Create(BetterSettingsTab, "<color=#4f92ff>Test Settings 2</color>");
-        */
     }
 
     [HarmonyPatch(nameof(GameSettingMenu.Start))]
