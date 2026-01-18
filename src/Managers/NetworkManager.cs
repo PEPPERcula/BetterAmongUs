@@ -93,7 +93,7 @@ internal static class NetworkManager
         }
     }
 
-    // Read rpc data from non-immediate RPC
+    // Read RPC data from non-immediate RPC
     internal static RPCData ReadRpc(MessageReader reader, byte flag, int targetId)
     {
         var netId = reader.ReadPackedUInt32();
@@ -102,7 +102,7 @@ internal static class NetworkManager
         return new RPCData(AmongUsClient.Instance.FindObjectByNetId<InnerNetObject>(netId), (SendOption)flag, targetId, (RpcCalls)calledId, reader);
     }
 
-    // Handle received rpcs from server
+    // Handle received RPCs from server
     public static void HandleGameData(MessageReader parentReader)
     {
         try
@@ -123,7 +123,7 @@ internal static class NetworkManager
         }
     }
 
-    // Handle rpc data
+    // Handle RPC data
     private static IEnumerator HandleGameDataInner(MessageReader reader, int msgNum)
     {
         int attemptCount = 0;
@@ -329,20 +329,6 @@ internal static class NetworkManager
 
     private static IEnumerator HandleXboxDeclareXuid(MessageReader reader)
     {
-        /*
-        try
-        {
-            string data = reader.ReadString();
-            if (ulong.TryParse(data, out ulong parsedValue))
-            {
-            }
-            yield break;
-        }
-        finally
-        {
-            reader.Recycle();
-        }
-        */
         reader.Recycle();
         yield break;
     }
