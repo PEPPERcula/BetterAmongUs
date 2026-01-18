@@ -48,12 +48,6 @@ internal static class BetterNotificationManager
 
         if (player.IsLocalPlayer())
         {
-            /*
-            FileChecker.SetHasUnauthorizedFileOrMod();
-            FileChecker.SetWarningMsg("Tampered client detected!");
-            Utils.DisconnectSelf("Tampered client detected!");
-            Utils.DisconnectAccountFromOnline();
-            */
             return false;
         }
 
