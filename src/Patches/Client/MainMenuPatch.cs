@@ -24,11 +24,6 @@ internal static class MainMenuPatch
             },
             "Icon", "Background");
         }
-
-        /*
-        bool Flag = __instance?.screenTint?.GetComponent<SpriteRenderer>() != null
-            && !__instance.screenTint.GetComponent<SpriteRenderer>().enabled;
-        */
     }
 
     // Replace AU logo with BAU logo
