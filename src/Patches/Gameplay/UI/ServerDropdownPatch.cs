@@ -60,6 +60,7 @@ internal static class ServerDropdownPatch
             __instance.controllerSelectable.Add(buttonPool.Button);
         }
 
+        // Calculate background dimensions
         float height = 1.2f + (0.5f * (rowLimit - 1));
         float width = totalColumns > 1 ? (3.15f * (totalColumns - 1)) + background.size.x : background.size.x;
         background.transform.localPosition = new Vector3(0f, __instance.initialYPos - ((height - 1.2f) / 2f), 0f);
