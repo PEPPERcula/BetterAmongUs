@@ -32,23 +32,28 @@ internal static class ServerDropdownPatch
         SpriteRenderer background = __instance.background;
         background.size = new Vector2(4, 1);
         ServerManager serverManager = ServerManager.Instance;
-        TranslationController tc = TranslationController.Instance;
+        TranslationController translationController = TranslationController.Instance;
+
+        // Get all available regions except current one
         var regions = serverManager.AvailableRegions.ToList();
         IRegionInfo currentRegion = serverManager.CurrentRegion;
         var displayRegions = regions.Where(r => r.Name != currentRegion.Name).ToList();
+
+        // Calculate total columns needed
         int totalColumns = Mathf.Max(1, Mathf.CeilToInt(displayRegions.Count / 5f));
         int rowLimit = Mathf.Min(displayRegions.Count, 5);
 
         __instance.defaultButtonSelected = __instance.firstOption;
-        __instance.firstOption.ChangeButtonText(tc.GetStringWithDefault(currentRegion.TranslateName, currentRegion.Name, new Il2CppReferenceArray<Il2CppSystem.Object>(0)));
+        __instance.firstOption.ChangeButtonText(translationController.GetStringWithDefault(currentRegion.TranslateName, currentRegion.Name, new Il2CppReferenceArray<Il2CppSystem.Object>(0)));
 
         for (var index = 0; index < displayRegions.Count; index++)
         {
             IRegionInfo ri = displayRegions[index];
             var buttonPool = __instance.ButtonPool.Get<ServerListButton>();
 
+            // Calculate position based on column and row
             buttonPool.transform.localPosition = new Vector3(((index / 5) - ((totalColumns - 1) / 2f)) * 3.15f, __instance.y_posButton - (0.5f * (index % 5)), -1f);
-            buttonPool.Text.text = tc.GetStringWithDefault(ri.TranslateName, ri.Name, new Il2CppReferenceArray<Il2CppSystem.Object>(0));
+            buttonPool.Text.text = translationController.GetStringWithDefault(ri.TranslateName, ri.Name, new Il2CppReferenceArray<Il2CppSystem.Object>(0));
             buttonPool.Text.ForceMeshUpdate();
             buttonPool.Button.OnClick.RemoveAllListeners();
             buttonPool.Button.OnClick.AddListener((Action)(() => __instance.ChooseOption(ri)));
