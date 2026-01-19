@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 using UnityEngine;
 
-
 namespace BetterAmongUs.Patches.Gameplay.UI;
 
 internal static class MiniMapBehaviourPatch
@@ -10,8 +9,9 @@ internal static class MiniMapBehaviourPatch
     internal static class MapBehaviourPatch
     {
         [HarmonyPatch(nameof(MapBehaviour.ShowNormalMap))]
+        [HarmonyPatch(nameof(MapBehaviour.ShowDetectiveMap))]
         [HarmonyPostfix]
-        private static void ShowNormalMap_Postfix(MapBehaviour __instance) => __instance.ColorControl.SetColor(new Color(0.05f, 0.6f, 1f, 1f));
+        private static void ShowMap_Postfix(MapBehaviour __instance) => __instance.ColorControl.SetColor(new Color(0.05f, 0.6f, 1f, 1f));
         [HarmonyPatch(nameof(MapBehaviour.ShowSabotageMap))]
         [HarmonyPostfix]
         private static void ShowSabotageMap_Postfix(MapBehaviour __instance) => __instance.ColorControl.SetColor(new Color(1f, 0.3f, 0f, 1f));
